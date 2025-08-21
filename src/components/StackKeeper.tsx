@@ -274,7 +274,7 @@ export const StackKeeper = () => {
         )}
 
         {/* Floating Action Button for Interventions */}
-        <InterventionFAB onIntervention={addIntervention} />
+        <InterventionFAB participants={stack} onIntervention={addIntervention} />
       </div>
     </div>
   );
