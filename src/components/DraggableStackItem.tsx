@@ -42,22 +42,25 @@ export const DraggableStackItem = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center justify-between p-3 rounded-lg border ${
+      className={`stack-card flex items-center justify-between p-4 rounded-xl border ${
         isCurrentSpeaker 
-          ? 'bg-primary/10 border-primary' 
-          : 'bg-muted/50'
-      } ${isDragging ? 'shadow-lg' : ''}`}
+          ? 'current-speaker border-primary/30' 
+          : 'bg-card hover:bg-muted/30 border-border'
+      } ${isDragging ? 'drag-overlay' : ''}`}
     >
       <div className="flex items-center gap-3">
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing hover:text-primary transition-colors"
+          className="cursor-grab active:cursor-grabbing hover:text-primary transition-all duration-200 p-1 rounded hover:bg-muted/50"
         >
-          <GripVertical className="h-4 w-4" />
+          <GripVertical className="h-5 w-5" />
         </div>
-        <Badge variant={isCurrentSpeaker ? "default" : "secondary"}>
-          {isCurrentSpeaker ? "Speaking" : `#${index + 1}`}
+        <Badge 
+          variant={isCurrentSpeaker ? "default" : "secondary"}
+          className={`${isCurrentSpeaker ? 'animate-pulse' : ''} px-3 py-1`}
+        >
+          {isCurrentSpeaker ? "🎤 Speaking" : `#${index + 1}`}
         </Badge>
         <span className={`font-medium ${
           isCurrentSpeaker ? 'text-primary' : 'text-foreground'

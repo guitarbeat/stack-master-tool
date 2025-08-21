@@ -22,6 +22,8 @@ import { Trash2, Plus, Users, MessageSquare, HelpCircle, AlertTriangle } from "l
 import { toast } from "@/hooks/use-toast";
 import { DraggableStackItem } from "./DraggableStackItem";
 import { InterventionDialog } from "./InterventionDialog";
+import { InterventionFAB } from "./InterventionFAB";
+import { NextSpeakerCard } from "./NextSpeakerCard";
 
 interface Participant {
   id: string;
@@ -136,66 +138,83 @@ export const StackKeeper = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4 md:p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground flex items-center justify-center gap-2">
+        <div className="text-center space-y-4 fade-in">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
             <Users className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-4xl font-bold text-foreground">
             Stack Facilitation
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Democratic discussion management tool for facilitators and stack keepers
           </p>
         </div>
 
         {/* Add Participant */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus className="h-5 w-5" />
+        <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm slide-up">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Plus className="h-5 w-5 text-primary" />
               Add to Stack
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Input
-                placeholder="Participant name"
+                placeholder="Enter participant name..."
                 value={newParticipantName}
                 onChange={(e) => setNewParticipantName(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && addToStack()}
-                className="flex-1"
+                className="flex-1 h-11 text-base border-border/50 focus:border-primary transition-colors"
               />
-              <Button onClick={addToStack} disabled={!newParticipantName.trim()}>
+              <Button 
+                onClick={addToStack} 
+                disabled={!newParticipantName.trim()}
+                size="lg"
+                className="px-6 shadow-md hover:shadow-lg transition-all duration-200"
+              >
                 Add to Stack
               </Button>
             </div>
           </CardContent>
         </Card>
 
+        {/* Current Speaker Highlight */}
+        {stack.length > 0 && (
+          <NextSpeakerCard
+            currentSpeaker={stack[0]}
+            nextSpeakers={stack.slice(1, 3)}
+            onNextSpeaker={nextSpeaker}
+          />
+        )}
+
         {/* Current Stack */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Speaking Queue ({stack.length})
+        <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <Users className="h-6 w-6 text-primary" />
+              Speaking Queue
+              <Badge variant="secondary" className="ml-2 px-3 py-1">
+                {stack.length} {stack.length === 1 ? 'person' : 'people'}
+              </Badge>
             </CardTitle>
             {stack.length > 0 && (
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={nextSpeaker}>
-                  Next Speaker
-                </Button>
-                <Button variant="destructive" size="sm" onClick={clearStack}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button variant="destructive" size="sm" onClick={clearStack} className="shadow-md">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Clear All
+              </Button>
             )}
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {stack.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">
-                No one in stack. Add participants to begin.
-              </p>
+              <div className="text-center py-12">
+                <Users className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                <p className="text-muted-foreground text-lg mb-2">No one in stack</p>
+                <p className="text-sm text-muted-foreground/70">Add participants above to begin the discussion</p>
+              </div>
             ) : (
               <DndContext
                 sensors={sensors}
@@ -205,13 +224,14 @@ export const StackKeeper = () => {
                 <SortableContext items={stack} strategy={verticalListSortingStrategy}>
                   <div className="space-y-3">
                     {stack.map((participant, index) => (
-                      <DraggableStackItem
-                        key={participant.id}
-                        participant={participant}
-                        index={index}
-                        isCurrentSpeaker={index === 0}
-                        onRemove={removeFromStack}
-                      />
+                      <div key={participant.id} className="fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                        <DraggableStackItem
+                          participant={participant}
+                          index={index}
+                          isCurrentSpeaker={index === 0}
+                          onRemove={removeFromStack}
+                        />
+                      </div>
                     ))}
                   </div>
                 </SortableContext>
@@ -220,115 +240,41 @@ export const StackKeeper = () => {
           </CardContent>
         </Card>
 
-        {/* Special Interventions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Special Interventions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-              <InterventionDialog
-                trigger={
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 h-auto p-4 flex-col w-full"
-                  >
-                    <MessageSquare className="h-5 w-5 text-secondary" />
-                    <div className="text-center">
-                      <div className="font-medium">Direct Response</div>
-                      <div className="text-xs text-muted-foreground">
-                        Immediate correction or answer
-                      </div>
-                    </div>
-                  </Button>
-                }
-                title="Direct Response"
-                description="Who is making a direct response? This should only be used for corrections or immediate answers."
-                onSubmit={(name) => addIntervention('direct-response', name)}
-              />
-              
-              <InterventionDialog
-                trigger={
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 h-auto p-4 flex-col w-full"
-                  >
-                    <HelpCircle className="h-5 w-5 text-accent" />
-                    <div className="text-center">
-                      <div className="font-medium">Clarifying Question</div>
-                      <div className="text-xs text-muted-foreground">
-                        Question for understanding
-                      </div>
-                    </div>
-                  </Button>
-                }
-                title="Clarifying Question"
-                description="Who has a clarifying question? This should only be used when you need additional information or don't understand something."
-                onSubmit={(name) => addIntervention('clarifying-question', name)}
-              />
-              
-              <InterventionDialog
-                trigger={
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 h-auto p-4 flex-col w-full"
-                  >
-                    <AlertTriangle className="h-5 w-5 text-warning" />
-                    <div className="text-center">
-                      <div className="font-medium">Point of Process</div>
-                      <div className="text-xs text-muted-foreground">
-                        Procedural concern
-                      </div>
-                    </div>
-                  </Button>
-                }
-                title="Point of Process"
-                description="Who is raising a point of process? This should be used when the discussion is off-topic or not following procedure."
-                onSubmit={(name) => addIntervention('point-of-process', name)}
-              />
-            </div>
+        {/* Recent Interventions */}
+        {interventions.length > 0 && (
+          <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <AlertTriangle className="h-5 w-5 text-primary" />
+                  Recent Interventions
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={clearInterventions} className="hover:bg-destructive/10 hover:text-destructive">
+                  Clear History
+                </Button>
+              </div>
+            </CardHeader>
 
-            {interventions.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Recent Interventions</h4>
-                  <Button variant="ghost" size="sm" onClick={clearInterventions}>
-                    Clear
-                  </Button>
-                </div>
-                {interventions.slice(-3).map((intervention) => (
-                  <div key={intervention.id} className="flex items-center gap-2 text-sm">
-                    <Badge variant="outline">
+            <CardContent className="pt-0">
+              <div className="space-y-3">
+                {interventions.slice(-5).reverse().map((intervention, index) => (
+                  <div key={intervention.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                    <Badge variant="outline" className="shrink-0">
                       {intervention.type.replace('-', ' ')}
                     </Badge>
-                    <span>{intervention.participant}</span>
-                    <span className="text-muted-foreground">
-                      {intervention.timestamp.toLocaleTimeString()}
+                    <span className="font-medium">{intervention.participant}</span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {intervention.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Next Speakers Preview */}
-        {stack.length > 1 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Coming Up</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2 flex-wrap">
-                {stack.slice(1, 4).map((participant, index) => (
-                  <Badge key={participant.id} variant="secondary">
-                    Next {index + 1}: {participant.name}
-                  </Badge>
                 ))}
               </div>
             </CardContent>
           </Card>
         )}
+
+        {/* Floating Action Button for Interventions */}
+        <InterventionFAB onIntervention={addIntervention} />
       </div>
     </div>
   );
