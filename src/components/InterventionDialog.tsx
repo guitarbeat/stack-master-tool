@@ -1,27 +1,9 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-interface Participant {
-  id: string;
-  name: string;
-  addedAt: Date;
-}
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Participant } from "@/types";
 
 interface InterventionDialogProps {
   trigger: React.ReactNode;
@@ -31,13 +13,7 @@ interface InterventionDialogProps {
   onSubmit: (participantName: string) => void;
 }
 
-export const InterventionDialog = ({ 
-  trigger, 
-  title, 
-  description, 
-  participants,
-  onSubmit 
-}: InterventionDialogProps) => {
+export const InterventionDialog = ({ trigger, title, description, participants, onSubmit }: InterventionDialogProps) => {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string>("");
   const [open, setOpen] = useState(false);
 
@@ -55,15 +31,11 @@ export const InterventionDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {description}
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -79,21 +51,15 @@ export const InterventionDialog = ({
                 </SelectTrigger>
                 <SelectContent>
                   {participants.map((participant) => (
-                    <SelectItem key={participant.id} value={participant.id}>
-                      {participant.name}
-                    </SelectItem>
+                    <SelectItem key={participant.id} value={participant.id}>{participant.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             )}
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!selectedParticipantId || participants.length === 0}>
-              Add Intervention
-            </Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" disabled={!selectedParticipantId || participants.length === 0}>Add Intervention</Button>
           </div>
         </form>
       </DialogContent>
