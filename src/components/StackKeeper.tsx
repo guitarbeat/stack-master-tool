@@ -1,10 +1,27 @@
 import { useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Users, MessageSquare, HelpCircle, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { DraggableStackItem } from "./DraggableStackItem";
+import { InterventionDialog } from "./InterventionDialog";
 
 interface Participant {
   id: string;
@@ -23,6 +40,13 @@ export const StackKeeper = () => {
   const [stack, setStack] = useState<Participant[]>([]);
   const [interventions, setInterventions] = useState<SpecialIntervention[]>([]);
   const [newParticipantName, setNewParticipantName] = useState("");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const addToStack = () => {
     if (!newParticipantName.trim()) return;
@@ -63,14 +87,11 @@ export const StackKeeper = () => {
     }
   };
 
-  const addIntervention = (type: SpecialIntervention['type']) => {
-    const participantName = prompt(`Who is making the ${type.replace('-', ' ')}?`);
-    if (!participantName?.trim()) return;
-
+  const addIntervention = (type: SpecialIntervention['type'], participantName: string) => {
     const intervention: SpecialIntervention = {
       id: Date.now().toString(),
       type,
-      participant: participantName.trim(),
+      participant: participantName,
       timestamp: new Date()
     };
 
@@ -86,6 +107,19 @@ export const StackKeeper = () => {
       title: typeLabels[type],
       description: `${participantName} - ${typeLabels[type]} recorded`,
     });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setStack((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const clearInterventions = () => {
@@ -163,36 +197,25 @@ export const StackKeeper = () => {
                 No one in stack. Add participants to begin.
               </p>
             ) : (
-              <div className="space-y-3">
-                {stack.map((participant, index) => (
-                  <div
-                    key={participant.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border ${
-                      index === 0 
-                        ? 'bg-primary/10 border-primary' 
-                        : 'bg-muted/50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Badge variant={index === 0 ? "default" : "secondary"}>
-                        {index === 0 ? "Speaking" : `#${index + 1}`}
-                      </Badge>
-                      <span className={`font-medium ${
-                        index === 0 ? 'text-primary' : 'text-foreground'
-                      }`}>
-                        {participant.name}
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFromStack(participant.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={stack} strategy={verticalListSortingStrategy}>
+                  <div className="space-y-3">
+                    {stack.map((participant, index) => (
+                      <DraggableStackItem
+                        key={participant.id}
+                        participant={participant}
+                        index={index}
+                        isCurrentSpeaker={index === 0}
+                        onRemove={removeFromStack}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
             )}
           </CardContent>
         </Card>
@@ -204,47 +227,65 @@ export const StackKeeper = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-              <Button
-                variant="outline"
-                onClick={() => addIntervention('direct-response')}
-                className="flex items-center gap-2 h-auto p-4 flex-col"
-              >
-                <MessageSquare className="h-5 w-5 text-secondary" />
-                <div className="text-center">
-                  <div className="font-medium">Direct Response</div>
-                  <div className="text-xs text-muted-foreground">
-                    Immediate correction or answer
-                  </div>
-                </div>
-              </Button>
+              <InterventionDialog
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 h-auto p-4 flex-col w-full"
+                  >
+                    <MessageSquare className="h-5 w-5 text-secondary" />
+                    <div className="text-center">
+                      <div className="font-medium">Direct Response</div>
+                      <div className="text-xs text-muted-foreground">
+                        Immediate correction or answer
+                      </div>
+                    </div>
+                  </Button>
+                }
+                title="Direct Response"
+                description="Who is making a direct response? This should only be used for corrections or immediate answers."
+                onSubmit={(name) => addIntervention('direct-response', name)}
+              />
               
-              <Button
-                variant="outline"
-                onClick={() => addIntervention('clarifying-question')}
-                className="flex items-center gap-2 h-auto p-4 flex-col"
-              >
-                <HelpCircle className="h-5 w-5 text-accent" />
-                <div className="text-center">
-                  <div className="font-medium">Clarifying Question</div>
-                  <div className="text-xs text-muted-foreground">
-                    Question for understanding
-                  </div>
-                </div>
-              </Button>
+              <InterventionDialog
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 h-auto p-4 flex-col w-full"
+                  >
+                    <HelpCircle className="h-5 w-5 text-accent" />
+                    <div className="text-center">
+                      <div className="font-medium">Clarifying Question</div>
+                      <div className="text-xs text-muted-foreground">
+                        Question for understanding
+                      </div>
+                    </div>
+                  </Button>
+                }
+                title="Clarifying Question"
+                description="Who has a clarifying question? This should only be used when you need additional information or don't understand something."
+                onSubmit={(name) => addIntervention('clarifying-question', name)}
+              />
               
-              <Button
-                variant="outline"
-                onClick={() => addIntervention('point-of-process')}
-                className="flex items-center gap-2 h-auto p-4 flex-col"
-              >
-                <AlertTriangle className="h-5 w-5 text-warning" />
-                <div className="text-center">
-                  <div className="font-medium">Point of Process</div>
-                  <div className="text-xs text-muted-foreground">
-                    Procedural concern
-                  </div>
-                </div>
-              </Button>
+              <InterventionDialog
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 h-auto p-4 flex-col w-full"
+                  >
+                    <AlertTriangle className="h-5 w-5 text-warning" />
+                    <div className="text-center">
+                      <div className="font-medium">Point of Process</div>
+                      <div className="text-xs text-muted-foreground">
+                        Procedural concern
+                      </div>
+                    </div>
+                  </Button>
+                }
+                title="Point of Process"
+                description="Who is raising a point of process? This should be used when the discussion is off-topic or not following procedure."
+                onSubmit={(name) => addIntervention('point-of-process', name)}
+              />
             </div>
 
             {interventions.length > 0 && (
