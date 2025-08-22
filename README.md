@@ -52,7 +52,14 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with:
+This project combines two related tools for democratic meeting facilitation:
+
+1. **Automatic Stack App** – A full-stack React/Socket.io application for creating meetings, letting participants join with a code, and managing the speaking queue in real time.
+2. **Manual Stack Keeper** – A lightweight interface for facilitators to manually manage a speaking stack without networking.
+
+You can access the manual stack keeper at `/manual`, while the default route `/` leads to the meeting-based workflow.
+
+The project is built with:
 
 - Vite
 - TypeScript
