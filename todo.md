@@ -32,10 +32,13 @@
 
 ---
 
+**Important Context**: The actual frontend and backend code is much more advanced than what's in the root directory. This project is about adding a manual way of doing something alongside the existing advanced system.
+
 **Current Status**: Ready to begin Phase 4 - Implementation of consolidation changes
 **Next Steps**: 
 1. Review the proposed consolidated structure from Phase 3
 2. Begin refactoring code according to the identified opportunities
 3. Focus on removing redundancies and simplifying the codebase
+4. Ensure the manual implementation works alongside the advanced existing system
 
 
