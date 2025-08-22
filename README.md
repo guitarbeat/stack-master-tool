@@ -1,6 +1,6 @@
 # Welcome to your Lovable project
 
-This project now sports a warm, earthy theme with a soft felt texture for a cozy look and feel.
+This project now sports a warm, earthy theme with a soft felt texture for a cozy look and feel. Layered radial gradients in the page background provide a gentle felt-like texture using earthy tones.
 
 ## Project info
 

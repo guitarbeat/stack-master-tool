@@ -81,9 +81,9 @@
     -moz-osx-font-smoothing: grayscale;
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 2px 2px, hsl(var(--foreground)/0.04) 2px, transparent 0),
-      radial-gradient(circle at 1px 1px, hsl(var(--foreground)/0.02) 1px, transparent 0);
-    background-size: 8px 8px;
+      radial-gradient(at 25% 25%, hsl(var(--primary)/0.08), transparent 60%),
+      radial-gradient(at 75% 75%, hsl(var(--secondary)/0.08), transparent 60%);
+    background-attachment: fixed;
   }
 }
 
