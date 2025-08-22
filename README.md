@@ -74,6 +74,20 @@ The project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and click on Share -> Publish.
 
+## Render deployment
+
+This project can also be deployed as a Render Web Service using the following configuration:
+
+- **Service name:** `stack-app-backend`
+- **Region:** Oregon (US West)
+- **Instance type:** Free (0.1 CPU, 512 MB)
+- **Repository:** `https://github.com/guitarbeat/stack-facilitation-app` (branch `main`)
+- **Root directory:** `backend`
+- **Build command:** `npm install`
+- **Start command:** `npm start`
+- **Health check path:** `/healthz`
+- **Auto-deploy:** On commit
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
