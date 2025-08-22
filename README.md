@@ -34,6 +34,9 @@ npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+
+# Step 5: Verify the project builds without errors.
+npm test
 ```
 
 **Edit a file directly in GitHub**
@@ -52,7 +55,14 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with:
+This project combines two related tools for democratic meeting facilitation:
+
+1. **Automatic Stack App** – A full-stack React/Socket.io application for creating meetings, letting participants join with a code, and managing the speaking queue in real time.
+2. **Manual Stack Keeper** – A lightweight interface for facilitators to manually manage a speaking stack without networking.
+
+You can access the manual stack keeper at `/manual`, while the default route `/` leads to the meeting-based workflow.
+
+The project is built with:
 
 - Vite
 - TypeScript
@@ -63,6 +73,20 @@ This project is built with:
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and click on Share -> Publish.
+
+## Render deployment
+
+This project can also be deployed as a Render Web Service using the following configuration:
+
+- **Service name:** `stack-app-backend`
+- **Region:** Oregon (US West)
+- **Instance type:** Free (0.1 CPU, 512 MB)
+- **Repository:** `https://github.com/guitarbeat/stack-facilitation-app` (branch `main`)
+- **Root directory:** `backend`
+- **Build command:** `npm install`
+- **Start command:** `npm start`
+- **Health check path:** `/healthz`
+- **Auto-deploy:** On commit
 
 ## Can I connect a custom domain to my Lovable project?
 
