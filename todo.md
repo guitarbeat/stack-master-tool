@@ -1,7 +1,7 @@
 # Todo List
 
 ## Phase 1: Repository analysis and setup
-- [ ] Create todo.md
+- [x] Create todo.md
 - [x] Clone the repository
 - [x] Initial review of the repository structure
 
@@ -16,18 +16,18 @@
 - [x] Propose a consolidated structure
 
 ## Phase 4: Implement consolidation changes
-- [ ] Refactor code based on proposed structure
-- [ ] Remove redundancies
-- [ ] Update imports and references
+- [x] Refactor code based on proposed structure
+- [x] Remove redundancies
+- [x] Update imports and references
 
 ## Phase 5: Testing and validation
-- [ ] Run existing tests
+- [x] Run existing tests
 - [ ] Create new tests for consolidated features
 - [ ] Verify all functionalities
 
 ## Phase 6: Documentation and commit changes
 - [ ] Document significant changes and architectural decisions
-- [ ] Update README.md
-- [ ] Commit changes to the repository
+- [x] Update README.md
+- [x] Commit changes to the repository
 
 
