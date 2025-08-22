@@ -42,6 +42,14 @@ function AppLayout({ children }) {
               >
                 Join
               </Link>
+              <Link
+                to="/manual"
+                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                  isActive('/manual') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                }`}
+              >
+                Manual
+              </Link>
             </nav>
             <ThemeToggle />
           </div>

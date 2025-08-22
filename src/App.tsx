@@ -10,6 +10,7 @@ import CreateMeeting from "./pages/CreateMeeting";
 import JoinMeeting from "./pages/JoinMeeting";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
+import ManualMeeting from "./pages/ManualMeeting";
 import AppLayout from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/join" element={<JoinMeeting />} />
             <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
             <Route path="/facilitate/:meetingId" element={<FacilitatorView />} />
+            <Route path="/manual" element={<ManualMeeting />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
