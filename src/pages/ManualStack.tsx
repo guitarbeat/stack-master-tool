@@ -1,7 +1,7 @@
 import { StackKeeper } from "@/components/StackKeeper";
 
-const Index = () => {
+const ManualStack = () => {
   return <StackKeeper />;
 };
 
-export default Index;
+export default ManualStack;
