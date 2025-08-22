@@ -80,8 +80,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     @apply bg-background text-foreground;
-    background-image: radial-gradient(circle at 1px 1px, hsl(var(--foreground)/0.03) 1px, transparent 0);
-    background-size: 4px 4px;
+    background-image:
+      radial-gradient(circle at 2px 2px, hsl(var(--foreground)/0.04) 2px, transparent 0),
+      radial-gradient(circle at 1px 1px, hsl(var(--foreground)/0.02) 1px, transparent 0);
+    background-size: 8px 8px;
   }
 }
 
