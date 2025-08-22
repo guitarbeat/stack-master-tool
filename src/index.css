@@ -11,3 +11,35 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer components {
+  .stack-card {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .stack-card:hover {
+    @apply transform translate-y-[-2px] shadow-lg;
+  }
+  
+  .current-speaker {
+    @apply ring-2 ring-primary/20 shadow-lg;
+    background: var(--speaker-gradient);
+  }
+  
+  .intervention-fab {
+    @apply fixed bottom-6 right-6 z-50 flex flex-col gap-2;
+  }
+  
+  .drag-overlay {
+    @apply rotate-3 scale-105;
+    box-shadow: var(--drag-shadow);
+  }
+  
+  .slide-up {
+    @apply animate-in slide-in-from-bottom-4 duration-300;
+  }
+  
+  .fade-in {
+    @apply animate-in duration-200;
+    animation-fill-mode: both;
+  }
+}
