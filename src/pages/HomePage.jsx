@@ -68,15 +68,15 @@ function HomePage() {
           </div>
           
           <div className="space-y-6 max-w-4xl mx-auto">
-            <h1 className="text-7xl md:text-8xl font-bold hero-text leading-tight tracking-tight">
+            <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold hero-text leading-tight tracking-tight">
               Organic Stack
               <br />
-              <span className="text-5xl md:text-6xl font-light">Facilitation</span>
+              <span className="text-3xl sm:text-5xl md:text-6xl font-light">Facilitation</span>
             </h1>
             
             <div className="w-32 h-1.5 bg-gradient-to-r from-primary via-accent to-primary mx-auto rounded-full opacity-60"></div>
             
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
               Nurture inclusive conversations that grow naturally.
               <br />
               <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
@@ -95,7 +95,7 @@ function HomePage() {
               to="/create"
               className="block h-full"
             >
-              <div className="liquid-glass rounded-3xl p-10 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden">
+              <div className="liquid-glass rounded-3xl p-6 sm:p-8 md:p-10 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 organic-blob opacity-50"></div>
                 
                 <div className="relative z-10">
@@ -130,7 +130,7 @@ function HomePage() {
               to="/join"
               className="block h-full"
             >
-              <div className="liquid-glass rounded-3xl p-10 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden">
+              <div className="liquid-glass rounded-3xl p-6 sm:p-8 md:p-10 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden">
                 <div className="absolute bottom-0 left-0 w-28 h-28 bg-accent/10 organic-blob opacity-50" style={{ animationDelay: '1s' }}></div>
                 
                 <div className="relative z-10">
