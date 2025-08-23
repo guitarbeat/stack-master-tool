@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Users, Play, SkipForward, LogOut, Loader2 } from 'lucide-react'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { useToast } from '../components/ui/ToastProvider'
 import FacilitatorHeader from '../components/FacilitatorHeader'
 import ParticipantList from '../components/ParticipantList'
 import CurrentSpeakerCard from '../components/CurrentSpeakerCard'

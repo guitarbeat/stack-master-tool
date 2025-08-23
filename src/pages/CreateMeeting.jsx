@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Users, Copy, QrCode as QrCodeIcon, Loader2 } from 'lucide-react'
 import QRCode from 'qrcode'
 import apiService from '../services/api'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { useToast } from '../components/ui/ToastProvider'
 import { playBeep } from '../utils/sound.js'
-import Confetti from '../components/ui/Confetti.jsx'
+import Confetti from '../components/ui/Confetti'
 
 function CreateMeeting() {
   const navigate = useNavigate()

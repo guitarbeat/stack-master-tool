@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
-import { ThemeProvider } from './components/ui/ThemeProvider.jsx'
-import { ToastProvider } from './components/ui/ToastProvider.jsx'
+import { ThemeProvider } from './components/ui/ThemeProvider'
+import { ToastProvider } from './components/ui/ToastProvider'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

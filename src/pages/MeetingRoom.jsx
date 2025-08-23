@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Hand, MessageCircle, Info, Settings, LogOut, Users, Loader2 } from 'lucide-react'
 import socketService from '../services/socket'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { useToast } from '../components/ui/ToastProvider'
 import { playBeep } from '../utils/sound.js'
 
 function MeetingRoom() {
