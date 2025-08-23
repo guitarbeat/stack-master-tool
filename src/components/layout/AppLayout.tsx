@@ -74,6 +74,8 @@ function AppLayout({ children }: AppLayoutProps) {
             <button
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -85,7 +87,10 @@ function AppLayout({ children }: AppLayoutProps) {
           </div>
         </div>
         {mobileMenuOpen && (
-          <nav className="md:hidden border-t border-gray-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur">
+          <nav
+            id="mobile-menu"
+            className="md:hidden border-t border-gray-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur"
+          >
             <div className="container mx-auto px-4 py-3 flex flex-col space-y-1">
               <Link
                 to="/"
