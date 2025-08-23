@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Users, Menu, X } from 'lucide-react'
-import ThemeToggle from '../ui/ThemeToggle.jsx'
+import ThemeToggle from '../ui/ThemeToggle'
 
 interface AppLayoutProps {
   children: ReactNode
