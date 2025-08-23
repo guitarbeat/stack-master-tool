@@ -1,48 +1,10 @@
 import { Link } from 'react-router-dom'
 import { Users, MessageSquare, QrCode, Leaf, Sparkles, ArrowRight } from 'lucide-react'
-import { useEffect, useRef } from 'react'
 import { ExpandableCard } from '@/components/ExpandableCard'
+import useTiltEffect from '@/hooks/use-tilt'
 
 function HomePage() {
-  const heroRef = useRef(null)
-  const cardsRef = useRef([])
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const cards = cardsRef.current
-      cards.forEach((card) => {
-        if (!card) return
-        const rect = card.getBoundingClientRect()
-        const x = e.clientX - rect.left - rect.width / 2
-        const y = e.clientY - rect.top - rect.height / 2
-        const rotateX = (y / rect.height) * -10
-        const rotateY = (x / rect.width) * 10
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
-      })
-    }
-
-    const handleMouseLeave = (card) => {
-      if (card) {
-        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)'
-      }
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    cardsRef.current.forEach(card => {
-      if (card) {
-        card.addEventListener('mouseleave', () => handleMouseLeave(card))
-      }
-    })
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      cardsRef.current.forEach(card => {
-        if (card) {
-          card.removeEventListener('mouseleave', () => handleMouseLeave(card))
-        }
-      })
-    }
-  }, [])
+  const cardsRef = useTiltEffect()
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -55,7 +17,7 @@ function HomePage() {
 
       <div className="container mx-auto px-6 py-20">
         {/* Hero Section */}
-        <div ref={heroRef} className="text-center mb-24 relative">
+        <div className="text-center mb-24 relative">
           <div className="mb-8 inline-block">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-2xl organic-blob"></div>
