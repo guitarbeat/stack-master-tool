@@ -1,15 +1,13 @@
 # Welcome to your Lovable project
 
-This project now sports a warm, earthy theme with a soft felt texture for a cozy look and feel. Layered radial gradients in the page background provide a gentle felt-like texture using earthy tones.
-
+This project features a warm, earthy theme with a soft felt texture for a cozy feel. Layered radial gradients in the page background create a subtle felt-like texture using natural tones.
 ## Project info
 
 **URL**: https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c
 
 ## How can I edit this code?
 
-There are several ways of editing your application.
-
+You can edit this application in several ways.
 **Use Lovable**
 
 Simply visit the [Lovable Project](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and start prompting.
@@ -20,7 +18,7 @@ Changes made via Lovable will be committed automatically to this repo.
 
 If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 Follow these steps:
 
