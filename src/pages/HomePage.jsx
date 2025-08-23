@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Users, MessageSquare, QrCode, Leaf, Sparkles, ArrowRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
+import { ExpandableCard } from '@/components/ExpandableCard'
 
 function HomePage() {
   const heroRef = useRef(null)
@@ -168,41 +169,43 @@ function HomePage() {
           <div className="grid md:grid-cols-3 gap-12">
             {[
               {
-                step: "Plant",
                 icon: "🌱",
                 title: "Seed the Space",
-                description: "A facilitator creates the meeting environment. Participants join with a simple code - no accounts, just authentic presence."
+                summary: "A facilitator creates the meeting environment.",
+                details: "Participants join with a simple code - no accounts, just authentic presence."
               },
               {
-                step: "Grow",
-                icon: "🌿", 
+                icon: "🌿",
                 title: "Nurture Names",
-                description: "Everyone enters their name to join the circle. No barriers, no complexity - just human connection in its simplest form."
+                summary: "Everyone enters their name to join the circle.",
+                details: "No barriers, no complexity - just human connection in its simplest form."
               },
               {
-                step: "Bloom",
                 icon: "🌳",
                 title: "Flourish Together",
-                description: "Voices queue naturally like branches reaching for light. Direct responses and interventions keep the dialogue healthy and balanced."
+                summary: "Voices queue naturally like branches reaching for light.",
+                details: "Direct responses and interventions keep the dialogue healthy and balanced."
               }
             ].map((item, index) => (
               <div
                 key={index}
                 ref={(el) => (cardsRef.current[index + 2] = el)}
-                className="tilt-card text-center group"
+                className="tilt-card group"
               >
-                <div className="liquid-glass rounded-3xl p-8 h-full transition-all duration-500 group-hover:scale-105">
-                  <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                    {item.icon}
-                  </div>
-                  
-                  <div className="liquid-glass w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-primary mx-auto mb-6">
-                    {index + 1}
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold gradient-text mb-4">{item.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed text-lg">{item.description}</p>
-                </div>
+                <ExpandableCard
+                  className="liquid-glass rounded-3xl p-8 h-full transition-all duration-500 group-hover:scale-105 text-center"
+                  title={
+                    <div className="flex flex-col items-center gap-6">
+                      <div className="text-6xl group-hover:scale-110 transition-transform duration-300">
+                        {item.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold gradient-text">{item.title}</h3>
+                    </div>
+                  }
+                  summary={item.summary}
+                >
+                  <p className="text-muted-foreground leading-relaxed text-lg">{item.details}</p>
+                </ExpandableCard>
               </div>
             ))}
           </div>
