@@ -146,11 +146,11 @@ function MeetingRoom() {
 
   if (!isConnected && !error) {
     return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-white rounded-2xl p-8 shadow-lg text-center dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-600" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">Connecting to meeting...</h2>
-          <p className="text-gray-600 dark:text-zinc-400">Please wait while we connect you to the meeting room.</p>
+      <div className="container mx-auto px-4 py-16 bg-earthy-brown text-sage-green">
+        <div className="bg-earthy-brown rounded-2xl p-8 shadow-lg text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-moss-green" />
+          <h2 className="text-xl font-semibold text-moss-green mb-2">Connecting to meeting...</h2>
+          <p className="text-sage-green">Please wait while we connect you to the meeting room.</p>
         </div>
       </div>
     )
@@ -158,16 +158,16 @@ function MeetingRoom() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md mx-auto dark:bg-zinc-900 dark:border dark:border-zinc-800">
+      <div className="container mx-auto px-4 py-16 bg-earthy-brown text-sage-green">
+        <div className="bg-earthy-brown rounded-2xl p-8 shadow-lg text-center max-w-md mx-auto">
           <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
             <LogOut className="w-8 h-8 text-red-600 mx-auto" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">Connection Error</h2>
-          <p className="text-gray-600 dark:text-zinc-400 mb-6">{error}</p>
+          <h2 className="text-xl font-semibold text-moss-green mb-2">Connection Error</h2>
+          <p className="text-sage-green mb-6">{error}</p>
           <button
             onClick={() => navigate('/join')}
-            className="bg-red-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+            className="bg-red-600 text-earthy-brown py-2 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors"
           >
             Try Again
           </button>
@@ -177,24 +177,24 @@ function MeetingRoom() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-earthy-brown text-sage-green">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 dark:bg-zinc-900 dark:border dark:border-zinc-800">
+      <div className="bg-earthy-brown rounded-2xl p-6 shadow-lg mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">{meetingData.title}</h1>
-            <p className="text-gray-600 dark:text-zinc-400">
+            <h1 className="text-2xl font-bold text-moss-green">{meetingData.title}</h1>
+            <p className="text-sage-green">
               Facilitated by {meetingData.facilitator} • Code: {meetingData.code}
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex items-center text-gray-600 dark:text-zinc-300">
+            <div className="flex items-center text-sage-green">
               <Users className="w-5 h-5 mr-2" />
               <span>{participants.length} participants</span>
             </div>
             <button
               onClick={() => navigator.clipboard.writeText(meetingData.code)}
-              className="px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+              className="px-3 py-2 text-sm rounded-lg bg-sage-green/20 hover:bg-sage-green/30 text-moss-green"
               title="Copy meeting code"
             >
               Copy Code
@@ -212,14 +212,14 @@ function MeetingRoom() {
 
       {/* Current Speaker Alert */}
       {currentSpeaker && (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-6 mb-8 dark:bg-green-900/10 dark:border-green-900/30">
+        <div className="bg-sage-green/10 border border-sage-green/30 rounded-2xl p-6 mb-8">
           <div className="flex items-center">
-            <div className="bg-green-100 p-3 rounded-full mr-4">
-              <MessageCircle className="w-6 h-6 text-green-600" />
+            <div className="bg-moss-green/20 p-3 rounded-full mr-4">
+              <MessageCircle className="w-6 h-6 text-moss-green" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-green-900 dark:text-green-300">Now Speaking</h3>
-              <p className="text-green-700 dark:text-green-400">
+              <h3 className="text-lg font-semibold text-moss-green">Now Speaking</h3>
+              <p className="text-sage-green">
                 {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
               </p>
             </div>
@@ -229,14 +229,14 @@ function MeetingRoom() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Speaking Queue */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-6">Speaking Queue</h2>
-          
+        <div className="bg-earthy-brown rounded-2xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold text-moss-green mb-6">Speaking Queue</h2>
+
           {speakingQueue.length === 0 ? (
             <div className="text-center py-8">
-              <Hand className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-zinc-400">No one in queue</p>
-              <p className="text-sm text-gray-400 dark:text-zinc-500">Raise your hand to speak!</p>
+              <Hand className="w-12 h-12 text-sage-green mx-auto mb-4" />
+              <p className="text-sage-green">No one in queue</p>
+              <p className="text-sm text-sage-green/80">Raise your hand to speak!</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -277,8 +277,8 @@ function MeetingRoom() {
         </div>
 
         {/* Actions */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-6">Actions</h2>
+        <div className="bg-earthy-brown rounded-2xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold text-moss-green mb-6">Actions</h2>
           
           <div className="space-y-4">
             {/* Main speak button */}
@@ -287,8 +287,8 @@ function MeetingRoom() {
               disabled={isInQueue}
               className={`w-full py-4 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center ${
                 isInQueue
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-purple-600 text-white hover:bg-purple-700'
+                  ? 'bg-sage-green/20 text-sage-green/50 cursor-not-allowed'
+                  : 'bg-moss-green text-earthy-brown hover:bg-sage-green'
               }`}
             >
               <Hand className="w-5 h-5 mr-2" />
@@ -302,8 +302,8 @@ function MeetingRoom() {
                 disabled={isInQueue}
                 className={`w-full py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center ${
                   isInQueue
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700'
+                    ? 'bg-sage-green/20 text-sage-green/50 cursor-not-allowed'
+                    : 'bg-sage-green/20 text-moss-green hover:bg-sage-green/30'
                 }`}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
@@ -311,27 +311,27 @@ function MeetingRoom() {
               </button>
 
               {showDirectOptions && !isInQueue && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 dark:bg-zinc-900 dark:border-zinc-800">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-earthy-brown border border-sage-green/30 rounded-lg shadow-lg z-10">
                   <button
                     onClick={() => joinQueue('direct-response')}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 dark:hover:bg-zinc-800 dark:border-zinc-800"
+                    className="w-full text-left px-4 py-3 hover:bg-sage-green/20 transition-colors border-b border-sage-green/30"
                   >
-                    <div className="font-medium text-gray-900 dark:text-zinc-100">Direct Response</div>
-                    <div className="text-sm text-gray-600 dark:text-zinc-400">Respond directly to current speaker</div>
+                    <div className="font-medium text-moss-green">Direct Response</div>
+                    <div className="text-sm text-sage-green">Respond directly to current speaker</div>
                   </button>
                   <button
                     onClick={() => joinQueue('point-of-info')}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 dark:hover:bg-zinc-800 dark:border-zinc-800"
+                    className="w-full text-left px-4 py-3 hover:bg-sage-green/20 transition-colors border-b border-sage-green/30"
                   >
-                    <div className="font-medium text-gray-900 dark:text-zinc-100">Point of Information</div>
-                    <div className="text-sm text-gray-600 dark:text-zinc-400">Share relevant information</div>
+                    <div className="font-medium text-moss-green">Point of Information</div>
+                    <div className="text-sm text-sage-green">Share relevant information</div>
                   </button>
                   <button
                     onClick={() => joinQueue('clarification')}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors dark:hover:bg-zinc-800"
+                    className="w-full text-left px-4 py-3 hover:bg-sage-green/20 transition-colors"
                   >
-                    <div className="font-medium text-gray-900 dark:text-zinc-100">Clarification</div>
-                    <div className="text-sm text-gray-600 dark:text-zinc-400">Ask for clarification</div>
+                    <div className="font-medium text-moss-green">Clarification</div>
+                    <div className="text-sm text-sage-green">Ask for clarification</div>
                   </button>
                 </div>
               )}
@@ -339,11 +339,11 @@ function MeetingRoom() {
           </div>
 
           {/* Participant info */}
-          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-zinc-800">
-            <p className="text-sm text-gray-600 dark:text-zinc-300">
+          <div className="mt-8 pt-6 border-t border-sage-green/30">
+            <p className="text-sm text-sage-green">
               <strong>You:</strong> {participantName}
             </p>
-            <p className="text-sm text-gray-600 dark:text-zinc-300 mt-1">
+            <p className="text-sm text-sage-green mt-1">
               <strong>Status:</strong> {isInQueue ? 'In speaking queue' : 'Ready to participate'}
             </p>
           </div>

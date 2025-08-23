@@ -4,22 +4,22 @@
 
 @layer base {
   :root {
-    --background: 60 9% 98%;
+    --background: var(--earthy-brown);
     --foreground: 120 27% 8%;
     --card: 0 0% 100%;
     --card-foreground: 120 27% 8%;
     --border: 120 13% 91%;
     --input: 120 13% 91%;
     --ring: 142 76% 36%;
-    --primary: 142 76% 36%;
+    --primary: var(--moss-green);
     --primary-foreground: 60 9% 98%;
-    --primary-hover: 142 76% 30%;
+    --primary-hover: 100 40% 20%;
     --secondary: 60 30% 96%;
     --secondary-foreground: 120 27% 8%;
     --secondary-hover: 60 30% 92%;
-    --accent: 84 81% 44%;
+    --accent: var(--sage-green);
     --accent-foreground: 120 27% 8%;
-    --accent-hover: 84 81% 38%;
+    --accent-hover: 120 20% 55%;
     --muted: 60 30% 96%;
     --muted-foreground: 120 10% 40%;
     --warning: 43 96% 56%;
@@ -28,11 +28,11 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 60 9% 98%;
     --radius: 1.2rem;
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(84 81% 44%));
-    --gradient-secondary: linear-gradient(135deg, hsl(84 81% 44%), hsl(142 76% 36%));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--moss-green)), hsl(var(--sage-green)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--sage-green)), hsl(var(--moss-green)));
     --gradient-elegant: linear-gradient(180deg, hsl(60 9% 98%), hsl(60 30% 96%));
-    --shadow-elegant: 0 20px 25px -5px hsl(142 76% 36% / 0.1), 0 10px 10px -5px hsl(142 76% 36% / 0.04);
-    --shadow-glow: 0 0 40px hsl(142 76% 36% / 0.3);
+    --shadow-elegant: 0 20px 25px -5px hsl(var(--moss-green) / 0.1), 0 10px 10px -5px hsl(var(--moss-green) / 0.04);
+    --shadow-glow: 0 0 40px hsl(var(--moss-green) / 0.3);
     --liquid-glass: rgba(255, 255, 255, 0.05);
     --liquid-border: rgba(255, 255, 255, 0.1);
     --earthy-brown: 30 25% 20%;
@@ -49,22 +49,22 @@
   }
 
   .dark {
-    --background: 120 27% 8%;
+    --background: var(--earthy-brown);
     --foreground: 60 9% 98%;
     --card: 120 20% 10%;
     --card-foreground: 60 9% 98%;
     --border: 120 13% 15%;
     --input: 120 13% 15%;
     --ring: 142 76% 36%;
-    --primary: 142 76% 36%;
+    --primary: var(--moss-green);
     --primary-foreground: 60 9% 98%;
-    --primary-hover: 142 76% 42%;
+    --primary-hover: 100 40% 30%;
     --secondary: 120 13% 15%;
     --secondary-foreground: 60 9% 98%;
     --secondary-hover: 120 13% 20%;
-    --accent: 84 81% 44%;
+    --accent: var(--sage-green);
     --accent-foreground: 120 27% 8%;
-    --accent-hover: 84 81% 50%;
+    --accent-hover: 120 20% 65%;
     --muted: 120 13% 15%;
     --muted-foreground: 120 5% 65%;
     --warning: 43 96% 56%;
@@ -72,18 +72,18 @@
     --warning-hover: 43 96% 62%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 60 9% 98%;
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(84 81% 44%));
-    --gradient-secondary: linear-gradient(135deg, hsl(84 81% 44%), hsl(142 76% 36%));
-    --gradient-elegant: linear-gradient(180deg, hsl(120 27% 8%), hsl(120 20% 10%));
-    --shadow-elegant: 0 20px 25px -5px hsl(142 76% 36% / 0.2), 0 10px 10px -5px hsl(142 76% 36% / 0.08);
-    --shadow-glow: 0 0 40px hsl(142 76% 36% / 0.5);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--moss-green)), hsl(var(--sage-green)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--sage-green)), hsl(var(--moss-green)));
+    --gradient-elegant: linear-gradient(180deg, hsl(var(--earthy-brown)), hsl(var(--earthy-brown)));
+    --shadow-elegant: 0 20px 25px -5px hsl(var(--moss-green) / 0.2), 0 10px 10px -5px hsl(var(--moss-green) / 0.08);
+    --shadow-glow: 0 0 40px hsl(var(--moss-green) / 0.5);
     --liquid-glass: rgba(255, 255, 255, 0.03);
     --liquid-border: rgba(255, 255, 255, 0.08);
-    --sidebar-background: 120 27% 8%;
+    --sidebar-background: var(--earthy-brown);
     --sidebar-foreground: 60 9% 98%;
-    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary: var(--moss-green);
     --sidebar-primary-foreground: 60 9% 98%;
-    --sidebar-accent: 84 81% 44%;
+    --sidebar-accent: var(--sage-green);
     --sidebar-accent-foreground: 120 27% 8%;
     --sidebar-border: 120 13% 15%;
     --sidebar-ring: 142 76% 36%;
@@ -106,7 +106,7 @@
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply bg-background text-foreground;
+    @apply bg-earthy-brown text-foreground;
     background-image:
       radial-gradient(at 20% 30%, hsl(var(--primary)/0.12), transparent 50%),
       radial-gradient(at 80% 20%, hsl(var(--accent)/0.08), transparent 50%),

@@ -70,8 +70,11 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
-			},
+},
+				'earthy-brown': 'hsl(var(--earthy-brown))',
+				'moss-green': 'hsl(var(--moss-green))',
+				'sage-green': 'hsl(var(--sage-green))'
+},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',

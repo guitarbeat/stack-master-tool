@@ -171,29 +171,29 @@ function FacilitatorView() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-earthy-brown text-sage-green">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 dark:bg-zinc-900 dark:border dark:border-zinc-800">
+      <div className="bg-earthy-brown rounded-2xl p-6 shadow-lg mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              <Crown className="w-6 h-6 text-blue-600" />
+            <div className="bg-moss-green/20 p-3 rounded-full mr-4">
+              <Crown className="w-6 h-6 text-moss-green" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">{meetingData.title}</h1>
-              <p className="text-gray-600 dark:text-zinc-400">
+              <h1 className="text-2xl font-bold text-moss-green">{meetingData.title}</h1>
+              <p className="text-sage-green">
                 Facilitator View • Code: {meetingData.code}
               </p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex items-center text-gray-600 dark:text-zinc-300">
+            <div className="flex items-center text-sage-green">
               <Users className="w-5 h-5 mr-2" />
               <span>{participants.length} participants</span>
             </div>
             <button
               onClick={() => navigator.clipboard.writeText(meetingData.code)}
-              className="px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+              className="px-3 py-2 text-sm rounded-lg bg-sage-green/20 hover:bg-sage-green/30 text-moss-green"
               title="Copy meeting code"
             >
               Copy Code
@@ -211,22 +211,22 @@ function FacilitatorView() {
 
       {/* Current Speaker Alert */}
       {currentSpeaker && (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-6 mb-8 dark:bg-green-900/10 dark:border-green-900/30">
+        <div className="bg-sage-green/10 border border-sage-green/30 rounded-2xl p-6 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="bg-green-100 p-3 rounded-full mr-4">
-                <MessageCircle className="w-6 h-6 text-green-600" />
+              <div className="bg-moss-green/20 p-3 rounded-full mr-4">
+                <MessageCircle className="w-6 h-6 text-moss-green" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-green-900 dark:text-green-300">Now Speaking</h3>
-                <p className="text-green-700 dark:text-green-400">
+                <h3 className="text-lg font-semibold text-moss-green">Now Speaking</h3>
+                <p className="text-sage-green">
                   {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
                 </p>
               </div>
             </div>
             <button
               onClick={finishSpeaking}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="bg-moss-green text-earthy-brown px-4 py-2 rounded-lg font-medium hover:bg-sage-green transition-colors"
             >
               Finish Speaking
             </button>
@@ -236,16 +236,16 @@ function FacilitatorView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Speaking Queue */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+        <div className="lg:col-span-2 bg-earthy-brown rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100">Speaking Queue</h2>
+            <h2 className="text-xl font-bold text-moss-green">Speaking Queue</h2>
             <button
               onClick={nextSpeaker}
               disabled={speakingQueue.length === 0}
               className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
                 speakingQueue.length === 0
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? 'bg-sage-green/20 text-sage-green/50 cursor-not-allowed'
+                  : 'bg-moss-green text-earthy-brown hover:bg-sage-green'
               }`}
             >
               <SkipForward className="w-4 h-4 mr-2" />
@@ -256,8 +256,8 @@ function FacilitatorView() {
           {speakingQueue.length === 0 ? (
             <div className="text-center py-12">
               <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-zinc-400 text-lg">No one in queue</p>
-              <p className="text-sm text-gray-400 dark:text-zinc-500">Participants can raise their hand to join the queue</p>
+              <p className="text-sage-green text-lg">No one in queue</p>
+              <p className="text-sm text-sage-green/80">Participants can raise their hand to join the queue</p>
             </div>
           ) : (
             <div className="space-y-4">

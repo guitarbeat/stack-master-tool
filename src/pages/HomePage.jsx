@@ -44,12 +44,12 @@ function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen bg-earthy-brown text-sage-green relative overflow-hidden">
       {/* Organic Background Elements */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-primary/10 organic-blob"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/8 organic-blob" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 organic-blob" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-20 left-10 w-64 h-64 bg-moss-green/10 organic-blob"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-sage-green/8 organic-blob" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-moss-green/5 organic-blob" style={{ animationDelay: '4s' }}></div>
       </div>
 
       <div className="container mx-auto px-6 py-20">
@@ -57,11 +57,11 @@ function HomePage() {
         <div ref={heroRef} className="text-center mb-24 relative">
           <div className="mb-8 inline-block">
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 blur-2xl organic-blob"></div>
+              <div className="absolute inset-0 bg-moss-green/20 blur-2xl organic-blob"></div>
               <div className="relative liquid-glass p-6 rounded-3xl inline-flex items-center justify-center">
-                <Leaf className="w-12 h-12 text-primary mr-3" />
-                <Users className="w-12 h-12 text-accent" />
-                <Sparkles className="w-8 h-8 text-primary ml-3" />
+                <Leaf className="w-12 h-12 text-moss-green mr-3" />
+                <Users className="w-12 h-12 text-sage-green" />
+                <Sparkles className="w-8 h-8 text-moss-green ml-3" />
               </div>
             </div>
           </div>
@@ -73,12 +73,12 @@ function HomePage() {
               <span className="text-5xl md:text-6xl font-light">Facilitation</span>
             </h1>
             
-            <div className="w-32 h-1.5 bg-gradient-to-r from-primary via-accent to-primary mx-auto rounded-full opacity-60"></div>
+            <div className="w-32 h-1.5 bg-gradient-to-r from-moss-green via-sage-green to-moss-green mx-auto rounded-full opacity-60"></div>
             
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
               Nurture inclusive conversations that grow naturally.
               <br />
-              <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
+              <span className="text-moss-green font-medium">Democratic • Sustainable • Human-centered</span>
             </p>
           </div>
         </div>
@@ -100,7 +100,7 @@ function HomePage() {
                 <div className="relative z-10">
                   <div className="mb-8">
                     <div className="liquid-glass p-4 rounded-2xl w-20 h-20 flex items-center justify-center mb-6">
-                      <MessageSquare className="w-10 h-10 text-primary" />
+                      <MessageSquare className="w-10 h-10 text-moss-green" />
                     </div>
                     <h2 className="text-3xl font-bold gradient-text mb-4">Cultivate Meeting</h2>
                     <p className="text-muted-foreground text-lg leading-relaxed">
@@ -109,7 +109,7 @@ function HomePage() {
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <div className="liquid-glass px-6 py-3 rounded-2xl text-primary font-semibold flex items-center">
+                    <div className="liquid-glass px-6 py-3 rounded-2xl text-moss-green font-semibold flex items-center">
                       Start Growing
                       <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>

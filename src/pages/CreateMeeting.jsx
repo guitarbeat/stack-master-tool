@@ -85,13 +85,13 @@ function CreateMeeting() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-earthy-brown text-sage-green">
       <Confetti triggerKey={confettiKey} />
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button 
+        <button
           onClick={() => step === 1 ? navigate('/') : setStep(1)}
-          className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+          className="flex items-center text-sage-green hover:text-moss-green transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back
@@ -100,13 +100,13 @@ function CreateMeeting() {
 
       <div className="max-w-2xl mx-auto">
         {step === 1 && (
-          <div className="bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+          <div className="bg-earthy-brown rounded-2xl p-8 shadow-lg">
             <div className="text-center mb-8">
-              <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                <Users className="w-8 h-8 text-blue-600 mx-auto" />
+              <div className="bg-moss-green/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
+                <Users className="w-8 h-8 text-moss-green mx-auto" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Create Meeting</h1>
-              <p className="text-gray-600 dark:text-zinc-400">Set up your meeting and get a shareable link</p>
+              <h1 className="text-3xl font-bold text-moss-green mb-2">Create Meeting</h1>
+              <p className="text-sage-green">Set up your meeting and get a shareable link</p>
             </div>
 
             <form onSubmit={handleCreateMeeting} className="space-y-6">
@@ -126,7 +126,7 @@ function CreateMeeting() {
                   disabled={loading}
                   value={meetingData.name}
                   onChange={(e) => setMeetingData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="w-full px-4 py-3 border border-sage-green rounded-lg focus:ring-2 focus:ring-moss-green focus:border-transparent disabled:bg-earthy-brown/50"
                   placeholder="e.g., Weekly Team Meeting"
                 />
               </div>
@@ -141,7 +141,7 @@ function CreateMeeting() {
                   disabled={loading}
                   value={meetingData.facilitatorName}
                   onChange={(e) => setMeetingData(prev => ({ ...prev, facilitatorName: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="w-full px-4 py-3 border border-sage-green rounded-lg focus:ring-2 focus:ring-moss-green focus:border-transparent disabled:bg-earthy-brown/50"
                   placeholder="Your name"
                 />
               </div>
@@ -149,7 +149,7 @@ function CreateMeeting() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-moss-green text-earthy-brown py-3 px-6 rounded-lg font-semibold hover:bg-sage-green transition-colors disabled:bg-moss-green/50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {loading ? (
                   <>

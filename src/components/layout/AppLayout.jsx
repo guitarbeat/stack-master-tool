@@ -7,21 +7,21 @@ function AppLayout({ children }) {
   const isActive = (path) => location.pathname === path
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900">
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800">
+    <div className="min-h-screen bg-earthy-brown bg-gradient-to-br from-moss-green/20 to-sage-green/20">
+      <header className="sticky top-0 z-50 bg-earthy-brown/70 backdrop-blur border-b border-sage-green">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-primary p-2 rounded-full">
-              <Users className="w-5 h-5 text-white" />
+            <div className="bg-moss-green p-2 rounded-full">
+              <Users className="w-5 h-5 text-earthy-brown" />
             </div>
-            <span className="font-semibold text-gray-900 dark:text-zinc-100">ICC Austin Stack</span>
+            <span className="font-semibold text-sage-green">ICC Austin Stack</span>
           </Link>
           <div className="flex items-center space-x-3">
             <nav className="flex items-center space-x-1">
               <Link
                 to="/"
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/') ? 'bg-moss-green text-earthy-brown' : 'text-sage-green hover:bg-sage-green/20'
                 }`}
               >
                 Home
@@ -29,7 +29,7 @@ function AppLayout({ children }) {
               <Link
                 to="/manual"
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/manual') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/manual') ? 'bg-moss-green text-earthy-brown' : 'text-sage-green hover:bg-sage-green/20'
                 }`}
               >
                 Manual
@@ -37,7 +37,7 @@ function AppLayout({ children }) {
               <Link
                 to="/create"
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/create') ? 'bg-moss-green text-earthy-brown' : 'text-sage-green hover:bg-sage-green/20'
                 }`}
               >
                 Create
@@ -45,7 +45,7 @@ function AppLayout({ children }) {
               <Link
                 to="/join"
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/join') ? 'bg-moss-green text-earthy-brown' : 'text-sage-green hover:bg-sage-green/20'
                 }`}
               >
                 Join
