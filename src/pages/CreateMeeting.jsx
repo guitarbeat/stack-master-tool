@@ -167,8 +167,8 @@ function CreateMeeting() {
         {step === 2 && (
           <div className="bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
             <div className="text-center mb-8">
-              <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                <QrCodeIcon className="w-8 h-8 text-green-600 mx-auto" />
+              <div className="bg-sage-green/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
+                <QrCodeIcon className="w-8 h-8 text-moss-green mx-auto" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Meeting Created!</h1>
               <p className="text-gray-600 dark:text-zinc-400">Share this code or link with participants</p>
@@ -229,7 +229,7 @@ function CreateMeeting() {
 
               <button
                 onClick={startMeeting}
-                className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                className="w-full bg-moss-green text-white py-3 px-6 rounded-lg font-semibold hover:bg-moss-green/90 transition-colors"
               >
                 Start Meeting
               </button>

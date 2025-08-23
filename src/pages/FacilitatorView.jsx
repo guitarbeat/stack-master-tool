@@ -129,7 +129,7 @@ function FacilitatorView() {
       case 'clarification':
         return 'bg-purple-100 text-purple-800'
       default:
-        return 'bg-green-100 text-green-800'
+        return 'bg-sage-green/20 text-moss-green'
     }
   }
 
@@ -211,22 +211,22 @@ function FacilitatorView() {
 
       {/* Current Speaker Alert */}
       {currentSpeaker && (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-6 mb-8 dark:bg-green-900/10 dark:border-green-900/30">
+        <div className="bg-sage-green/10 border border-sage-green rounded-2xl p-6 mb-8 dark:bg-earthy-brown/10 dark:border-earthy-brown/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="bg-green-100 p-3 rounded-full mr-4">
-                <MessageCircle className="w-6 h-6 text-green-600" />
+              <div className="bg-sage-green/20 p-3 rounded-full mr-4">
+                <MessageCircle className="w-6 h-6 text-moss-green" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-green-900 dark:text-green-300">Now Speaking</h3>
-                <p className="text-green-700 dark:text-green-400">
+                <h3 className="text-lg font-semibold text-earthy-brown dark:text-sage-green">Now Speaking</h3>
+                <p className="text-moss-green dark:text-sage-green">
                   {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
                 </p>
               </div>
             </div>
             <button
               onClick={finishSpeaking}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="bg-moss-green text-white px-4 py-2 rounded-lg font-medium hover:bg-moss-green/90 transition-colors"
             >
               Finish Speaking
             </button>

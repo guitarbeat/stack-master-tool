@@ -53,19 +53,22 @@ export default {
 					foreground: 'hsl(var(--warning-foreground))',
 					hover: 'hsl(var(--warning-hover))'
 				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
-				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
-				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+                                popover: {
+                                        DEFAULT: 'hsl(var(--popover))',
+                                        foreground: 'hsl(var(--popover-foreground))'
+                                },
+                                card: {
+                                        DEFAULT: 'hsl(var(--card))',
+                                        foreground: 'hsl(var(--card-foreground))'
+                                },
+                                'earthy-brown': 'hsl(var(--earthy-brown))',
+                                'moss-green': 'hsl(var(--moss-green))',
+                                'sage-green': 'hsl(var(--sage-green))',
+                                sidebar: {
+                                        DEFAULT: 'hsl(var(--sidebar-background))',
+                                        foreground: 'hsl(var(--sidebar-foreground))',
+                                        primary: 'hsl(var(--sidebar-primary))',
+                                        'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
 					accent: 'hsl(var(--sidebar-accent))',
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
