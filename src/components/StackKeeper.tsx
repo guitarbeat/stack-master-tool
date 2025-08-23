@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { DraggableStackItem } from "./DraggableStackItem";
 import { InterventionFAB } from "./InterventionFAB";
 import { NextSpeakerCard } from "./NextSpeakerCard";
+import { ExpandableCard } from "./ExpandableCard";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES } from "@/types";
 
 export const StackKeeper = () => {
@@ -152,32 +153,49 @@ export const StackKeeper = () => {
 
         {/* Recent Interventions */}
         {interventions.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader className="pb-6">
-              <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center gap-3 text-xl font-semibold">
-                  <div className="p-2 rounded-lg bg-warning/10">
-                    <AlertTriangle className="h-5 w-5 text-warning" />
-                  </div>
-                  Recent Interventions
-                </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => setInterventions([])} className="hover:bg-destructive/10 hover:text-destructive rounded-xl">
-                  Clear History
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3">
-                {interventions.slice(-5).reverse().map((intervention, index) => (
-                  <div key={intervention.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                    <Badge variant="outline" className="shrink-0">{intervention.type.replace('-', ' ')}</Badge>
-                    <span className="font-medium">{intervention.participant}</span>
-                    <span className="text-xs text-muted-foreground ml-auto">{intervention.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <ExpandableCard
+            className="glass-card"
+            title={
+              <span className="flex items-center gap-3 text-xl font-semibold">
+                <div className="p-2 rounded-lg bg-warning/10">
+                  <AlertTriangle className="h-5 w-5 text-warning" />
+                </div>
+                Recent Interventions
+              </span>
+            }
+            summary={`${interventions.length} recorded`}
+          >
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setInterventions([])}
+                className="hover:bg-destructive/10 hover:text-destructive rounded-xl"
+              >
+                Clear History
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {interventions.slice(-5).reverse().map((intervention, index) => (
+                <div
+                  key={intervention.id}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 fade-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <Badge variant="outline" className="shrink-0">
+                    {intervention.type.replace('-', ' ')}
+                  </Badge>
+                  <span className="font-medium">{intervention.participant}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">
+                    {intervention.timestamp.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </ExpandableCard>
         )}
 
         {/* Floating Action Button for Interventions */}
