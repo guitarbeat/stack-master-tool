@@ -1,30 +1,61 @@
 import { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { Hand, MessageCircle, Info, Settings, LogOut, Users, Loader2 } from 'lucide-react'
+import { Hand, MessageCircle, LogOut, Users, Loader2 } from 'lucide-react'
 import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function MeetingRoom() {
-  const { meetingId } = useParams()
+type MeetingRoomProps = Record<string, never>
+
+interface MeetingData {
+  code: string
+  title: string
+  facilitator: string
+}
+
+interface Participant {
+  id: string
+  name: string
+  isFacilitator: boolean
+  isInQueue: boolean
+}
+
+interface QueueEntry {
+  id: string
+  participantName: string
+  type: string
+}
+
+interface Speaker {
+  participantName: string
+  type: string
+}
+
+function MeetingRoom(_: MeetingRoomProps) {
+  const { meetingId } = useParams<{ meetingId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const { participantName, meetingInfo } = location.state || {}
-  
-  const [meetingData, setMeetingData] = useState(meetingInfo || {
-    code: meetingId,
-    title: 'Loading...',
-    facilitator: 'Loading...'
-  })
-  
-  const [participants, setParticipants] = useState([])
-  const [speakingQueue, setSpeakingQueue] = useState([])
-  const [isInQueue, setIsInQueue] = useState(false)
-  const [showDirectOptions, setShowDirectOptions] = useState(false)
-  const [isConnected, setIsConnected] = useState(false)
-  const [error, setError] = useState('')
-  const [currentSpeaker, setCurrentSpeaker] = useState(null)
+  const { participantName, meetingInfo } = (location.state as {
+    participantName?: string
+    meetingInfo?: MeetingData
+  }) || {}
+
+  const [meetingData, setMeetingData] = useState<MeetingData>(
+    meetingInfo || {
+      code: meetingId || '',
+      title: 'Loading...',
+      facilitator: 'Loading...'
+    }
+  )
+
+  const [participants, setParticipants] = useState<Participant[]>([])
+  const [speakingQueue, setSpeakingQueue] = useState<QueueEntry[]>([])
+  const [isInQueue, setIsInQueue] = useState<boolean>(false)
+  const [showDirectOptions, setShowDirectOptions] = useState<boolean>(false)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [currentSpeaker, setCurrentSpeaker] = useState<Speaker | null>(null)
 
   useEffect(() => {
     if (!participantName) {
@@ -32,26 +63,28 @@ function MeetingRoom() {
       return
     }
 
-    const setupSocketListeners = () => {
-      socketService.onQueueUpdated((queue) => {
+    const setupSocketListeners = (): void => {
+      socketService.onQueueUpdated((queue: QueueEntry[]) => {
         setSpeakingQueue(queue)
-        const userInQueue = queue.find(item => item.participantName === participantName)
+        const userInQueue = queue.find(
+          (item) => item.participantName === participantName
+        )
         setIsInQueue(!!userInQueue)
       })
 
-      socketService.onParticipantsUpdated((participantsList) => {
+      socketService.onParticipantsUpdated((participantsList: Participant[]) => {
         setParticipants(participantsList)
       })
 
-      socketService.onParticipantJoined((data) => {
+      socketService.onParticipantJoined((data: { participant: Participant }) => {
         showToast({ type: 'info', title: `${data.participant.name} joined` })
       })
 
-      socketService.onParticipantLeft((data) => {
+      socketService.onParticipantLeft((data: { participantName: string }) => {
         showToast({ type: 'info', title: `${data.participantName} left` })
       })
 
-      socketService.onNextSpeaker((speaker) => {
+      socketService.onNextSpeaker((speaker: Speaker) => {
         setCurrentSpeaker(speaker)
         showToast({ type: 'success', title: `${speaker.participantName} is up next` })
         playBeep(1200, 120)
@@ -60,7 +93,7 @@ function MeetingRoom() {
         }, 5000)
       })
 
-      socketService.onError((error) => {
+      socketService.onError((error: { message: string }) => {
         setError(error.message || 'Connection error')
         showToast({ type: 'error', title: error.message || 'Connection error' })
       })
@@ -84,7 +117,7 @@ function MeetingRoom() {
     }
   }, [participantName, navigate, showToast])
 
-  const joinQueue = (type = 'speak') => {
+  const joinQueue = (type: string = 'speak'): void => {
     if (isInQueue || !isConnected) return
     
     try {
@@ -99,7 +132,7 @@ function MeetingRoom() {
     }
   }
 
-  const leaveQueue = () => {
+  const leaveQueue = (): void => {
     if (!isInQueue || !isConnected) return
     
     try {
@@ -113,12 +146,12 @@ function MeetingRoom() {
     }
   }
 
-  const leaveMeeting = () => {
+  const leaveMeeting = (): void => {
     socketService.disconnect()
     navigate('/')
   }
 
-  const getQueueTypeDisplay = (type) => {
+  const getQueueTypeDisplay = (type: string): string => {
     switch (type) {
       case 'direct-response':
         return 'Direct Response'
@@ -131,7 +164,7 @@ function MeetingRoom() {
     }
   }
 
-  const getQueueTypeColor = (type) => {
+  const getQueueTypeColor = (type: string): string => {
     switch (type) {
       case 'direct-response':
         return 'bg-orange-100 text-orange-800'

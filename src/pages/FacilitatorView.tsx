@@ -5,26 +5,59 @@ import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function FacilitatorView() {
-  const { meetingId } = useParams()
+type FacilitatorViewProps = Record<string, never>
+
+interface MeetingData {
+  code: string
+  title: string
+  facilitator: string
+  isActive: boolean
+  currentSpeaker: string | null
+}
+
+interface Participant {
+  id: string
+  name: string
+  isFacilitator: boolean
+  isInQueue: boolean
+}
+
+interface QueueEntry {
+  id: string
+  participantName: string
+  type: string
+  timestamp: number
+}
+
+interface Speaker {
+  participantName: string
+  type: string
+}
+
+function FacilitatorView(_: FacilitatorViewProps) {
+  const { meetingId } = useParams<{ meetingId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const { facilitatorName, meetingName, meetingCode } = location.state || {}
-  
-  const [meetingData, setMeetingData] = useState({
-    code: meetingCode || meetingId,
+  const { facilitatorName, meetingName, meetingCode } = (location.state as {
+    facilitatorName?: string
+    meetingName?: string
+    meetingCode?: string
+  }) || {}
+
+  const [meetingData, setMeetingData] = useState<MeetingData>({
+    code: meetingCode || meetingId || '',
     title: meetingName || 'Meeting',
     facilitator: facilitatorName || 'Facilitator',
     isActive: true,
     currentSpeaker: null
   })
-  
-  const [participants, setParticipants] = useState([])
-  const [speakingQueue, setSpeakingQueue] = useState([])
-  const [isConnected, setIsConnected] = useState(false)
-  const [error, setError] = useState('')
-  const [currentSpeaker, setCurrentSpeaker] = useState(null)
+
+  const [participants, setParticipants] = useState<Participant[]>([])
+  const [speakingQueue, setSpeakingQueue] = useState<QueueEntry[]>([])
+  const [isConnected, setIsConnected] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [currentSpeaker, setCurrentSpeaker] = useState<Speaker | null>(null)
 
   useEffect(() => {
     if (!facilitatorName || !meetingCode) {
@@ -32,24 +65,24 @@ function FacilitatorView() {
       return
     }
 
-    const setupSocketListeners = () => {
-      socketService.onQueueUpdated((queue) => {
+    const setupSocketListeners = (): void => {
+      socketService.onQueueUpdated((queue: QueueEntry[]) => {
         setSpeakingQueue(queue)
       })
 
-      socketService.onParticipantsUpdated((participantsList) => {
+      socketService.onParticipantsUpdated((participantsList: Participant[]) => {
         setParticipants(participantsList)
       })
 
-      socketService.onParticipantJoined((data) => {
+      socketService.onParticipantJoined((data: { participant: Participant }) => {
         showToast({ type: 'info', title: `${data.participant.name} joined` })
       })
 
-      socketService.onParticipantLeft((data) => {
+      socketService.onParticipantLeft((data: { participantName: string }) => {
         showToast({ type: 'info', title: `${data.participantName} left` })
       })
 
-      socketService.onNextSpeaker((speaker) => {
+      socketService.onNextSpeaker((speaker: Speaker) => {
         setCurrentSpeaker(speaker)
         showToast({ type: 'success', title: `Next: ${speaker.participantName}` })
         playBeep(1200, 120)
@@ -58,13 +91,13 @@ function FacilitatorView() {
         }, 10000)
       })
 
-      socketService.onError((error) => {
+      socketService.onError((error: { message: string }) => {
         setError(error.message || 'Connection error')
         showToast({ type: 'error', title: error.message || 'Connection error' })
       })
     }
 
-    const connectAsFacilitator = async () => {
+    const connectAsFacilitator = async (): Promise<void> => {
       try {
         if (!socketService.isConnected) {
           socketService.connect()
@@ -86,7 +119,7 @@ function FacilitatorView() {
     }
   }, [facilitatorName, meetingCode, navigate, showToast])
 
-  const nextSpeaker = () => {
+  const nextSpeaker = (): void => {
     if (speakingQueue.length === 0 || !isConnected) return
     
     try {
@@ -98,16 +131,16 @@ function FacilitatorView() {
     }
   }
 
-  const finishSpeaking = () => {
+  const finishSpeaking = (): void => {
     setCurrentSpeaker(null)
   }
 
-  const leaveMeeting = () => {
+  const leaveMeeting = (): void => {
     socketService.disconnect()
     navigate('/')
   }
 
-  const getQueueTypeDisplay = (type) => {
+  const getQueueTypeDisplay = (type: string): string => {
     switch (type) {
       case 'direct-response':
         return 'Direct Response'
@@ -120,7 +153,7 @@ function FacilitatorView() {
     }
   }
 
-  const getQueueTypeColor = (type) => {
+  const getQueueTypeColor = (type: string): string => {
     switch (type) {
       case 'direct-response':
         return 'bg-orange-100 text-orange-800'
@@ -133,7 +166,7 @@ function FacilitatorView() {
     }
   }
 
-  const formatTime = (timestamp) => {
+  const formatTime = (timestamp: number): string => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }

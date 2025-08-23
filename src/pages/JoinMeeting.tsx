@@ -1,23 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Users, LogIn, Loader2 } from 'lucide-react'
+import { ArrowLeft, LogIn, Loader2 } from 'lucide-react'
 import apiService from '../services/api'
 import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function JoinMeeting() {
+type JoinMeetingProps = Record<string, never>
+
+interface FormData {
+  meetingCode: string
+  participantName: string
+}
+
+function JoinMeeting(_: JoinMeetingProps) {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const [searchParams] = useSearchParams()
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     meetingCode: searchParams.get('code') || '',
     participantName: ''
   })
-  const [isJoining, setIsJoining] = useState(false)
-  const [error, setError] = useState('')
+  const [isJoining, setIsJoining] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
-  const handleJoinMeeting = async (e) => {
+  const handleJoinMeeting = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsJoining(true)
     setError('')
