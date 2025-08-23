@@ -1,99 +1,34 @@
-# Welcome to your Lovable project
+# Stack Master Tool
 
-This project now sports a warm, earthy theme with a soft felt texture for a cozy look and feel. Layered radial gradients in the page background provide a gentle felt-like texture using earthy tones.
+Stack Master Tool is an open-source application for democratic meeting facilitation. It combines an automatic meeting-based speaking queue with a manual stack keeper so facilitators can manage turn-taking in both online and in-person gatherings.
 
-## Project info
+## Features
 
-**URL**: https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c
+- Create meetings with shareable join codes
+- Real-time speaking queue powered by Socket.io
+- Manual stack keeper for offline use
+- React + TypeScript + Tailwind CSS frontend
 
-## How can I edit this code?
+## Getting Started
 
-There are several ways of editing your application.
+Clone the repository, install dependencies, and start the development server:
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+cd stack-master-tool
+npm install
 npm run dev
+```
 
-# Step 5: Verify the project builds without errors.
+Build the project and run the basic test script:
+
+```bash
+npm run build
 npm test
 ```
 
-**Edit a file directly in GitHub**
+## Documentation
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- [Project documentation](docs/README.md)
+- [Deployment guide](docs/DEPLOYMENT.md)
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project combines two related tools for democratic meeting facilitation:
-
-1. **Automatic Stack App** – A full-stack React/Socket.io application for creating meetings, letting participants join with a code, and managing the speaking queue in real time.
-2. **Manual Stack Keeper** – A lightweight interface for facilitators to manually manage a speaking stack without networking.
-
-You can access the manual stack keeper at `/manual`, while the default route `/` leads to the meeting-based workflow.
-
-The project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and click on Share -> Publish.
-
-## Render deployment
-
-This project can also be deployed as a Render Web Service using the following configuration:
-
-- **Service name:** `stack-app-backend`
-- **Region:** Oregon (US West)
-- **Instance type:** Free (0.1 CPU, 512 MB)
-- **Repository:** `https://github.com/guitarbeat/stack-facilitation-app` (branch `main`)
-- **Root directory:** `backend`
-- **Build command:** `npm install`
-- **Start command:** `npm start`
-- **Health check path:** `/healthz`
-- **Auto-deploy:** On commit
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
