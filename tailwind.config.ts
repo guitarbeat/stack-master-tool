@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 export default {
 	darkMode: ["class"],
@@ -98,11 +99,34 @@ export default {
 					}
 				}
 			},
-			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
-		}
-	},
-        plugins: [tailwindcssAnimate],
+                        animation: {
+                                'accordion-down': 'accordion-down 0.2s ease-out',
+                                'accordion-up': 'accordion-up 0.2s ease-out'
+                        },
+                        typography: {
+                                DEFAULT: {
+                                        css: {
+                                                color: 'hsl(var(--foreground))',
+                                                a: {
+                                                        color: 'hsl(var(--primary))',
+                                                        '&:hover': {
+                                                                color: 'hsl(var(--primary-hover))'
+                                                        }
+                                                },
+                                                'h1, h2, h3, h4': {
+                                                        color: 'hsl(var(--foreground))'
+                                                },
+                                                strong: {
+                                                        color: 'hsl(var(--foreground))'
+                                                },
+                                                blockquote: {
+                                                        color: 'hsl(var(--foreground))',
+                                                        borderLeftColor: 'hsl(var(--primary))'
+                                                }
+                                        }
+                                }
+                        }
+                }
+        },
+        plugins: [typography, tailwindcssAnimate],
 } satisfies Config;

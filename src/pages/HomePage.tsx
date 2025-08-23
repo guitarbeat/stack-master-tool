@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Users, MessageSquare, QrCode, Leaf, Sparkles, ArrowRight } from 'lucide-react'
 import { ExpandableCard } from '@/components/ExpandableCard'
 import useTiltEffect from '@/hooks/use-tilt'
+import Typography from '@/components/Typography'
 
 function HomePage() {
   const cardsRef = useTiltEffect()
@@ -38,11 +39,13 @@ function HomePage() {
             
             <div className="w-32 h-1.5 bg-gradient-to-r from-primary via-accent to-primary mx-auto rounded-full opacity-60"></div>
             
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
-              Nurture inclusive conversations that grow naturally.
-              <br />
-              <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
-            </p>
+            <Typography className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
+              <p>
+                Nurture inclusive conversations that grow naturally.
+                <br />
+                <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
+              </p>
+            </Typography>
           </div>
         </div>
 
