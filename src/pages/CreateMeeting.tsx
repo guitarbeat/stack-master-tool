@@ -7,13 +7,23 @@ import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 import Confetti from '../components/ui/Confetti.jsx'
 
-function CreateMeeting() {
+interface CreateMeetingProps {}
+
+interface MeetingData {
+  name: string
+  facilitatorName: string
+  meetingCode: string
+  meetingId: string
+  shareableLink: string
+}
+
+const CreateMeeting: React.FC<CreateMeetingProps> = () => {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [meetingData, setMeetingData] = useState({
+  const [meetingData, setMeetingData] = useState<MeetingData>({
     name: '',
     facilitatorName: '',
     meetingCode: '',
@@ -23,7 +33,7 @@ function CreateMeeting() {
   const [qrCodeUrl, setQrCodeUrl] = useState('')
   const [confettiKey, setConfettiKey] = useState(0)
 
-  const handleCreateMeeting = async (e) => {
+  const handleCreateMeeting = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -89,7 +99,7 @@ function CreateMeeting() {
       <Confetti triggerKey={confettiKey} />
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button 
+        <button
           onClick={() => step === 1 ? navigate('/') : setStep(1)}
           className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
         >
@@ -239,7 +249,7 @@ function CreateMeeting() {
       </div>
     </div>
   )
-}
+};
 
 export default CreateMeeting
 

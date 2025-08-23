@@ -5,7 +5,9 @@ import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function FacilitatorView() {
+interface FacilitatorViewProps {}
+
+const FacilitatorView: React.FC<FacilitatorViewProps> = () => {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
@@ -354,7 +356,7 @@ function FacilitatorView() {
       </div>
     </div>
   )
-}
+};
 
 export default FacilitatorView
 

@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Users, Menu, X } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle.jsx'
 
-function AppLayout({ children }) {
+interface AppLayoutProps {
+  children: ReactNode
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation()
-  const isActive = (path) => location.pathname === path
+  const isActive = (path: string) => location.pathname === path
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -115,6 +119,6 @@ function AppLayout({ children }) {
       </main>
     </div>
   )
-}
+};
 
 export default AppLayout

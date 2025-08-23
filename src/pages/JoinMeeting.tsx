@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Users, LogIn, Loader2 } from 'lucide-react'
 import apiService from '../services/api'
@@ -6,18 +6,25 @@ import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function JoinMeeting() {
+interface JoinMeetingProps {}
+
+interface JoinFormData {
+  meetingCode: string
+  participantName: string
+}
+
+const JoinMeeting: React.FC<JoinMeetingProps> = () => {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const [searchParams] = useSearchParams()
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<JoinFormData>({
     meetingCode: searchParams.get('code') || '',
     participantName: ''
   })
   const [isJoining, setIsJoining] = useState(false)
   const [error, setError] = useState('')
 
-  const handleJoinMeeting = async (e) => {
+  const handleJoinMeeting = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsJoining(true)
     setError('')
@@ -60,7 +67,7 @@ function JoinMeeting() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button 
+        <button
           onClick={() => navigate('/')}
           className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
         >
@@ -154,7 +161,7 @@ function JoinMeeting() {
       </div>
     </div>
   )
-}
+};
 
 export default JoinMeeting
 

@@ -5,7 +5,9 @@ import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function MeetingRoom() {
+interface MeetingRoomProps {}
+
+const MeetingRoom: React.FC<MeetingRoomProps> = () => {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
@@ -351,7 +353,7 @@ function MeetingRoom() {
       </div>
     </div>
   )
-}
+};
 
 export default MeetingRoom
 
