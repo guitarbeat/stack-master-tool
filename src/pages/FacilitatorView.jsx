@@ -4,6 +4,7 @@ import { Users, Play, Pause, SkipForward, Settings, LogOut, Crown, Loader2, Mess
 import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
+import { getQueueTypeLabel, getQueueTypeColor } from '../utils/queueTypes'
 
 function FacilitatorView() {
   const { meetingId } = useParams()
@@ -107,31 +108,7 @@ function FacilitatorView() {
     navigate('/')
   }
 
-  const getQueueTypeDisplay = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'Direct Response'
-      case 'point-of-info':
-        return 'Point of Info'
-      case 'clarification':
-        return 'Clarification'
-      default:
-        return 'Speak'
-    }
-  }
-
-  const getQueueTypeColor = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'bg-orange-100 text-orange-800'
-      case 'point-of-info':
-        return 'bg-blue-100 text-blue-800'
-      case 'clarification':
-        return 'bg-purple-100 text-purple-800'
-      default:
-        return 'bg-sage-green/20 text-moss-green'
-    }
-  }
+  // Queue type helpers moved to utilities
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp)
@@ -220,7 +197,7 @@ function FacilitatorView() {
               <div>
                 <h3 className="text-lg font-semibold text-earthy-brown dark:text-sage-green">Now Speaking</h3>
                 <p className="text-moss-green dark:text-sage-green">
-                  {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
+                  {currentSpeaker.participantName} - {getQueueTypeLabel(currentSpeaker.type)}
                 </p>
               </div>
             </div>
@@ -283,7 +260,7 @@ function FacilitatorView() {
                         <p className="font-medium text-gray-900 dark:text-zinc-100">{entry.participantName}</p>
                         <div className="flex items-center space-x-2 mt-1">
                           <span className={`text-xs px-2 py-1 rounded-full ${getQueueTypeColor(entry.type)}`}>
-                            {getQueueTypeDisplay(entry.type)}
+                            {getQueueTypeLabel(entry.type)}
                           </span>
                           <span className="text-xs text-gray-500 dark:text-zinc-400">
                             {formatTime(entry.timestamp)}

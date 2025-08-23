@@ -4,6 +4,7 @@ import { Hand, MessageCircle, Info, Settings, LogOut, Users, Loader2 } from 'luc
 import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
+import { getQueueTypeLabel, getQueueTypeColor } from '../utils/queueTypes'
 
 function MeetingRoom() {
   const { meetingId } = useParams()
@@ -118,31 +119,7 @@ function MeetingRoom() {
     navigate('/')
   }
 
-  const getQueueTypeDisplay = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'Direct Response'
-      case 'point-of-info':
-        return 'Point of Info'
-      case 'clarification':
-        return 'Clarification'
-      default:
-        return 'Speak'
-    }
-  }
-
-  const getQueueTypeColor = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'bg-orange-100 text-orange-800'
-      case 'point-of-info':
-        return 'bg-blue-100 text-blue-800'
-      case 'clarification':
-        return 'bg-purple-100 text-purple-800'
-      default:
-        return 'bg-sage-green/20 text-moss-green'
-    }
-  }
+  // Queue type helpers moved to utilities
 
   if (!isConnected && !error) {
     return (
@@ -220,7 +197,7 @@ function MeetingRoom() {
             <div>
               <h3 className="text-lg font-semibold text-earthy-brown dark:text-sage-green">Now Speaking</h3>
               <p className="text-moss-green dark:text-sage-green">
-                {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
+                {currentSpeaker.participantName} - {getQueueTypeLabel(currentSpeaker.type)}
               </p>
             </div>
           </div>
@@ -257,7 +234,7 @@ function MeetingRoom() {
                       <div>
                         <p className="font-medium text-gray-900 dark:text-zinc-100">{entry.participantName}</p>
                         <span className={`text-xs px-2 py-1 rounded-full ${getQueueTypeColor(entry.type)}`}>
-                          {getQueueTypeDisplay(entry.type)}
+                          {getQueueTypeLabel(entry.type)}
                         </span>
                       </div>
                     </div>
@@ -307,7 +284,7 @@ function MeetingRoom() {
                 }`}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
-                Direct Response
+                {getQueueTypeLabel('direct-response')}
               </button>
 
               {showDirectOptions && !isInQueue && (
@@ -316,21 +293,21 @@ function MeetingRoom() {
                     onClick={() => joinQueue('direct-response')}
                     className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 dark:hover:bg-zinc-800 dark:border-zinc-800"
                   >
-                    <div className="font-medium text-gray-900 dark:text-zinc-100">Direct Response</div>
+                    <div className="font-medium text-gray-900 dark:text-zinc-100">{getQueueTypeLabel('direct-response')}</div>
                     <div className="text-sm text-gray-600 dark:text-zinc-400">Respond directly to current speaker</div>
                   </button>
                   <button
                     onClick={() => joinQueue('point-of-info')}
                     className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 dark:hover:bg-zinc-800 dark:border-zinc-800"
                   >
-                    <div className="font-medium text-gray-900 dark:text-zinc-100">Point of Information</div>
+                    <div className="font-medium text-gray-900 dark:text-zinc-100">{getQueueTypeLabel('point-of-info')}</div>
                     <div className="text-sm text-gray-600 dark:text-zinc-400">Share relevant information</div>
                   </button>
                   <button
                     onClick={() => joinQueue('clarification')}
                     className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors dark:hover:bg-zinc-800"
                   >
-                    <div className="font-medium text-gray-900 dark:text-zinc-100">Clarification</div>
+                    <div className="font-medium text-gray-900 dark:text-zinc-100">{getQueueTypeLabel('clarification')}</div>
                     <div className="text-sm text-gray-600 dark:text-zinc-400">Ask for clarification</div>
                   </button>
                 </div>
