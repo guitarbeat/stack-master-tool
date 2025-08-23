@@ -70,32 +70,37 @@ export const StackKeeper = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4 md:p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-4 fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <Users className="h-8 w-8 text-primary" />
+        <div className="text-center space-y-6 fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full floating-glow mb-6" style={{ background: 'var(--gradient-primary)' }}>
+            <Users className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground">Stack Facilitation</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Democratic discussion management tool for facilitators and stack keepers</p>
+          <div className="space-y-3">
+            <h1 className="text-5xl font-bold gradient-text tracking-tight">Stack Facilitation</h1>
+            <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+          </div>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">Democratic discussion management tool for facilitators and stack keepers</p>
         </div>
 
         {/* Add Participant */}
-        <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm slide-up">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Plus className="h-5 w-5 text-primary" />
+        <Card className="glass-card slide-up">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Plus className="h-5 w-5 text-primary" />
+              </div>
               Add to Stack
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <Input
                 placeholder="Enter participant name..."
                 value={newParticipantName}
                 onChange={(e) => setNewParticipantName(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && addToStack()}
-                className="flex-1 h-11 text-base border-border/50 focus:border-primary transition-colors"
+                className="flex-1 h-12 text-base border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-xl"
               />
-              <Button onClick={addToStack} disabled={!newParticipantName.trim()} size="lg" className="px-6 shadow-md hover:shadow-lg transition-all duration-200">
+              <Button onClick={addToStack} disabled={!newParticipantName.trim()} size="lg" className="px-8 h-12 floating-glow rounded-xl font-medium">
                 Add to Stack
               </Button>
             </div>
@@ -106,15 +111,17 @@ export const StackKeeper = () => {
         {stack.length > 0 && <NextSpeakerCard currentSpeaker={stack[0]} nextSpeakers={stack.slice(1, 3)} onNextSpeaker={nextSpeaker} />}
 
         {/* Current Stack */}
-        <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <Users className="h-6 w-6 text-primary" />
+        <Card className="glass-card">
+          <CardHeader className="flex flex-row items-center justify-between pb-6">
+            <CardTitle className="flex items-center gap-4 text-2xl font-semibold">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
               Speaking Queue
-              <Badge variant="secondary" className="ml-2 px-3 py-1">{stack.length} {stack.length === 1 ? 'person' : 'people'}</Badge>
+              <Badge variant="secondary" className="ml-3 px-4 py-2 text-sm font-medium rounded-full">{stack.length} {stack.length === 1 ? 'person' : 'people'}</Badge>
             </CardTitle>
             {stack.length > 0 && (
-              <Button variant="destructive" size="sm" onClick={clearAll} className="shadow-md">
+              <Button variant="destructive" size="sm" onClick={clearAll} className="floating-glow rounded-xl">
                 <Trash2 className="h-4 w-4 mr-2" />
                 Clear All
               </Button>
@@ -145,14 +152,16 @@ export const StackKeeper = () => {
 
         {/* Recent Interventions */}
         {interventions.length > 0 && (
-          <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
+          <Card className="glass-card">
+            <CardHeader className="pb-6">
               <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <AlertTriangle className="h-5 w-5 text-primary" />
+                <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+                  <div className="p-2 rounded-lg bg-warning/10">
+                    <AlertTriangle className="h-5 w-5 text-warning" />
+                  </div>
                   Recent Interventions
                 </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => setInterventions([])} className="hover:bg-destructive/10 hover:text-destructive">
+                <Button variant="ghost" size="sm" onClick={() => setInterventions([])} className="hover:bg-destructive/10 hover:text-destructive rounded-xl">
                   Clear History
                 </Button>
               </div>

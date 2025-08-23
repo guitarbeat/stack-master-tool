@@ -21,24 +21,38 @@ export const DraggableStackItem = ({ participant, index, isCurrentSpeaker, onRem
     <div
       ref={setNodeRef}
       style={style}
-      className={`stack-card flex items-center justify-between p-4 rounded-xl border ${
-        isCurrentSpeaker ? 'current-speaker border-primary/30' : 'bg-card hover:bg-muted/30 border-border'
+      className={`stack-card flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 ${
+        isCurrentSpeaker 
+          ? 'current-speaker border-primary/40 text-white' 
+          : 'glass-card hover:bg-muted/40 border-border/60'
       } ${isDragging ? 'drag-overlay' : ''}`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing hover:text-primary transition-all duration-200 p-1 rounded hover:bg-muted/50"
+          className="cursor-grab active:cursor-grabbing hover:text-primary transition-all duration-300 p-2 rounded-lg hover:bg-muted/60 group"
         >
-          <GripVertical className="h-5 w-5" />
+          <GripVertical className="h-5 w-5 group-hover:scale-110 transition-transform" />
         </div>
-        <Badge variant={isCurrentSpeaker ? "default" : "secondary"} className={`${isCurrentSpeaker ? 'animate-pulse' : ''} px-3 py-1`}>
+        <Badge 
+          variant={isCurrentSpeaker ? "default" : "secondary"} 
+          className={`${isCurrentSpeaker ? 'animate-pulse bg-white/20 text-white border-white/30' : 'px-4 py-2 font-semibold'} rounded-full text-sm`}
+        >
           {isCurrentSpeaker ? "🎤 Speaking" : `#${index + 1}`}
         </Badge>
-        <span className={`font-medium ${isCurrentSpeaker ? 'text-primary' : 'text-foreground'}`}>{participant.name}</span>
+        <span className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-white' : 'text-foreground'}`}>
+          {participant.name}
+        </span>
       </div>
-      <Button variant="ghost" size="sm" onClick={() => onRemove(participant.id)}>
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={() => onRemove(participant.id)}
+        className={`hover:bg-destructive/20 hover:text-destructive rounded-xl transition-all duration-200 ${
+          isCurrentSpeaker ? 'text-white/80 hover:text-white hover:bg-white/20' : ''
+        }`}
+      >
         <Trash2 className="h-4 w-4" />
       </Button>
     </div>
