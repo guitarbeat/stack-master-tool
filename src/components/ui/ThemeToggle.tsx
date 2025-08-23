@@ -1,9 +1,15 @@
-import { Sun, Moon } from "lucide-react";
-import { useTheme } from "./ThemeProvider";
+import { Sun, Moon } from "lucide-react"
+import { useTheme } from "./ThemeProvider"
+
+interface ThemeContext {
+  theme: "light" | "dark"
+  toggleTheme: () => void
+}
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-  const label = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+  const { theme, toggleTheme } = useTheme() as ThemeContext
+  const label =
+    theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
 
   return (
     <button
@@ -11,10 +17,10 @@ export default function ThemeToggle() {
       aria-label={label}
       aria-pressed={theme === "dark"}
       onClick={toggleTheme}
-
       className="inline-flex items-center justify-center rounded-lg border border-border bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover dark:border-border dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-hover"
-      title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-
+      title={
+        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+      }
     >
       {theme === "dark" ? (
         <Sun className="h-4 w-4" />
@@ -22,5 +28,5 @@ export default function ThemeToggle() {
         <Moon className="h-4 w-4" />
       )}
     </button>
-  );
+  )
 }
