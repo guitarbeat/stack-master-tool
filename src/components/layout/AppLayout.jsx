@@ -8,13 +8,13 @@ function AppLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900">
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800">
+      <header className="sticky top-0 z-50 bg-brown text-brown-foreground backdrop-blur border-b border-brown">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <div className="bg-primary p-2 rounded-full">
               <Users className="w-5 h-5 text-white" />
             </div>
-            <span className="font-semibold text-gray-900 dark:text-zinc-100">ICC Austin Stack</span>
+            <span className="font-semibold text-brown-foreground">ICC Austin Stack</span>
           </Link>
           <div className="flex items-center space-x-3">
             <nav className="flex items-center space-x-1">

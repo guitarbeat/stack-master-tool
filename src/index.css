@@ -36,6 +36,8 @@
     --liquid-glass: rgba(255, 255, 255, 0.05);
     --liquid-border: rgba(255, 255, 255, 0.1);
     --earthy-brown: 30 25% 20%;
+    --brown: 30 30% 40%;
+    --brown-foreground: 60 9% 98%;
     --moss-green: 100 40% 25%;
     --sage-green: 120 20% 60%;
     --sidebar-background: 60 9% 98%;
@@ -79,6 +81,8 @@
     --shadow-glow: 0 0 40px hsl(142 76% 36% / 0.5);
     --liquid-glass: rgba(255, 255, 255, 0.03);
     --liquid-border: rgba(255, 255, 255, 0.08);
+    --brown: 30 30% 30%;
+    --brown-foreground: 60 9% 98%;
     --sidebar-background: 120 27% 8%;
     --sidebar-foreground: 60 9% 98%;
     --sidebar-primary: 142 76% 36%;
