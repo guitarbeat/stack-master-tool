@@ -72,6 +72,23 @@ The project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Backend Setup
+
+The backend provides an Express and Socket.io server that manages meetings and real-time speaking queues.
+It exposes a few REST endpoints:
+
+- `GET /health` – basic health check
+- `POST /api/meetings` – create a new meeting
+- `GET /api/meetings/:code` – fetch meeting details
+
+To run the backend locally:
+
+```sh
+cd backend
+npm install
+npm start # or node server.js
+```
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and click on Share -> Publish.
