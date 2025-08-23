@@ -38,7 +38,7 @@ export function ToastProvider({ children }) {
             onClick={() => removeToast(toast.id)}
             className={`pointer-events-auto max-w-sm cursor-pointer rounded-lg border p-4 shadow-lg transition-all duration-200 ${
               toast.type === 'success'
-                ? 'border-green-200 bg-green-50 text-green-900'
+                ? 'border-moss-green/20 bg-sage-green/10 text-moss-green'
                 : toast.type === 'error'
                 ? 'border-red-200 bg-red-50 text-red-900'
                 : 'border-blue-200 bg-white text-gray-900 dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-800'
