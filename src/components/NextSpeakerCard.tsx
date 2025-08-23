@@ -11,7 +11,7 @@ interface NextSpeakerCardProps {
 }
 
 export const NextSpeakerCard = ({ currentSpeaker, nextSpeakers, onNextSpeaker }: NextSpeakerCardProps) => (
-  <Card className="glass-card border-primary/30" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)/0.08), hsl(var(--accent)/0.05))' }}>
+  <Card className="glass-card next-speaker-gradient border-primary/30">
     <CardContent className="p-8">
       <div className="flex items-center justify-between">
         <div className="space-y-4">
