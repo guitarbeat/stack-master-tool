@@ -1,12 +1,17 @@
+
+import { Hero } from '@/components/Hero'
+import { ActionCards } from '@/components/ActionCards'
+import { HowItWorks } from '@/components/HowItWorks'
+import { CallToAction } from '@/components/CallToAction'
+
 import { Link } from 'react-router-dom'
 import { Users, MessageSquare, QrCode, Leaf, Sparkles, ArrowRight } from 'lucide-react'
 import { ExpandableCard } from '@/components/ExpandableCard'
 import useTiltEffect from '@/hooks/use-tilt'
 import Typography from '@/components/Typography'
 
-function HomePage() {
-  const cardsRef = useTiltEffect()
 
+function HomePage() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Organic Background Elements */}
@@ -17,6 +22,11 @@ function HomePage() {
       </div>
 
       <div className="container mx-auto px-6 py-20">
+        <Hero />
+        <ActionCards />
+        <HowItWorks />
+        <CallToAction />
+
         {/* Hero Section */}
         <div className="text-center mb-24 relative">
           <div className="mb-8 inline-block">
@@ -201,6 +211,7 @@ function HomePage() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   )
