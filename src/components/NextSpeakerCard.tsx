@@ -12,7 +12,7 @@ interface NextSpeakerCardProps {
 
 export const NextSpeakerCard = ({ currentSpeaker, nextSpeakers, onNextSpeaker }: NextSpeakerCardProps) => (
   <Card className="glass-card next-speaker-gradient border-primary/30">
-    <CardContent className="p-8">
+    <CardContent className="p-8 pt-0">
       <div className="flex items-center justify-between">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
