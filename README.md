@@ -1,11 +1,23 @@
-# Welcome to your Lovable project
+# Stack Master Tool
+
+
+Stack Master Tool is an open-source application for democratic meeting facilitation. It combines an automatic meeting-based speaking queue with a manual stack keeper so facilitators can manage turn-taking in both online and in-person gatherings.
+
+## Features
 
 This project features a warm, earthy theme with a soft felt texture for a cozy feel. Layered radial gradients in the page background create a subtle felt-like texture using natural tones.
 ## Project info
 
-**URL**: https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c
+- Create meetings with shareable join codes
+- Real-time speaking queue powered by Socket.io
+- Manual stack keeper for offline use
+- React + TypeScript + Tailwind CSS frontend
 
-## How can I edit this code?
+## Getting Started
+
+Clone the repository, install dependencies, and start the development server:
+
+```bash
 
 You can edit this application in several ways.
 **Use Lovable**
@@ -24,28 +36,19 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
+
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+cd stack-master-tool
+npm install
 npm run dev
-
-# Step 5: Verify the project builds without errors.
-npm test
 ```
 
-**Edit a file directly in GitHub**
+Build the project and run the basic test script:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
+```bash
+npm run build
+npm test
+```
 
 - Navigate to the main page of your repository.
 - Click on the "Code" button (green button) near the top right.
@@ -107,12 +110,16 @@ This project can also be deployed as a Render Web Service using the following co
 
 ## Can I connect a custom domain to my Lovable project?
 
-Yes, you can!
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Documentation
+
+- [Project documentation](docs/README.md)
+- [Deployment guide](docs/DEPLOYMENT.md)
+
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
