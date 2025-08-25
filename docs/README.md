@@ -12,5 +12,4 @@ Welcome to the Stack Facilitation App documentation.
 
 ## Notes
 
-- Legacy infrastructure files in the repository root (such as `render.yaml` and `docker-compose.yml`) relate to an older architecture and are not used by the current app.
 

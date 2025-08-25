@@ -70,4 +70,6 @@ Your frontend URL will look like:
 
 ## Legacy Notes
 
+- The root `render.yaml` and `docker-compose.yml` are for a legacy stack and not compatible with the current `simple-backend + frontend` architecture
+
 - The root `render.yaml` and `docker-compose.yml` files describe a legacy stack and are not compatible with the current `simple-backend` + `frontend` architecture.
