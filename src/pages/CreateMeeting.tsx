@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Users, Copy, QrCode as QrCodeIcon, Loader2 } from 'lucide-react'
 import QRCode from 'qrcode'
@@ -7,23 +7,31 @@ import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 import Confetti from '../components/ui/Confetti.jsx'
 
-function CreateMeeting() {
+interface MeetingData {
+  name: string
+  facilitatorName: string
+  meetingCode: string
+  meetingId: string
+  shareableLink: string
+}
+
+function CreateMeeting(): JSX.Element {
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const [step, setStep] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [meetingData, setMeetingData] = useState({
+  const [step, setStep] = useState<number>(1)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [meetingData, setMeetingData] = useState<MeetingData>({
     name: '',
     facilitatorName: '',
     meetingCode: '',
     meetingId: '',
     shareableLink: ''
   })
-  const [qrCodeUrl, setQrCodeUrl] = useState('')
-  const [confettiKey, setConfettiKey] = useState(0)
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
+  const [confettiKey, setConfettiKey] = useState<number>(0)
 
-  const handleCreateMeeting = async (e) => {
+  const handleCreateMeeting = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -68,7 +76,7 @@ function CreateMeeting() {
     }
   }
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     showToast({ type: 'success', title: 'Copied to clipboard' })
     playBeep(1200, 80)

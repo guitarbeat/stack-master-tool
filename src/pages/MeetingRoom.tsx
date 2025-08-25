@@ -1,30 +1,50 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Hand, MessageCircle, Info, Settings, LogOut, Users, Loader2 } from 'lucide-react'
 import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
 
-function MeetingRoom() {
+interface Participant {
+  id: string
+  name: string
+  isFacilitator: boolean
+  hasRaisedHand: boolean
+}
+
+interface MeetingData {
+  code: string
+  title: string
+  facilitator: string
+}
+
+interface QueueItem {
+  id: string
+  participantName: string
+  type: string
+  timestamp: number
+}
+
+function MeetingRoom(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
   const { showToast } = useToast()
   const { participantName, meetingInfo } = location.state || {}
   
-  const [meetingData, setMeetingData] = useState(meetingInfo || {
-    code: meetingId,
+  const [meetingData, setMeetingData] = useState<MeetingData>(meetingInfo || {
+    code: meetingId || '',
     title: 'Loading...',
     facilitator: 'Loading...'
   })
   
-  const [participants, setParticipants] = useState([])
-  const [speakingQueue, setSpeakingQueue] = useState([])
-  const [isInQueue, setIsInQueue] = useState(false)
-  const [showDirectOptions, setShowDirectOptions] = useState(false)
-  const [isConnected, setIsConnected] = useState(false)
-  const [error, setError] = useState('')
-  const [currentSpeaker, setCurrentSpeaker] = useState(null)
+  const [participants, setParticipants] = useState<Participant[]>([])
+  const [speakingQueue, setSpeakingQueue] = useState<QueueItem[]>([])
+  const [isInQueue, setIsInQueue] = useState<boolean>(false)
+  const [showDirectOptions, setShowDirectOptions] = useState<boolean>(false)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [currentSpeaker, setCurrentSpeaker] = useState<QueueItem | null>(null)
 
   useEffect(() => {
     if (!participantName) {
@@ -84,7 +104,7 @@ function MeetingRoom() {
     }
   }, [participantName, navigate, showToast])
 
-  const joinQueue = (type = 'speak') => {
+  const joinQueue = (type: string = 'speak') => {
     if (isInQueue || !isConnected) return
     
     try {

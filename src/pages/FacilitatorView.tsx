@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Users, Play, SkipForward, LogOut, Loader2 } from 'lucide-react'
 import { useToast } from '../components/ui/ToastProvider.jsx'
@@ -8,7 +8,14 @@ import CurrentSpeakerCard from '../components/CurrentSpeakerCard'
 import useFacilitatorSocket from '../hooks/useFacilitatorSocket'
 import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
 
-function FacilitatorView() {
+interface MeetingData {
+  code: string
+  title: string
+  facilitator: string
+  isActive: boolean
+}
+
+function FacilitatorView(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
@@ -44,7 +51,7 @@ function FacilitatorView() {
     navigate('/')
   }
 
-  const formatTime = (timestamp) => {
+  const formatTime = (timestamp: number) => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
