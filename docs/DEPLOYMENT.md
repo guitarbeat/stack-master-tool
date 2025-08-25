@@ -1,6 +1,6 @@
 # Deployment
 
-This project uses a simple split: a Node backend (`simple-backend/`) and a static React frontend (`frontend/`). The recommended host is Render because it supports both a Node Web Service and a Static Site with a generous free tier.
+This project uses a simple split architecture: a Node backend (`simple-backend/`) and a static React frontend (`frontend/`). We recommend deploying on Render, which supports both a Node Web Service and a static site on its generous free tier.
 
 - Backend: Express + Socket.io (real-time), binds to 0.0.0.0 and uses the `PORT` environment variable.
 - Frontend: Vite-built static site, configured via `VITE_API_URL`.
@@ -71,3 +71,5 @@ Your frontend URL will look like:
 ## Legacy Notes
 
 - The root `render.yaml` and `docker-compose.yml` are for a legacy stack and not compatible with the current `simple-backend + frontend` architecture
+
+- The root `render.yaml` and `docker-compose.yml` files describe a legacy stack and are not compatible with the current `simple-backend` + `frontend` architecture.

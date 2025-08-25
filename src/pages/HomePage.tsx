@@ -1,11 +1,17 @@
+
+import { Hero } from '@/components/Hero'
+import { ActionCards } from '@/components/ActionCards'
+import { HowItWorks } from '@/components/HowItWorks'
+import { CallToAction } from '@/components/CallToAction'
+
 import { Link } from 'react-router-dom'
 import { Users, MessageSquare, QrCode, Leaf, Sparkles, ArrowRight } from 'lucide-react'
 import { ExpandableCard } from '@/components/ExpandableCard'
 import useTiltEffect from '@/hooks/use-tilt'
+import Typography from '@/components/Typography'
+
 
 function HomePage() {
-  const cardsRef = useTiltEffect()
-
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Organic Background Elements */}
@@ -16,6 +22,11 @@ function HomePage() {
       </div>
 
       <div className="container mx-auto px-6 py-20">
+        <Hero />
+        <ActionCards />
+        <HowItWorks />
+        <CallToAction />
+
         {/* Hero Section */}
         <div className="text-center mb-24 relative">
           <div className="mb-8 inline-block">
@@ -38,11 +49,13 @@ function HomePage() {
             
             <div className="w-32 h-1.5 bg-gradient-to-r from-primary via-accent to-primary mx-auto rounded-full opacity-60"></div>
             
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
-              Nurture inclusive conversations that grow naturally.
-              <br />
-              <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
-            </p>
+            <Typography className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
+              <p>
+                Nurture inclusive conversations that grow naturally.
+                <br />
+                <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
+              </p>
+            </Typography>
           </div>
         </div>
 
@@ -198,6 +211,7 @@ function HomePage() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   )

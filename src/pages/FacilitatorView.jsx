@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { Users, Play, Pause, SkipForward, Settings, LogOut, Crown, Loader2, MessageCircle } from 'lucide-react'
-import socketService from '../services/socket'
+import { Users, Play, SkipForward, LogOut, Loader2 } from 'lucide-react'
 import { useToast } from '../components/ui/ToastProvider.jsx'
-import { playBeep } from '../utils/sound.js'
+import FacilitatorHeader from '../components/FacilitatorHeader'
+import ParticipantList from '../components/ParticipantList'
+import CurrentSpeakerCard from '../components/CurrentSpeakerCard'
+import useFacilitatorSocket from '../hooks/useFacilitatorSocket'
+import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
 
 function FacilitatorView() {
   const { meetingId } = useParams()
@@ -11,126 +14,34 @@ function FacilitatorView() {
   const navigate = useNavigate()
   const { showToast } = useToast()
   const { facilitatorName, meetingName, meetingCode } = location.state || {}
-  
-  const [meetingData, setMeetingData] = useState({
+
+  const meetingData = {
     code: meetingCode || meetingId,
     title: meetingName || 'Meeting',
     facilitator: facilitatorName || 'Facilitator',
-    isActive: true,
-    currentSpeaker: null
-  })
-  
-  const [participants, setParticipants] = useState([])
-  const [speakingQueue, setSpeakingQueue] = useState([])
-  const [isConnected, setIsConnected] = useState(false)
-  const [error, setError] = useState('')
-  const [currentSpeaker, setCurrentSpeaker] = useState(null)
+    isActive: true
+  }
 
   useEffect(() => {
     if (!facilitatorName || !meetingCode) {
       navigate('/create')
-      return
     }
+  }, [facilitatorName, meetingCode, navigate])
 
-    const setupSocketListeners = () => {
-      socketService.onQueueUpdated((queue) => {
-        setSpeakingQueue(queue)
-      })
-
-      socketService.onParticipantsUpdated((participantsList) => {
-        setParticipants(participantsList)
-      })
-
-      socketService.onParticipantJoined((data) => {
-        showToast({ type: 'info', title: `${data.participant.name} joined` })
-      })
-
-      socketService.onParticipantLeft((data) => {
-        showToast({ type: 'info', title: `${data.participantName} left` })
-      })
-
-      socketService.onNextSpeaker((speaker) => {
-        setCurrentSpeaker(speaker)
-        showToast({ type: 'success', title: `Next: ${speaker.participantName}` })
-        playBeep(1200, 120)
-        setTimeout(() => {
-          setCurrentSpeaker(null)
-        }, 10000)
-      })
-
-      socketService.onError((error) => {
-        setError(error.message || 'Connection error')
-        showToast({ type: 'error', title: error.message || 'Connection error' })
-      })
-    }
-
-    const connectAsFacilitator = async () => {
-      try {
-        if (!socketService.isConnected) {
-          socketService.connect()
-        }
-        
-        setupSocketListeners()
-        
-        await socketService.joinMeeting(meetingCode, facilitatorName, true)
-        setIsConnected(true)
-      } catch (err) {
-        setError('Failed to connect to meeting')
-      }
-    }
-
-    connectAsFacilitator()
-
-    return () => {
-      socketService.removeAllListeners()
-    }
-  }, [facilitatorName, meetingCode, navigate, showToast])
-
-  const nextSpeaker = () => {
-    if (speakingQueue.length === 0 || !isConnected) return
-    
-    try {
-      socketService.nextSpeaker()
-    } catch (err) {
-      setError('Failed to call next speaker')
-      showToast({ type: 'error', title: 'Failed to call next speaker' })
-      playBeep(220, 200)
-    }
-  }
-
-  const finishSpeaking = () => {
-    setCurrentSpeaker(null)
-  }
+  const {
+    participants,
+    speakingQueue,
+    currentSpeaker,
+    isConnected,
+    error,
+    nextSpeaker,
+    finishSpeaking,
+    disconnect
+  } = useFacilitatorSocket(meetingCode, facilitatorName, showToast)
 
   const leaveMeeting = () => {
-    socketService.disconnect()
+    disconnect()
     navigate('/')
-  }
-
-  const getQueueTypeDisplay = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'Direct Response'
-      case 'point-of-info':
-        return 'Point of Info'
-      case 'clarification':
-        return 'Clarification'
-      default:
-        return 'Speak'
-    }
-  }
-
-  const getQueueTypeColor = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'bg-orange-100 text-orange-800'
-      case 'point-of-info':
-        return 'bg-blue-100 text-blue-800'
-      case 'clarification':
-        return 'bg-purple-100 text-purple-800'
-      default:
-        return 'bg-sage-green/20 text-moss-green'
-    }
   }
 
   const formatTime = (timestamp) => {
@@ -172,67 +83,17 @@ function FacilitatorView() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 dark:bg-zinc-900 dark:border dark:border-zinc-800">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              <Crown className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">{meetingData.title}</h1>
-              <p className="text-gray-600 dark:text-zinc-400">
-                Facilitator View • Code: {meetingData.code}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-gray-600 dark:text-zinc-300">
-              <Users className="w-5 h-5 mr-2" />
-              <span>{participants.length} participants</span>
-            </div>
-            <button
-              onClick={() => navigator.clipboard.writeText(meetingData.code)}
-              className="px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
-              title="Copy meeting code"
-            >
-              Copy Code
-            </button>
-            <button
-              onClick={leaveMeeting}
-              className="flex items-center text-red-600 hover:text-red-700 transition-colors"
-            >
-              <LogOut className="w-5 h-5 mr-2" />
-              End Meeting
-            </button>
-          </div>
-        </div>
-      </div>
+      <FacilitatorHeader
+        title={meetingData.title}
+        code={meetingData.code}
+        participantCount={participants.length}
+        leaveMeeting={leaveMeeting}
+      />
 
-      {/* Current Speaker Alert */}
-      {currentSpeaker && (
-        <div className="bg-sage-green/10 border border-sage-green rounded-2xl p-6 mb-8 dark:bg-earthy-brown/10 dark:border-earthy-brown/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="bg-sage-green/20 p-3 rounded-full mr-4">
-                <MessageCircle className="w-6 h-6 text-moss-green" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-earthy-brown dark:text-sage-green">Now Speaking</h3>
-                <p className="text-moss-green dark:text-sage-green">
-                  {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={finishSpeaking}
-              className="bg-moss-green text-white px-4 py-2 rounded-lg font-medium hover:bg-moss-green/90 transition-colors"
-            >
-              Finish Speaking
-            </button>
-          </div>
-        </div>
-      )}
+      <CurrentSpeakerCard
+        currentSpeaker={currentSpeaker}
+        finishSpeaking={finishSpeaking}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Speaking Queue */}
@@ -305,52 +166,10 @@ function FacilitatorView() {
         </div>
 
         {/* Participants */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-6">Participants</h2>
-          
-          {participants.length === 0 ? (
-            <div className="text-center py-8">
-              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-zinc-400">No participants yet</p>
-              <p className="text-sm text-gray-400 dark:text-zinc-500">Share the meeting code to invite people</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {participants.map((participant) => (
-                <div
-                  key={participant.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-zinc-950"
-                >
-                  <div className="flex items-center">
-                    {participant.isFacilitator && (
-                      <Crown className="w-4 h-4 text-yellow-600 mr-2" />
-                    )}
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-zinc-100">{participant.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-zinc-400">
-                        {participant.isFacilitator ? 'Facilitator' : 'Participant'}
-                      </p>
-                    </div>
-                  </div>
-                  {participant.isInQueue && (
-                    <div className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full dark:bg-purple-900/20 dark:text-purple-300">
-                      In Queue
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Meeting Info */}
-          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-zinc-800">
-            <div className="space-y-2 text-sm text-gray-600 dark:text-zinc-400">
-              <p><strong>Meeting Code:</strong> {meetingData.code}</p>
-              <p><strong>Facilitator:</strong> {meetingData.facilitator}</p>
-              <p><strong>Status:</strong> Active</p>
-            </div>
-          </div>
-        </div>
+        <ParticipantList
+          participants={participants}
+          meetingData={meetingData}
+        />
       </div>
     </div>
   )

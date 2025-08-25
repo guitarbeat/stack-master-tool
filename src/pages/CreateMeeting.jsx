@@ -106,7 +106,7 @@ function CreateMeeting() {
                 <Users className="w-8 h-8 text-blue-600 mx-auto" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Create Meeting</h1>
-              <p className="text-gray-600 dark:text-zinc-400">Set up your meeting and get a shareable link</p>
+              <p className="text-gray-600 dark:text-zinc-400">Set up your meeting and share the invitation link</p>
             </div>
 
             <form onSubmit={handleCreateMeeting} className="space-y-6">
@@ -170,7 +170,7 @@ function CreateMeeting() {
               <div className="bg-sage-green/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
                 <QrCodeIcon className="w-8 h-8 text-moss-green mx-auto" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Meeting Created!</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Your meeting is ready!</h1>
               <p className="text-gray-600 dark:text-zinc-400">Share this code or link with participants</p>
             </div>
 
@@ -231,7 +231,7 @@ function CreateMeeting() {
                 onClick={startMeeting}
                 className="w-full bg-moss-green text-white py-3 px-6 rounded-lg font-semibold hover:bg-moss-green/90 transition-colors"
               >
-                Start Meeting
+                Start meeting
               </button>
             </div>
           </div>
