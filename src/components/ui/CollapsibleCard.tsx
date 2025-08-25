@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Card, CardHeader, CardContent } from "./card"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./collapsible"
 
-export interface CollapsibleCardProps extends React.ComponentPropsWithoutRef<typeof Collapsible> {
+export interface CollapsibleCardProps extends Omit<React.ComponentPropsWithoutRef<typeof Collapsible>, 'title'> {
   title: React.ReactNode
   children: React.ReactNode
   className?: string

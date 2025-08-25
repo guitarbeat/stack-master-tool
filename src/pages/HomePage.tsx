@@ -12,6 +12,8 @@ import Typography from '@/components/Typography'
 
 
 function HomePage() {
+  const cardsRef = useTiltEffect();
+  
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Organic Background Elements */}

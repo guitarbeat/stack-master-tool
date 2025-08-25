@@ -4,21 +4,21 @@
 
 @layer base {
   :root {
-    --background: var(--earthy-brown);
+    --background: 30 25% 20%;
     --foreground: 60 9% 100%;
-    --card: var(--earthy-brown);
+    --card: 30 25% 20%;
     --card-foreground: 60 9% 100%;
     --border: 120 13% 91%;
     --input: 120 13% 91%;
-    --ring: var(--moss-green);
-    --primary: var(--moss-green);
+    --ring: 100 40% 25%;
+    --primary: 100 40% 25%;
     --primary-foreground: 60 9% 100%;
     --primary-hover: 100 40% 30%;
     --secondary: 60 30% 96%;
     --secondary-foreground: 120 27% 8%;
     --secondary-hover: 60 30% 92%;
-    --accent: var(--sage-green);
-    --accent-foreground: var(--earthy-brown);
+    --accent: 120 20% 60%;
+    --accent-foreground: 30 25% 20%;
     --accent-hover: 120 20% 55%;
     --muted: 60 30% 96%;
     --muted-foreground: 120 10% 30%;
@@ -38,14 +38,14 @@
     --earthy-brown: 30 25% 20%;
     --moss-green: 100 40% 25%;
     --sage-green: 120 20% 60%;
-    --sidebar-background: var(--earthy-brown);
+    --sidebar-background: 30 25% 20%;
     --sidebar-foreground: 60 9% 100%;
-    --sidebar-primary: var(--moss-green);
+    --sidebar-primary: 100 40% 25%;
     --sidebar-primary-foreground: 60 9% 100%;
-    --sidebar-accent: var(--sage-green);
-    --sidebar-accent-foreground: var(--earthy-brown);
+    --sidebar-accent: 120 20% 60%;
+    --sidebar-accent-foreground: 30 25% 20%;
     --sidebar-border: 120 13% 91%;
-    --sidebar-ring: var(--moss-green);
+    --sidebar-ring: 100 40% 25%;
   }
 
   .dark {
