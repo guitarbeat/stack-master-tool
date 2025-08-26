@@ -1,26 +1,33 @@
-export function getQueueTypeDisplay(type: string): string {
-  switch (type) {
-    case 'direct-response':
-      return 'Direct Response'
-    case 'point-of-info':
-      return 'Point of Info'
-    case 'clarification':
-      return 'Clarification'
-    default:
-      return 'Speak'
+interface QueueTypeInfo {
+  display: string
+  color: string
+}
+
+const queueTypeMap: Record<string, QueueTypeInfo> = {
+  'direct-response': {
+    display: 'Direct Response',
+    color: 'bg-orange-100 text-orange-800'
+  },
+  'point-of-info': {
+    display: 'Point of Info',
+    color: 'bg-blue-100 text-blue-800'
+  },
+  clarification: {
+    display: 'Clarification',
+    color: 'bg-purple-100 text-purple-800'
   }
 }
 
+const defaultQueueType: QueueTypeInfo = {
+  display: 'Speak',
+  color: 'bg-sage-green/20 text-moss-green'
+}
+
+export function getQueueTypeDisplay(type: string): string {
+  return (queueTypeMap[type] ?? defaultQueueType).display
+}
+
 export function getQueueTypeColor(type: string): string {
-  switch (type) {
-    case 'direct-response':
-      return 'bg-orange-100 text-orange-800'
-    case 'point-of-info':
-      return 'bg-blue-100 text-blue-800'
-    case 'clarification':
-      return 'bg-purple-100 text-purple-800'
-    default:
-      return 'bg-sage-green/20 text-moss-green'
-  }
+  return (queueTypeMap[type] ?? defaultQueueType).color
 }
 
