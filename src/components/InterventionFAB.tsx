@@ -17,52 +17,35 @@ const interventions = [
 ];
 
 export const InterventionFAB = ({ participants, onIntervention }: InterventionFABProps) => {
-  const [isOpen, setIsOpen] = useState(false);
   const hasParticipants = participants.length > 0;
 
   return (
-    <div className="intervention-fab">
-      {isOpen && (
-        <div className="flex flex-col gap-2 mb-2">
-          {!hasParticipants && (
-            <div className="text-center text-sm text-muted-foreground bg-muted/30 rounded-lg p-3 mb-2">
-              Add participants to the queue first to record interventions
-            </div>
-          )}
-          {interventions.map((intervention, index) => (
-            <InterventionDialog
-              key={intervention.type}
-              trigger={
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={!hasParticipants}
-                  className={cn(
-                    "shadow-lg hover:shadow-xl transition-all duration-200 w-12 h-12 rounded-full",
-                    "slide-up opacity-0 animate-in fade-in-0 slide-in-from-bottom-2",
-                    !hasParticipants && "opacity-50 cursor-not-allowed"
-                  )}
-                  style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
-                >
-                  <intervention.icon className={cn("h-5 w-5", intervention.color)} />
-                </Button>
-              }
-              title={intervention.label}
-              description={intervention.description}
-              participants={participants}
-              onSubmit={(name) => onIntervention(intervention.type, name)}
-            />
-          ))}
-        </div>
-      )}
-      
-      <Button
-        size="lg"
-        className="shadow-lg hover:shadow-xl transition-all duration-200 w-14 h-14 rounded-full"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X className="h-6 w-6 transition-transform duration-200" /> : <Plus className="h-6 w-6 transition-transform duration-200 hover:rotate-90" />}
-      </Button>
-    </div>
+    <>
+      {interventions.map((intervention, index) => (
+        <InterventionDialog
+          key={intervention.type}
+          trigger={
+            <Button
+              variant="outline"
+              disabled={!hasParticipants}
+              className={cn(
+                "h-12 px-4 flex items-center gap-3 justify-start hover-scale transition-all duration-200",
+                !hasParticipants && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              <intervention.icon className={cn("h-4 w-4", intervention.color)} />
+              <div className="text-left">
+                <div className="font-medium text-sm">{intervention.label}</div>
+                <div className="text-xs text-muted-foreground">{intervention.description}</div>
+              </div>
+            </Button>
+          }
+          title={intervention.label}
+          description={intervention.description}
+          participants={participants}
+          onSubmit={(name) => onIntervention(intervention.type, name)}
+        />
+      ))}
+    </>
   );
 };

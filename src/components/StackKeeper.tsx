@@ -364,17 +364,17 @@ export const StackKeeper = () => {
         {/* Current Speaker with Timer */}
         {stack.length > 0 && (
           <Card className="glass-card next-speaker-gradient border-primary/30">
-            <CardContent className="p-8 pt-0">
-              <div className="flex items-center justify-between">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
+            <CardContent className="p-6">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="flex-1 space-y-4">
+                  <div className="flex flex-wrap items-center gap-3">
                     <div className="relative">
                       <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
                       <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
                     </div>
                     <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Currently Speaking</span>
                     {speakerTimer && (
-                      <div className="flex items-center gap-2 ml-4">
+                      <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
                         <Timer className="h-4 w-4 text-accent" />
                         <span className="font-mono text-lg font-bold text-accent">
                           {formatTime(elapsedTime)}
@@ -384,7 +384,7 @@ export const StackKeeper = () => {
                             variant="ghost"
                             size="sm"
                             onClick={toggleSpeakerTimer}
-                            className="h-6 w-6 p-0"
+                            className="h-7 w-7 p-0 hover:bg-accent/20"
                             title={speakerTimer.isActive ? "Pause timer" : "Resume timer"}
                           >
                             {speakerTimer.isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
@@ -393,7 +393,7 @@ export const StackKeeper = () => {
                             variant="ghost"
                             size="sm"
                             onClick={resetSpeakerTimer}
-                            className="h-6 w-6 p-0"
+                            className="h-7 w-7 p-0 hover:bg-accent/20"
                             title="Reset timer"
                           >
                             <RotateCcw className="h-3 w-3" />
@@ -402,15 +402,18 @@ export const StackKeeper = () => {
                       </div>
                     )}
                   </div>
-                  <h3 className="text-3xl font-bold gradient-text">{stack[0].name}</h3>
+                  
+                  <h3 className="text-2xl lg:text-3xl font-bold gradient-text">{stack[0].name}</h3>
                   
                   {stack.length > 1 && (
-                    <div className="flex items-center gap-3 mt-6">
+                    <div className="flex flex-wrap items-center gap-3">
                       <div className="p-1.5 rounded-lg bg-accent/10">
                         <Clock className="h-4 w-4 text-accent" />
                       </div>
                       <span className="text-sm font-medium text-muted-foreground">Up next:</span>
-                      <Badge variant="outline" className="font-semibold px-3 py-1 rounded-full border-accent/30 text-accent">{stack[1].name}</Badge>
+                      <Badge variant="outline" className="font-semibold px-3 py-1 rounded-full border-accent/30 text-accent">
+                        {stack[1].name}
+                      </Badge>
                       {stack.length > 2 && (
                         <span className="text-sm text-muted-foreground/70 font-medium">+{stack.length - 2} more</span>
                       )}
@@ -418,10 +421,16 @@ export const StackKeeper = () => {
                   )}
                 </div>
                 
-                <Button size="lg" onClick={nextSpeaker} className="floating-glow px-8 py-4 text-base font-semibold rounded-xl group">
-                  Next Speaker
-                  <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-2" />
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    size="lg" 
+                    onClick={nextSpeaker} 
+                    className="floating-glow px-6 py-3 text-base font-semibold rounded-xl group whitespace-nowrap"
+                  >
+                    Next Speaker
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -506,55 +515,65 @@ export const StackKeeper = () => {
           </CardContent>
         </Card>
 
-        {/* Recent Interventions */}
-        {interventions.length > 0 && (
-          <ExpandableCard
-            className="glass-card"
-            title={
-              <span className="flex items-center gap-3 text-xl font-semibold">
+        {/* Interventions Section */}
+        {stack.length > 0 && (
+          <Card className="glass-card">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold">
                 <div className="p-2 rounded-lg bg-warning/10">
                   <AlertTriangle className="h-5 w-5 text-warning" />
                 </div>
-                Recent Interventions
-              </span>
-            }
-            summary={`${interventions.length} recorded`}
-          >
-            <div className="flex justify-end mb-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setInterventions([])}
-                className="hover:bg-destructive/10 hover:text-destructive rounded-xl"
-              >
-                Clear History
-              </Button>
-            </div>
-            <div className="space-y-3">
-              {interventions.slice(-5).reverse().map((intervention, index) => (
-                <div
-                  key={intervention.id}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <Badge variant="outline" className="shrink-0">
-                    {intervention.type.replace('-', ' ')}
-                  </Badge>
-                  <span className="font-medium">{intervention.participant}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    {intervention.timestamp.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
+                Quick Interventions
+                <Badge variant="outline" className="ml-2 text-xs">
+                  Record speaking interruptions
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <InterventionFAB participants={stack} onIntervention={addIntervention} />
+              </div>
+              
+              {interventions.length > 0 && (
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                      Recent Activity ({interventions.length})
+                    </h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setInterventions([])}
+                      className="hover:bg-destructive/10 hover:text-destructive rounded-xl h-8 px-3 text-xs"
+                    >
+                      Clear History
+                    </Button>
+                  </div>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {interventions.slice(-5).reverse().map((intervention, index) => (
+                      <div
+                        key={intervention.id}
+                        className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 text-sm fade-in"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <Badge variant="outline" className="shrink-0 text-xs px-2 py-0">
+                          {intervention.type.replace('-', ' ')}
+                        </Badge>
+                        <span className="font-medium">{intervention.participant}</span>
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {intervention.timestamp.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-          </ExpandableCard>
+              )}
+            </CardContent>
+          </Card>
         )}
-
-        {/* Floating Action Button for Interventions */}
-        <InterventionFAB participants={stack} onIntervention={addIntervention} />
       </div>
     </div>
   );
