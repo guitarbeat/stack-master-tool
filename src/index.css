@@ -233,4 +233,12 @@
     0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
     50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
   }
+
+  .kbd {
+    @apply px-2 py-1 text-xs font-mono bg-muted border border-border/50 rounded shadow-sm;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
 }
