@@ -4,6 +4,7 @@ import { Hand, MessageCircle, Info, Settings, LogOut, Users, Loader2 } from 'luc
 import socketService from '../services/socket'
 import { useToast } from '../components/ui/ToastProvider.jsx'
 import { playBeep } from '../utils/sound.js'
+import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
 
 interface Participant {
   id: string
@@ -136,32 +137,6 @@ function MeetingRoom(): JSX.Element {
   const leaveMeeting = () => {
     socketService.disconnect()
     navigate('/')
-  }
-
-  const getQueueTypeDisplay = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'Direct Response'
-      case 'point-of-info':
-        return 'Point of Info'
-      case 'clarification':
-        return 'Clarification'
-      default:
-        return 'Speak'
-    }
-  }
-
-  const getQueueTypeColor = (type) => {
-    switch (type) {
-      case 'direct-response':
-        return 'bg-orange-100 text-orange-800'
-      case 'point-of-info':
-        return 'bg-blue-100 text-blue-800'
-      case 'clarification':
-        return 'bg-purple-100 text-purple-800'
-      default:
-        return 'bg-sage-green/20 text-moss-green'
-    }
   }
 
   if (!isConnected && !error) {
