@@ -10,6 +10,7 @@ import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Fil
 import { toast } from "@/hooks/use-toast";
 import { DraggableStackItem } from "./DraggableStackItem";
 import { InterventionFAB } from "./InterventionFAB";
+import { InterventionFlow } from "./InterventionFlow";
 import { NextSpeakerCard } from "./NextSpeakerCard";
 import { ExpandableCard } from "./ExpandableCard";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES } from "@/types";
@@ -329,7 +330,7 @@ export const StackKeeper = () => {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Input
                 ref={inputRef}
                 placeholder="Enter participant name... (Ctrl+N)"
@@ -338,8 +339,9 @@ export const StackKeeper = () => {
                 onKeyPress={(e) => e.key === 'Enter' && addToStack()}
                 className="flex-1 h-12 text-base border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-xl"
               />
-              <Button onClick={addToStack} disabled={!newParticipantName.trim()} size="lg" className="px-8 h-12 floating-glow rounded-xl font-medium">
-                Add to Stack
+              <Button onClick={addToStack} disabled={!newParticipantName.trim()} size="lg" className="px-4 sm:px-8 h-12 floating-glow rounded-xl font-medium w-full sm:w-auto">
+                <span className="sm:hidden">Add</span>
+                <span className="hidden sm:inline">Add to Stack</span>
               </Button>
             </div>
             
@@ -530,8 +532,22 @@ export const StackKeeper = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <InterventionFAB participants={stack} onIntervention={addIntervention} />
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    🎯 <strong>Fun Way:</strong> Drag interventions to the speaking queue below!
+                  </p>
+                </div>
+                <InterventionFlow participants={stack} onIntervention={addIntervention} />
+                
+                <Separator className="my-4" />
+                
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Traditional Buttons</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <InterventionFAB participants={stack} onIntervention={addIntervention} />
+                  </div>
+                </div>
               </div>
               
               {interventions.length > 0 && (
