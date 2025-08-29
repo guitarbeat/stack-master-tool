@@ -1,16 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { DraggableStackItem } from "./DraggableStackItem";
 import { InterventionFAB } from "./InterventionFAB";
-import { InterventionFlow } from "./InterventionFlow";
+import { StackItem } from "./StackItem";
 import { NextSpeakerCard } from "./NextSpeakerCard";
 import { ExpandableCard } from "./ExpandableCard";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES } from "@/types";
@@ -40,11 +36,6 @@ export const StackKeeper = () => {
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
 
   // Timer effect
   useEffect(() => {
@@ -200,17 +191,6 @@ export const StackKeeper = () => {
     const intervention: SpecialIntervention = { id: Date.now().toString(), type, participant: participantName, timestamp: new Date() };
     setInterventions(prev => [...prev, intervention]);
     toast({ title: INTERVENTION_TYPES[type], description: `${participantName} - ${INTERVENTION_TYPES[type]} recorded` });
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      setStack((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
   };
 
   const startSpeakerTimer = (participantId: string) => {
@@ -494,25 +474,21 @@ export const StackKeeper = () => {
                 </Button>
               </div>
             ) : (
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={filteredStack} strategy={verticalListSortingStrategy}>
-                  <div className="space-y-3">
-                    {filteredStack.map((participant, index) => {
-                      const actualIndex = stack.findIndex(p => p.id === participant.id);
-                      return (
-                        <div key={participant.id} className="fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                          <DraggableStackItem 
-                            participant={participant} 
-                            index={actualIndex} 
-                            isCurrentSpeaker={actualIndex === 0} 
-                            onRemove={removeFromStack} 
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </SortableContext>
-              </DndContext>
+              <div className="space-y-3">
+                {filteredStack.map((participant, index) => {
+                  const actualIndex = stack.findIndex(p => p.id === participant.id);
+                  return (
+                    <div key={participant.id} className="fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                      <StackItem
+                        participant={participant}
+                        index={actualIndex}
+                        isCurrentSpeaker={actualIndex === 0}
+                        onRemove={removeFromStack}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </CardContent>
         </Card>
@@ -525,31 +501,22 @@ export const StackKeeper = () => {
                 <div className="p-2 rounded-lg bg-warning/10">
                   <AlertTriangle className="h-5 w-5 text-warning" />
                 </div>
-                Quick Interventions
+                Intervention Tracking
                 <Badge variant="outline" className="ml-2 text-xs">
                   Record speaking interruptions
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-4">
-                    🎯 <strong>Fun Way:</strong> Drag interventions to the speaking queue below!
-                  </p>
-                </div>
-                <InterventionFlow participants={stack} onIntervention={addIntervention} />
-                
-                <Separator className="my-4" />
-                
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Traditional Buttons</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <InterventionFAB participants={stack} onIntervention={addIntervention} />
-                  </div>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Use the buttons below to log interventions.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <InterventionFAB participants={stack} onIntervention={addIntervention} />
                 </div>
               </div>
-              
+
               {interventions.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-4">
