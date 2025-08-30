@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight } from "lucide-react";
+import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { InterventionFAB } from "./InterventionFAB";
 import { StackItem } from "./StackItem";
@@ -11,13 +11,41 @@ import { NextSpeakerCard } from "./NextSpeakerCard";
 import { ExpandableCard } from "./ExpandableCard";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES } from "@/types";
 
-interface UndoAction {
+interface RemoveUndoAction {
   id: string;
-  type: 'remove' | 'clear' | 'next';
-  data: any;
+  type: 'remove';
+  data: {
+    participant: Participant;
+    index: number;
+    previousStack: Participant[];
+  };
   timestamp: Date;
   description: string;
 }
+
+interface NextUndoAction {
+  id: string;
+  type: 'next';
+  data: {
+    speaker: Participant;
+    previousStack: Participant[];
+  };
+  timestamp: Date;
+  description: string;
+}
+
+interface ClearUndoAction {
+  id: string;
+  type: 'clear';
+  data: {
+    previousStack: Participant[];
+    previousInterventions: SpecialIntervention[];
+  };
+  timestamp: Date;
+  description: string;
+}
+
+type UndoAction = RemoveUndoAction | NextUndoAction | ClearUndoAction;
 
 interface SpeakerTimer {
   participantId: string;
@@ -218,7 +246,7 @@ export const StackKeeper = () => {
     if (!lastAction) return;
 
     switch (lastAction.type) {
-      case 'remove':
+      case 'remove': {
         const { participant, index } = lastAction.data;
         setStack(prev => {
           const newStack = [...prev];
@@ -226,16 +254,19 @@ export const StackKeeper = () => {
           return newStack;
         });
         break;
-      case 'next':
+      }
+      case 'next': {
         setStack(lastAction.data.previousStack);
         if (lastAction.data.previousStack.length > 0) {
           startSpeakerTimer(lastAction.data.previousStack[0].id);
         }
         break;
-      case 'clear':
+      }
+      case 'clear': {
         setStack(lastAction.data.previousStack);
         setInterventions(lastAction.data.previousInterventions);
         break;
+      }
     }
 
     setUndoHistory(prev => prev.slice(0, -1));
@@ -440,8 +471,19 @@ export const StackKeeper = () => {
                     placeholder="Search participants... (Ctrl+F)"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-48 h-9 text-sm rounded-xl"
+                    className="pl-10 pr-8 w-48 h-9 text-sm rounded-xl"
                   />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full p-0"
+                      title="Clear search"
+                    >
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  )}
                 </div>
               )}
               {stack.length > 0 && (
