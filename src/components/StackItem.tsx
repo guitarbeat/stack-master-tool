@@ -1,17 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, MessageCircle, HelpCircle, Settings } from "lucide-react";
+import { Trash2, MessageCircle, HelpCircle, Settings, CheckCircle } from "lucide-react";
 import { Participant } from "@/types";
 
 interface StackItemProps {
   participant: Participant;
   index: number;
   isCurrentSpeaker: boolean;
+  isDirectResponse: boolean;
   onRemove: (id: string) => void;
   onIntervention: (participantName: string, type: 'direct-response' | 'clarifying-question' | 'point-of-process') => void;
+  onFinishDirectResponse?: () => void;
 }
 
-export const StackItem = ({ participant, index, isCurrentSpeaker, onRemove, onIntervention }: StackItemProps) => {
+export const StackItem = ({ participant, index, isCurrentSpeaker, isDirectResponse, onRemove, onIntervention, onFinishDirectResponse }: StackItemProps) => {
   return (
     <div
       className={`stack-card flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 ${
@@ -27,15 +29,32 @@ export const StackItem = ({ participant, index, isCurrentSpeaker, onRemove, onIn
             isCurrentSpeaker
               ? 'animate-pulse bg-white/20 text-white border-white/30'
               : 'px-4 py-2 font-semibold'
-          } rounded-full text-sm`}
+          } rounded-full text-sm ${
+            isDirectResponse ? 'bg-blue-500 text-white animate-pulse' : ''
+          }`}
         >
-          {isCurrentSpeaker ? "🎤 Speaking" : `#${index + 1}`}
+          {isCurrentSpeaker 
+            ? (isDirectResponse ? "🎤 Direct Response" : "🎤 Speaking") 
+            : `#${index + 1}`
+          }
         </Badge>
         <span className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-white' : 'text-foreground'}`}>
           {participant.name}
         </span>
       </div>
       <div className="flex items-center gap-1">
+        {/* Show finish direct response button when current speaker is in direct response mode */}
+        {isCurrentSpeaker && isDirectResponse && onFinishDirectResponse && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onFinishDirectResponse}
+            className="hover:bg-green-500/20 hover:text-green-600 rounded-xl transition-all duration-200 p-2 mr-2"
+            title="Finish Direct Response"
+          >
+            <CheckCircle className="h-4 w-4" />
+          </Button>
+        )}
         {/* Intervention buttons - only show for non-current speakers */}
         {!isCurrentSpeaker && (
           <>

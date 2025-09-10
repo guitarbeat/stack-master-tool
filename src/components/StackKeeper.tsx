@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { StackItem } from "./StackItem";
 import { NextSpeakerCard } from "./NextSpeakerCard";
 import { ExpandableCard } from "./ExpandableCard";
-import { Participant, SpecialIntervention, INTERVENTION_TYPES } from "@/types";
+import { Participant, SpecialIntervention, INTERVENTION_TYPES, DirectResponseState } from "@/types";
 
 interface RemoveUndoAction {
   id: string;
@@ -61,6 +61,11 @@ export const StackKeeper = () => {
   const [speakerTimer, setSpeakerTimer] = useState<SpeakerTimer | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [directResponse, setDirectResponse] = useState<DirectResponseState>({
+    isActive: false,
+    participantId: '',
+    originalQueue: []
+  });
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -221,7 +226,61 @@ export const StackKeeper = () => {
   };
 
   const handleInterventionSubmit = (participantName: string, type: SpecialIntervention['type']) => {
-    addIntervention(type, participantName);
+    if (type === 'direct-response') {
+      // Find the participant in the stack
+      const participant = stack.find(p => p.name === participantName);
+      if (!participant) return;
+      
+      // Store original queue and move participant to front temporarily
+      setDirectResponse({
+        isActive: true,
+        participantId: participant.id,
+        originalQueue: [...stack]
+      });
+      
+      // Move participant to front of queue
+      const newStack = [participant, ...stack.filter(p => p.id !== participant.id)];
+      setStack(newStack);
+      
+      // Start timer for direct response
+      startSpeakerTimer(participant.id);
+      
+      toast({ 
+        title: "Direct Response Active", 
+        description: `${participantName} moved to speak for direct response` 
+      });
+    } else {
+      // Handle other intervention types normally
+      addIntervention(type, participantName);
+    }
+  };
+
+  const finishDirectResponse = () => {
+    if (!directResponse.isActive) return;
+    
+    // Restore original queue order (minus the person who just spoke)
+    const remainingQueue = directResponse.originalQueue.filter(p => p.id !== directResponse.participantId);
+    setStack(remainingQueue);
+    
+    // Reset direct response state
+    setDirectResponse({
+      isActive: false,
+      participantId: '',
+      originalQueue: []
+    });
+    
+    // Start timer for next person if queue exists
+    if (remainingQueue.length > 0) {
+      startSpeakerTimer(remainingQueue[0].id);
+    } else {
+      setSpeakerTimer(null);
+      setElapsedTime(0);
+    }
+    
+    toast({ 
+      title: "Direct Response Complete", 
+      description: "Returned to normal speaking queue" 
+    });
   };
 
   const startSpeakerTimer = (participantId: string) => {
@@ -528,8 +587,10 @@ export const StackKeeper = () => {
                         participant={participant}
                         index={actualIndex}
                         isCurrentSpeaker={actualIndex === 0}
+                        isDirectResponse={directResponse.isActive && participant.id === directResponse.participantId && actualIndex === 0}
                         onRemove={removeFromStack}
                         onIntervention={handleInterventionSubmit}
+                        onFinishDirectResponse={finishDirectResponse}
                       />
                     </div>
                   );

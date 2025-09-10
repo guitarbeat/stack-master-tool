@@ -4,6 +4,12 @@ export interface Participant {
   addedAt: Date;
 }
 
+export interface DirectResponseState {
+  isActive: boolean;
+  participantId: string;
+  originalQueue: Participant[];
+}
+
 export interface SpecialIntervention {
   id: string;
   type: 'direct-response' | 'clarifying-question' | 'point-of-process';
