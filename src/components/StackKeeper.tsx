@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { InterventionFAB } from "./InterventionFAB";
 import { StackItem } from "./StackItem";
 import { NextSpeakerCard } from "./NextSpeakerCard";
 import { ExpandableCard } from "./ExpandableCard";
@@ -127,12 +126,12 @@ export const StackKeeper = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const addUndoAction = useCallback((action: Omit<UndoAction, 'id' | 'timestamp'>) => {
+  const addUndoAction = useCallback((action: Omit<RemoveUndoAction, 'id' | 'timestamp'> | Omit<NextUndoAction, 'id' | 'timestamp'> | Omit<ClearUndoAction, 'id' | 'timestamp'>) => {
     const undoAction: UndoAction = {
       ...action,
       id: Date.now().toString(),
       timestamp: new Date()
-    };
+    } as UndoAction;
     setUndoHistory(prev => [...prev.slice(-4), undoAction]); // Keep last 5 actions
   }, []);
 
@@ -219,6 +218,10 @@ export const StackKeeper = () => {
     const intervention: SpecialIntervention = { id: Date.now().toString(), type, participant: participantName, timestamp: new Date() };
     setInterventions(prev => [...prev, intervention]);
     toast({ title: INTERVENTION_TYPES[type], description: `${participantName} - ${INTERVENTION_TYPES[type]} recorded` });
+  };
+
+  const handleInterventionSubmit = (participantName: string, type: SpecialIntervention['type']) => {
+    addIntervention(type, participantName);
   };
 
   const startSpeakerTimer = (participantId: string) => {
@@ -526,6 +529,7 @@ export const StackKeeper = () => {
                         index={actualIndex}
                         isCurrentSpeaker={actualIndex === 0}
                         onRemove={removeFromStack}
+                        onIntervention={handleInterventionSubmit}
                       />
                     </div>
                   );
@@ -552,11 +556,8 @@ export const StackKeeper = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  Use the buttons below to log interventions.
+                  Click intervention buttons on each participant to log activities.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <InterventionFAB participants={stack} onIntervention={addIntervention} />
-                </div>
               </div>
 
               {interventions.length > 0 && (
