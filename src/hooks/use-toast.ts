@@ -71,6 +71,14 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
+// Cleanup function for timeouts
+const clearAllTimeouts = () => {
+  toastTimeouts.forEach((timeout) => {
+    clearTimeout(timeout)
+  })
+  toastTimeouts.clear()
+}
+
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -180,6 +188,13 @@ function useToast() {
       }
     }
   }, [state])
+
+  // Cleanup timeouts on unmount
+  React.useEffect(() => {
+    return () => {
+      clearAllTimeouts()
+    }
+  }, [])
 
   return {
     ...state,
