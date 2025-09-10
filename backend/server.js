@@ -105,6 +105,13 @@ io.on('connection', (socket) => {
       return;
     }
     
+    // Verify facilitator access - only the original facilitator can join as facilitator
+    if (isFacilitator && participantName !== meeting.facilitator) {
+      console.log(`Unauthorized facilitator attempt: ${participantName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
+      socket.emit('error', { message: 'Only the meeting creator can join as facilitator' });
+      return;
+    }
+    
     const participant = {
       id: socket.id,
       name: participantName,

@@ -81,7 +81,11 @@ export function useFacilitatorSocket(
         await socketService.joinMeeting(meetingCode, facilitatorName, true)
         setIsConnected(true)
       } catch (err) {
-        setError('Failed to connect to meeting')
+        if (err.message && err.message.includes('Only the meeting creator can join as facilitator')) {
+          setError('You are not authorized to facilitate this meeting. Only the meeting creator can facilitate.')
+        } else {
+          setError('Failed to connect to meeting')
+        }
       }
     }
 
