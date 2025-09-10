@@ -98,6 +98,21 @@ io.on('connection', (socket) => {
   // Join a meeting
   socket.on('join-meeting', (data) => {
     const { meetingCode, participantName, isFacilitator = false } = data;
+    
+    // Validate input data
+    if (!meetingCode || typeof meetingCode !== 'string') {
+      socket.emit('error', { message: 'Meeting code is required' });
+      return;
+    }
+    
+    if (!participantName || typeof participantName !== 'string' || participantName.trim().length === 0) {
+      socket.emit('error', { message: 'Participant name is required' });
+      return;
+    }
+    
+    // Sanitize participant name
+    const sanitizedName = participantName.trim().substring(0, 50); // Limit length
+    
     const meeting = meetings.get(meetingCode.toUpperCase());
     
     if (!meeting) {
@@ -106,15 +121,15 @@ io.on('connection', (socket) => {
     }
     
     // Verify facilitator access - only the original facilitator can join as facilitator
-    if (isFacilitator && participantName !== meeting.facilitator) {
-      console.log(`Unauthorized facilitator attempt: ${participantName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
+    if (isFacilitator && sanitizedName !== meeting.facilitator) {
+      console.log(`Unauthorized facilitator attempt: ${sanitizedName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
       socket.emit('error', { message: 'Only the meeting creator can join as facilitator' });
       return;
     }
     
     const participant = {
       id: socket.id,
-      name: participantName,
+      name: sanitizedName,
       isFacilitator,
       joinedAt: new Date().toISOString(),
       isInQueue: false,
@@ -128,7 +143,7 @@ io.on('connection', (socket) => {
     // Join the meeting room
     socket.join(meetingCode.toUpperCase());
     
-    console.log(`${participantName} joined meeting ${meetingCode} as ${isFacilitator ? 'facilitator' : 'participant'}`);
+    console.log(`${sanitizedName} joined meeting ${meetingCode} as ${isFacilitator ? 'facilitator' : 'participant'}`);
     
     // Send meeting info to the participant
     socket.emit('meeting-joined', {
@@ -159,6 +174,13 @@ io.on('connection', (socket) => {
     
     if (!participantData) {
       socket.emit('error', { message: 'Not in a meeting' });
+      return;
+    }
+    
+    // Validate queue type
+    const validTypes = ['speak', 'direct-response', 'point-of-info', 'clarification'];
+    if (!validTypes.includes(type)) {
+      socket.emit('error', { message: 'Invalid queue type' });
       return;
     }
     
@@ -219,7 +241,7 @@ io.on('connection', (socket) => {
     if (queueIndex !== -1) {
       meeting.queue.splice(queueIndex, 1);
       
-      // Update positions for remaining queue items
+      // Update positions for remaining queue items atomically
       meeting.queue.forEach((item, index) => {
         item.position = index + 1;
       });
@@ -257,10 +279,10 @@ io.on('connection', (socket) => {
       return;
     }
     
-    // Remove first person from queue
+    // Remove first person from queue atomically
     const nextSpeaker = meeting.queue.shift();
     
-    // Update positions for remaining queue items
+    // Update positions for remaining queue items atomically
     meeting.queue.forEach((item, index) => {
       item.position = index + 1;
     });
@@ -301,7 +323,7 @@ io.on('connection', (socket) => {
         if (queueIndex !== -1) {
           meeting.queue.splice(queueIndex, 1);
           
-          // Update positions for remaining queue items
+          // Update positions for remaining queue items atomically
           meeting.queue.forEach((item, index) => {
             item.position = index + 1;
           });

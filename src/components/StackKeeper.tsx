@@ -71,13 +71,17 @@ export const StackKeeper = () => {
 
   // Timer effect
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | undefined;
     if (speakerTimer?.isActive) {
       interval = setInterval(() => {
         setElapsedTime(Date.now() - speakerTimer.startTime.getTime());
       }, 100);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [speakerTimer]);
 
   // Keyboard shortcuts

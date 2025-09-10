@@ -53,38 +53,46 @@ function MeetingRoom(): JSX.Element {
       return
     }
 
+    // Store callback references for proper cleanup
+    const queueUpdatedCallback = (queue) => {
+      setSpeakingQueue(queue)
+      const userInQueue = queue.find(item => item.participantName === participantName)
+      setIsInQueue(!!userInQueue)
+    }
+
+    const participantsUpdatedCallback = (participantsList) => {
+      setParticipants(participantsList)
+    }
+
+    const participantJoinedCallback = (data) => {
+      showToast({ type: 'info', title: `${data.participant.name} joined` })
+    }
+
+    const participantLeftCallback = (data) => {
+      showToast({ type: 'info', title: `${data.participantName} left` })
+    }
+
+    const nextSpeakerCallback = (speaker) => {
+      setCurrentSpeaker(speaker)
+      showToast({ type: 'success', title: `${speaker.participantName} is up next` })
+      playBeep(1200, 120)
+      setTimeout(() => {
+        setCurrentSpeaker(null)
+      }, 5000)
+    }
+
+    const errorCallback = (error) => {
+      setError(error.message || 'Connection error')
+      showToast({ type: 'error', title: error.message || 'Connection error' })
+    }
+
     const setupSocketListeners = () => {
-      socketService.onQueueUpdated((queue) => {
-        setSpeakingQueue(queue)
-        const userInQueue = queue.find(item => item.participantName === participantName)
-        setIsInQueue(!!userInQueue)
-      })
-
-      socketService.onParticipantsUpdated((participantsList) => {
-        setParticipants(participantsList)
-      })
-
-      socketService.onParticipantJoined((data) => {
-        showToast({ type: 'info', title: `${data.participant.name} joined` })
-      })
-
-      socketService.onParticipantLeft((data) => {
-        showToast({ type: 'info', title: `${data.participantName} left` })
-      })
-
-      socketService.onNextSpeaker((speaker) => {
-        setCurrentSpeaker(speaker)
-        showToast({ type: 'success', title: `${speaker.participantName} is up next` })
-        playBeep(1200, 120)
-        setTimeout(() => {
-          setCurrentSpeaker(null)
-        }, 5000)
-      })
-
-      socketService.onError((error) => {
-        setError(error.message || 'Connection error')
-        showToast({ type: 'error', title: error.message || 'Connection error' })
-      })
+      socketService.onQueueUpdated(queueUpdatedCallback)
+      socketService.onParticipantsUpdated(participantsUpdatedCallback)
+      socketService.onParticipantJoined(participantJoinedCallback)
+      socketService.onParticipantLeft(participantLeftCallback)
+      socketService.onNextSpeaker(nextSpeakerCallback)
+      socketService.onError(errorCallback)
     }
 
     if (!socketService.isConnected) {
@@ -93,7 +101,8 @@ function MeetingRoom(): JSX.Element {
         setupSocketListeners()
         setIsConnected(true)
       } catch (err) {
-        setError('Failed to connect to meeting')
+        console.error('Connection error:', err)
+        setError(err.message || 'Failed to connect to meeting. Please check your internet connection and try again.')
       }
     } else {
       setupSocketListeners()
@@ -101,7 +110,13 @@ function MeetingRoom(): JSX.Element {
     }
 
     return () => {
-      socketService.removeAllListeners()
+      // Remove specific listeners using stored callback references
+      socketService.off('queue-updated', queueUpdatedCallback)
+      socketService.off('participants-updated', participantsUpdatedCallback)
+      socketService.off('participant-joined', participantJoinedCallback)
+      socketService.off('participant-left', participantLeftCallback)
+      socketService.off('next-speaker', nextSpeakerCallback)
+      socketService.off('error', errorCallback)
     }
   }, [participantName, navigate, showToast])
 
@@ -114,8 +129,9 @@ function MeetingRoom(): JSX.Element {
       showToast({ type: 'success', title: 'Joined queue', description: type === 'speak' ? 'Speak' : type.replace('-', ' ') })
       playBeep(1000, 120)
     } catch (err) {
-      setError('Failed to join queue')
-      showToast({ type: 'error', title: 'Failed to join queue' })
+      console.error('Join queue error:', err)
+      setError(err.message || 'Failed to join queue. Please try again.')
+      showToast({ type: 'error', title: err.message || 'Failed to join queue' })
       playBeep(220, 200)
     }
   }
@@ -128,8 +144,9 @@ function MeetingRoom(): JSX.Element {
       showToast({ type: 'info', title: 'Left queue' })
       playBeep(600, 100)
     } catch (err) {
-      setError('Failed to leave queue')
-      showToast({ type: 'error', title: 'Failed to leave queue' })
+      console.error('Leave queue error:', err)
+      setError(err.message || 'Failed to leave queue. Please try again.')
+      showToast({ type: 'error', title: err.message || 'Failed to leave queue' })
       playBeep(220, 200)
     }
   }

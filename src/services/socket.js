@@ -5,6 +5,7 @@ class SocketService {
   constructor() {
     this.socket = null
     this.isConnected = false
+    this.connecting = false
     this.listeners = new Map()
   }
 
@@ -13,6 +14,25 @@ class SocketService {
       return this.socket
     }
 
+    if (this.connecting) {
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Connection timeout'))
+        }, 10000)
+        
+        this.socket.once('connect', () => {
+          clearTimeout(timeout)
+          resolve(this.socket)
+        })
+        
+        this.socket.once('error', (error) => {
+          clearTimeout(timeout)
+          reject(error)
+        })
+      })
+    }
+
+    this.connecting = true
     const socketUrl = apiService.getSocketUrl()
     console.log('Connecting to socket:', socketUrl)
 
@@ -25,15 +45,18 @@ class SocketService {
     this.socket.on('connect', () => {
       console.log('Socket connected:', this.socket.id)
       this.isConnected = true
+      this.connecting = false
     })
 
     this.socket.on('disconnect', (reason) => {
       console.log('Socket disconnected:', reason)
       this.isConnected = false
+      this.connecting = false
     })
 
     this.socket.on('error', (error) => {
       console.error('Socket error:', error)
+      this.connecting = false
     })
 
     return this.socket
@@ -44,6 +67,7 @@ class SocketService {
       this.socket.disconnect()
       this.socket = null
       this.isConnected = false
+      this.connecting = false
     }
   }
 
@@ -54,17 +78,27 @@ class SocketService {
     }
 
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
+      let timeout: NodeJS.Timeout | null = null
+      
+      const cleanup = () => {
+        if (timeout) {
+          clearTimeout(timeout)
+          timeout = null
+        }
+      }
+
+      timeout = setTimeout(() => {
+        cleanup()
         reject(new Error('Join meeting timeout'))
       }, 10000)
 
       this.socket.once('meeting-joined', (data) => {
-        clearTimeout(timeout)
+        cleanup()
         resolve(data)
       })
 
       this.socket.once('error', (error) => {
-        clearTimeout(timeout)
+        cleanup()
         reject(new Error(error.message || 'Failed to join meeting'))
       })
 
