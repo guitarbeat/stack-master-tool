@@ -49,22 +49,13 @@ function AppLayout({ children }: AppLayoutProps) {
                 Manual
               </Link>
               <Link
-                to="/create"
-                aria-current={isActive('/create') ? 'page' : undefined}
+                to="/create-or-join"
+                aria-current={isActive('/create-or-join') ? 'page' : undefined}
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/create-or-join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
-                Create
-              </Link>
-              <Link
-                to="/join"
-                aria-current={isActive('/join') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Join
+                Create / Join
               </Link>
             </nav>
             <ThemeToggle />
@@ -110,24 +101,14 @@ function AppLayout({ children }: AppLayoutProps) {
                 Manual
               </Link>
               <Link
-                to="/create"
+                to="/create-or-join"
                 onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/create') ? 'page' : undefined}
+                aria-current={isActive('/create-or-join') ? 'page' : undefined}
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/create-or-join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
-                Create
-              </Link>
-              <Link
-                to="/join"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/join') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Join
+                Create / Join
               </Link>
             </div>
           </nav>
