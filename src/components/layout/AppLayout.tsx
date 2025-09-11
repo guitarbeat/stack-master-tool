@@ -124,8 +124,8 @@ function AppLayout({ children }: AppLayoutProps) {
                       <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
                         mode === 'create' ? 'text-white' : 'text-primary'
                       }`} />
-                      <span className="hidden sm:inline">Left</span>
-                      <span className="sm:hidden">Left</span>
+                      <span className="hidden sm:inline">Create</span>
+                      <span className="sm:hidden">Create</span>
                     </button>
                     <button
                       onClick={() => navigate('/join')}
@@ -139,8 +139,8 @@ function AppLayout({ children }: AppLayoutProps) {
                       <UserPlus className={`w-4 h-4 mr-2 transition-all duration-300 ${
                         mode === 'join' ? 'text-white' : 'text-moss-green'
                       }`} />
-                      <span className="hidden sm:inline">Right</span>
-                      <span className="sm:hidden">Right</span>
+                      <span className="hidden sm:inline">Join</span>
+                      <span className="sm:hidden">Join</span>
                     </button>
                   </div>
                 )
