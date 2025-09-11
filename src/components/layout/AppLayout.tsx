@@ -33,6 +33,11 @@ function AppLayout({ children }: AppLayoutProps) {
             aria-current={isActive('/') ? 'page' : undefined}
             className="flex items-center space-x-2"
           >
+            <img
+              src="/icc-logo-no-bg.png"
+              alt="ICC Austin logo"
+              className="w-6 h-6 object-contain drop-shadow-sm dark:brightness-110"
+            />
             <span className="font-semibold text-gray-900 dark:text-zinc-100">ICC Austin Stack</span>
           </Link>
           <div className="flex items-center space-x-3">

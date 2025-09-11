@@ -11,17 +11,17 @@ export const Hero = () => (
             <div className="relative group">
               <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm group-hover:bg-primary/20 transition-colors duration-300"></div>
               <img 
-                src="/icc-logo.png" 
-                alt="ICC Logo" 
-                className="relative w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300"
+                src="/icc-logo-no-bg.png" 
+                alt="ICC Austin primary logo" 
+                className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300 dark:brightness-110"
               />
             </div>
             <div className="relative group">
               <div className="absolute inset-0 bg-accent/10 rounded-full blur-sm group-hover:bg-accent/20 transition-colors duration-300"></div>
               <img 
                 src="/icc2-logo.png" 
-                alt="ICC2 Logo" 
-                className="relative w-6 h-6 sm:w-8 sm:h-8 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300"
+                alt="ICC Austin secondary mark" 
+                className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300 dark:brightness-110"
               />
             </div>
           </div>
