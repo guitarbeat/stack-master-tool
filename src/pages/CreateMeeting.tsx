@@ -45,14 +45,8 @@ function CreateMeeting(): JSX.Element {
       )
       
       const shareableLink = `${window.location.origin}/join?code=${response.meetingCode}`
-      
-      try {
-        const qrUrl = await QRCode.toDataURL(shareableLink)
-        setQrCodeUrl(qrUrl)
-      } catch (err) {
-        console.error('Error generating QR code:', err)
-      }
 
+      // Set state and advance UI before generating QR to avoid perceived slowness
       setMeetingData(prev => ({
         ...prev,
         meetingCode: response.meetingCode,
@@ -60,6 +54,16 @@ function CreateMeeting(): JSX.Element {
         shareableLink
       }))
       setStep(2)
+
+      // Generate QR in background
+      ;(async () => {
+        try {
+          const qrUrl = await QRCode.toDataURL(shareableLink)
+          setQrCodeUrl(qrUrl)
+        } catch (err) {
+          console.error('Error generating QR code:', err)
+        }
+      })()
 
       notify('success', 'Meeting created', `Code: ${response.meetingCode}`)
       playBeep(880, 140)
@@ -207,9 +211,11 @@ function CreateMeeting(): JSX.Element {
                     QR Code
                   </label>
                   <div className="flex justify-center">
-                    <div className="w-48 h-48 bg-gray-100 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded flex items-center justify-center text-sm text-gray-500">
-                      QR preview removed
-                    </div>
+                    <img
+                      src={qrCodeUrl}
+                      alt="QR code to join meeting"
+                      className="w-48 h-48 border border-gray-200 dark:border-zinc-800 rounded bg-white"
+                    />
                   </div>
                 </div>
               )}
