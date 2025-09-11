@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X, MessageCircle, HelpCircle, Settings } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
+import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import { StackItem } from "./StackItem";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -49,11 +50,6 @@ interface ClearUndoAction {
 
 type UndoAction = RemoveUndoAction | NextUndoAction | ClearUndoAction;
 
-interface SpeakerTimer {
-  participantId: string;
-  startTime: Date;
-  isActive: boolean;
-}
 
 interface StackKeeperProps {
   showInterventionsPanel?: boolean;
@@ -65,8 +61,6 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
   const [newParticipantName, setNewParticipantName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [undoHistory, setUndoHistory] = useState<UndoAction[]>([]);
-  const [speakerTimer, setSpeakerTimer] = useState<SpeakerTimer | null>(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [directResponse, setDirectResponse] = useState<DirectResponseState>({
     isActive: false,
@@ -76,42 +70,57 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
   const [recentParticipants, setRecentParticipants] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [showAllUpNext, setShowAllUpNext] = useState(false);
   const [includeDirectResponsesInChart, setIncludeDirectResponsesInChart] = useState(true);
 
-  type SpeakingSegment = {
+  // Use the consolidated timer hook
+  const {
+    speakerTimer,
+    elapsedTime,
+    startTimer: startSpeakerTimer,
+    pauseTimer: pauseSpeakerTimer,
+    resumeTimer: resumeSpeakerTimer,
+    resetTimer: resetSpeakerTimer,
+    stopTimer: stopSpeakerTimer,
+    formatTime
+  } = useSpeakerTimer();
+
+  // Use the drag and drop hook
+  const {
+    dragIndex,
+    dragOverIndex,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd,
+    isDragOver
+  } = useDragAndDrop();
+
+  interface SpeakingSegment {
     participantId: string;
     participantName: string;
     durationMs: number;
     isDirectResponse: boolean;
-  };
+  }
   const [speakingHistory, setSpeakingHistory] = useState<SpeakingSegment[]>([]);
 
   // Signal timers: direct response, question, clarification (point of process)
-  const [activeSignal, setActiveSignal] = useState<null | 'direct' | 'question' | 'clarify'>(null);
-  const [signalTimers, setSignalTimers] = useState({
-    direct: { totalMs: 0, startedAt: null as null | number },
-    question: { totalMs: 0, startedAt: null as null | number },
-    clarify: { totalMs: 0, startedAt: null as null | number },
+  type SignalType = 'direct' | 'question' | 'clarify';
+  const [activeSignal, setActiveSignal] = useState<SignalType | null>(null);
+  
+  interface SignalTimer {
+    totalMs: number;
+    startedAt: number | null;
+  }
+  
+  const [signalTimers, setSignalTimers] = useState<Record<SignalType, SignalTimer>>({
+    direct: { totalMs: 0, startedAt: null },
+    question: { totalMs: 0, startedAt: null },
+    clarify: { totalMs: 0, startedAt: null },
   });
   const [signalTick, setSignalTick] = useState(0);
 
-  // Timer effect
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined;
-    if (speakerTimer?.isActive) {
-      interval = setInterval(() => {
-        setElapsedTime(Date.now() - speakerTimer.startTime.getTime());
-      }, 100);
-    }
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [speakerTimer]);
 
   // Signal timers ticker
   useEffect(() => {
@@ -187,15 +196,8 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     participant.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const formatTime = (ms: number) => {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
   // Helpers for signal timers
-  const getSignalElapsed = (key: 'direct' | 'question' | 'clarify') => {
+  const getSignalElapsed = (key: SignalType): number => {
     const t = signalTimers[key];
     if (!t.startedAt) return t.totalMs;
     return t.totalMs + (Date.now() - t.startedAt);
@@ -216,7 +218,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     setActiveSignal(null);
   };
 
-  const toggleSignal = (key: 'direct' | 'question' | 'clarify') => {
+  const toggleSignal = (key: SignalType) => {
     if (activeSignal === key) {
       stopActiveSignal();
       return;
@@ -230,7 +232,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     setActiveSignal(key);
   };
 
-  const resetSignal = (key: 'direct' | 'question' | 'clarify') => {
+  const resetSignal = (key: SignalType) => {
     if (activeSignal === key) {
       stopActiveSignal();
     }
@@ -327,8 +329,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     if (remainingStack.length > 0) {
       startSpeakerTimer(remainingStack[0].id);
     } else {
-      setSpeakerTimer(null);
-      setElapsedTime(0);
+      stopSpeakerTimer();
     }
     
     toast({ 
@@ -376,8 +377,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
       if (newStack.length > 0) {
         startSpeakerTimer(newStack[0].id);
       } else {
-        setSpeakerTimer(null);
-        setElapsedTime(0);
+        stopSpeakerTimer();
       }
     }
     
@@ -397,7 +397,24 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     if (type === 'direct-response') {
       // Find the participant in the stack
       const participant = stack.find(p => p.name === participantName);
-      if (!participant) return;
+      if (!participant) {
+        toast({ 
+          title: "Participant not found", 
+          description: `Could not find ${participantName} in the queue`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Prevent multiple direct responses
+      if (directResponse.isActive) {
+        toast({ 
+          title: "Direct Response Already Active", 
+          description: "Please finish the current direct response before starting another",
+          variant: "destructive"
+        });
+        return;
+      }
       
       // Store original queue and move participant to front temporarily
       setDirectResponse({
@@ -417,7 +434,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
       
       toast({ 
         title: "Direct Response Active", 
-        description: `${participantName} moved to speak for direct response` 
+        description: `${participantName} temporarily moved to front for direct response. Original queue will be restored when finished.` 
       });
     } else if (type === 'clarifying-question') {
       toggleSignal('question');
@@ -430,9 +447,6 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
 
   const finishDirectResponse = () => {
     if (!directResponse.isActive) return;
-    
-    // Restore original queue order (minus the person who just spoke)
-    const remainingQueue = directResponse.originalQueue.filter(p => p.id !== directResponse.participantId);
     
     // Record the direct response segment for the person who just spoke
     if (speakerTimer) {
@@ -452,7 +466,13 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
         }
       }
     }
+    
+    // Restore original queue order (minus the person who just spoke)
+    const remainingQueue = directResponse.originalQueue.filter(p => p.id !== directResponse.participantId);
     setStack(remainingQueue);
+    
+    // Stop direct response signal timer
+    stopActiveSignal();
     
     // Reset direct response state
     setDirectResponse({
@@ -465,34 +485,22 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     if (remainingQueue.length > 0) {
       startSpeakerTimer(remainingQueue[0].id);
     } else {
-      setSpeakerTimer(null);
-      setElapsedTime(0);
+      stopSpeakerTimer();
     }
     
     toast({ 
       title: "Direct Response Complete", 
-      description: "Returned to normal speaking queue" 
+      description: `Queue restored to original order. ${remainingQueue.length > 0 ? `${remainingQueue[0].name} is now speaking` : 'No one in queue'}` 
     });
-  };
-
-  const startSpeakerTimer = (participantId: string) => {
-    setSpeakerTimer({
-      participantId,
-      startTime: new Date(),
-      isActive: true
-    });
-    setElapsedTime(0);
   };
 
   const toggleSpeakerTimer = () => {
     if (!speakerTimer) return;
-    setSpeakerTimer(prev => prev ? { ...prev, isActive: !prev.isActive } : null);
-  };
-
-  const resetSpeakerTimer = () => {
-    if (!speakerTimer) return;
-    setSpeakerTimer(prev => prev ? { ...prev, startTime: new Date() } : null);
-    setElapsedTime(0);
+    if (speakerTimer.isActive) {
+      pauseSpeakerTimer();
+    } else {
+      resumeSpeakerTimer();
+    }
   };
 
   const handleUndo = () => {
@@ -513,6 +521,8 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
         setStack(lastAction.data.previousStack);
         if (lastAction.data.previousStack.length > 0) {
           startSpeakerTimer(lastAction.data.previousStack[0].id);
+        } else {
+          stopSpeakerTimer();
         }
         break;
       }
@@ -539,40 +549,13 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     
     setStack([]);
     setInterventions([]);
-    setSpeakerTimer(null);
-    setElapsedTime(0);
+    stopSpeakerTimer();
     setSpeakingHistory([]);
     toast({ title: "Stack cleared", description: "All participants removed from queue" });
   };
 
-  // Drag and drop handlers for manual reordering (non-speaking users only)
-  const handleDragStart = (index: number) => {
-    // Disallow dragging current speaker
-    if (index === 0) return;
-    setDragIndex(index);
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    // Allow dropping only on non-current speaker positions
-    if (index === 0) return;
-    e.preventDefault();
-    setDragOverIndex(index);
-  };
-
-  const handleDragLeave = () => {
-    setDragOverIndex(null);
-  };
-
-  const handleDrop = (index: number) => {
-    if (dragIndex === null) return;
-    if (dragIndex === 0) return; // safety
-    // Do not allow dropping into current speaker slot
-    const targetIndex = index === 0 ? 1 : index;
-    if (targetIndex === dragIndex) {
-      setDragIndex(null);
-      setDragOverIndex(null);
-      return;
-    }
+  // Reorder function for drag and drop
+  const reorderStack = useCallback((dragIndex: number, targetIndex: number) => {
     setStack(prev => {
       const newStack = [...prev];
       const [moved] = newStack.splice(dragIndex, 1);
@@ -581,14 +564,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
       newStack.splice(adjustedTarget, 0, moved);
       return newStack;
     });
-    setDragIndex(null);
-    setDragOverIndex(null);
-  };
-
-  const handleDragEnd = () => {
-    setDragIndex(null);
-    setDragOverIndex(null);
-  };
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -835,7 +811,14 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                           <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
                           <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
                         </div>
-                        <span className="text-sm font-semibold text-primary uppercase tracking-wider">Currently Speaking</span>
+                        <span className="text-sm font-semibold text-primary uppercase tracking-wider">
+                          {directResponse.isActive ? "Direct Response" : "Currently Speaking"}
+                        </span>
+                        {directResponse.isActive && (
+                          <div className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs font-semibold rounded-full border border-orange-200 dark:border-orange-800">
+                            Temporary
+                          </div>
+                        )}
                         {speakerTimer && (
                           <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
                             <Timer className="h-4 w-4 text-accent" />
@@ -964,17 +947,16 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                   // Skip rendering the current speaker here since it's shown in the enhanced display above
                   if (isCurrentSpeaker) return null;
                   
-                  const isDragOver = dragOverIndex === actualIndex;
                   return (
                     <div
                       key={participant.id}
-                      className={`fade-in ${isDragOver ? 'ring-2 ring-primary/40 rounded-xl' : ''}`}
+                      className={`fade-in ${isDragOver(actualIndex) ? 'ring-2 ring-primary/40 rounded-xl' : ''}`}
                       style={{ animationDelay: `${index * 50}ms` }}
                       draggable
                       onDragStart={() => handleDragStart(actualIndex)}
                       onDragOver={(e) => handleDragOver(e, actualIndex)}
                       onDragLeave={handleDragLeave}
-                      onDrop={() => handleDrop(actualIndex)}
+                      onDrop={() => handleDrop(actualIndex, reorderStack)}
                       onDragEnd={handleDragEnd}
                     >
                       <StackItem
@@ -1110,7 +1092,12 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                     totals.set(key, prev);
                   }
                 }
-                const data = Array.from(totals.values())
+                interface ChartDataPoint {
+                  name: string;
+                  value: number;
+                }
+                
+                const data: ChartDataPoint[] = Array.from(totals.values())
                   .sort((a, b) => b.ms - a.ms)
                   .map((d) => ({ name: d.name, value: Math.round(d.ms / 1000) })); // seconds
 
