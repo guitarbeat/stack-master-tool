@@ -1,6 +1,6 @@
-import { ReactNode, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Users, Menu, X } from 'lucide-react'
+import { ReactNode, useMemo, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Users, Menu, X, Plus, UserPlus } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle'
 
 interface AppLayoutProps {
@@ -16,6 +16,13 @@ function AppLayout({ children }: AppLayoutProps) {
     return location.pathname === path || location.pathname.startsWith(`${path}/`)
   }
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navigate = useNavigate()
+
+  const activeSegment: 'create' | 'join' = useMemo(() => {
+    if (location.pathname.startsWith('/create')) return 'create'
+    if (location.pathname.startsWith('/join')) return 'join'
+    return 'join'
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900">
@@ -48,15 +55,39 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 Manual
               </Link>
-              <Link
-                to="/create-or-join"
-                aria-current={isActive('/create-or-join') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/create-or-join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Create / Join
-              </Link>
+              <div className="relative bg-gradient-to-r from-primary/10 to-primary/5 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1.5 flex backdrop-blur-sm border border-gray-200/60 dark:border-zinc-700/60 shadow-sm w-full max-w-md">
+                <div
+                  className={`toggle-indicator absolute top-1.5 h-[calc(100%-12px)] w-[calc(50%-6px)] rounded-lg transition-all duration-300 bg-gradient-to-r from-primary to-primary/90 shadow-sm ${
+                    activeSegment === 'create' ? 'left-[3px]' : 'left-[calc(50%+3px)]'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => navigate('/create')}
+                  className={`relative z-10 px-4 sm:px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                    activeSegment === 'create'
+                      ? 'text-white'
+                      : 'text-gray-700 hover:text-gray-900 dark:text-zinc-300 dark:hover:text-zinc-100'
+                  }`}
+                >
+                  <Plus className={`w-4 h-4 mr-2 transition-all ${activeSegment === 'create' ? 'text-white' : 'text-primary'}`} />
+                  <span className="hidden sm:inline">Create Meeting</span>
+                  <span className="sm:hidden">Create</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/join')}
+                  className={`relative z-10 px-4 sm:px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                    activeSegment === 'join'
+                      ? 'text-white'
+                      : 'text-gray-700 hover:text-gray-900 dark:text-zinc-300 dark:hover:text-zinc-100'
+                  }`}
+                >
+                  <UserPlus className={`w-4 h-4 mr-2 transition-all ${activeSegment === 'join' ? 'text-white' : 'text-primary'}`} />
+                  <span className="hidden sm:inline">Join Meeting</span>
+                  <span className="sm:hidden">Join</span>
+                </button>
+              </div>
             </nav>
             <ThemeToggle />
             <button
@@ -100,16 +131,24 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 Manual
               </Link>
-              <Link
-                to="/create-or-join"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/create-or-join') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActive('/create-or-join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
+              <button
+                className="w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800 text-left"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  navigate('/create')
+                }}
               >
-                Create / Join
-              </Link>
+                Create Meeting
+              </button>
+              <button
+                className="w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800 text-left"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  navigate('/join')
+                }}
+              >
+                Join Meeting
+              </button>
             </div>
           </nav>
         )}
