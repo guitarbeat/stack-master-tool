@@ -11,7 +11,7 @@ export const Hero = () => (
             <div className="relative group">
               <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm group-hover:bg-primary/20 transition-colors duration-300"></div>
               <img 
-                src="/icc-logo-no-bg.png" 
+                src="/icc-removebg-preview.png" 
                 alt="ICC Austin primary logo" 
                 className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300 dark:brightness-110"
               />
