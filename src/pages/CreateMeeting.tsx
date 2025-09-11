@@ -209,7 +209,9 @@ function CreateMeeting(): JSX.Element {
                     QR Code
                   </label>
                   <div className="flex justify-center">
-                    <img src={qrCodeUrl} alt="QR Code" className="w-48 h-48" />
+                    <div className="w-48 h-48 bg-gray-100 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded flex items-center justify-center text-sm text-gray-500">
+                      QR preview removed
+                    </div>
                   </div>
                 </div>
               )}

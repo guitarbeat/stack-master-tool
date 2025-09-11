@@ -2,7 +2,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, RefreshCw } from "lucide-react";
-import cuteCharacter from "@/assets/404-cute-character.png";
+// Image removed
 
 const NotFound = () => {
   const location = useLocation();
@@ -25,14 +25,14 @@ const NotFound = () => {
       <div className="text-center max-w-md mx-auto px-6">
         {/* Cute character with bounce animation */}
         <div className="mb-8 animate-fade-in">
-          <img 
-            src={cuteCharacter}
-            alt="Cute lost character"
-            className={`w-48 h-48 mx-auto mb-6 transition-transform duration-300 hover:scale-110 cursor-pointer ${
+          <div 
+            className={`w-48 h-48 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center text-sm text-muted-foreground transition-transform duration-300 hover:scale-110 cursor-pointer ${
               isWiggling ? 'animate-bounce' : ''
             }`}
             onClick={handleWiggle}
-          />
+          >
+            (no image)
+          </div>
         </div>
 
         {/* Fun 404 text with gradient */}

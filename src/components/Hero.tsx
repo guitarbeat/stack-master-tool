@@ -6,16 +6,7 @@ export const Hero = () => (
       <div className="relative">
         <div className="absolute inset-0 bg-primary/20 blur-2xl organic-blob"></div>
         <div className="relative liquid-glass p-6 sm:p-8 rounded-2xl sm:rounded-3xl inline-flex items-center justify-center gap-4">
-          <img 
-            src="/icc-logo-no-bg.png" 
-            alt="ICC Austin Logo" 
-            className="w-12 sm:w-16 lg:w-20 h-12 sm:h-16 lg:h-20"
-          />
-          <img 
-            src="/community-badge-no-bg.png" 
-            alt="Community Badge" 
-            className="w-10 sm:w-12 lg:w-16 h-10 sm:h-12 lg:h-16"
-          />
+          <span className="text-2xl sm:text-3xl lg:text-4xl font-semibold">ICC Austin</span>
         </div>
       </div>
     </div>
