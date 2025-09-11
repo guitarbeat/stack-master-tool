@@ -171,7 +171,7 @@ Stack facilitation works well for:
 
 **Enforce Time Limits**: Gently remind speakers when time is up.
 
-**Maintain Order**: Ensure people speak in queue order unless there's a point of process.
+**Maintain Order**: Ensure people speak in queue order.
 
 **Encourage Conciseness**: Ask speakers to focus on key points.
 
@@ -199,7 +199,6 @@ Stack facilitation works well for:
 **Managing the Queue**:
 - "Sarah, you're next in the queue, followed by Marcus and then Jennifer."
 - "I see you have a direct response, Tom. You'll go next after the current speaker."
-- "Point of process from Alex - go ahead."
 
 **Keeping Discussion Focused**:
 - "That's an interesting point. How does it relate to the current proposal?"
@@ -225,10 +224,6 @@ Stack facilitation works well for:
 - Goes to front of queue
 - Limited number per person to prevent dominance
 
-**Point of Process**: Questions about meeting procedure
-- Highest priority - interrupts current flow
-- Used for clarification about how the meeting is being run
-- Should be brief and focused on process, not content
 
 **Point of Information**: Factual information relevant to discussion
 - High priority, goes near front of queue

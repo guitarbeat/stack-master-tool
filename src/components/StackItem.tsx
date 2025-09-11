@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, MessageCircle, HelpCircle, Settings, CheckCircle } from "lucide-react";
+import { Trash2, MessageCircle, HelpCircle, CheckCircle } from "lucide-react";
 import { Participant } from "@/types";
 
 interface StackItemProps {
@@ -9,7 +9,7 @@ interface StackItemProps {
   isCurrentSpeaker: boolean;
   isDirectResponse: boolean;
   onRemove: (id: string) => void;
-  onIntervention: (participantName: string, type: 'direct-response' | 'clarifying-question' | 'point-of-process') => void;
+  onIntervention: (participantName: string, type: 'direct-response' | 'clarifying-question') => void;
   onFinishDirectResponse?: () => void;
 }
 
@@ -75,15 +75,6 @@ export const StackItem = ({ participant, index, isCurrentSpeaker, isDirectRespon
               title="Clarifying Question"
             >
               <HelpCircle className="h-3 w-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onIntervention(participant.name, 'point-of-process')}
-              className="hover:bg-secondary/20 hover:text-secondary-foreground rounded-lg transition-fast p-2"
-              title="Point of Process"
-            >
-              <Settings className="h-3 w-3" />
             </Button>
           </>
         )}
