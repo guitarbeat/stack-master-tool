@@ -70,7 +70,7 @@ function AppLayout({ children }: AppLayoutProps) {
                     />
                     <button
                       onClick={() => navigate('/create')}
-                      className={`toggle-button relative z-10 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                      className={`toggle-button relative z-10 px-4 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'create'
                           ? 'text-white shadow-sm'
                           : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
@@ -80,12 +80,12 @@ function AppLayout({ children }: AppLayoutProps) {
                       <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
                         mode === 'create' ? 'text-white' : 'text-primary'
                       }`} />
-                      <span className="hidden sm:inline">Create Meeting</span>
-                      <span className="sm:hidden">Create</span>
+                      <span className="hidden sm:inline">Left</span>
+                      <span className="sm:hidden">Left</span>
                     </button>
                     <button
                       onClick={() => navigate('/join')}
-                      className={`toggle-button relative z-10 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                      className={`toggle-button relative z-10 px-4 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'join'
                           ? 'text-white shadow-sm'
                           : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
@@ -95,8 +95,8 @@ function AppLayout({ children }: AppLayoutProps) {
                       <UserPlus className={`w-4 h-4 mr-2 transition-all duration-300 ${
                         mode === 'join' ? 'text-white' : 'text-moss-green'
                       }`} />
-                      <span className="hidden sm:inline">Join Meeting</span>
-                      <span className="sm:hidden">Join</span>
+                      <span className="hidden sm:inline">Right</span>
+                      <span className="sm:hidden">Right</span>
                     </button>
                   </div>
                 )
