@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator";
 import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { StackItem } from "./StackItem";
-import { NextSpeakerCard } from "./NextSpeakerCard";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES, DirectResponseState } from "@/types";
 
@@ -575,71 +574,83 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
               </div>
             )}
             {stack.length > 0 && (
-              <div className="p-4 sm:p-6 rounded-xl bg-muted/20">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                  <div className="flex-1 space-y-4">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="relative">
-                        <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
-                        <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-600 dark:text-zinc-400 uppercase tracking-wider">Currently Speaking</span>
-                      {speakerTimer && (
-                        <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
-                          <Timer className="h-4 w-4 text-accent" />
-                          <span className="font-mono text-lg font-bold text-accent">
-                            {formatTime(elapsedTime)}
-                          </span>
-                          <div className="flex gap-1 ml-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={toggleSpeakerTimer}
-                              className="h-7 w-7 p-0 hover:bg-accent/20"
-                              title={speakerTimer.isActive ? "Pause timer" : "Resume timer"}
-                            >
-                              {speakerTimer.isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={resetSpeakerTimer}
-                              className="h-7 w-7 p-0 hover:bg-accent/20"
-                              title="Reset timer"
-                            >
-                              <RotateCcw className="h-3 w-3" />
-                            </Button>
+              <div className="space-y-4">
+                {/* Current Speaker - Enhanced display integrated into queue */}
+                <div className="p-6 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border-2 border-primary/30 shadow-lg">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div className="flex-1 space-y-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative">
+                          <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
+                          <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
+                        </div>
+                        <span className="text-sm font-semibold text-primary uppercase tracking-wider">Currently Speaking</span>
+                        {speakerTimer && (
+                          <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
+                            <Timer className="h-4 w-4 text-accent" />
+                            <span className="font-mono text-lg font-bold text-accent">
+                              {formatTime(elapsedTime)}
+                            </span>
+                            <div className="flex gap-1 ml-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={toggleSpeakerTimer}
+                                className="h-7 w-7 p-0 hover:bg-accent/20"
+                                title={speakerTimer.isActive ? "Pause timer" : "Resume timer"}
+                              >
+                                {speakerTimer.isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={resetSpeakerTimer}
+                                className="h-7 w-7 p-0 hover:bg-accent/20"
+                                title="Reset timer"
+                              >
+                                <RotateCcw className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
+                        )}
+                      </div>
+                      <h3 className="text-2xl lg:text-3xl font-bold text-primary">{stack[0].name}</h3>
+                      {stack.length > 1 && (
+                        <div className="flex flex-wrap items-center gap-3">
+                          <div className="p-1.5 rounded-lg bg-accent/10">
+                            <Clock className="h-4 w-4 text-accent" />
+                          </div>
+                          <span className="text-sm font-medium text-muted-foreground">Up next:</span>
+                          <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
+                            {stack[1].name}
+                          </span>
+                          {stack.length > 2 && (
+                            <span className="text-sm text-muted-foreground font-medium">+{stack.length - 2} more</span>
+                          )}
                         </div>
                       )}
                     </div>
-                    <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-zinc-100">{stack[0].name}</h3>
-                    {stack.length > 1 && (
-                      <div className="flex flex-wrap items-center gap-3">
-                        <div className="p-1.5 rounded-lg bg-accent/10">
-                          <Clock className="h-4 w-4 text-accent" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">Up next:</span>
-                        <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
-                          {stack[1].name}
-                        </span>
-                        {stack.length > 2 && (
-                          <span className="text-sm text-gray-500 dark:text-zinc-500 font-medium">+{stack.length - 2} more</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      size="lg" 
-                      onClick={nextSpeaker} 
-                      className="floating-glow px-6 py-3 text-base font-semibold rounded-xl group whitespace-nowrap"
-                    >
-                      Next Speaker
-                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button 
+                        size="lg" 
+                        onClick={nextSpeaker} 
+                        className="floating-glow px-6 py-3 text-base font-semibold rounded-xl group whitespace-nowrap bg-primary hover:bg-primary/90"
+                      >
+                        Next Speaker
+                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Queue separator */}
+                {stack.length > 1 && (
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 h-px bg-border"></div>
+                    <span className="text-sm font-medium text-muted-foreground px-3">Speaking Queue</span>
+                    <div className="flex-1 h-px bg-border"></div>
+                  </div>
+                )}
               </div>
             )}
             {stack.length > 0 && <Separator className="my-2" />}
@@ -667,13 +678,18 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
               <div className="space-y-3">
                 {filteredStack.map((participant, index) => {
                   const actualIndex = stack.findIndex(p => p.id === participant.id);
+                  const isCurrentSpeaker = actualIndex === 0;
+                  
+                  // Skip rendering the current speaker here since it's shown in the enhanced display above
+                  if (isCurrentSpeaker) return null;
+                  
                   return (
                     <div key={participant.id} className="fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                       <StackItem
                         participant={participant}
                         index={actualIndex}
-                        isCurrentSpeaker={actualIndex === 0}
-                        isDirectResponse={directResponse.isActive && participant.id === directResponse.participantId && actualIndex === 0}
+                        isCurrentSpeaker={false}
+                        isDirectResponse={false}
                         onRemove={removeFromStack}
                         onIntervention={handleInterventionSubmit}
                         onFinishDirectResponse={finishDirectResponse}
