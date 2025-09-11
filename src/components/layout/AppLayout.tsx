@@ -27,7 +27,7 @@ function AppLayout({ children }: AppLayoutProps) {
             className="flex items-center space-x-2"
           >
             <img 
-              src="/lovable-uploads/7d9858d1-1f82-4b50-b3be-70cc56c38f48.png" 
+              src="/icc-logo-no-bg.png" 
               alt="ICC Austin Logo" 
               className="w-8 h-8 rounded-full"
             />

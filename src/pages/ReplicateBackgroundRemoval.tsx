@@ -1,32 +1,28 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { processImageWithReplicate } from '@/utils/replicateBackgroundRemoval';
 
 const ReplicateBackgroundRemoval = () => {
-  const [apiKey, setApiKey] = useState('r8_JkD7xnevUPQvp33KeR5MSp4ujWe6CfZ3bfHTy');
+  const apiKey = 'r8_JkD7xnevUPQvp33KeR5MSp4ujWe6CfZ3bfHTy';
   const [processing, setProcessing] = useState(false);
   const [processedImages, setProcessedImages] = useState<{[key: string]: string}>({});
 
   const imagesToProcess = [
     {
-      path: 'public/lovable-uploads/7d9858d1-1f82-4b50-b3be-70cc56c38f48.png',
-      name: 'Image 1'
+      path: 'lovable-uploads/7d9858d1-1f82-4b50-b3be-70cc56c38f48.png',
+      name: 'ICC Austin Logo',
+      outputName: 'icc-logo-no-bg.png'
     },
     {
-      path: 'public/lovable-uploads/7e6f6389-6a87-4c5e-a2db-fe7af486956f.png', 
-      name: 'Image 2'
+      path: 'lovable-uploads/7e6f6389-6a87-4c5e-a2db-fe7af486956f.png', 
+      name: 'Community Badge',
+      outputName: 'community-badge-no-bg.png'
     }
   ];
 
   const processImages = async () => {
-    if (!apiKey.trim()) {
-      toast.error('Please enter your Replicate API key');
-      return;
-    }
-
     setProcessing(true);
     const newProcessedImages: {[key: string]: string} = {};
 
@@ -41,7 +37,7 @@ const ReplicateBackgroundRemoval = () => {
       }
       
       setProcessedImages(newProcessedImages);
-      toast.success('All images processed! You can now download them.');
+      toast.success('All images processed! Ready to update site.');
     } catch (error) {
       console.error('Processing failed:', error);
       toast.error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -77,25 +73,16 @@ const ReplicateBackgroundRemoval = () => {
         
         <Card className="p-6 mb-8">
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Replicate API Key
-              </label>
-              <Input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Replicate API key"
-                className="w-full"
-              />
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Processing images with Replicate API to remove backgrounds for the site.
+            </p>
             
             <Button 
               onClick={processImages} 
-              disabled={processing || !apiKey.trim()}
+              disabled={processing}
               className="w-full"
             >
-              {processing ? 'Processing Images...' : 'Remove Backgrounds'}
+              {processing ? 'Processing Images...' : 'Process Site Images'}
             </Button>
           </div>
         </Card>
@@ -128,11 +115,11 @@ const ReplicateBackgroundRemoval = () => {
                       size="sm"
                       onClick={() => downloadImage(
                         processedImages[image.path], 
-                        `${image.name.toLowerCase().replace(' ', '-')}-no-bg.png`
+                        image.outputName
                       )}
                       className="w-full"
                     >
-                      Download PNG
+                      Download {image.outputName}
                     </Button>
                   </div>
                 )}
