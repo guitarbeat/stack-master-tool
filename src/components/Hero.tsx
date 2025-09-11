@@ -16,14 +16,6 @@ export const Hero = () => (
                 className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300 dark:brightness-110"
               />
             </div>
-            <div className="relative group">
-              <div className="absolute inset-0 bg-accent/10 rounded-full blur-sm group-hover:bg-accent/20 transition-colors duration-300"></div>
-              <img 
-                src="/icc2-logo.png" 
-                alt="ICC Austin secondary mark" 
-                className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300 dark:brightness-110"
-              />
-            </div>
           </div>
           <span className="text-xl sm:text-2xl font-semibold">ICC Austin</span>
         </div>
