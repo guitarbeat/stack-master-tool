@@ -504,7 +504,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
 
         {/* Current Stack */}
         <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
-          <CardHeader className="flex flex-row items-center justify-between pb-6">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="flex items-center gap-4 text-2xl font-semibold text-gray-900 dark:text-zinc-100">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Users className="h-6 w-6 text-primary" />
@@ -516,6 +516,13 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
               </span>
             </CardTitle>
             <div className="flex items-center gap-3">
+              {stack.length > 0 && (
+                <span className="hidden md:inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold text-accent border-accent/30">
+                  <span role="img" aria-label="mic">🎤</span>
+                  <span>Speaking</span>
+                  <span className="text-foreground">{stack[0].name}</span>
+                </span>
+              )}
               {stack.length > 1 && (
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -548,6 +555,25 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
             </div>
           </CardHeader>
           <CardContent className="pt-0 space-y-6">
+            {recentParticipants.length > 0 && (
+              <div className="-mt-1">
+                <div className="flex items-center gap-2 overflow-x-auto py-1">
+                  <span className="text-xs font-semibold text-gray-700 dark:text-zinc-300 whitespace-nowrap">Recent Participants</span>
+                  {recentParticipants.slice().reverse().map((name) => (
+                    <Button
+                      key={name}
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full h-7 px-2 text-xs"
+                      onClick={() => addExistingToStack(name)}
+                      title={`Add ${name} to stack`}
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> {name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
             {stack.length > 0 && (
               <div className="p-4 sm:p-6 rounded-xl bg-muted/20">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -657,38 +683,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                 })}
               </div>
             )}
-            {recentParticipants.length > 0 && (
-              <>
-                <Separator className="my-4" />
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-zinc-300">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <Users className="h-4 w-4 text-primary" />
-                      </div>
-                      Recent Participants
-                    </h4>
-                    <span className="ml-2 text-xs inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold">
-                      Quick re-add to queue
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {recentParticipants.slice().reverse().map((name) => (
-                      <Button
-                        key={name}
-                        variant="outline"
-                        size="sm"
-                        className="rounded-full"
-                        onClick={() => addExistingToStack(name)}
-                        title={`Add ${name} to stack`}
-                      >
-                        <Plus className="h-3 w-3 mr-1" /> {name}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
+            {/* Recent participants moved to compact header row above */}
           </CardContent>
         </Card>
 
