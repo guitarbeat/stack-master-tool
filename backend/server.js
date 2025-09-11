@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Serve static assets from the frontend public directory so /icc-logo-no-bg.png and others resolve
+app.use(
+  express.static(path.join(__dirname, '..', 'public'), {
+    maxAge: '7d',
+    index: false,
+  })
+);
 
 const io = socketIo(server, {
   cors: corsOptions
