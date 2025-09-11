@@ -33,6 +33,7 @@ function AppLayout({ children }: AppLayoutProps) {
           <Link
             to="/"
             aria-current={isActive('/') ? 'page' : undefined}
+            aria-label="Home"
             className="flex items-center space-x-2"
           >
             <img
@@ -44,15 +45,6 @@ function AppLayout({ children }: AppLayoutProps) {
           </Link>
           <div className="flex items-center space-x-3">
             <nav className="hidden md:flex items-center space-x-1">
-              <Link
-                to="/"
-                aria-current={isActive('/') ? 'page' : undefined}
-                className={`inline-flex h-10 items-center justify-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Home
-              </Link>
               <Link
                 to="/manual"
                 aria-current={isActive('/manual') ? 'page' : undefined}
@@ -168,16 +160,6 @@ function AppLayout({ children }: AppLayoutProps) {
             className="md:hidden border-t border-gray-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur"
           >
             <div className="container mx-auto px-4 py-3 flex flex-col space-y-1">
-              <Link
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/') ? 'page' : undefined}
-                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Home
-              </Link>
               <Link
                 to="/manual"
                 onClick={() => setMobileMenuOpen(false)}
