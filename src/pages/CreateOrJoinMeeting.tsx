@@ -4,7 +4,7 @@ import { ArrowLeft, Users, LogIn, Copy, QrCode as QrCodeIcon, Loader2, Plus, Use
 import QRCode from 'qrcode'
 import apiService from '../services/api'
 import socketService from '../services/socket'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 import Confetti from '../components/ui/Confetti.jsx'
 
@@ -23,7 +23,9 @@ interface JoinFormData {
 
 function CreateOrJoinMeeting(): JSX.Element {
   const navigate = useNavigate()
-  const { showToast } = useToast()
+  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
+    toast({ title, description })
+  }
   const [searchParams] = useSearchParams()
   const [mode, setMode] = useState<'create' | 'join'>('create')
   const [step, setStep] = useState<number>(1)
@@ -71,17 +73,13 @@ function CreateOrJoinMeeting(): JSX.Element {
       }))
       setStep(2)
 
-      showToast({
-        type: 'success',
-        title: 'Meeting created',
-        description: `Code: ${response.meetingCode}`
-      })
+      notify('success', 'Meeting created', `Code: ${response.meetingCode}`)
       playBeep(880, 140)
       setConfettiKey((k) => k + 1)
     } catch (err) {
       console.error('Error creating meeting:', err)
       setError('Failed to create meeting. Please try again.')
-      showToast({ type: 'error', title: 'Failed to create meeting' })
+      notify('error', 'Failed to create meeting')
       playBeep(220, 200)
     } finally {
       setLoading(false)
@@ -102,7 +100,7 @@ function CreateOrJoinMeeting(): JSX.Element {
         false
       )
 
-      showToast({ type: 'success', title: 'Joined meeting', description: meetingInfo.title })
+      notify('success', 'Joined meeting', meetingInfo.title)
       playBeep(1000, 120)
 
       navigate(`/meeting/${joinFormData.meetingCode}`, {
@@ -114,12 +112,12 @@ function CreateOrJoinMeeting(): JSX.Element {
       })
     } catch (err) {
       console.error('Error joining meeting:', err)
-      if (err.message === 'Meeting not found') {
+      if ((err as any).message === 'Meeting not found') {
         setError('Meeting not found. Please check the code and try again.')
-        showToast({ type: 'error', title: 'Meeting not found' })
+        notify('error', 'Meeting not found')
       } else {
         setError('Failed to join meeting. Please try again.')
-        showToast({ type: 'error', title: 'Failed to join meeting' })
+        notify('error', 'Failed to join meeting')
       }
       playBeep(220, 200)
     } finally {
@@ -129,7 +127,7 @@ function CreateOrJoinMeeting(): JSX.Element {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    showToast({ type: 'success', title: 'Copied to clipboard' })
+    notify('success', 'Copied to clipboard')
     playBeep(1200, 80)
   }
 
