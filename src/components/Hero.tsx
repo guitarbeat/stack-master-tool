@@ -5,10 +5,17 @@ export const Hero = () => (
     <div className="mb-8 sm:mb-12 inline-block">
       <div className="relative">
         <div className="absolute inset-0 bg-primary/20 blur-2xl organic-blob"></div>
-        <div className="relative liquid-glass p-6 sm:p-8 rounded-2xl sm:rounded-3xl inline-flex items-center justify-center">
-          <Leaf className="w-8 sm:w-10 lg:w-12 h-8 sm:h-10 lg:h-12 text-primary mr-3 sm:mr-4" />
-          <Users className="w-8 sm:w-10 lg:w-12 h-8 sm:h-10 lg:h-12 text-accent" />
-          <Sparkles className="w-6 sm:w-7 lg:w-8 h-6 sm:h-7 lg:h-8 text-primary ml-3 sm:ml-4" />
+        <div className="relative liquid-glass p-6 sm:p-8 rounded-2xl sm:rounded-3xl inline-flex items-center justify-center gap-4">
+          <img 
+            src="/lovable-uploads/7d9858d1-1f82-4b50-b3be-70cc56c38f48.png" 
+            alt="ICC Austin Logo" 
+            className="w-12 sm:w-16 lg:w-20 h-12 sm:h-16 lg:h-20"
+          />
+          <img 
+            src="/lovable-uploads/7e6f6389-6a87-4c5e-a2db-fe7af486956f.png" 
+            alt="Community Badge" 
+            className="w-10 sm:w-12 lg:w-16 h-10 sm:h-12 lg:h-16"
+          />
         </div>
       </div>
     </div>
