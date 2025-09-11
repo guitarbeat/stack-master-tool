@@ -136,17 +136,59 @@ io.on('connection', (socket) => {
       return;
     }
     
-    const participant = {
-      id: socket.id,
-      name: sanitizedName,
-      isFacilitator,
-      joinedAt: new Date().toISOString(),
-      isInQueue: false,
-      queuePosition: null
-    };
-    
-    // Add participant to meeting
-    meeting.participants.push(participant);
+    // Prevent duplicate joins from the same socket
+    if (participants.has(socket.id)) {
+      const existing = participants.get(socket.id);
+      const existingMeeting = meetings.get(existing.meetingCode);
+      if (existingMeeting) {
+        // Already joined; just re-emit joined event for idempotency
+        socket.emit('meeting-joined', {
+          meeting: {
+            code: existingMeeting.code,
+            title: existingMeeting.title,
+            facilitator: existingMeeting.facilitator
+          },
+          participant: existing.participant,
+          queue: existingMeeting.queue,
+          participants: existingMeeting.participants
+        });
+        return;
+      }
+    }
+
+    // Deduplicate by role/name: if facilitator rejoins, update their socket id instead of adding
+    const existingIndex = meeting.participants.findIndex(p => p.name === sanitizedName && p.isFacilitator === !!isFacilitator);
+    let participant;
+    if (existingIndex !== -1) {
+      participant = {
+        ...meeting.participants[existingIndex],
+        id: socket.id,
+        joinedAt: new Date().toISOString()
+      };
+      meeting.participants[existingIndex] = participant;
+    } else {
+      // Also prevent duplicate participant (non-facilitator) by same name in same meeting
+      const nonFacIndex = meeting.participants.findIndex(p => p.name === sanitizedName && !p.isFacilitator && !isFacilitator);
+      if (nonFacIndex !== -1) {
+        participant = {
+          ...meeting.participants[nonFacIndex],
+          id: socket.id,
+          joinedAt: new Date().toISOString()
+        };
+        meeting.participants[nonFacIndex] = participant;
+      } else {
+        participant = {
+          id: socket.id,
+          name: sanitizedName,
+          isFacilitator,
+          joinedAt: new Date().toISOString(),
+          isInQueue: false,
+          queuePosition: null
+        };
+        meeting.participants.push(participant);
+      }
+    }
+
     participants.set(socket.id, { meetingCode: meetingCode.toUpperCase(), participant });
     
     // Join the meeting room
@@ -166,7 +208,7 @@ io.on('connection', (socket) => {
       participants: meeting.participants
     });
     
-    // Notify all participants about the new participant
+    // Notify all other participants about the new/updated participant
     socket.to(meetingCode.toUpperCase()).emit('participant-joined', {
       participant,
       participantCount: meeting.participants.length
