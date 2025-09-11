@@ -1,15 +1,7 @@
 import { ReactNode, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, ChevronDown, MessageSquare, QrCode } from 'lucide-react'
+import { Menu, X, Plus, UserPlus } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '../ui/navigation-menu'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -64,69 +56,51 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 Manual
               </Link>
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger 
-                      className={`h-10 px-4 rounded-lg text-sm font-medium ${
-                        isActive('/create') || isActive('/join') || isActive('/create-or-join') 
-                          ? 'bg-primary text-white' 
-                          : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+              {/* Create/Join toggle (replacing dropdown) */}
+              {(() => {
+                const mode = isActive('/join') ? 'join' : (isActive('/create') ? 'create' : 'create')
+                return (
+                  <div className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1 flex backdrop-blur-sm border border-border/50 shadow-elegant w-[280px]">
+                    <div 
+                      className={`toggle-indicator ${
+                        mode === 'create' 
+                          ? 'left-1 w-[calc(50%-4px)] bg-gradient-to-r from-primary to-accent' 
+                          : 'left-[calc(50%+3px)] w-[calc(50%-4px)] bg-gradient-to-r from-moss-green to-sage-green'
                       }`}
+                    />
+                    <button
+                      onClick={() => navigate('/create')}
+                      className={`toggle-button relative z-10 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                        mode === 'create'
+                          ? 'text-white shadow-sm'
+                          : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
+                      }`}
+                      aria-current={mode === 'create' ? 'page' : undefined}
                     >
-                      <span className="hidden sm:inline">Create or Join</span>
-                      <span className="sm:hidden">Meeting</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-4 w-[400px]">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to="/create-or-join"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <MessageSquare className="w-4 h-4 text-primary" />
-                              <div className="text-sm font-medium leading-none">Create or Join Meeting</div>
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Unified interface to create new meetings or join existing ones
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                        <div className="h-px bg-border" />
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to="/create"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <MessageSquare className="w-4 h-4 text-primary" />
-                              <div className="text-sm font-medium leading-none">Create Meeting</div>
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Start a new meeting and share the code with participants
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to="/join"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <QrCode className="w-4 h-4 text-accent" />
-                              <div className="text-sm font-medium leading-none">Join Meeting</div>
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Enter a meeting code to join an existing meeting
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+                      <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
+                        mode === 'create' ? 'text-white' : 'text-primary'
+                      }`} />
+                      <span className="hidden sm:inline">Create Meeting</span>
+                      <span className="sm:hidden">Create</span>
+                    </button>
+                    <button
+                      onClick={() => navigate('/join')}
+                      className={`toggle-button relative z-10 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                        mode === 'join'
+                          ? 'text-white shadow-sm'
+                          : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
+                      }`}
+                      aria-current={mode === 'join' ? 'page' : undefined}
+                    >
+                      <UserPlus className={`w-4 h-4 mr-2 transition-all duration-300 ${
+                        mode === 'join' ? 'text-white' : 'text-moss-green'
+                      }`} />
+                      <span className="hidden sm:inline">Join Meeting</span>
+                      <span className="sm:hidden">Join</span>
+                    </button>
+                  </div>
+                )
+              })()}
             </nav>
             <ThemeToggle />
             <button
