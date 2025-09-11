@@ -38,7 +38,7 @@ function AppLayout({ children }: AppLayoutProps) {
             className="flex items-center space-x-2"
           >
             <img
-              src="/icc-removebg-preview.png"
+              src="https://stack.alw.lol/icc-removebg-preview.png"
               alt="ICC Austin logo"
               className="w-6 h-6 object-contain drop-shadow-sm dark:brightness-110"
             />
@@ -215,7 +215,7 @@ function AppLayout({ children }: AppLayoutProps) {
       <footer className="bg-white/70 backdrop-blur border-t border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800 mt-auto">
         <div className="container mx-auto px-4 py-6 flex flex-col items-center justify-center space-y-4">
           <img
-            src="/icc2-removebg-preview.png"
+            src="https://stack.alw.lol/icc2-removebg-preview.png"
             alt="ICC2 Logo"
             className="h-12 w-auto object-contain drop-shadow-sm dark:brightness-110"
           />
