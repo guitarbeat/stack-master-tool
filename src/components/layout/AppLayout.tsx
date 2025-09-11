@@ -45,7 +45,7 @@ function AppLayout({ children }: AppLayoutProps) {
               <Link
                 to="/"
                 aria-current={isActive('/') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`inline-flex h-10 items-center justify-center px-4 rounded-lg text-sm font-medium ${
                   isActive('/') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -54,7 +54,7 @@ function AppLayout({ children }: AppLayoutProps) {
               <Link
                 to="/manual"
                 aria-current={isActive('/manual') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`inline-flex h-10 items-center justify-center px-4 rounded-lg text-sm font-medium ${
                   isActive('/manual') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -120,7 +120,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-current={isActive('/') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
                   isActive('/') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
@@ -130,14 +130,14 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/manual"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-current={isActive('/manual') ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
                   isActive('/manual') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
                 Manual
               </Link>
               <button
-                className="w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800 text-left"
+                className="w-full h-10 flex items-center px-4 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800 text-left"
                 onClick={() => {
                   setMobileMenuOpen(false)
                   navigate('/create')
@@ -146,7 +146,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 Create Meeting
               </button>
               <button
-                className="w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800 text-left"
+                className="w-full h-10 flex items-center px-4 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800 text-left"
                 onClick={() => {
                   setMobileMenuOpen(false)
                   navigate('/join')
