@@ -1,7 +1,7 @@
 import { StackKeeper } from "@/components/StackKeeper";
 
 const ManualStack = () => {
-  return <StackKeeper />;
+  return <StackKeeper showInterventionsPanel={false} />;
 };
 
 export default ManualStack;
