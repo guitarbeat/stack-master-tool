@@ -28,13 +28,13 @@ export const HowItWorks = () => {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text mb-4 sm:mb-6">How It Grows</h2>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text mb-6 sm:mb-8">How It Grows</h2>
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
           Like nature, great conversations need the right conditions to flourish
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
         {steps.map((item, index) => (
           <div key={index} ref={(el) => (cardsRef.current[index] = el)} className="tilt-card group">
             <ExpandableCard

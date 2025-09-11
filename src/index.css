@@ -123,21 +123,18 @@
   }
 
   .stack-card:hover {
-    @apply transform translate-y-[-4px];
-    box-shadow: var(--shadow-elegant);
+    @apply transform translate-y-[-4px] shadow-elegant;
   }
 
   .current-speaker {
-    @apply ring-2 ring-primary/30;
+    @apply ring-2 ring-primary/30 shadow-glow;
     background: var(--gradient-primary);
-    box-shadow: var(--shadow-glow);
     border: 1px solid hsl(var(--primary)/0.2);
   }
 
 
   .drag-overlay {
-    @apply rotate-2 scale-110;
-    box-shadow: var(--shadow-glow);
+    @apply rotate-2 scale-110 shadow-glow;
     backdrop-filter: blur(20px);
   }
 
@@ -151,8 +148,7 @@
   }
 
   .glass-card {
-    @apply backdrop-blur-xl bg-card/70 border border-border/50;
-    box-shadow: var(--shadow-elegant);
+    @apply backdrop-blur-xl bg-card/70 border border-border/50 shadow-elegant;
   }
 
   .next-speaker-gradient {
@@ -237,5 +233,25 @@
 
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .transition-standard {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .transition-fast {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .transition-slow {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 ease-out hover:transform hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 ease-out hover:shadow-glow;
   }
 }
