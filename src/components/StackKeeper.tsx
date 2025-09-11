@@ -669,11 +669,6 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                         <span className="text-sm font-semibold text-primary uppercase tracking-wider">
                           {directResponse.isActive ? "Direct Response" : "Currently Speaking"}
                         </span>
-                        {directResponse.isActive && (
-                          <div className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs font-semibold rounded-full border border-orange-200 dark:border-orange-800">
-                            Temporary
-                          </div>
-                        )}
                         {speakerTimer && (
                           <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
                             <Timer className="h-4 w-4 text-accent" />
