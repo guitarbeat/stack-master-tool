@@ -15,7 +15,7 @@ function HomePage() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-primary/5 organic-blob" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Hero />
         <ActionCards />
         <HowItWorks />
