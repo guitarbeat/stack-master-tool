@@ -177,35 +177,51 @@ function CreateOrJoinMeeting(): JSX.Element {
       <div className="max-w-2xl mx-auto">
         {/* Mode Toggle */}
         {step === 1 && (
-          <div className="flex justify-center mb-8">
-            <div className="bg-gray-100 dark:bg-zinc-800 rounded-lg p-1 flex">
+          <div className="flex justify-center mb-8 px-4">
+            <div className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1.5 flex backdrop-blur-sm border border-border/50 shadow-elegant w-full max-w-md">
+              {/* Animated background indicator */}
+              <div 
+                className={`toggle-indicator ${
+                  mode === 'create' 
+                    ? 'left-1.5 w-[calc(50%-6px)] bg-gradient-to-r from-primary to-accent' 
+                    : 'left-[calc(50%+3px)] w-[calc(50%-6px)] bg-gradient-to-r from-moss-green to-sage-green'
+                }`}
+              />
+              
               <button
                 onClick={() => {
                   setMode('create')
                   resetForm()
                 }}
-                className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
+                className={`toggle-button relative z-10 px-4 sm:px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                   mode === 'create'
-                    ? 'bg-white text-primary shadow-sm dark:bg-zinc-700 dark:text-primary'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-200'
+                    ? 'text-white shadow-sm transform scale-[1.02]'
+                    : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
                 }`}
               >
-                <Plus className="w-4 h-4 inline mr-2" />
-                Create Meeting
+                <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
+                  mode === 'create' ? 'text-white' : 'text-primary'
+                }`} />
+                <span className="hidden sm:inline">Create Meeting</span>
+                <span className="sm:hidden">Create</span>
               </button>
+              
               <button
                 onClick={() => {
                   setMode('join')
                   resetForm()
                 }}
-                className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
+                className={`toggle-button relative z-10 px-4 sm:px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                   mode === 'join'
-                    ? 'bg-white text-primary shadow-sm dark:bg-zinc-700 dark:text-primary'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-200'
+                    ? 'text-white shadow-sm transform scale-[1.02]'
+                    : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
                 }`}
               >
-                <UserPlus className="w-4 h-4 inline mr-2" />
-                Join Meeting
+                <UserPlus className={`w-4 h-4 mr-2 transition-all duration-300 ${
+                  mode === 'join' ? 'text-white' : 'text-moss-green'
+                }`} />
+                <span className="hidden sm:inline">Join Meeting</span>
+                <span className="sm:hidden">Join</span>
               </button>
             </div>
           </div>
