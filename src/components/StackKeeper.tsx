@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X, MessageCircle, HelpCircle, Settings } from "lucide-react";
+import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
@@ -105,28 +105,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
   }
   const [speakingHistory, setSpeakingHistory] = useState<SpeakingSegment[]>([]);
 
-  // Signal timers: direct response, question, clarification (point of process)
-  type SignalType = 'direct' | 'question' | 'clarify';
-  const [activeSignal, setActiveSignal] = useState<SignalType | null>(null);
-  
-  interface SignalTimer {
-    totalMs: number;
-    startedAt: number | null;
-  }
-  
-  const [signalTimers, setSignalTimers] = useState<Record<SignalType, SignalTimer>>({
-    direct: { totalMs: 0, startedAt: null },
-    question: { totalMs: 0, startedAt: null },
-    clarify: { totalMs: 0, startedAt: null },
-  });
-  const [signalTick, setSignalTick] = useState(0);
-
-
-  // Signal timers ticker
-  useEffect(() => {
-    const interval = setInterval(() => setSignalTick((t) => t + 1), 250);
-    return () => clearInterval(interval);
-  }, []);
+  // Removed per simplification: separate signal timers for direct/question/clarify
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -196,51 +175,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     participant.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Helpers for signal timers
-  const getSignalElapsed = (key: SignalType): number => {
-    const t = signalTimers[key];
-    if (!t.startedAt) return t.totalMs;
-    return t.totalMs + (Date.now() - t.startedAt);
-  };
-
-  const stopActiveSignal = () => {
-    if (!activeSignal) return;
-    setSignalTimers((prev) => {
-      const key = activeSignal;
-      const current = prev[key];
-      if (!current.startedAt) return prev;
-      const added = Date.now() - current.startedAt;
-      return {
-        ...prev,
-        [key]: { totalMs: current.totalMs + added, startedAt: null },
-      };
-    });
-    setActiveSignal(null);
-  };
-
-  const toggleSignal = (key: SignalType) => {
-    if (activeSignal === key) {
-      stopActiveSignal();
-      return;
-    }
-    // Stop previous, start new
-    stopActiveSignal();
-    setSignalTimers((prev) => ({
-      ...prev,
-      [key]: { ...prev[key], startedAt: Date.now() },
-    }));
-    setActiveSignal(key);
-  };
-
-  const resetSignal = (key: SignalType) => {
-    if (activeSignal === key) {
-      stopActiveSignal();
-    }
-    setSignalTimers((prev) => ({
-      ...prev,
-      [key]: { totalMs: 0, startedAt: null },
-    }));
-  };
+  // Removed per simplification: signal helpers (toggle/reset)
 
   const addUndoAction = useCallback((action: Omit<RemoveUndoAction, 'id' | 'timestamp'> | Omit<NextUndoAction, 'id' | 'timestamp'> | Omit<ClearUndoAction, 'id' | 'timestamp'>) => {
     const undoAction: UndoAction = {
@@ -427,8 +362,6 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
       const newStack = [participant, ...stack.filter(p => p.id !== participant.id)];
       setStack(newStack);
       
-      // Start timer for direct response (signal timer)
-      toggleSignal('direct');
       // Start timer for direct response speaker
       startSpeakerTimer(participant.id);
       
@@ -437,10 +370,8 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
         description: `${participantName} temporarily moved to front for direct response. Original queue will be restored when finished.` 
       });
     } else if (type === 'clarifying-question') {
-      toggleSignal('question');
       addIntervention(type, participantName);
     } else if (type === 'point-of-process') {
-      toggleSignal('clarify');
       addIntervention(type, participantName);
     }
   };
@@ -471,8 +402,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     const remainingQueue = directResponse.originalQueue.filter(p => p.id !== directResponse.participantId);
     setStack(remainingQueue);
     
-    // Stop direct response signal timer
-    stopActiveSignal();
+    // No separate signal timer to stop anymore
     
     // Reset direct response state
     setDirectResponse({
@@ -707,80 +637,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
             </div>
           </CardHeader>
           <CardContent className="pt-0 space-y-6">
-            {/* Signal timers panel */}
-            <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-muted/30 border border-border/60">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleSignal('direct')}
-                  className={`rounded-lg px-3 ${activeSignal === 'direct' ? 'bg-primary/20 text-primary' : ''}`}
-                  title="Direct Response timer"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Direct</span>
-                  <span className="ml-2 font-mono text-sm">{formatTime(getSignalElapsed('direct'))}</span>
-                  {activeSignal === 'direct' ? <Pause className="h-3 w-3 ml-2" /> : <Play className="h-3 w-3 ml-2" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => resetSignal('direct')}
-                  className="rounded-lg"
-                  title="Reset Direct"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleSignal('question')}
-                  className={`rounded-lg px-3 ${activeSignal === 'question' ? 'bg-primary/20 text-primary' : ''}`}
-                  title="Question timer"
-                >
-                  <HelpCircle className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Question</span>
-                  <span className="ml-2 font-mono text-sm">{formatTime(getSignalElapsed('question'))}</span>
-                  {activeSignal === 'question' ? <Pause className="h-3 w-3 ml-2" /> : <Play className="h-3 w-3 ml-2" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => resetSignal('question')}
-                  className="rounded-lg"
-                  title="Reset Question"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleSignal('clarify')}
-                  className={`rounded-lg px-3 ${activeSignal === 'clarify' ? 'bg-primary/20 text-primary' : ''}`}
-                  title="Clarification timer"
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Clarify</span>
-                  <span className="ml-2 font-mono text-sm">{formatTime(getSignalElapsed('clarify'))}</span>
-                  {activeSignal === 'clarify' ? <Pause className="h-3 w-3 ml-2" /> : <Play className="h-3 w-3 ml-2" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => resetSignal('clarify')}
-                  className="rounded-lg"
-                  title="Reset Clarify"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            {/* Signal timers removed per request */}
             {recentParticipants.length > 0 && (
               <div className="-mt-1">
                 <div className="flex items-center gap-2 overflow-x-auto py-1">
