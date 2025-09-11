@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Filter, Clock, Play, Pause, RotateCcw, ArrowRight, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { StackItem } from "./StackItem";
@@ -415,35 +416,21 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 dark:bg-zinc-900 dark:border dark:border-zinc-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">Stack Facilitation</h1>
-            <p className="text-gray-600 dark:text-zinc-400">
-              Democratic discussion management tool for facilitators and stack keepers
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-gray-600 dark:text-zinc-300">
-              <Users className="w-5 h-5 mr-2" />
-              <span>{stack.length} participants</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-        {/* Add Participant & Controls */}
+        {/* Header + Add Participant & Controls (consolidated) */}
         <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
           <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-900 dark:text-zinc-100">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Plus className="h-5 w-5 text-primary" />
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">Stack Facilitation</h1>
+                <p className="text-gray-600 dark:text-zinc-400">
+                  Democratic discussion management tool for facilitators and stack keepers
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center text-gray-600 dark:text-zinc-300">
+                  <Users className="w-5 h-5 mr-2" />
+                  <span>{stack.length} participants</span>
                 </div>
-                Add to Stack
-              </CardTitle>
-              <div className="flex items-center gap-2">
                 {undoHistory.length > 0 && (
                   <Button 
                     variant="outline" 
@@ -467,8 +454,20 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                 </Button>
               </div>
             </div>
+            <div className="mt-4 flex items-center gap-3 text-gray-600 dark:text-zinc-300 sm:hidden">
+              <Users className="w-5 h-5" />
+              <span>{stack.length} participants</span>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="flex items-center gap-3 text-xl font-semibold text-gray-900 dark:text-zinc-100">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Plus className="h-5 w-5 text-primary" />
+                </div>
+                Add to Stack
+              </h3>
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Input
                 ref={inputRef}
@@ -483,7 +482,6 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                 <span className="hidden sm:inline">Add to Stack</span>
               </Button>
             </div>
-            
             {showKeyboardShortcuts && (
               <div className="mt-4 p-4 bg-gray-100 dark:bg-zinc-800 rounded-xl">
                 <h4 className="font-semibold mb-3 flex items-center gap-2 text-gray-900 dark:text-zinc-100">
@@ -502,80 +500,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
           </CardContent>
         </Card>
 
-        {/* Current Speaker with Timer */}
-        {stack.length > 0 && (
-          <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
-            <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="flex-1 space-y-4">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="relative">
-                      <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
-                      <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
-                    </div>
-                    <span className="text-sm font-semibold text-gray-600 dark:text-zinc-400 uppercase tracking-wider">Currently Speaking</span>
-                    {speakerTimer && (
-                      <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
-                        <Timer className="h-4 w-4 text-accent" />
-                        <span className="font-mono text-lg font-bold text-accent">
-                          {formatTime(elapsedTime)}
-                        </span>
-                        <div className="flex gap-1 ml-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={toggleSpeakerTimer}
-                            className="h-7 w-7 p-0 hover:bg-accent/20"
-                            title={speakerTimer.isActive ? "Pause timer" : "Resume timer"}
-                          >
-                            {speakerTimer.isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={resetSpeakerTimer}
-                            className="h-7 w-7 p-0 hover:bg-accent/20"
-                            title="Reset timer"
-                          >
-                            <RotateCcw className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-zinc-100">{stack[0].name}</h3>
-                  
-                  {stack.length > 1 && (
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="p-1.5 rounded-lg bg-accent/10">
-                        <Clock className="h-4 w-4 text-accent" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">Up next:</span>
-                      <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
-                        {stack[1].name}
-                      </span>
-                      {stack.length > 2 && (
-                        <span className="text-sm text-gray-500 dark:text-zinc-500 font-medium">+{stack.length - 2} more</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    size="lg" 
-                    onClick={nextSpeaker} 
-                    className="floating-glow px-6 py-3 text-base font-semibold rounded-xl group whitespace-nowrap"
-                  >
-                    Next Speaker
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        
 
         {/* Current Stack */}
         <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
@@ -622,7 +547,76 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
               )}
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 space-y-6">
+            {stack.length > 0 && (
+              <div className="p-4 sm:p-6 rounded-xl bg-muted/20">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                  <div className="flex-1 space-y-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="relative">
+                        <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
+                        <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-600 dark:text-zinc-400 uppercase tracking-wider">Currently Speaking</span>
+                      {speakerTimer && (
+                        <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
+                          <Timer className="h-4 w-4 text-accent" />
+                          <span className="font-mono text-lg font-bold text-accent">
+                            {formatTime(elapsedTime)}
+                          </span>
+                          <div className="flex gap-1 ml-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={toggleSpeakerTimer}
+                              className="h-7 w-7 p-0 hover:bg-accent/20"
+                              title={speakerTimer.isActive ? "Pause timer" : "Resume timer"}
+                            >
+                              {speakerTimer.isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={resetSpeakerTimer}
+                              className="h-7 w-7 p-0 hover:bg-accent/20"
+                              title="Reset timer"
+                            >
+                              <RotateCcw className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-zinc-100">{stack[0].name}</h3>
+                    {stack.length > 1 && (
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="p-1.5 rounded-lg bg-accent/10">
+                          <Clock className="h-4 w-4 text-accent" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">Up next:</span>
+                        <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
+                          {stack[1].name}
+                        </span>
+                        {stack.length > 2 && (
+                          <span className="text-sm text-gray-500 dark:text-zinc-500 font-medium">+{stack.length - 2} more</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      size="lg" 
+                      onClick={nextSpeaker} 
+                      className="floating-glow px-6 py-3 text-base font-semibold rounded-xl group whitespace-nowrap"
+                    >
+                      Next Speaker
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {stack.length > 0 && <Separator className="my-2" />}
             {stack.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -663,41 +657,40 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                 })}
               </div>
             )}
+            {recentParticipants.length > 0 && (
+              <>
+                <Separator className="my-4" />
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-zinc-300">
+                      <div className="p-1.5 rounded-lg bg-primary/10">
+                        <Users className="h-4 w-4 text-primary" />
+                      </div>
+                      Recent Participants
+                    </h4>
+                    <span className="ml-2 text-xs inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold">
+                      Quick re-add to queue
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {recentParticipants.slice().reverse().map((name) => (
+                      <Button
+                        key={name}
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full"
+                        onClick={() => addExistingToStack(name)}
+                        title={`Add ${name} to stack`}
+                      >
+                        <Plus className="h-3 w-3 mr-1" /> {name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
-
-        {/* Recent Participants (persistent) */}
-        {recentParticipants.length > 0 && (
-          <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-900 dark:text-zinc-100">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Users className="h-5 w-5 text-primary" />
-                </div>
-                Recent Participants
-                <span className="ml-2 text-xs inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold">
-                  Quick re-add to queue
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {recentParticipants.slice().reverse().map((name) => (
-                  <Button
-                    key={name}
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full"
-                    onClick={() => addExistingToStack(name)}
-                    title={`Add ${name} to stack`}
-                  >
-                    <Plus className="h-3 w-3 mr-1" /> {name}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Interventions Section */}
         {showInterventionsPanel && stack.length > 0 && (
