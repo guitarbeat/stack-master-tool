@@ -18,22 +18,22 @@ export default function CurrentSpeakerCard({
   if (!currentSpeaker) return null
 
   return (
-    <div className="bg-sage-green/10 border border-sage-green rounded-2xl p-6 mb-8 dark:bg-earthy-brown/10 dark:border-earthy-brown/30">
+    <div className="bg-accent/10 border border-accent rounded-xl p-6 mb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <div className="bg-sage-green/20 p-3 rounded-full mr-4">
-            <MessageCircle className="w-6 h-6 text-moss-green" />
+          <div className="bg-accent/20 p-3 rounded-full mr-4">
+            <MessageCircle className="w-6 h-6 text-accent" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-earthy-brown dark:text-sage-green">Now Speaking</h3>
-            <p className="text-moss-green dark:text-sage-green">
+            <h3 className="text-lg font-semibold text-foreground">Now Speaking</h3>
+            <p className="text-muted-foreground">
               {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
             </p>
           </div>
         </div>
         <button
           onClick={finishSpeaking}
-          className="bg-moss-green text-white px-4 py-2 rounded-lg font-medium hover:bg-moss-green/90 transition-colors"
+          className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-medium hover:bg-accent-hover transition-colors"
         >
           Finish Speaking
         </button>
