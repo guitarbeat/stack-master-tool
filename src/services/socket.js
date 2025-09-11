@@ -78,7 +78,7 @@ class SocketService {
     }
 
     return new Promise((resolve, reject) => {
-      let timeout: NodeJS.Timeout | null = null
+      let timeout = null
       
       const cleanup = () => {
         if (timeout) {
