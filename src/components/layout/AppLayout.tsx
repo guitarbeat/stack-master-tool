@@ -1,7 +1,15 @@
 import { ReactNode, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronDown, MessageSquare, QrCode } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '../ui/navigation-menu'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -56,26 +64,69 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 Manual
               </Link>
-              <Link
-                to="/create"
-                aria-current={isActive('/create') ? 'page' : undefined}
-                className={`inline-flex h-10 items-center justify-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                <span className="hidden sm:inline">Create Meeting</span>
-                <span className="sm:hidden">Create</span>
-              </Link>
-              <Link
-                to="/join"
-                aria-current={isActive('/join') ? 'page' : undefined}
-                className={`inline-flex h-10 items-center justify-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                <span className="hidden sm:inline">Join Meeting</span>
-                <span className="sm:hidden">Join</span>
-              </Link>
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger 
+                      className={`h-10 px-4 rounded-lg text-sm font-medium ${
+                        isActive('/create') || isActive('/join') || isActive('/create-or-join') 
+                          ? 'bg-primary text-white' 
+                          : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      <span className="hidden sm:inline">Create or Join</span>
+                      <span className="sm:hidden">Meeting</span>
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="grid gap-3 p-4 w-[400px]">
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/create-or-join"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <MessageSquare className="w-4 h-4 text-primary" />
+                              <div className="text-sm font-medium leading-none">Create or Join Meeting</div>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Unified interface to create new meetings or join existing ones
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                        <div className="h-px bg-border" />
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/create"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <MessageSquare className="w-4 h-4 text-primary" />
+                              <div className="text-sm font-medium leading-none">Create Meeting</div>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Start a new meeting and share the code with participants
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/join"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <QrCode className="w-4 h-4 text-accent" />
+                              <div className="text-sm font-medium leading-none">Join Meeting</div>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Enter a meeting code to join an existing meeting
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
             </nav>
             <ThemeToggle />
             <button
@@ -120,25 +171,40 @@ function AppLayout({ children }: AppLayoutProps) {
                 Manual
               </Link>
               <Link
-                to="/create"
+                to="/create-or-join"
                 onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/create') ? 'page' : undefined}
+                aria-current={isActive('/create-or-join') ? 'page' : undefined}
                 className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/create-or-join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
-                Create Meeting
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Create or Join Meeting
               </Link>
-              <Link
-                to="/join"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/join') ? 'page' : undefined}
-                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Join Meeting
-              </Link>
+              <div className="ml-6 space-y-1">
+                <Link
+                  to="/create"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-current={isActive('/create') ? 'page' : undefined}
+                  className={`h-8 flex items-center px-4 rounded-lg text-sm font-medium ${
+                    isActive('/create') ? 'bg-primary/20 text-primary' : 'text-gray-600 hover:bg-gray-100 dark:text-zinc-300 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  <MessageSquare className="w-3 h-3 mr-2" />
+                  Create Meeting
+                </Link>
+                <Link
+                  to="/join"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-current={isActive('/join') ? 'page' : undefined}
+                  className={`h-8 flex items-center px-4 rounded-lg text-sm font-medium ${
+                    isActive('/join') ? 'bg-primary/20 text-primary' : 'text-gray-600 hover:bg-gray-100 dark:text-zinc-300 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  <QrCode className="w-3 h-3 mr-2" />
+                  Join Meeting
+                </Link>
+              </div>
             </div>
           </nav>
         )}
