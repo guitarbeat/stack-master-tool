@@ -29,7 +29,7 @@ function AppLayout({ children }: AppLayoutProps) {
   
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900 flex flex-col">
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link
@@ -209,9 +209,21 @@ function AppLayout({ children }: AppLayoutProps) {
           </nav>
         )}
       </header>
-      <main>
+      <main className="flex-grow">
         {children}
       </main>
+      <footer className="bg-white/70 backdrop-blur border-t border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800 mt-auto">
+        <div className="container mx-auto px-4 py-6 flex flex-col items-center justify-center space-y-4">
+          <img
+            src="/icc2-removebg-preview.png"
+            alt="ICC2 Logo"
+            className="h-12 w-auto object-contain drop-shadow-sm dark:brightness-110"
+          />
+          <p className="text-sm text-gray-600 dark:text-zinc-400 text-center">
+            Powered by ICC Austin Stack
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
