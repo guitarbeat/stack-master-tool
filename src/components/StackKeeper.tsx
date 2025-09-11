@@ -53,7 +53,11 @@ interface SpeakerTimer {
   isActive: boolean;
 }
 
-export const StackKeeper = () => {
+interface StackKeeperProps {
+  showInterventionsPanel?: boolean;
+}
+
+export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps) => {
   const [stack, setStack] = useState<Participant[]>([]);
   const [interventions, setInterventions] = useState<SpecialIntervention[]>([]);
   const [newParticipantName, setNewParticipantName] = useState("");
@@ -696,7 +700,7 @@ export const StackKeeper = () => {
         )}
 
         {/* Interventions Section */}
-        {stack.length > 0 && (
+        {showInterventionsPanel && stack.length > 0 && (
           <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-900 dark:text-zinc-100">
