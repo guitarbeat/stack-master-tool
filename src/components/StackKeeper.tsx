@@ -9,7 +9,7 @@ import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Fil
 import { toast } from "@/hooks/use-toast";
 import { StackItem } from "./StackItem";
 import { NextSpeakerCard } from "./NextSpeakerCard";
-import { ExpandableCard } from "./ExpandableCard";
+import { ExpandableCard } from "@/components/ui/expandable-card";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES, DirectResponseState } from "@/types";
 
 interface RemoveUndoAction {

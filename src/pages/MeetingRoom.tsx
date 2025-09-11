@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Hand, MessageCircle, Info, Settings, LogOut, Users, Loader2 } from 'lucide-react'
 import socketService from '../services/socket'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
 
@@ -30,7 +30,9 @@ function MeetingRoom(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const { showToast } = useToast()
+  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
+    toast({ title, description })
+  }
   const { participantName, meetingInfo } = location.state || {}
   
   const [meetingData, setMeetingData] = useState<MeetingData>(meetingInfo || {
@@ -65,16 +67,16 @@ function MeetingRoom(): JSX.Element {
     }
 
     const participantJoinedCallback = (data) => {
-      showToast({ type: 'info', title: `${data.participant.name} joined` })
+      notify('info', `${data.participant.name} joined`)
     }
 
     const participantLeftCallback = (data) => {
-      showToast({ type: 'info', title: `${data.participantName} left` })
+      notify('info', `${data.participantName} left`)
     }
 
     const nextSpeakerCallback = (speaker) => {
       setCurrentSpeaker(speaker)
-      showToast({ type: 'success', title: `${speaker.participantName} is up next` })
+      notify('success', `${speaker.participantName} is up next`)
       playBeep(1200, 120)
       setTimeout(() => {
         setCurrentSpeaker(null)
@@ -83,7 +85,7 @@ function MeetingRoom(): JSX.Element {
 
     const errorCallback = (error) => {
       setError(error.message || 'Connection error')
-      showToast({ type: 'error', title: error.message || 'Connection error' })
+      notify('error', error.message || 'Connection error')
     }
 
     const setupSocketListeners = () => {
@@ -118,7 +120,7 @@ function MeetingRoom(): JSX.Element {
       socketService.off('next-speaker', nextSpeakerCallback)
       socketService.off('error', errorCallback)
     }
-  }, [participantName, navigate, showToast])
+  }, [participantName, navigate])
 
   const joinQueue = (type: string = 'speak') => {
     if (isInQueue || !isConnected) return
@@ -126,12 +128,12 @@ function MeetingRoom(): JSX.Element {
     try {
       socketService.joinQueue(type)
       setShowDirectOptions(false)
-      showToast({ type: 'success', title: 'Joined queue', description: type === 'speak' ? 'Speak' : type.replace('-', ' ') })
+      notify('success', 'Joined queue', type === 'speak' ? 'Speak' : type.replace('-', ' '))
       playBeep(1000, 120)
     } catch (err) {
       console.error('Join queue error:', err)
       setError(err.message || 'Failed to join queue. Please try again.')
-      showToast({ type: 'error', title: err.message || 'Failed to join queue' })
+      notify('error', err.message || 'Failed to join queue')
       playBeep(220, 200)
     }
   }
@@ -141,12 +143,12 @@ function MeetingRoom(): JSX.Element {
     
     try {
       socketService.leaveQueue()
-      showToast({ type: 'info', title: 'Left queue' })
+      notify('info', 'Left queue')
       playBeep(600, 100)
     } catch (err) {
       console.error('Leave queue error:', err)
       setError(err.message || 'Failed to leave queue. Please try again.')
-      showToast({ type: 'error', title: err.message || 'Failed to leave queue' })
+      notify('error', err.message || 'Failed to leave queue')
       playBeep(220, 200)
     }
   }

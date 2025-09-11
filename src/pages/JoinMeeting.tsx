@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, LogIn, Loader2 } from 'lucide-react'
 import apiService from '../services/api'
 import socketService from '../services/socket'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 
 interface FormData {
@@ -13,7 +13,9 @@ interface FormData {
 
 function JoinMeeting(): JSX.Element {
   const navigate = useNavigate()
-  const { showToast } = useToast()
+  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
+    toast({ title, description })
+  }
   const [searchParams] = useSearchParams()
   const [formData, setFormData] = useState<FormData>({
     meetingCode: searchParams.get('code') || '',
@@ -36,7 +38,7 @@ function JoinMeeting(): JSX.Element {
         false
       )
 
-      showToast({ type: 'success', title: 'Joined meeting', description: meetingInfo.title })
+      notify('success', 'Joined meeting', meetingInfo.title)
       playBeep(1000, 120)
 
       navigate(`/meeting/${formData.meetingCode}`, {
@@ -48,12 +50,12 @@ function JoinMeeting(): JSX.Element {
       })
     } catch (err) {
       console.error('Error joining meeting:', err)
-      if (err.message === 'Meeting not found') {
+      if ((err as any).message === 'Meeting not found') {
         setError('Meeting not found. Please check the code and try again.')
-        showToast({ type: 'error', title: 'Meeting not found' })
+        notify('error', 'Meeting not found')
       } else {
         setError('Failed to join meeting. Please try again.')
-        showToast({ type: 'error', title: 'Failed to join meeting' })
+        notify('error', 'Failed to join meeting')
       }
       playBeep(220, 200)
     } finally {

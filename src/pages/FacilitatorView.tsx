@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Users, Play, SkipForward, LogOut, Loader2 } from 'lucide-react'
-import { useToast } from '../components/ui/ToastProvider.jsx'
+import { toast } from '@/hooks/use-toast'
 import FacilitatorHeader from '../components/FacilitatorHeader'
 import ParticipantList from '../components/ParticipantList'
 import CurrentSpeakerCard from '../components/CurrentSpeakerCard'
@@ -19,7 +19,9 @@ function FacilitatorView(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const { showToast } = useToast()
+  const showToast = (payload: { title: string; description?: string }) => {
+    toast(payload)
+  }
   const { facilitatorName, meetingName, meetingCode } = location.state || {}
 
   const meetingData = {

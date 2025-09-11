@@ -1,4 +1,4 @@
-import { ExpandableCard } from '@/components/ExpandableCard'
+import { ExpandableCard } from '@/components/ui/expandable-card'
 import useTiltEffect from '@/hooks/use-tilt'
 
 export const HowItWorks = () => {
@@ -38,18 +38,23 @@ export const HowItWorks = () => {
         {steps.map((item, index) => (
           <div key={index} ref={(el) => (cardsRef.current[index] = el)} className="tilt-card group">
             <ExpandableCard
-              className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 h-full transition-all duration-500 group-hover:scale-105 text-center"
-              title={
-                <div className="flex flex-col items-center gap-4 sm:gap-6">
-                  <div className="text-4xl sm:text-5xl lg:text-6xl group-hover:scale-110 transition-transform duration-300">
-                    {item.icon}
+              className="liquid-glass rounded-2xl sm:rounded-3xl h-full transition-all duration-500 group-hover:scale-105 text-center"
+              trigger={
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex flex-col items-center gap-4 sm:gap-6 mx-auto">
+                    <div className="text-4xl sm:text-5xl lg:text-6xl group-hover:scale-110 transition-transform duration-300">
+                      {item.icon}
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-bold gradient-text">{item.title}</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base">{item.summary}</p>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold gradient-text">{item.title}</h3>
                 </div>
               }
-              summary={item.summary}
+              contentClassName="p-0"
             >
-              <p className="text-muted-foreground leading-relaxed text-base sm:text-lg">{item.details}</p>
+              <div className="p-6 sm:p-8">
+                <p className="text-muted-foreground leading-relaxed text-base sm:text-lg">{item.details}</p>
+              </div>
             </ExpandableCard>
           </div>
         ))}
