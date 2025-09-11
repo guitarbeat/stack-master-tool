@@ -1,5 +1,6 @@
 import React from 'react'
 import { Plus, UserPlus } from 'lucide-react'
+import { useMouseFollow } from '@/hooks/use-mouse-follow'
 
 interface ModeToggleProps {
   mode: 'create' | 'join'
@@ -11,15 +12,57 @@ interface ModeToggleProps {
 function ModeToggle({ mode, step, onSelectCreate, onSelectJoin }: ModeToggleProps): JSX.Element | null {
   if (step !== 1) return null
 
+  const { containerRef, mousePosition, isHovering, handleMouseMove, handleMouseEnter, handleMouseLeave } = useMouseFollow({
+    enabled: true,
+    smoothness: 0.2
+  })
+
+  // Calculate indicator position based on mouse or selected state
+  const getIndicatorStyle = () => {
+    if (isHovering) {
+      // Follow mouse position when hovering
+      const containerWidth = containerRef.current?.offsetWidth || 0
+      const indicatorWidth = containerWidth / 2 - 6
+      const mouseX = mousePosition.x
+      
+      // Constrain to valid positions
+      const leftPosition = Math.max(1.5, Math.min(mouseX - indicatorWidth / 2, containerWidth - indicatorWidth - 1.5))
+      
+      return {
+        left: `${leftPosition}px`,
+        width: `${indicatorWidth}px`,
+        background: mouseX < containerWidth / 2 
+          ? 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
+          : 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+      }
+    } else {
+      // Use selected state when not hovering
+      return mode === 'create' 
+        ? {
+            left: '6px',
+            width: 'calc(50% - 6px)',
+            background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
+          }
+        : {
+            left: 'calc(50% + 3px)',
+            width: 'calc(50% - 6px)',
+            background: 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+          }
+    }
+  }
+
   return (
     <div className="flex justify-center mb-8 px-4">
-      <div className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1.5 flex backdrop-blur-sm border border-border/50 shadow-elegant w-full max-w-md">
+      <div 
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1.5 flex backdrop-blur-sm border border-border/50 shadow-elegant w-full max-w-md"
+      >
         <div 
-          className={`toggle-indicator ${
-            mode === 'create' 
-              ? 'left-1.5 w-[calc(50%-6px)] bg-gradient-to-r from-primary to-accent' 
-              : 'left-[calc(50%+3px)] w-[calc(50%-6px)] bg-gradient-to-r from-moss-green to-sage-green'
-          }`}
+          className="toggle-indicator"
+          style={getIndicatorStyle()}
         />
         <button
           onClick={onSelectCreate}

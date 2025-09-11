@@ -1,7 +1,8 @@
 import { ReactNode, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, Plus, UserPlus } from 'lucide-react'
+import { Menu, X, Plus, UserPlus, MessageSquare, QrCode } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle'
+import { useMouseFollow } from '@/hooks/use-mouse-follow'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -17,6 +18,11 @@ function AppLayout({ children }: AppLayoutProps) {
   }
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
+
+  const { containerRef, mousePosition, isHovering, handleMouseMove, handleMouseEnter, handleMouseLeave } = useMouseFollow({
+    enabled: true,
+    smoothness: 0.2
+  })
 
   
 
@@ -59,14 +65,52 @@ function AppLayout({ children }: AppLayoutProps) {
               {/* Create/Join toggle (replacing dropdown) */}
               {(() => {
                 const mode = isActive('/join') ? 'join' : (isActive('/create') ? 'create' : 'create')
+                
+                // Calculate indicator position based on mouse or selected state
+                const getIndicatorStyle = () => {
+                  if (isHovering) {
+                    // Follow mouse position when hovering
+                    const containerWidth = containerRef.current?.offsetWidth || 0
+                    const indicatorWidth = containerWidth / 2 - 4
+                    const mouseX = mousePosition.x
+                    
+                    // Constrain to valid positions
+                    const leftPosition = Math.max(4, Math.min(mouseX - indicatorWidth / 2, containerWidth - indicatorWidth - 4))
+                    
+                    return {
+                      left: `${leftPosition}px`,
+                      width: `${indicatorWidth}px`,
+                      background: mouseX < containerWidth / 2 
+                        ? 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
+                        : 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+                    }
+                  } else {
+                    // Use selected state when not hovering
+                    return mode === 'create' 
+                      ? {
+                          left: '4px',
+                          width: 'calc(50% - 4px)',
+                          background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
+                        }
+                      : {
+                          left: 'calc(50% + 3px)',
+                          width: 'calc(50% - 4px)',
+                          background: 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+                        }
+                  }
+                }
+
                 return (
-                  <div className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1 flex backdrop-blur-sm border border-border/50 shadow-elegant w-[280px]">
+                  <div 
+                    ref={containerRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1 flex backdrop-blur-sm border border-border/50 shadow-elegant w-[280px]"
+                  >
                     <div 
-                      className={`toggle-indicator ${
-                        mode === 'create' 
-                          ? 'left-1 w-[calc(50%-4px)] bg-gradient-to-r from-primary to-accent' 
-                          : 'left-[calc(50%+3px)] w-[calc(50%-4px)] bg-gradient-to-r from-moss-green to-sage-green'
-                      }`}
+                      className="toggle-indicator"
+                      style={getIndicatorStyle()}
                     />
                     <button
                       onClick={() => navigate('/create')}
