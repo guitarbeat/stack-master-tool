@@ -426,6 +426,11 @@ app.get('/join/:code', (req, res) => {
   res.redirect(`${frontendUrl}/join?code=${code.toUpperCase()}`);
 });
 
+// Serve the React app for all other routes (client-side routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, '0.0.0.0', () => {
