@@ -9,6 +9,8 @@ import { Trash2, Plus, Users, AlertTriangle, Search, Undo2, Timer, Keyboard, Fil
 import { toast } from "@/hooks/use-toast";
 import { StackItem } from "./StackItem";
 import { ExpandableCard } from "@/components/ui/expandable-card";
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { PieChart, Pie, Cell } from "recharts";
 import { Participant, SpecialIntervention, INTERVENTION_TYPES, DirectResponseState } from "@/types";
 
 interface RemoveUndoAction {
@@ -76,6 +78,16 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
   const searchRef = useRef<HTMLInputElement>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [showAllUpNext, setShowAllUpNext] = useState(false);
+  const [includeDirectResponsesInChart, setIncludeDirectResponsesInChart] = useState(true);
+
+  type SpeakingSegment = {
+    participantId: string;
+    participantName: string;
+    durationMs: number;
+    isDirectResponse: boolean;
+  };
+  const [speakingHistory, setSpeakingHistory] = useState<SpeakingSegment[]>([]);
 
   // Timer effect
   useEffect(() => {
@@ -225,6 +237,22 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     const currentSpeaker = stack[0];
     const remainingStack = stack.slice(1);
     
+    // Record the finished speaking segment for the current speaker
+    if (speakerTimer) {
+      const durationMs = Date.now() - speakerTimer.startTime.getTime();
+      if (durationMs > 0) {
+        setSpeakingHistory(prev => [
+          ...prev,
+          {
+            participantId: currentSpeaker.id,
+            participantName: currentSpeaker.name,
+            durationMs,
+            isDirectResponse: directResponse.isActive && directResponse.participantId === currentSpeaker.id,
+          },
+        ]);
+      }
+    }
+    
     // Add to undo history
     addUndoAction({
       type: 'next',
@@ -256,6 +284,22 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     const participantIndex = stack.findIndex(p => p.id === id);
     const wasCurrentSpeaker = participantIndex === 0;
     
+    // If removing current speaker, record their segment so far
+    if (wasCurrentSpeaker && speakerTimer) {
+      const durationMs = Date.now() - speakerTimer.startTime.getTime();
+      if (durationMs > 0) {
+        setSpeakingHistory(prev => [
+          ...prev,
+          {
+            participantId: participant.id,
+            participantName: participant.name,
+            durationMs,
+            isDirectResponse: directResponse.isActive && directResponse.participantId === participant.id,
+          },
+        ]);
+      }
+    }
+
     // Add to undo history
     addUndoAction({
       type: 'remove',
@@ -323,6 +367,25 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     
     // Restore original queue order (minus the person who just spoke)
     const remainingQueue = directResponse.originalQueue.filter(p => p.id !== directResponse.participantId);
+    
+    // Record the direct response segment for the person who just spoke
+    if (speakerTimer) {
+      const drParticipant = stack[0];
+      if (drParticipant) {
+        const durationMs = Date.now() - speakerTimer.startTime.getTime();
+        if (durationMs > 0) {
+          setSpeakingHistory(prev => [
+            ...prev,
+            {
+              participantId: drParticipant.id,
+              participantName: drParticipant.name,
+              durationMs,
+              isDirectResponse: true,
+            },
+          ]);
+        }
+      }
+    }
     setStack(remainingQueue);
     
     // Reset direct response state
@@ -412,6 +475,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     setInterventions([]);
     setSpeakerTimer(null);
     setElapsedTime(0);
+    setSpeakingHistory([]);
     toast({ title: "Stack cleared", description: "All participants removed from queue" });
   };
 
@@ -668,11 +732,41 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                             <Clock className="h-4 w-4 text-accent" />
                           </div>
                           <span className="text-sm font-medium text-muted-foreground">Up next:</span>
-                          <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
-                            {stack[1].name}
-                          </span>
-                          {stack.length > 2 && (
-                            <span className="text-sm text-muted-foreground font-medium">+{stack.length - 2} more</span>
+                          {!showAllUpNext ? (
+                            <>
+                              <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
+                                {stack[1].name}
+                              </span>
+                              {stack.length > 2 && (
+                                <>
+                                  <span className="text-sm text-muted-foreground font-medium">+{stack.length - 2} more</span>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 px-2"
+                                    onClick={() => setShowAllUpNext(true)}
+                                  >
+                                    Show more
+                                  </Button>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {stack.slice(1).map((p) => (
+                                <span key={p.id} className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold border-accent/30 text-accent">
+                                  {p.name}
+                                </span>
+                              ))}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2"
+                                onClick={() => setShowAllUpNext(false)}
+                              >
+                                Show less
+                              </Button>
+                            </>
                           )}
                         </div>
                       )}
@@ -822,6 +916,90 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
             </CardContent>
           </Card>
         )}
+
+        {/* Speaking Distribution (hidden collapsible at bottom) */}
+        <div className="mt-8">
+          <ExpandableCard
+            className="bg-white rounded-2xl p-0 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800"
+            trigger={
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-zinc-100">Speaking Distribution</h3>
+                    <p className="text-xs text-muted-foreground">Pie chart of who has talked the most</p>
+                  </div>
+                </div>
+                <Button
+                  variant={includeDirectResponsesInChart ? "default" : "outline"}
+                  size="sm"
+                  className="rounded-xl"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIncludeDirectResponsesInChart(v => !v);
+                  }}
+                  title="Toggle including direct responses"
+                >
+                  {includeDirectResponsesInChart ? "Including Direct Responses" : "Excluding Direct Responses"}
+                </Button>
+              </div>
+            }
+            contentClassName="p-0"
+          >
+            <div className="p-4 sm:p-6">
+              {(() => {
+                // Aggregate data by participant
+                const totals = new Map<string, { name: string; ms: number }>();
+                // Include finished segments
+                for (const seg of speakingHistory) {
+                  if (!includeDirectResponsesInChart && seg.isDirectResponse) continue;
+                  const key = seg.participantId;
+                  const prev = totals.get(key) || { name: seg.participantName, ms: 0 };
+                  prev.ms += seg.durationMs;
+                  totals.set(key, prev);
+                }
+                // Include current speaker ongoing time
+                if (speakerTimer && stack[0]) {
+                  const isDR = directResponse.isActive && directResponse.participantId === stack[0].id;
+                  if (includeDirectResponsesInChart || !isDR) {
+                    const key = stack[0].id;
+                    const prev = totals.get(key) || { name: stack[0].name, ms: 0 };
+                    prev.ms += Math.max(0, Date.now() - speakerTimer.startTime.getTime());
+                    totals.set(key, prev);
+                  }
+                }
+                const data = Array.from(totals.values())
+                  .sort((a, b) => b.ms - a.ms)
+                  .map((d) => ({ name: d.name, value: Math.round(d.ms / 1000) })); // seconds
+
+                const COLORS = [
+                  "#6366F1","#10B981","#F59E0B","#EF4444","#3B82F6","#8B5CF6","#14B8A6","#F97316","#22C55E","#E11D48"
+                ];
+
+                return (
+                  <div className="w-full">
+                    <ChartContainer
+                      config={{}}
+                      className="w-full h-72"
+                    >
+                      <PieChart>
+                        <Pie dataKey="value" data={data} cx="50%" cy="50%" outerRadius={90} label>
+                          {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <ChartLegend content={<ChartLegendContent />} />
+                      </PieChart>
+                    </ChartContainer>
+                  </div>
+                );
+              })()}
+            </div>
+          </ExpandableCard>
+        </div>
     </div>
   );
 };
