@@ -371,8 +371,6 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
       });
     } else if (type === 'clarifying-question') {
       addIntervention(type, participantName);
-    } else if (type === 'point-of-process') {
-      addIntervention(type, participantName);
     }
   };
 

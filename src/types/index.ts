@@ -12,13 +12,12 @@ export interface DirectResponseState {
 
 export interface SpecialIntervention {
   id: string;
-  type: 'direct-response' | 'clarifying-question' | 'point-of-process';
+  type: 'direct-response' | 'clarifying-question';
   participant: string;
   timestamp: Date;
 }
 
 export const INTERVENTION_TYPES = {
   'direct-response': 'Direct Response',
-  'clarifying-question': 'Clarifying Question', 
-  'point-of-process': 'Point of Process'
+  'clarifying-question': 'Clarifying Question'
 } as const;
