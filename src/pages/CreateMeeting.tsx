@@ -110,8 +110,8 @@ function CreateMeeting(): JSX.Element {
         {step === 1 && (
           <div className="bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
             <div className="text-center mb-8">
-              <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                <Users className="w-8 h-8 text-blue-600 mx-auto" />
+              <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4">
+                <Users className="w-8 h-8 text-primary mx-auto" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Create Meeting</h1>
               <p className="text-gray-600 dark:text-zinc-400">Set up your meeting and share the invitation link</p>
@@ -134,7 +134,7 @@ function CreateMeeting(): JSX.Element {
                   disabled={loading}
                   value={meetingData.name}
                   onChange={(e) => setMeetingData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
                   placeholder="e.g., Weekly Team Meeting"
                 />
               </div>
@@ -149,7 +149,7 @@ function CreateMeeting(): JSX.Element {
                   disabled={loading}
                   value={meetingData.facilitatorName}
                   onChange={(e) => setMeetingData(prev => ({ ...prev, facilitatorName: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
                   placeholder="Your name"
                 />
               </div>
@@ -157,7 +157,7 @@ function CreateMeeting(): JSX.Element {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-hover transition-colors disabled:bg-primary/60 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {loading ? (
                   <>
@@ -175,8 +175,8 @@ function CreateMeeting(): JSX.Element {
         {step === 2 && (
           <div className="bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
             <div className="text-center mb-8">
-              <div className="bg-sage-green/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                <QrCodeIcon className="w-8 h-8 text-moss-green mx-auto" />
+              <div className="bg-accent/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
+                <QrCodeIcon className="w-8 h-8 text-accent mx-auto" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Your meeting is ready!</h1>
               <p className="text-gray-600 dark:text-zinc-400">Share this code or link with participants</p>
@@ -189,7 +189,7 @@ function CreateMeeting(): JSX.Element {
                   Meeting Code
                 </label>
                 <div className="bg-gray-50 dark:bg-zinc-950 border-2 border-dashed border-gray-300 dark:border-zinc-800 rounded-lg p-6">
-                  <div className="text-4xl font-bold text-blue-600 mb-2">
+                  <div className="text-4xl font-bold text-primary mb-2">
                     {meetingData.meetingCode}
                   </div>
                   <button
@@ -237,7 +237,7 @@ function CreateMeeting(): JSX.Element {
 
               <button
                 onClick={startMeeting}
-                className="w-full bg-moss-green text-white py-3 px-6 rounded-lg font-semibold hover:bg-moss-green/90 transition-colors"
+                className="w-full bg-accent text-white py-3 px-6 rounded-lg font-semibold hover:bg-accent-hover transition-colors"
               >
                 Start meeting
               </button>
