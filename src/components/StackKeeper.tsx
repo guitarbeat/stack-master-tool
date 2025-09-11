@@ -673,7 +673,7 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                         </span>
                         {directResponse.isActive && (
                           <div className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs font-semibold rounded-full border border-orange-200 dark:border-orange-800">
-                            Temporary
+                            Responding
                           </div>
                         )}
                         {speakerTimer && (
