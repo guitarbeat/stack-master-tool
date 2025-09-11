@@ -74,6 +74,8 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
   const [recentParticipants, setRecentParticipants] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // Timer effect
   useEffect(() => {
@@ -413,6 +415,51 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
     toast({ title: "Stack cleared", description: "All participants removed from queue" });
   };
 
+  // Drag and drop handlers for manual reordering (non-speaking users only)
+  const handleDragStart = (index: number) => {
+    // Disallow dragging current speaker
+    if (index === 0) return;
+    setDragIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    // Allow dropping only on non-current speaker positions
+    if (index === 0) return;
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (index: number) => {
+    if (dragIndex === null) return;
+    if (dragIndex === 0) return; // safety
+    // Do not allow dropping into current speaker slot
+    const targetIndex = index === 0 ? 1 : index;
+    if (targetIndex === dragIndex) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    setStack(prev => {
+      const newStack = [...prev];
+      const [moved] = newStack.splice(dragIndex, 1);
+      // Adjust target if removal shifted indices
+      const adjustedTarget = dragIndex < targetIndex ? targetIndex - 1 : targetIndex;
+      newStack.splice(adjustedTarget, 0, moved);
+      return newStack;
+    });
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
         {/* Header + Add Participant & Controls (consolidated) */}
@@ -683,8 +730,19 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                   // Skip rendering the current speaker here since it's shown in the enhanced display above
                   if (isCurrentSpeaker) return null;
                   
+                  const isDragOver = dragOverIndex === actualIndex;
                   return (
-                    <div key={participant.id} className="fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                    <div
+                      key={participant.id}
+                      className={`fade-in ${isDragOver ? 'ring-2 ring-primary/40 rounded-xl' : ''}`}
+                      style={{ animationDelay: `${index * 50}ms` }}
+                      draggable
+                      onDragStart={() => handleDragStart(actualIndex)}
+                      onDragOver={(e) => handleDragOver(e, actualIndex)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={() => handleDrop(actualIndex)}
+                      onDragEnd={handleDragEnd}
+                    >
                       <StackItem
                         participant={participant}
                         index={actualIndex}
