@@ -94,22 +94,14 @@ const ReplicateBackgroundRemoval = () => {
                 <h3 className="font-semibold">{image.name}</h3>
                 
                 <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Original:</p>
-                  <img 
-                    src={`/${image.path}`} 
-                    alt={image.name}
-                    className="w-full h-48 object-contain bg-gray-100 rounded"
-                  />
+                  <p className="text-sm text-muted-foreground">Original (preview removed)</p>
+                  <div className="w-full h-48 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">No image preview</div>
                 </div>
 
                 {processedImages[image.path] && (
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Background Removed:</p>
-                    <img 
-                      src={processedImages[image.path]} 
-                      alt={`${image.name} - Background Removed`}
-                      className="w-full h-48 object-contain bg-gray-100 rounded"
-                    />
+                    <p className="text-sm text-muted-foreground">Background Removed (preview removed)</p>
+                    <div className="w-full h-48 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-500">No image preview</div>
                     <Button 
                       variant="outline" 
                       size="sm"
