@@ -357,25 +357,30 @@ export const StackKeeper = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-6 fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full floating-glow mb-6" style={{ background: 'var(--gradient-primary)' }}>
-            <Users className="h-10 w-10 text-white" />
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="bg-white rounded-2xl p-6 shadow-lg mb-8 dark:bg-zinc-900 dark:border dark:border-zinc-800">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">Stack Facilitation</h1>
+            <p className="text-gray-600 dark:text-zinc-400">
+              Democratic discussion management tool for facilitators and stack keepers
+            </p>
           </div>
-          <div className="space-y-3">
-            <h1 className="text-5xl font-bold gradient-text tracking-tight">Stack Facilitation</h1>
-            <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center text-gray-600 dark:text-zinc-300">
+              <Users className="w-5 h-5 mr-2" />
+              <span>{stack.length} participants</span>
+            </div>
           </div>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">Democratic discussion management tool for facilitators and stack keepers</p>
         </div>
+      </div>
 
         {/* Add Participant & Controls */}
-        <Card className="glass-card slide-up">
+        <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-900 dark:text-zinc-100">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Plus className="h-5 w-5 text-primary" />
                 </div>
@@ -423,8 +428,8 @@ export const StackKeeper = () => {
             </div>
             
             {showKeyboardShortcuts && (
-              <div className="mt-4 p-4 bg-muted/30 rounded-xl">
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <div className="mt-4 p-4 bg-gray-100 dark:bg-zinc-800 rounded-xl">
+                <h4 className="font-semibold mb-3 flex items-center gap-2 text-gray-900 dark:text-zinc-100">
                   <Keyboard className="h-4 w-4" />
                   Keyboard Shortcuts
                 </h4>
@@ -442,7 +447,7 @@ export const StackKeeper = () => {
 
         {/* Current Speaker with Timer */}
         {stack.length > 0 && (
-          <Card className="glass-card next-speaker-gradient border-primary/30">
+          <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
             <CardContent className="p-6">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="flex-1 space-y-4">
@@ -451,7 +456,7 @@ export const StackKeeper = () => {
                       <div className="w-4 h-4 rounded-full bg-primary animate-pulse"></div>
                       <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-20"></div>
                     </div>
-                    <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Currently Speaking</span>
+                    <span className="text-sm font-semibold text-gray-600 dark:text-zinc-400 uppercase tracking-wider">Currently Speaking</span>
                     {speakerTimer && (
                       <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
                         <Timer className="h-4 w-4 text-accent" />
@@ -482,19 +487,19 @@ export const StackKeeper = () => {
                     )}
                   </div>
                   
-                  <h3 className="text-2xl lg:text-3xl font-bold gradient-text">{stack[0].name}</h3>
+                  <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-zinc-100">{stack[0].name}</h3>
                   
                   {stack.length > 1 && (
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="p-1.5 rounded-lg bg-accent/10">
                         <Clock className="h-4 w-4 text-accent" />
                       </div>
-                      <span className="text-sm font-medium text-muted-foreground">Up next:</span>
+                      <span className="text-sm font-medium text-gray-600 dark:text-zinc-400">Up next:</span>
                       <Badge variant="outline" className="font-semibold px-3 py-1 rounded-full border-accent/30 text-accent">
                         {stack[1].name}
                       </Badge>
                       {stack.length > 2 && (
-                        <span className="text-sm text-muted-foreground/70 font-medium">+{stack.length - 2} more</span>
+                        <span className="text-sm text-gray-500 dark:text-zinc-500 font-medium">+{stack.length - 2} more</span>
                       )}
                     </div>
                   )}
@@ -516,9 +521,9 @@ export const StackKeeper = () => {
         )}
 
         {/* Current Stack */}
-        <Card className="glass-card">
+        <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 mb-8">
           <CardHeader className="flex flex-row items-center justify-between pb-6">
-            <CardTitle className="flex items-center gap-4 text-2xl font-semibold">
+            <CardTitle className="flex items-center gap-4 text-2xl font-semibold text-gray-900 dark:text-zinc-100">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Users className="h-6 w-6 text-primary" />
               </div>
@@ -531,7 +536,7 @@ export const StackKeeper = () => {
             <div className="flex items-center gap-3">
               {stack.length > 1 && (
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     ref={searchRef}
                     placeholder="Search participants... (Ctrl+F)"
@@ -547,7 +552,7 @@ export const StackKeeper = () => {
                       className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full p-0"
                       title="Clear search"
                     >
-                      <X className="h-4 w-4 text-muted-foreground" />
+                      <X className="h-4 w-4 text-gray-400" />
                     </Button>
                   )}
                 </div>
@@ -563,15 +568,15 @@ export const StackKeeper = () => {
           <CardContent className="pt-0">
             {stack.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <p className="text-muted-foreground text-lg mb-2">No one in stack</p>
-                <p className="text-sm text-muted-foreground/70">Add participants above to begin the discussion</p>
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-zinc-400 text-lg mb-2">No one in stack</p>
+                <p className="text-sm text-gray-400 dark:text-zinc-500">Add participants above to begin the discussion</p>
               </div>
             ) : filteredStack.length === 0 ? (
               <div className="text-center py-12">
-                <Filter className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <p className="text-muted-foreground text-lg mb-2">No participants match your search</p>
-                <p className="text-sm text-muted-foreground/70">Try adjusting your search term</p>
+                <Filter className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-zinc-400 text-lg mb-2">No participants match your search</p>
+                <p className="text-sm text-gray-400 dark:text-zinc-500">Try adjusting your search term</p>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -606,9 +611,9 @@ export const StackKeeper = () => {
 
         {/* Interventions Section */}
         {stack.length > 0 && (
-          <Card className="glass-card">
+          <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-900 dark:text-zinc-100">
                 <div className="p-2 rounded-lg bg-warning/10">
                   <AlertTriangle className="h-5 w-5 text-warning" />
                 </div>
@@ -620,7 +625,7 @@ export const StackKeeper = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 dark:text-zinc-400">
                   Click intervention buttons on each participant to log activities.
                 </p>
               </div>
@@ -628,7 +633,7 @@ export const StackKeeper = () => {
               {interventions.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                    <h4 className="font-semibold text-sm text-gray-600 dark:text-zinc-400 uppercase tracking-wider">
                       Recent Activity ({interventions.length})
                     </h4>
                     <Button
@@ -651,7 +656,7 @@ export const StackKeeper = () => {
                           {intervention.type.replace('-', ' ')}
                         </Badge>
                         <span className="font-medium">{intervention.participant}</span>
-                        <span className="text-xs text-muted-foreground ml-auto">
+                        <span className="text-xs text-gray-500 dark:text-zinc-500 ml-auto">
                           {intervention.timestamp.toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -665,7 +670,6 @@ export const StackKeeper = () => {
             </CardContent>
           </Card>
         )}
-      </div>
     </div>
   );
 };
