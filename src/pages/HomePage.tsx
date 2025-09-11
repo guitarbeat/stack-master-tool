@@ -2,7 +2,6 @@
 import { Hero } from '@/components/Hero'
 import { ActionCards } from '@/components/ActionCards'
 import { HowItWorks } from '@/components/HowItWorks'
-// Removed CallToAction to reduce redundancy with ActionCards and header nav
 
 
 function HomePage() {
@@ -19,7 +18,6 @@ function HomePage() {
         <Hero />
         <ActionCards />
         <HowItWorks />
-        {/* Call-to-action removed to streamline home screen */}
       </div>
     </div>
   )
