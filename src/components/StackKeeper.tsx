@@ -676,6 +676,11 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                             Responding
                           </div>
                         )}
+                        {speakerTimer && !speakerTimer.isActive && (
+                          <div className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs font-semibold rounded-full border border-yellow-200 dark:border-yellow-800">
+                            Paused
+                          </div>
+                        )}
                         {speakerTimer && (
                           <div className="flex items-center gap-2 p-2 bg-background/50 rounded-lg">
                             <Timer className="h-4 w-4 text-accent" />
@@ -720,6 +725,11 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
                               {stack.length > 2 && (
                                 <>
                                   <span className="text-sm text-muted-foreground font-medium">+{stack.length - 2} more</span>
+                                  {stack.length > 5 && (
+                                    <div className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-semibold rounded-full border border-blue-200 dark:border-blue-800">
+                                      Long Queue
+                                    </div>
+                                  )}
                                   <Button
                                     variant="ghost"
                                     size="sm"
@@ -778,6 +788,10 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
             {stack.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm font-medium rounded-full border border-gray-200 dark:border-gray-700 mb-3">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                  Empty Queue
+                </div>
                 <p className="text-gray-500 dark:text-zinc-400 text-lg mb-2">No one in stack</p>
                 <p className="text-sm text-gray-400 dark:text-zinc-500">Add participants above to begin the discussion</p>
               </div>
@@ -858,9 +872,16 @@ export const StackKeeper = ({ showInterventionsPanel = true }: StackKeeperProps)
               {interventions.length > 0 && (
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-sm text-gray-600 dark:text-zinc-400 uppercase tracking-wider">
-                      Recent Activity ({interventions.length})
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-sm text-gray-600 dark:text-zinc-400 uppercase tracking-wider">
+                        Recent Activity ({interventions.length})
+                      </h4>
+                      {interventions.length > 0 && (
+                        <div className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-semibold rounded-full border border-green-200 dark:border-green-800">
+                          Active
+                        </div>
+                      )}
+                    </div>
                     <Button
                       variant="ghost"
                       size="sm"
