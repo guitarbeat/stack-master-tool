@@ -23,7 +23,7 @@ function HomePage() {
         <footer className="mt-12 sm:mt-16">
           <div className="flex flex-col items-center justify-center text-center">
             <img
-              src="/icc2-logo.png"
+              src="/icc2-removebg-preview.png"
               alt="ICC Austin secondary logo"
               className="w-10 h-10 sm:w-12 sm:h-12 object-contain mb-2 drop-shadow dark:brightness-110"
             />
