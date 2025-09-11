@@ -27,33 +27,33 @@ export const HowItWorks = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text mb-6 sm:mb-8">How It Grows</h2>
-        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
+      <div className="text-center mb-8 sm:mb-10">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text mb-4 sm:mb-6">How It Grows</h2>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
           Like nature, great conversations need the right conditions to flourish
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {steps.map((item, index) => (
           <div key={index} ref={(el) => (cardsRef.current[index] = el)} className="tilt-card group">
             <ExpandableCard
               className="liquid-glass rounded-2xl sm:rounded-3xl h-full transition-all duration-500 group-hover:scale-105 text-center"
               trigger={
                 <div className="flex w-full items-center justify-between">
-                  <div className="flex flex-col items-center gap-4 sm:gap-6 mx-auto">
-                    <div className="text-4xl sm:text-5xl lg:text-6xl group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex flex-col items-center gap-3 sm:gap-4 mx-auto">
+                    <div className="text-3xl sm:text-4xl group-hover:scale-110 transition-transform duration-300">
                       {item.icon}
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold gradient-text">{item.title}</h3>
-                    <p className="text-muted-foreground text-sm sm:text-base">{item.summary}</p>
+                    <h3 className="text-lg sm:text-xl font-bold gradient-text">{item.title}</h3>
+                    <p className="text-muted-foreground text-sm">{item.summary}</p>
                   </div>
                 </div>
               }
               contentClassName="p-0"
             >
-              <div className="p-6 sm:p-8">
-                <p className="text-muted-foreground leading-relaxed text-base sm:text-lg">{item.details}</p>
+              <div className="p-4 sm:p-6">
+                <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">{item.details}</p>
               </div>
             </ExpandableCard>
           </div>
