@@ -1,4 +1,4 @@
-import { StackKeeper as StackKeeperRefactored } from "./StackKeeper";
+import { StackKeeperRefactored } from "./StackKeeper/StackKeeperRefactored";
 
 interface StackKeeperProps {
   showInterventionsPanel?: boolean;
