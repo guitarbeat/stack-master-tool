@@ -26,9 +26,25 @@ export default defineConfig(({ mode }) => ({
     // Ensure proper SPA routing in production
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['lucide-react', '@radix-ui/react-toast', '@radix-ui/react-tooltip'],
+        },
       },
     },
+    // Optimize build for better performance
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    // Enable source maps for production debugging
+    sourcemap: false,
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
   },
   preview: {
     port: 4173,
