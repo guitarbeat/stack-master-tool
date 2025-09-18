@@ -28,7 +28,7 @@ function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900 flex flex-col">
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800">
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800" role="banner">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link
             to="/"
@@ -44,7 +44,7 @@ function AppLayout({ children }: AppLayoutProps) {
             <span className="font-semibold text-gray-900 dark:text-zinc-100">ICC Austin Stack</span>
           </Link>
           <div className="flex items-center space-x-3">
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
               {/* Manual/Create/Join toggle */}
               {(() => {
                 const mode = isActive('/manual') ? 'manual' : (isActive('/join') ? 'join' : (isActive('/create') ? 'create' : 'create'))
@@ -179,6 +179,8 @@ function AppLayout({ children }: AppLayoutProps) {
           <nav
             id="mobile-menu"
             className="md:hidden border-t border-gray-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur"
+            role="navigation"
+            aria-label="Mobile navigation"
           >
             <div className="container mx-auto px-4 py-3 flex flex-col space-y-1">
               <Link
@@ -230,10 +232,10 @@ function AppLayout({ children }: AppLayoutProps) {
           </nav>
         )}
       </header>
-      <main className="flex-grow">
+      <main className="flex-grow" role="main">
         {children}
       </main>
-      <footer className="bg-white/70 backdrop-blur border-t border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800 mt-auto">
+      <footer className="bg-white/70 backdrop-blur border-t border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800 mt-auto" role="contentinfo">
         <div className="container mx-auto px-4 py-6 flex flex-col items-center justify-center space-y-4">
           <img
             src="https://stack.alw.lol/icc2-removebg-preview.png"
