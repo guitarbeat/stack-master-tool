@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
 import { useStackManagement } from "@/hooks/useStackManagement";
 import { useParticipantManagement } from "@/hooks/useParticipantManagement";
@@ -73,13 +73,34 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
     formatTime
   } = useSpeakerTimer();
 
-  // Keyboard shortcuts
-  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts({
+  // Keyboard shortcuts with stable references
+  const keyboardShortcuts = useMemo(() => ({
     onFocusAddInput: () => inputRef.current?.focus(),
     onFocusSearch: () => searchRef.current?.focus(),
-    onNextSpeaker: () => stack.length > 0 && handleNextSpeaker(),
+    onNextSpeaker: () => {
+      if (stack.length > 0) {
+        const currentSpeaker = stack[0];
+        if (speakerTimer) {
+          const durationMs = Date.now() - speakerTimer.startTime.getTime();
+          addSpeakingSegment(
+            currentSpeaker.id,
+            currentSpeaker.name,
+            durationMs,
+            isDirectResponseActive && directResponseParticipantId === currentSpeaker.id
+          );
+        }
+        const result = nextSpeaker();
+        if (result?.remainingStack.length > 0) {
+          startSpeakerTimer(result.remainingStack[0].id);
+        } else {
+          stopSpeakerTimer();
+        }
+      }
+    },
     onUndo: handleUndo,
-  });
+  }), [stack, speakerTimer, addSpeakingSegment, isDirectResponseActive, directResponseParticipantId, nextSpeaker, startSpeakerTimer, stopSpeakerTimer, handleUndo]);
+
+  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts(keyboardShortcuts);
 
   // Enhanced add to stack function
   const handleAddToStack = useCallback(() => {
