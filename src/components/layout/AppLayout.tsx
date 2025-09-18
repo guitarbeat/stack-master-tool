@@ -45,15 +45,6 @@ function AppLayout({ children }: AppLayoutProps) {
           </Link>
           <div className="flex items-center space-x-3">
             <nav className="hidden md:flex items-center space-x-1">
-              <Link
-                to="/manual"
-                aria-current={isActive('/manual') ? 'page' : undefined}
-                className={`inline-flex h-10 items-center justify-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/manual') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                Manual
-              </Link>
               {/* Manual/Create/Join toggle */}
               {(() => {
                 const mode = isActive('/manual') ? 'manual' : (isActive('/join') ? 'join' : (isActive('/create') ? 'create' : 'create'))
