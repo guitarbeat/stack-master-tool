@@ -54,41 +54,62 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 Manual
               </Link>
-              {/* Create/Join toggle (replacing dropdown) */}
+              {/* Manual/Create/Join toggle */}
               {(() => {
-                const mode = isActive('/join') ? 'join' : (isActive('/create') ? 'create' : 'create')
+                const mode = isActive('/manual') ? 'manual' : (isActive('/join') ? 'join' : (isActive('/create') ? 'create' : 'create'))
                 
                 // Calculate indicator position based on mouse or selected state
                 const getIndicatorStyle = () => {
                   if (isHovering) {
                     // Follow mouse position when hovering
                     const containerWidth = containerRef.current?.offsetWidth || 0
-                    const indicatorWidth = containerWidth / 2 - 4
+                    const indicatorWidth = containerWidth / 3 - 4
                     const mouseX = mousePosition.x
                     
-                    // Constrain to valid positions
-                    const leftPosition = Math.max(4, Math.min(mouseX - indicatorWidth / 2, containerWidth - indicatorWidth - 4))
+                    // Determine which section we're in
+                    const sectionWidth = containerWidth / 3
+                    let leftPosition, background
+                    
+                    if (mouseX < sectionWidth) {
+                      // Manual section
+                      leftPosition = Math.max(4, Math.min(mouseX - indicatorWidth / 2, sectionWidth - indicatorWidth - 4))
+                      background = 'linear-gradient(to right, hsl(var(--secondary)), hsl(var(--secondary-foreground)))'
+                    } else if (mouseX < sectionWidth * 2) {
+                      // Create section
+                      leftPosition = Math.max(sectionWidth + 2, Math.min(mouseX - indicatorWidth / 2, sectionWidth * 2 - indicatorWidth - 2))
+                      background = 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
+                    } else {
+                      // Join section
+                      leftPosition = Math.max(sectionWidth * 2 + 2, Math.min(mouseX - indicatorWidth / 2, containerWidth - indicatorWidth - 4))
+                      background = 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+                    }
                     
                     return {
                       left: `${leftPosition}px`,
                       width: `${indicatorWidth}px`,
-                      background: mouseX < containerWidth / 2 
-                        ? 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
-                        : 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+                      background
                     }
                   } else {
                     // Use selected state when not hovering
-                    return mode === 'create' 
-                      ? {
-                          left: '4px',
-                          width: 'calc(50% - 4px)',
-                          background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
-                        }
-                      : {
-                          left: 'calc(50% + 3px)',
-                          width: 'calc(50% - 4px)',
-                          background: 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
-                        }
+                    if (mode === 'manual') {
+                      return {
+                        left: '4px',
+                        width: 'calc(33.333% - 4px)',
+                        background: 'linear-gradient(to right, hsl(var(--secondary)), hsl(var(--secondary-foreground)))'
+                      }
+                    } else if (mode === 'create') {
+                      return {
+                        left: 'calc(33.333% + 2px)',
+                        width: 'calc(33.333% - 4px)',
+                        background: 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
+                      }
+                    } else {
+                      return {
+                        left: 'calc(66.666% + 2px)',
+                        width: 'calc(33.333% - 4px)',
+                        background: 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
+                      }
+                    }
                   }
                 }
 
@@ -98,41 +119,50 @@ function AppLayout({ children }: AppLayoutProps) {
                     onMouseMove={handleMouseMove}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1 flex backdrop-blur-sm border border-border/50 shadow-elegant w-[280px]"
+                    className="relative bg-gradient-to-r from-muted/50 to-muted/30 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-xl p-1 flex backdrop-blur-sm border border-border/50 shadow-elegant w-[360px]"
                   >
                     <div 
                       className="toggle-indicator"
                       style={getIndicatorStyle()}
                     />
                     <button
+                      onClick={() => navigate('/manual')}
+                      className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                        mode === 'manual'
+                          ? 'text-white shadow-sm'
+                          : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
+                      }`}
+                      aria-current={mode === 'manual' ? 'page' : undefined}
+                    >
+                      <span className="text-xs">Manual</span>
+                    </button>
+                    <button
                       onClick={() => navigate('/create')}
-                      className={`toggle-button relative z-10 px-4 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                      className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'create'
                           ? 'text-white shadow-sm'
                           : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
                       }`}
                       aria-current={mode === 'create' ? 'page' : undefined}
                     >
-                      <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
+                      <Plus className={`w-3 h-3 mr-1 transition-all duration-300 ${
                         mode === 'create' ? 'text-white' : 'text-primary'
                       }`} />
-                      <span className="hidden sm:inline">Create</span>
-                      <span className="sm:hidden">Create</span>
+                      <span className="text-xs">Create</span>
                     </button>
                     <button
                       onClick={() => navigate('/join')}
-                      className={`toggle-button relative z-10 px-4 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                      className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'join'
                           ? 'text-white shadow-sm'
                           : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
                       }`}
                       aria-current={mode === 'join' ? 'page' : undefined}
                     >
-                      <UserPlus className={`w-4 h-4 mr-2 transition-all duration-300 ${
+                      <UserPlus className={`w-3 h-3 mr-1 transition-all duration-300 ${
                         mode === 'join' ? 'text-white' : 'text-moss-green'
                       }`} />
-                      <span className="hidden sm:inline">Join</span>
-                      <span className="sm:hidden">Join</span>
+                      <span className="text-xs">Join</span>
                     </button>
                   </div>
                 )

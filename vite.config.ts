@@ -31,8 +31,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   preview: {
-    // Enable SPA fallback for preview mode
-    historyApiFallback: true,
+    port: 4173,
+    host: "::",
   },
 }));
 

@@ -79,7 +79,6 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
     onFocusSearch: () => searchRef.current?.focus(),
     onNextSpeaker: () => stack.length > 0 && handleNextSpeaker(),
     onUndo: handleUndo,
-    onToggleShortcuts: toggleShortcuts
   });
 
   // Enhanced add to stack function
