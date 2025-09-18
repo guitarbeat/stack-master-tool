@@ -73,51 +73,6 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
     formatTime
   } = useSpeakerTimer();
 
-  // Keyboard shortcuts with stable references
-  const keyboardShortcuts = useMemo(() => ({
-    onFocusAddInput: () => inputRef.current?.focus(),
-    onFocusSearch: () => searchRef.current?.focus(),
-    onNextSpeaker: () => {
-      if (stack.length > 0) {
-        const currentSpeaker = stack[0];
-        if (speakerTimer) {
-          const durationMs = Date.now() - speakerTimer.startTime.getTime();
-          addSpeakingSegment(
-            currentSpeaker.id,
-            currentSpeaker.name,
-            durationMs,
-            isDirectResponseActive && directResponseParticipantId === currentSpeaker.id
-          );
-        }
-        const result = nextSpeaker();
-        if (result?.remainingStack.length > 0) {
-          startSpeakerTimer(result.remainingStack[0].id);
-        } else {
-          stopSpeakerTimer();
-        }
-      }
-    },
-    onUndo: handleUndo,
-  }), [stack, speakerTimer, addSpeakingSegment, isDirectResponseActive, directResponseParticipantId, nextSpeaker, startSpeakerTimer, stopSpeakerTimer, handleUndo]);
-
-  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts(keyboardShortcuts);
-
-  // Enhanced add to stack function
-  const handleAddToStack = useCallback(() => {
-    if (!newParticipantName.trim()) return;
-    
-    const newParticipant = addToStack(newParticipantName);
-    if (newParticipant) {
-      addRecentParticipant(newParticipant.name);
-      setNewParticipantName("");
-      
-      // Start timer if this is the first person
-      if (stack.length === 0) {
-        startSpeakerTimer(newParticipant.id);
-      }
-    }
-  }, [newParticipantName, addToStack, addRecentParticipant, stack.length, startSpeakerTimer]);
-
   // Enhanced next speaker function
   const handleNextSpeaker = useCallback(() => {
     if (stack.length === 0) return;
@@ -147,6 +102,32 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
       }
     }
   }, [stack, speakerTimer, addSpeakingSegment, isDirectResponseActive, directResponseParticipantId, nextSpeaker, startSpeakerTimer, stopSpeakerTimer]);
+
+  // Keyboard shortcuts with stable references
+  const keyboardShortcuts = useMemo(() => ({
+    onFocusAddInput: () => inputRef.current?.focus(),
+    onFocusSearch: () => searchRef.current?.focus(),
+    onNextSpeaker: handleNextSpeaker,
+    onUndo: handleUndo,
+  }), [handleNextSpeaker, handleUndo]);
+
+  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts(keyboardShortcuts);
+
+  // Enhanced add to stack function
+  const handleAddToStack = useCallback(() => {
+    if (!newParticipantName.trim()) return;
+    
+    const newParticipant = addToStack(newParticipantName);
+    if (newParticipant) {
+      addRecentParticipant(newParticipant.name);
+      setNewParticipantName("");
+      
+      // Start timer if this is the first person
+      if (stack.length === 0) {
+        startSpeakerTimer(newParticipant.id);
+      }
+    }
+  }, [newParticipantName, addToStack, addRecentParticipant, stack.length, startSpeakerTimer]);
 
   // Enhanced remove from stack function
   const handleRemoveFromStack = useCallback((id: string) => {
