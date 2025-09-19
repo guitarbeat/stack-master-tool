@@ -432,6 +432,19 @@
     .mobile-safe-area {
       padding-bottom: env(safe-area-inset-bottom);
     }
+    
+    /* Home page mobile optimizations */
+    .hero-text {
+      @apply text-3xl leading-tight;
+    }
+    
+    .liquid-glass {
+      backdrop-filter: blur(16px) saturate(150%);
+    }
+    
+    .organic-blob {
+      animation-duration: 6s; /* Slightly faster on mobile */
+    }
   }
 
   /* Improved touch targets for mobile */

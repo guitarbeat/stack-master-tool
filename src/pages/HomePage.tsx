@@ -2,6 +2,8 @@
 import { Hero } from '@/components/Hero'
 import { ActionCards } from '@/components/ActionCards'
 import { HowItWorks } from '@/components/HowItWorks'
+import { Features } from '@/components/Features'
+import { Testimonials } from '@/components/Testimonials'
 // Removed CallToAction to reduce redundancy with ActionCards and header nav
 
 
@@ -15,15 +17,23 @@ function HomePage() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-primary/5 organic-blob organic-blob-delay-4"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
         <Hero />
         <section aria-labelledby="action-cards-heading" className="mb-8 sm:mb-12">
           <h2 id="action-cards-heading" className="sr-only">Main Actions</h2>
           <ActionCards />
         </section>
-        <section aria-labelledby="how-it-works-heading">
+        <section aria-labelledby="how-it-works-heading" className="mb-8 sm:mb-12">
           <h2 id="how-it-works-heading" className="sr-only">How It Works</h2>
           <HowItWorks />
+        </section>
+        <section aria-labelledby="features-heading" className="mb-8 sm:mb-12">
+          <h2 id="features-heading" className="sr-only">Platform Features</h2>
+          <Features />
+        </section>
+        <section aria-labelledby="testimonials-heading">
+          <h2 id="testimonials-heading" className="sr-only">Community Testimonials</h2>
+          <Testimonials />
         </section>
       </div>
     </main>
