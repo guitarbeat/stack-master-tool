@@ -33,7 +33,13 @@ function handleJoinMeeting(socket, data) {
   }
   
   if (participantName.trim().length > 50) {
-    sendSocketError(socket, 'INVALID_PARTICIPANT_NAME', 'Participant name must be 50 characters or less');
+    sendSocketError(socket, 'NAME_TOO_LONG', 'Participant name must be 50 characters or less');
+    return;
+  }
+  
+  // Validate name characters
+  if (!/^[a-zA-Z0-9\s]+$/.test(participantName.trim())) {
+    sendSocketError(socket, 'INVALID_CHARACTERS', 'Participant name can only contain letters, numbers, and spaces');
     return;
   }
   
@@ -197,7 +203,7 @@ function handleNextSpeaker(socket) {
   }
   
   if (!participant.isFacilitator) {
-    sendSocketError(socket, 'AUTHORIZATION', 'Not authorized - facilitator access required');
+    sendSocketError(socket, 'FACILITATOR_REQUIRED', 'Not authorized - facilitator access required');
     return;
   }
   

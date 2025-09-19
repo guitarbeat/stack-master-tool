@@ -35,11 +35,23 @@ class ApiService {
         
         switch (response.status) {
           case 400:
+            // Map specific error codes from server
+            if (errorData.code) {
+              throw new AppError(errorData.code, undefined, errorData.error || 'Invalid request data')
+            }
             throw new AppError(ErrorCode.VALIDATION, undefined, errorData.error || 'Invalid request data')
+          case 404:
+            throw new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, errorData.error || 'Meeting not found')
+          case 409:
+            throw new AppError(ErrorCode.MEETING_CODE_EXISTS, undefined, errorData.error || 'Meeting code already exists')
+          case 429:
+            throw new AppError(ErrorCode.RATE_LIMIT_EXCEEDED, undefined, errorData.error || 'Too many requests')
           case 500:
             throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, 'Server error occurred')
           case 503:
             throw new AppError(ErrorCode.SERVICE_UNAVAILABLE, undefined, 'Service temporarily unavailable')
+          case 504:
+            throw new AppError(ErrorCode.REQUEST_TIMEOUT, undefined, 'Request timed out')
           default:
             throw new AppError(ErrorCode.SERVER, undefined, `Server error: ${response.status}`)
         }
@@ -80,14 +92,22 @@ class ApiService {
         const errorData = await response.json().catch(() => ({}))
         
         switch (response.status) {
+          case 400:
+            // Map specific error codes from server
+            if (errorData.code) {
+              throw new AppError(errorData.code, undefined, errorData.error || 'Invalid request data')
+            }
+            throw new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, 'Invalid meeting code format')
           case 404:
             throw new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, errorData.error || 'Meeting not found')
-          case 400:
-            throw new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, 'Invalid meeting code format')
+          case 429:
+            throw new AppError(ErrorCode.RATE_LIMIT_EXCEEDED, undefined, errorData.error || 'Too many requests')
           case 500:
             throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, 'Server error occurred')
           case 503:
             throw new AppError(ErrorCode.SERVICE_UNAVAILABLE, undefined, 'Service temporarily unavailable')
+          case 504:
+            throw new AppError(ErrorCode.REQUEST_TIMEOUT, undefined, 'Request timed out')
           default:
             throw new AppError(ErrorCode.SERVER, undefined, `Server error: ${response.status}`)
         }

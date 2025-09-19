@@ -6,16 +6,13 @@ import socketService from '../services/socket'
 import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 import { AppError, getErrorDisplayInfo } from '../utils/errorHandling'
+import { useValidation, validationRules } from '../utils/validation'
 
 interface FormData {
   meetingCode: string
   participantName: string
 }
 
-interface ValidationState {
-  meetingCode: 'idle' | 'validating' | 'valid' | 'invalid'
-  participantName: 'idle' | 'valid' | 'invalid'
-}
 
 function JoinMeeting(): JSX.Element {
   const navigate = useNavigate()
@@ -29,52 +26,54 @@ function JoinMeeting(): JSX.Element {
   })
   const [isJoining, setIsJoining] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
-  const [validation, setValidation] = useState<ValidationState>({
-    meetingCode: 'idle',
-    participantName: 'idle'
-  })
   const [meetingInfo, setMeetingInfo] = useState<{ title: string; code: string; facilitator: string } | null>(null)
+  
+  // Real-time validation
+  const meetingCodeValidation = useValidation(
+    formData.meetingCode,
+    [validationRules.meetingCode()],
+    500
+  )
+  
+  const participantNameValidation = useValidation(
+    formData.participantName,
+    [validationRules.participantName()],
+    300
+  )
 
   // Real-time validation for meeting code
   useEffect(() => {
     const validateMeetingCode = async () => {
-      if (formData.meetingCode.length === 6) {
-        setValidation(prev => ({ ...prev, meetingCode: 'validating' }))
+      if (formData.meetingCode.length === 6 && meetingCodeValidation.isValid) {
         try {
           const meeting = await apiService.getMeeting(formData.meetingCode)
           setMeetingInfo(meeting)
-          setValidation(prev => ({ ...prev, meetingCode: 'valid' }))
           setError('')
         } catch (err) {
-          setValidation(prev => ({ ...prev, meetingCode: 'invalid' }))
           setError('Meeting not found. Please check the code and try again.')
         }
       } else if (formData.meetingCode.length > 0) {
-        setValidation(prev => ({ ...prev, meetingCode: 'idle' }))
         setError('')
       } else {
-        setValidation(prev => ({ ...prev, meetingCode: 'idle' }))
         setError('')
       }
     }
 
     const timeoutId = setTimeout(validateMeetingCode, 500)
     return () => clearTimeout(timeoutId)
-  }, [formData.meetingCode])
-
-  // Real-time validation for participant name
-  useEffect(() => {
-    if (formData.participantName.length > 0) {
-      setValidation(prev => ({ ...prev, participantName: 'valid' }))
-    } else {
-      setValidation(prev => ({ ...prev, participantName: 'idle' }))
-    }
-  }, [formData.participantName])
+  }, [formData.meetingCode, meetingCodeValidation.isValid])
 
   const handleJoinMeeting = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsJoining(true)
     setError('')
+
+    // Validate form before submission
+    if (!meetingCodeValidation.isValid || !participantNameValidation.isValid) {
+      setError('Please fix the validation errors before joining.')
+      setIsJoining(false)
+      return
+    }
 
     try {
       const meetingInfo = await apiService.getMeeting(formData.meetingCode)
@@ -153,9 +152,9 @@ function JoinMeeting(): JSX.Element {
                     meetingCode: e.target.value.toUpperCase() 
                   }))}
                   className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-moss-green focus:border-transparent text-center text-2xl font-bold tracking-wider disabled:bg-gray-100 dark:bg-zinc-950 dark:text-zinc-100 form-input ${
-                    validation.meetingCode === 'valid' 
+                    meetingCodeValidation.isValid && formData.meetingCode.length === 6
                       ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
-                      : validation.meetingCode === 'invalid' 
+                      : !meetingCodeValidation.isValid && formData.meetingCode.length > 0
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
                       : 'border-gray-300 dark:border-zinc-800'
                   }`}
@@ -164,25 +163,25 @@ function JoinMeeting(): JSX.Element {
                   aria-describedby="meeting-code-status"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  {validation.meetingCode === 'validating' && (
+                  {meetingCodeValidation.isValidating && (
                     <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
                   )}
-                  {validation.meetingCode === 'valid' && (
+                  {meetingCodeValidation.isValid && formData.meetingCode.length === 6 && (
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   )}
-                  {validation.meetingCode === 'invalid' && (
+                  {!meetingCodeValidation.isValid && formData.meetingCode.length > 0 && (
                     <XCircle className="w-5 h-5 text-red-500" />
                   )}
                 </div>
               </div>
-              {validation.meetingCode === 'valid' && meetingInfo && (
+              {meetingCodeValidation.isValid && formData.meetingCode.length === 6 && meetingInfo && (
                 <p id="meeting-code-status" className="mt-2 text-sm text-green-600 dark:text-green-400 break-words">
                   ✓ Meeting found: {meetingInfo.title}
                 </p>
               )}
-              {validation.meetingCode === 'invalid' && (
+              {!meetingCodeValidation.isValid && formData.meetingCode.length > 0 && (
                 <p id="meeting-code-status" className="mt-2 text-sm text-red-600 dark:text-red-400">
-                  ✗ Meeting not found
+                  ✗ {meetingCodeValidation.message}
                 </p>
               )}
             </div>
@@ -202,29 +201,39 @@ function JoinMeeting(): JSX.Element {
                     participantName: e.target.value 
                   }))}
                   className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-moss-green focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:text-zinc-100 form-input ${
-                    validation.participantName === 'valid' 
+                    participantNameValidation.isValid && formData.participantName.length > 0
                       ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                      : !participantNameValidation.isValid && formData.participantName.length > 0
+                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
                       : 'border-gray-300 dark:border-zinc-800'
                   }`}
                   placeholder="Enter your name"
                   aria-describedby="participant-name-status"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  {validation.participantName === 'valid' && (
+                  {participantNameValidation.isValid && formData.participantName.length > 0 && (
                     <CheckCircle className="w-5 h-5 text-green-500" />
+                  )}
+                  {!participantNameValidation.isValid && formData.participantName.length > 0 && (
+                    <XCircle className="w-5 h-5 text-red-500" />
                   )}
                 </div>
               </div>
-              {validation.participantName === 'valid' && (
+              {participantNameValidation.isValid && formData.participantName.length > 0 && (
                 <p id="participant-name-status" className="mt-2 text-sm text-green-600 dark:text-green-400">
                   ✓ Name entered
+                </p>
+              )}
+              {!participantNameValidation.isValid && formData.participantName.length > 0 && (
+                <p id="participant-name-status" className="mt-2 text-sm text-red-600 dark:text-red-400">
+                  ✗ {participantNameValidation.message}
                 </p>
               )}
             </div>
 
             <button
               type="submit"
-              disabled={isJoining || validation.meetingCode !== 'valid' || validation.participantName !== 'valid'}
+              disabled={isJoining || !meetingCodeValidation.isValid || !participantNameValidation.isValid}
               className="w-full bg-moss-green text-white py-3 px-6 rounded-lg font-semibold hover:bg-moss-green/90 transition-colors disabled:bg-moss-green/40 disabled:cursor-not-allowed flex items-center justify-center touch-target"
             >
               {isJoining ? (
@@ -238,14 +247,14 @@ function JoinMeeting(): JSX.Element {
             </button>
             
             {/* Validation status message */}
-            {!isJoining && (validation.meetingCode !== 'valid' || validation.participantName !== 'valid') && (
+            {!isJoining && (!meetingCodeValidation.isValid || !participantNameValidation.isValid) && (
               <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-900/20 dark:border-amber-900/40">
                 <div className="flex items-start sm:items-center">
                   <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mr-2 mt-0.5 sm:mt-0 flex-shrink-0" />
                   <p className="text-sm text-amber-600 dark:text-amber-400 break-words">
-                    {validation.meetingCode !== 'valid' && validation.participantName !== 'valid' 
+                    {!meetingCodeValidation.isValid && !participantNameValidation.isValid 
                       ? 'Please enter a valid meeting code and your name to continue'
-                      : validation.meetingCode !== 'valid' 
+                      : !meetingCodeValidation.isValid 
                       ? 'Please enter a valid meeting code to continue'
                       : 'Please enter your name to continue'
                     }

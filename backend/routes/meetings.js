@@ -39,11 +39,16 @@ router.post('/meetings', (req, res) => {
     
     // Validate length constraints
     if (facilitatorName.trim().length > 50) {
-      return sendErrorResponse(res, 400, 'INVALID_PARTICIPANT_NAME', 'Facilitator name must be 50 characters or less');
+      return sendErrorResponse(res, 400, 'NAME_TOO_LONG', 'Facilitator name must be 50 characters or less');
     }
     
     if (meetingTitle.trim().length > 100) {
-      return sendErrorResponse(res, 400, 'MISSING_REQUIRED_FIELD', 'Meeting title must be 100 characters or less');
+      return sendErrorResponse(res, 400, 'INVALID_MEETING_TITLE', 'Meeting title must be 100 characters or less');
+    }
+    
+    // Validate name characters
+    if (!/^[a-zA-Z0-9\s]+$/.test(facilitatorName.trim())) {
+      return sendErrorResponse(res, 400, 'INVALID_CHARACTERS', 'Facilitator name can only contain letters, numbers, and spaces');
     }
     
     const meeting = meetingsService.createMeeting(facilitatorName.trim(), meetingTitle.trim());
@@ -57,7 +62,7 @@ router.post('/meetings', (req, res) => {
     console.error('Error creating meeting:', error);
     
     if (error.message && error.message.includes('already exists')) {
-      return sendErrorResponse(res, 409, 'CONFLICT', 'Meeting code already exists, please try again');
+      return sendErrorResponse(res, 409, 'MEETING_CODE_EXISTS', 'Meeting code already exists, please try again');
     }
     
     sendErrorResponse(res, 500, 'INTERNAL_SERVER_ERROR', 'Failed to create meeting');
