@@ -6,6 +6,7 @@ import apiService from '../services/api'
 import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 import Confetti from '../components/ui/Confetti.jsx'
+import { useMeetingCreator } from '../hooks/useMeetingCreator'
 
 interface MeetingData {
   name: string
@@ -17,6 +18,7 @@ interface MeetingData {
 
 function CreateMeeting(): JSX.Element {
   const navigate = useNavigate()
+  const { setCreator } = useMeetingCreator()
   const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
     toast({ title, description })
   }
@@ -53,6 +55,14 @@ function CreateMeeting(): JSX.Element {
         meetingId: response.meetingId,
         shareableLink
       }))
+      
+      // Store creator information
+      setCreator({
+        meetingCode: response.meetingCode,
+        facilitatorName: meetingData.facilitatorName,
+        meetingTitle: meetingData.name
+      })
+      
       setStep(2)
 
       // Generate QR in background

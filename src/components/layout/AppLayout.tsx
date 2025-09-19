@@ -1,8 +1,9 @@
 import { ReactNode, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, Plus, UserPlus, MessageSquare, QrCode } from 'lucide-react'
+import { Menu, X, Plus, UserPlus, MessageSquare, QrCode, Settings } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle'
 import { useMouseFollow } from '@/hooks/use-mouse-follow'
+import { useMeetingCreator } from '@/hooks/useMeetingCreator'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -10,6 +11,7 @@ interface AppLayoutProps {
 
 function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation()
+  const { creatorInfo, isCreator } = useMeetingCreator()
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/'
@@ -159,6 +161,19 @@ function AppLayout({ children }: AppLayoutProps) {
                 )
               })()}
             </nav>
+            
+            {/* Facilitate Button - Only show if user is a meeting creator */}
+            {isCreator && creatorInfo && (
+              <Link
+                to={`/facilitate/${creatorInfo.meetingCode}`}
+                className="hidden md:flex items-center px-4 py-2 bg-accent text-white rounded-lg font-semibold hover:bg-accent-hover transition-colors"
+                title={`Facilitate: ${creatorInfo.meetingTitle}`}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Facilitate
+              </Link>
+            )}
+            
             <ThemeToggle />
             <button
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800"
@@ -227,6 +242,17 @@ function AppLayout({ children }: AppLayoutProps) {
                   <QrCode className="w-3 h-3 mr-2" />
                   Join Meeting
                 </Link>
+                {/* Facilitate Button for Mobile */}
+                {isCreator && creatorInfo && (
+                  <Link
+                    to={`/facilitate/${creatorInfo.meetingCode}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="h-8 flex items-center px-4 rounded-lg text-sm font-medium bg-accent/20 text-accent hover:bg-accent/30"
+                  >
+                    <Settings className="w-3 h-3 mr-2" />
+                    Facilitate
+                  </Link>
+                )}
               </div>
             </div>
           </nav>

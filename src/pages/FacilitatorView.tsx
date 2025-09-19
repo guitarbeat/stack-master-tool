@@ -12,6 +12,7 @@ import { SpeakingDistribution } from '../components/StackKeeper/SpeakingDistribu
 import { InterventionsPanel } from '../components/StackKeeper/InterventionsPanel'
 import useFacilitatorSocket from '../hooks/useFacilitatorSocket'
 import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
+import { useMeetingCreator } from '../hooks/useMeetingCreator'
 
 interface MeetingData {
   code: string
@@ -24,6 +25,7 @@ function FacilitatorView(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const { clearCreator } = useMeetingCreator()
   const showToast = (payload: { title: string; description?: string }) => {
     toast(payload)
   }
@@ -67,6 +69,7 @@ function FacilitatorView(): JSX.Element {
 
   const leaveMeeting = () => {
     disconnect()
+    clearCreator() // Clear creator info when leaving
     navigate('/')
   }
 
