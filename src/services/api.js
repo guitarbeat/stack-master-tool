@@ -1,7 +1,7 @@
 import { AppError, ErrorCode, ErrorType, logError } from '../utils/errorHandling'
 
 // API configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://stack-facilitation-app-simple-backend.onrender.com'
 
 class ApiService {
   constructor() {
