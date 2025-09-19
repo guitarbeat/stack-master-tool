@@ -1,4 +1,4 @@
-import { AppError, ErrorCode, ErrorType, logError } from '../utils/errorHandling.js'
+import { AppError, ErrorCode, ErrorType, logError } from '../utils/errorHandling'
 
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
@@ -39,7 +39,7 @@ class ApiService {
             if (errorData.code) {
               throw new AppError(errorData.code, undefined, errorData.error || 'Invalid request data')
             }
-            throw new AppError(ErrorCode.VALIDATION, undefined, errorData.error || 'Invalid request data')
+            throw new AppError(ErrorCode.INVALID_PARTICIPANT_NAME, undefined, errorData.error || 'Invalid request data')
           case 404:
             throw new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, errorData.error || 'Meeting not found')
           case 409:
@@ -53,7 +53,7 @@ class ApiService {
           case 504:
             throw new AppError(ErrorCode.REQUEST_TIMEOUT, undefined, 'Request timed out')
           default:
-            throw new AppError(ErrorCode.SERVER, undefined, `Server error: ${response.status}`)
+            throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, `Server error: ${response.status}`)
         }
       }
 
@@ -75,7 +75,7 @@ class ApiService {
       }
       
       logError(error, 'createMeeting')
-      throw new AppError(ErrorCode.UNKNOWN, error, 'Failed to create meeting')
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to create meeting')
     }
   }
 
@@ -109,7 +109,7 @@ class ApiService {
           case 504:
             throw new AppError(ErrorCode.REQUEST_TIMEOUT, undefined, 'Request timed out')
           default:
-            throw new AppError(ErrorCode.SERVER, undefined, `Server error: ${response.status}`)
+            throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, `Server error: ${response.status}`)
         }
       }
 
@@ -131,7 +131,7 @@ class ApiService {
       }
       
       logError(error, 'getMeeting')
-      throw new AppError(ErrorCode.UNKNOWN, error, 'Failed to get meeting')
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to get meeting')
     }
   }
 
