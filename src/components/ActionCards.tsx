@@ -9,9 +9,9 @@ export const ActionCards = () => {
     {
       to: "/create",
       icon: <MessageSquare className="w-8 h-8 text-primary" />,
-      title: "Cultivate Meeting",
-      description: "Plant the seed for meaningful dialogue. Generate a shareable space where voices can flourish and grow organically.",
-      cta: "Start Growing",
+      title: "Create Meeting",
+      description: "Set up a new meeting room with a shareable code for participants to join.",
+      cta: "Create Meeting",
       emoji: "🌱",
       gradient: "from-primary to-primary/80",
       bgBlob: "bg-primary/10",
@@ -20,9 +20,9 @@ export const ActionCards = () => {
     {
       to: "/join",
       icon: <QrCode className="w-8 h-8 text-accent" />,
-      title: "Join the Grove",
-      description: "Connect with an existing circle. Enter a meeting code and add your voice to the collective wisdom and conversation.",
-      cta: "Enter Circle",
+      title: "Join Meeting",
+      description: "Enter a meeting code to join an existing discussion and participate in the speaking queue.",
+      cta: "Join Meeting",
       emoji: "🌿",
       gradient: "from-accent to-accent/80",
       bgBlob: "bg-accent/10",
@@ -32,7 +32,7 @@ export const ActionCards = () => {
       to: "/manual",
       icon: <Users className="w-8 h-8 text-primary" />,
       title: "Manual Stack",
-      description: "Manage speaking queues offline. Perfect for in-person meetings and direct facilitation without digital dependencies.",
+      description: "Manage speaking queues offline. Perfect for in-person meetings and direct facilitation.",
       cta: "Start Facilitating",
       emoji: "📝",
       gradient: "from-primary to-accent",
@@ -50,11 +50,11 @@ export const ActionCards = () => {
           <span>Get Started</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Choose Your
-          <span className="text-primary"> Journey</span>
+          Get
+          <span className="text-primary"> Started</span>
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Three ways to begin your organic facilitation experience
+          Choose how you want to use the stack facilitation tool
         </p>
       </div>
 

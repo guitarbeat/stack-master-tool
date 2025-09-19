@@ -8,21 +8,21 @@ export const HowItWorks = () => {
   const steps = [
     {
       icon: <MessageSquare className="w-8 h-8 text-primary" />,
-      title: "Plant the Seed",
-      summary: "Create or join a meeting space",
-      details: "Start by creating a new meeting room or joining an existing one using a meeting code. The platform generates a unique space where participants can gather and contribute to the conversation organically."
+      title: "Create Meeting",
+      summary: "Set up a meeting room",
+      details: "Create a new meeting room or join an existing one using a meeting code. Each meeting has a unique space where participants can gather and participate in the discussion."
     },
     {
       icon: <Users className="w-8 h-8 text-accent" />,
-      title: "Grow Together",
-      summary: "Add participants to the stack",
-      details: "Participants can add themselves to the speaking queue, creating a natural flow of conversation. The democratic system ensures everyone has an equal opportunity to contribute their voice to the discussion."
+      title: "Add Participants",
+      summary: "Build the speaking queue",
+      details: "Participants can add themselves to the speaking queue. The system ensures everyone has an equal opportunity to contribute to the discussion in an organized manner."
     },
     {
       icon: <Leaf className="w-8 h-8 text-primary" />,
-      title: "Nurture Dialogue",
-      summary: "Facilitate organic conversation",
-      details: "The facilitator manages the speaking order while maintaining the natural flow of conversation. The system supports sustainable, human-centered dialogue that grows organically based on participant needs and contributions."
+      title: "Facilitate Discussion",
+      summary: "Manage the speaking order",
+      details: "The facilitator manages the speaking order and ensures fair turn-taking. The system helps maintain organized, democratic discussions where everyone can participate effectively."
     }
   ]
 
@@ -35,12 +35,12 @@ export const HowItWorks = () => {
           <span>How It Works</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Three Simple Steps to
+          How to Use the
           <br />
-          <span className="text-primary">Organic Facilitation</span>
+          <span className="text-primary">Stack Tool</span>
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Transform your meetings into inclusive, democratic conversations that grow naturally
+          Three simple steps to set up and facilitate democratic discussions
         </p>
       </div>
 
@@ -88,15 +88,15 @@ export const HowItWorks = () => {
                     <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">{item.details}</p>
                   </div>
                   
-                  {/* Additional Benefits */}
+                  {/* Key Features */}
                   <div className="grid grid-cols-2 gap-3 pt-4">
                     <div className="text-center p-3 bg-primary/5 rounded-xl">
-                      <div className="text-primary font-semibold text-sm">Democratic</div>
-                      <div className="text-xs text-muted-foreground">Equal voice</div>
+                      <div className="text-primary font-semibold text-sm">Organized</div>
+                      <div className="text-xs text-muted-foreground">Clear queue</div>
                     </div>
                     <div className="text-center p-3 bg-accent/5 rounded-xl">
-                      <div className="text-accent font-semibold text-sm">Organic</div>
-                      <div className="text-xs text-muted-foreground">Natural flow</div>
+                      <div className="text-accent font-semibold text-sm">Fair</div>
+                      <div className="text-xs text-muted-foreground">Equal turns</div>
                     </div>
                   </div>
                 </div>

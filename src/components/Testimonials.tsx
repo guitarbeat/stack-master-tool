@@ -6,35 +6,35 @@ export const Testimonials = () => {
 
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Community Facilitator",
-      organization: "Austin Community Center",
-      content: "Organic Stack has transformed how we conduct community meetings. The democratic process ensures every voice is heard, and the organic flow feels so much more natural than traditional facilitation methods.",
-      rating: 5,
-      avatar: "SC"
+      name: "Community Feedback",
+      role: "User Experience",
+      organization: "Open Source Community",
+      content: "This tool helps create more inclusive and organized discussions by ensuring everyone has a fair chance to speak.",
+      rating: 4,
+      avatar: "CF"
     },
     {
-      name: "Marcus Rodriguez",
-      role: "Non-profit Director",
-      organization: "Sustainable Futures",
-      content: "The platform's human-centered design makes complex discussions feel manageable. Our team meetings are now more inclusive and productive than ever before.",
-      rating: 5,
-      avatar: "MR"
+      name: "Facilitator Insights",
+      role: "Meeting Management",
+      organization: "Democratic Process",
+      content: "The speaking queue system makes it easier to manage turn-taking and maintain order in group discussions.",
+      rating: 4,
+      avatar: "FI"
     },
     {
-      name: "Dr. Aisha Patel",
-      role: "Research Coordinator",
-      organization: "University of Texas",
-      content: "As someone who studies group dynamics, I'm impressed by how Organic Stack creates genuine democratic participation. It's not just a tool—it's a philosophy of inclusive communication.",
-      rating: 5,
-      avatar: "AP"
+      name: "User Research",
+      role: "Accessibility Focus",
+      organization: "Inclusive Design",
+      content: "The platform's design prioritizes equal participation and helps create more structured, productive conversations.",
+      rating: 4,
+      avatar: "UR"
     }
   ]
 
   const stats = [
-    { icon: <Users className="w-5 h-5 text-primary" />, value: "500+", label: "Active Facilitators" },
-    { icon: <Heart className="w-5 h-5 text-accent" />, value: "10K+", label: "Meetings Facilitated" },
-    { icon: <Globe className="w-5 h-5 text-primary" />, value: "25+", label: "Countries Served" }
+    { icon: <Users className="w-5 h-5 text-primary" />, value: "Open", label: "Source Project" },
+    { icon: <Heart className="w-5 h-5 text-accent" />, value: "Free", label: "To Use" },
+    { icon: <Globe className="w-5 h-5 text-primary" />, value: "MIT", label: "License" }
   ]
 
   return (
@@ -46,11 +46,11 @@ export const Testimonials = () => {
           <span>Community Voices</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Trusted by
-          <span className="text-primary"> Facilitators Worldwide</span>
+          Community
+          <span className="text-primary"> Feedback</span>
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
-          Join a growing community of facilitators who have discovered the power of organic conversation
+          Feedback from users about the tool's effectiveness in facilitating democratic discussions
         </p>
       </div>
 
@@ -127,25 +127,25 @@ export const Testimonials = () => {
       <div className="text-center mt-12 sm:mt-16">
         <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-3xl mx-auto">
           <h3 className="text-xl sm:text-2xl font-bold gradient-text mb-3">
-            Ready to Join Our Community?
+            Try the Tool
           </h3>
           <p className="text-muted-foreground text-sm sm:text-base mb-6">
-            Experience the difference that organic facilitation can make in your meetings and conversations.
+            Create a meeting or use the manual stack keeper to facilitate democratic discussions.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span>4.9/5 Rating</span>
+              <span>Open Source</span>
             </div>
             <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4 text-primary" />
-              <span>500+ Active Users</span>
+              <span>Free to Use</span>
             </div>
             <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
             <div className="flex items-center gap-1">
               <Heart className="w-4 h-4 text-accent" />
-              <span>Trusted Worldwide</span>
+              <span>MIT Licensed</span>
             </div>
           </div>
         </div>

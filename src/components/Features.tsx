@@ -52,12 +52,11 @@ export const Features = () => {
           <span>Platform Features</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Built for
-          <span className="text-primary"> Meaningful Connection</span>
+          Platform
+          <span className="text-primary"> Features</span>
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
-          Our platform combines cutting-edge technology with human-centered design to create 
-          the most inclusive and effective facilitation experience possible.
+          Key features that support democratic meeting facilitation and organized discussions.
         </p>
       </div>
 
@@ -108,10 +107,10 @@ export const Features = () => {
       <div className="text-center mt-12 sm:mt-16">
         <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto">
           <h3 className="text-xl sm:text-2xl font-bold gradient-text mb-3">
-            Ready to Transform Your Meetings?
+            Get Started
           </h3>
           <p className="text-muted-foreground text-sm sm:text-base mb-6">
-            Join thousands of facilitators who have already discovered the power of organic conversation.
+            Create a meeting or use the manual stack keeper to begin facilitating democratic discussions.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <div className="text-2xl sm:text-3xl">🌱</div>

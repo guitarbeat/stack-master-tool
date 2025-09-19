@@ -49,23 +49,23 @@ export const Hero = () => (
       {/* Enhanced Description */}
       <div className="space-y-4 max-w-3xl mx-auto">
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed font-light">
-          Nurture inclusive conversations that grow naturally through democratic, 
-          sustainable, and human-centered facilitation.
+          A tool for facilitating democratic discussions with organized speaking queues 
+          and fair turn-taking.
         </p>
         
-        {/* Key Benefits */}
+        {/* Key Features */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base">
           <div className="flex items-center gap-2 text-primary font-medium">
             <CheckCircle className="w-4 h-4" />
-            <span>Democratic</span>
+            <span>Speaking Queue</span>
           </div>
           <div className="flex items-center gap-2 text-accent font-medium">
             <CheckCircle className="w-4 h-4" />
-            <span>Sustainable</span>
+            <span>Real-time Sync</span>
           </div>
           <div className="flex items-center gap-2 text-primary font-medium">
             <CheckCircle className="w-4 h-4" />
-            <span>Human-centered</span>
+            <span>Fair Turn-taking</span>
           </div>
         </div>
       </div>
