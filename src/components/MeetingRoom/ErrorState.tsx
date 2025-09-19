@@ -1,12 +1,27 @@
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ErrorDisplay } from "../ErrorDisplay";
+import { AppError } from "../../utils/errorHandling";
 
 interface ErrorStateProps {
-  error: string;
+  error: string | AppError;
 }
 
 export const ErrorState = ({ error }: ErrorStateProps) => {
   const navigate = useNavigate();
+
+  const handleRetry = () => {
+    navigate('/join');
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
+  };
+
+  // Convert string error to AppError if needed
+  const appError = typeof error === 'string' 
+    ? new AppError('CONNECTION_FAILED', undefined, error)
+    : error;
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -14,14 +29,16 @@ export const ErrorState = ({ error }: ErrorStateProps) => {
         <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
           <LogOut className="w-8 h-8 text-red-600 mx-auto" />
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">Connection Error</h2>
-        <p className="text-gray-600 dark:text-zinc-400 mb-6">{error}</p>
-        <button
-          onClick={() => navigate('/join')}
-          className="bg-red-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors"
-        >
-          Try Again
-        </button>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-4">Connection Error</h2>
+        
+        <div className="mb-6">
+          <ErrorDisplay 
+            error={appError}
+            onRetry={handleRetry}
+            onGoHome={handleGoHome}
+            showDetails={false}
+          />
+        </div>
       </div>
     </div>
   );

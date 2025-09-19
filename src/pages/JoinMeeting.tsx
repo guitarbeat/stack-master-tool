@@ -5,6 +5,7 @@ import apiService from '../services/api'
 import socketService from '../services/socket'
 import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
+import { AppError, getErrorDisplayInfo } from '../utils/errorHandling'
 
 interface FormData {
   meetingCode: string
@@ -96,13 +97,10 @@ function JoinMeeting(): JSX.Element {
       })
     } catch (err) {
       console.error('Error joining meeting:', err)
-      if (err instanceof Error && err.message === 'Meeting not found') {
-        setError('Meeting not found. Please check the code and try again.')
-        notify('error', 'Meeting not found')
-      } else {
-        setError('Failed to join meeting. Please try again.')
-        notify('error', 'Failed to join meeting')
-      }
+      
+      const errorInfo = getErrorDisplayInfo(err as AppError)
+      setError(errorInfo.description)
+      notify('error', errorInfo.title, errorInfo.description)
       playBeep(220, 200)
     } finally {
       setIsJoining(false)

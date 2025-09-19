@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import socketService from '../services/socket';
 import { toast } from '@/hooks/use-toast';
 import { playBeep } from '../utils/sound.js';
+import { AppError, getErrorDisplayInfo } from '../utils/errorHandling';
 
 interface Participant {
   id: string;
@@ -72,9 +73,10 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       }, 5000);
     };
 
-    const errorCallback = (error: { message?: string }) => {
-      setError(error.message || 'Connection error');
-      notify('error', error.message || 'Connection error');
+    const errorCallback = (error: { message?: string; code?: string }) => {
+      const errorInfo = getErrorDisplayInfo(new AppError(error.code as any || 'UNKNOWN', undefined, error.message || 'Connection error'));
+      setError(errorInfo.description);
+      notify('error', errorInfo.title, errorInfo.description);
     };
 
     const setupSocketListeners = () => {
@@ -93,8 +95,8 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
         setIsConnected(true);
       } catch (err: unknown) {
         console.error('Connection error:', err);
-        const errorMessage = err instanceof Error ? err.message : 'Failed to connect to meeting. Please check your internet connection and try again.';
-        setError(errorMessage);
+        const errorInfo = getErrorDisplayInfo(err as AppError);
+        setError(errorInfo.description);
       }
     } else {
       setupSocketListeners();
@@ -121,9 +123,9 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       playBeep(1000, 120);
     } catch (err: unknown) {
       console.error('Join queue error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to join queue. Please try again.';
-      setError(errorMessage);
-      notify('error', errorMessage);
+      const errorInfo = getErrorDisplayInfo(err as AppError);
+      setError(errorInfo.description);
+      notify('error', errorInfo.title, errorInfo.description);
       playBeep(220, 200);
     }
   }, [isInQueue, isConnected, notify]);
@@ -137,9 +139,9 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       playBeep(600, 100);
     } catch (err: unknown) {
       console.error('Leave queue error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to leave queue. Please try again.';
-      setError(errorMessage);
-      notify('error', errorMessage);
+      const errorInfo = getErrorDisplayInfo(err as AppError);
+      setError(errorInfo.description);
+      notify('error', errorInfo.title, errorInfo.description);
       playBeep(220, 200);
     }
   }, [isInQueue, isConnected, notify]);

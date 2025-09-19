@@ -6,6 +6,7 @@ import apiService from '../services/api'
 import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 import Confetti from '../components/ui/Confetti.jsx'
+import { AppError, getErrorDisplayInfo } from '../utils/errorHandling'
 
 interface MeetingData {
   name: string
@@ -70,8 +71,10 @@ function CreateMeeting(): JSX.Element {
       setConfettiKey((k) => k + 1)
     } catch (err) {
       console.error('Error creating meeting:', err)
-      setError('Failed to create meeting. Please try again.')
-      notify('error', 'Failed to create meeting')
+      
+      const errorInfo = getErrorDisplayInfo(err as AppError)
+      setError(errorInfo.description)
+      notify('error', errorInfo.title, errorInfo.description)
       playBeep(220, 200)
     } finally {
       setLoading(false)

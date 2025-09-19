@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AppError, getErrorDisplayInfo, logError } from '../utils/errorHandling';
 
 interface Props {
   children: ReactNode;
@@ -23,6 +24,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logError(error, 'ErrorBoundary');
   }
 
   private handleReload = () => {
@@ -35,6 +37,8 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      const errorInfo = getErrorDisplayInfo(this.state.error || new Error('Unknown error'));
+      
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
           <Card className="w-full max-w-md">
@@ -42,17 +46,23 @@ class ErrorBoundary extends Component<Props, State> {
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
-              <CardTitle className="text-xl">Something went wrong</CardTitle>
+              <CardTitle className="text-xl">{errorInfo.title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-center text-muted-foreground">
-                We encountered an unexpected error. This might be a routing issue.
+                {errorInfo.description}
               </p>
+              {errorInfo.action && (
+                <p className="text-center text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                  💡 {errorInfo.action}
+                </p>
+              )}
               {this.state.error && (
                 <details className="text-sm text-muted-foreground">
-                  <summary className="cursor-pointer">Error details</summary>
-                  <pre className="mt-2 whitespace-pre-wrap break-words">
+                  <summary className="cursor-pointer">Technical details</summary>
+                  <pre className="mt-2 whitespace-pre-wrap break-words text-xs">
                     {this.state.error.message}
+                    {this.state.error.stack && `\n\nStack trace:\n${this.state.error.stack}`}
                   </pre>
                 </details>
               )}

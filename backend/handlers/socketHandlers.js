@@ -2,35 +2,55 @@ const { v4: uuidv4 } = require('uuid');
 const meetingsService = require('../services/meetings');
 const participantsService = require('../services/participants');
 
+// Error response helper for socket events
+const sendSocketError = (socket, errorCode, message, details = {}) => {
+  socket.emit('error', {
+    code: errorCode,
+    message,
+    timestamp: new Date().toISOString(),
+    ...details
+  });
+};
+
 // Join a meeting
 function handleJoinMeeting(socket, data) {
   const { meetingCode, participantName, isFacilitator = false } = data;
   
   // Validate input data
   if (!meetingCode || typeof meetingCode !== 'string') {
-    socket.emit('error', { message: 'Meeting code is required' });
+    sendSocketError(socket, 'INVALID_MEETING_CODE', 'Meeting code is required');
+    return;
+  }
+  
+  if (meetingCode.length !== 6) {
+    sendSocketError(socket, 'INVALID_MEETING_CODE', 'Meeting code must be 6 characters');
     return;
   }
   
   if (!participantName || typeof participantName !== 'string' || participantName.trim().length === 0) {
-    socket.emit('error', { message: 'Participant name is required' });
+    sendSocketError(socket, 'INVALID_PARTICIPANT_NAME', 'Participant name is required');
+    return;
+  }
+  
+  if (participantName.trim().length > 50) {
+    sendSocketError(socket, 'INVALID_PARTICIPANT_NAME', 'Participant name must be 50 characters or less');
     return;
   }
   
   // Sanitize participant name
-  const sanitizedName = participantName.trim().substring(0, 50); // Limit length
+  const sanitizedName = participantName.trim();
   
   const meeting = meetingsService.getMeeting(meetingCode);
   
   if (!meeting) {
-    socket.emit('error', { message: 'Meeting not found' });
+    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
     return;
   }
   
   // Verify facilitator access - only the original facilitator can join as facilitator
   if (isFacilitator && sanitizedName !== meeting.facilitator) {
     console.log(`Unauthorized facilitator attempt: ${sanitizedName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
-    socket.emit('error', { message: 'Only the meeting creator can join as facilitator' });
+    sendSocketError(socket, 'UNAUTHORIZED_FACILITATOR', 'Only the meeting creator can join as facilitator');
     return;
   }
   
@@ -92,14 +112,14 @@ function handleJoinQueue(socket, data) {
   const participantData = participantsService.getParticipant(socket.id);
   
   if (!participantData) {
-    socket.emit('error', { message: 'Not in a meeting' });
+    sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
     return;
   }
   
   // Validate queue type
   const validTypes = ['speak', 'direct-response', 'point-of-info', 'clarification'];
   if (!validTypes.includes(type)) {
-    socket.emit('error', { message: 'Invalid queue type' });
+    sendSocketError(socket, 'INVALID_QUEUE_TYPE', 'Invalid queue type');
     return;
   }
   
@@ -107,7 +127,7 @@ function handleJoinQueue(socket, data) {
   const meeting = meetingsService.getMeeting(meetingCode);
   
   if (!meeting) {
-    socket.emit('error', { message: 'Meeting not found' });
+    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
     return;
   }
   
@@ -122,7 +142,7 @@ function handleJoinQueue(socket, data) {
   
   const addedQueueItem = meetingsService.addToQueue(meetingCode, queueItem);
   if (!addedQueueItem) {
-    socket.emit('error', { message: 'Already in queue' });
+    sendSocketError(socket, 'ALREADY_IN_QUEUE', 'Already in queue');
     return;
   }
   
@@ -138,7 +158,7 @@ function handleLeaveQueue(socket) {
   const participantData = participantsService.getParticipant(socket.id);
   
   if (!participantData) {
-    socket.emit('error', { message: 'Not in a meeting' });
+    sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
     return;
   }
   
@@ -146,7 +166,7 @@ function handleLeaveQueue(socket) {
   const meeting = meetingsService.getMeeting(meetingCode);
   
   if (!meeting) {
-    socket.emit('error', { message: 'Meeting not found' });
+    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
     return;
   }
   
@@ -164,21 +184,26 @@ function handleNextSpeaker(socket) {
   const participantData = participantsService.getParticipant(socket.id);
   
   if (!participantData) {
-    socket.emit('error', { message: 'Not in a meeting' });
+    sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
     return;
   }
   
   const { meetingCode, participant } = participantData;
   const meeting = meetingsService.getMeeting(meetingCode);
   
-  if (!meeting || !participant.isFacilitator) {
-    socket.emit('error', { message: 'Not authorized' });
+  if (!meeting) {
+    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
+    return;
+  }
+  
+  if (!participant.isFacilitator) {
+    sendSocketError(socket, 'AUTHORIZATION', 'Not authorized - facilitator access required');
     return;
   }
   
   const nextSpeaker = meetingsService.getNextSpeaker(meetingCode);
   if (!nextSpeaker) {
-    socket.emit('error', { message: 'Queue is empty' });
+    sendSocketError(socket, 'QUEUE_EMPTY', 'Queue is empty');
     return;
   }
   
