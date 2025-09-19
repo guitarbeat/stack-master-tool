@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    /* Core Colors */
-    --background: 44 9% 98%;
-    --foreground: 30 25% 15%;
-    --card: 44 9% 100%;
-    --card-foreground: 30 25% 15%;
-    --border: 44 9% 88%;
-    --input: 44 9% 95%;
+    /* Core Colors - Darker light mode */
+    --background: 30 25% 20%;
+    --foreground: 60 9% 95%;
+    --card: 30 25% 25%;
+    --card-foreground: 60 9% 95%;
+    --border: 120 13% 30%;
+    --input: 120 13% 25%;
     --ring: 100 40% 35%;
     
     /* Primary Colors */
@@ -19,9 +19,9 @@
     --primary-hover: 100 40% 40%;
     
     /* Secondary Colors */
-    --secondary: 44 9% 92%;
-    --secondary-foreground: 30 25% 15%;
-    --secondary-hover: 44 9% 88%;
+    --secondary: 120 13% 25%;
+    --secondary-foreground: 60 9% 95%;
+    --secondary-hover: 120 13% 30%;
     
     /* Accent Colors */
     --accent: 120 25% 45%;
@@ -29,8 +29,8 @@
     --accent-hover: 120 25% 50%;
     
     /* Muted Colors */
-    --muted: 44 9% 92%;
-    --muted-foreground: 30 10% 45%;
+    --muted: 120 13% 25%;
+    --muted-foreground: 120 5% 80%;
     
     /* Status Colors */
     --warning: 43 96% 56%;
