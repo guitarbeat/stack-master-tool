@@ -12,7 +12,6 @@ import JoinMeeting from "./pages/JoinMeeting";
 import CreateOrJoinMeeting from "./pages/CreateOrJoinMeeting";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
-import CollapsibleCardDemo from "./pages/CollapsibleCardDemo";
 import AppLayout from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
@@ -49,7 +48,6 @@ const App = () => {
             <Route path="/create-or-join" element={<CreateOrJoinMeeting />} />
             <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
             <Route path="/facilitate/:meetingId" element={<FacilitatorView />} />
-            <Route path="/demo/collapsible-card" element={<CollapsibleCardDemo />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
