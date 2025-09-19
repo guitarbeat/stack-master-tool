@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client'
 import apiService from './api.js'
+import { AppError, ErrorCode, logError } from '../utils/errorHandling.js'
 
 class SocketService {
   constructor() {
@@ -7,6 +8,9 @@ class SocketService {
     this.isConnected = false
     this.connecting = false
     this.listeners = new Map()
+    this.reconnectAttempts = 0
+    this.maxReconnectAttempts = 5
+    this.reconnectDelay = 1000
   }
 
   connect() {
@@ -17,7 +21,7 @@ class SocketService {
     if (this.connecting) {
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
-          reject(new Error('Connection timeout'))
+          reject(new AppError(ErrorCode.SOCKET_TIMEOUT, undefined, 'Socket connection timeout'))
         }, 10000)
         
         this.socket.once('connect', () => {
@@ -27,7 +31,7 @@ class SocketService {
         
         this.socket.once('error', (error) => {
           clearTimeout(timeout)
-          reject(error)
+          reject(new AppError(ErrorCode.CONNECTION_FAILED, error, 'Socket connection failed'))
         })
       })
     }
@@ -39,24 +43,63 @@ class SocketService {
     this.socket = io(socketUrl, {
       transports: ['websocket', 'polling'],
       timeout: 20000,
-      forceNew: true
+      forceNew: true,
+      reconnection: true,
+      reconnectionAttempts: this.maxReconnectAttempts,
+      reconnectionDelay: this.reconnectDelay
     })
 
     this.socket.on('connect', () => {
       console.log('Socket connected:', this.socket.id)
       this.isConnected = true
       this.connecting = false
+      this.reconnectAttempts = 0
     })
 
     this.socket.on('disconnect', (reason) => {
       console.log('Socket disconnected:', reason)
       this.isConnected = false
       this.connecting = false
+      
+      // Handle different disconnect reasons
+      if (reason === 'io server disconnect') {
+        // Server initiated disconnect, don't reconnect
+        this.socket.disconnect()
+      } else if (reason === 'io client disconnect') {
+        // Client initiated disconnect, don't reconnect
+        this.socket.disconnect()
+      }
+      // For other reasons (network issues), let socket.io handle reconnection
+    })
+
+    this.socket.on('reconnect', (attemptNumber) => {
+      console.log('Socket reconnected after', attemptNumber, 'attempts')
+      this.isConnected = true
+      this.connecting = false
+      this.reconnectAttempts = 0
+    })
+
+    this.socket.on('reconnect_attempt', (attemptNumber) => {
+      console.log('Socket reconnection attempt', attemptNumber)
+      this.reconnectAttempts = attemptNumber
+    })
+
+    this.socket.on('reconnect_error', (error) => {
+      console.error('Socket reconnection error:', error)
+      logError(error, 'socketReconnect')
+    })
+
+    this.socket.on('reconnect_failed', () => {
+      console.error('Socket reconnection failed after', this.maxReconnectAttempts, 'attempts')
+      this.isConnected = false
+      this.connecting = false
+      this.reconnectAttempts = 0
     })
 
     this.socket.on('error', (error) => {
       console.error('Socket error:', error)
       this.connecting = false
+      logError(error, 'socketError')
     })
 
     return this.socket
@@ -74,7 +117,20 @@ class SocketService {
   // Meeting operations
   joinMeeting(meetingCode, participantName, isFacilitator = false) {
     if (!this.socket) {
-      throw new Error('Socket not connected')
+      throw new AppError(ErrorCode.CONNECTION_FAILED, undefined, 'Socket not connected')
+    }
+
+    // Validate input
+    if (!meetingCode || typeof meetingCode !== 'string' || meetingCode.length !== 6) {
+      throw new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, 'Meeting code must be 6 characters')
+    }
+
+    if (!participantName || typeof participantName !== 'string' || participantName.trim().length === 0) {
+      throw new AppError(ErrorCode.INVALID_PARTICIPANT_NAME, undefined, 'Participant name is required')
+    }
+
+    if (participantName.trim().length > 50) {
+      throw new AppError(ErrorCode.INVALID_PARTICIPANT_NAME, undefined, 'Participant name must be 50 characters or less')
     }
 
     return new Promise((resolve, reject) => {
@@ -89,7 +145,7 @@ class SocketService {
 
       timeout = setTimeout(() => {
         cleanup()
-        reject(new Error('Join meeting timeout'))
+        reject(new AppError(ErrorCode.JOIN_TIMEOUT, undefined, 'Join meeting timeout'))
       }, 10000)
 
       this.socket.once('meeting-joined', (data) => {
@@ -99,12 +155,25 @@ class SocketService {
 
       this.socket.once('error', (error) => {
         cleanup()
-        reject(new Error(error.message || 'Failed to join meeting'))
+        
+        // Map server error messages to specific error codes
+        let errorCode = ErrorCode.UNKNOWN
+        if (error.message === 'Meeting not found') {
+          errorCode = ErrorCode.MEETING_NOT_FOUND
+        } else if (error.message === 'Only the meeting creator can join as facilitator') {
+          errorCode = ErrorCode.UNAUTHORIZED_FACILITATOR
+        } else if (error.message === 'Participant name is required') {
+          errorCode = ErrorCode.INVALID_PARTICIPANT_NAME
+        } else if (error.message === 'Meeting code is required') {
+          errorCode = ErrorCode.INVALID_MEETING_CODE
+        }
+        
+        reject(new AppError(errorCode, error, error.message || 'Failed to join meeting'))
       })
 
       this.socket.emit('join-meeting', {
         meetingCode: meetingCode.toUpperCase(),
-        participantName,
+        participantName: participantName.trim(),
         isFacilitator
       })
     })
@@ -113,14 +182,21 @@ class SocketService {
   // Queue operations
   joinQueue(type = 'speak') {
     if (!this.socket) {
-      throw new Error('Socket not connected')
+      throw new AppError(ErrorCode.CONNECTION_FAILED, undefined, 'Socket not connected')
     }
+
+    // Validate queue type
+    const validTypes = ['speak', 'direct-response', 'point-of-info', 'clarification']
+    if (!validTypes.includes(type)) {
+      throw new AppError(ErrorCode.INVALID_QUEUE_TYPE, undefined, 'Invalid queue type')
+    }
+
     this.socket.emit('join-queue', { type })
   }
 
   leaveQueue() {
     if (!this.socket) {
-      throw new Error('Socket not connected')
+      throw new AppError(ErrorCode.CONNECTION_FAILED, undefined, 'Socket not connected')
     }
     this.socket.emit('leave-queue')
   }
@@ -128,7 +204,7 @@ class SocketService {
   // Facilitator operations
   nextSpeaker() {
     if (!this.socket) {
-      throw new Error('Socket not connected')
+      throw new AppError(ErrorCode.CONNECTION_FAILED, undefined, 'Socket not connected')
     }
     this.socket.emit('next-speaker')
   }
