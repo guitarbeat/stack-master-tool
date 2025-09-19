@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { Users, Play, SkipForward, LogOut, Loader2 } from 'lucide-react'
+import { Users, Play, SkipForward, LogOut, Loader2, MessageCircle, Info, Settings } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import FacilitatorHeader from '../components/FacilitatorHeader'
 import ParticipantList from '../components/ParticipantList'
 import CurrentSpeakerCard from '../components/CurrentSpeakerCard'
@@ -106,73 +109,97 @@ function FacilitatorView(): JSX.Element {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Speaking Queue */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100">Speaking Queue</h2>
-            <button
+        <Card className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="text-xl font-bold text-gray-900 dark:text-zinc-100">Speaking Queue</CardTitle>
+            <Button
               onClick={nextSpeaker}
               disabled={speakingQueue.length === 0}
-              className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-                speakingQueue.length === 0
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
+              className="floating-glow rounded-xl"
             >
               <SkipForward className="w-4 h-4 mr-2" />
               Next Speaker
-            </button>
-          </div>
+            </Button>
+          </CardHeader>
           
-          {speakingQueue.length === 0 ? (
-            <div className="text-center py-12">
-              <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-zinc-400 text-lg">No one in queue</p>
-              <p className="text-sm text-gray-400 dark:text-zinc-500">Participants can raise their hand to join the queue</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {speakingQueue.map((entry, index) => (
-                <div
-                  key={entry.id}
-                  className={`p-4 rounded-lg border-2 ${
-                    index === 0
-                      ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-900/30'
-                      : 'border-gray-200 bg-gray-50 dark:bg-zinc-950 dark:border-zinc-800'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className={`text-sm font-semibold px-3 py-1 rounded-full mr-3 ${
-                        index === 0
-                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
-                          : 'bg-gray-100 text-gray-800 dark:bg-zinc-800 dark:text-zinc-200'
-                      }`}>
-                        #{index + 1}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-zinc-100">{entry.participantName}</p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <span className={`text-xs px-2 py-1 rounded-full ${getQueueTypeColor(entry.type)}`}>
-                            {getQueueTypeDisplay(entry.type)}
-                          </span>
-                          <span className="text-xs text-gray-500 dark:text-zinc-400">
-                            {formatTime(entry.timestamp)}
+          <CardContent>
+            {speakingQueue.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-zinc-400 text-lg">No one in queue</p>
+                <p className="text-sm text-gray-400 dark:text-zinc-500">Participants can raise their hand to join the queue</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {speakingQueue.map((entry, index) => {
+                  const isCurrentSpeaker = index === 0;
+                  const isDirect = entry.type === 'direct-response';
+                  const isPointInfo = entry.type === 'point-of-info';
+                  const isClarify = entry.type === 'clarification';
+                  
+                  return (
+                    <div
+                      key={entry.id}
+                      className={`stack-card flex items-center justify-between p-6 rounded-xl border transition-standard ${
+                        isCurrentSpeaker
+                          ? 'current-speaker border-primary/40 text-primary-foreground'
+                          : 'glass-card hover:bg-muted/40 border-border/60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <Badge
+                          variant={isCurrentSpeaker ? "default" : "secondary"}
+                          className={`${
+                            isCurrentSpeaker
+                              ? 'animate-pulse bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30'
+                              : 'px-4 py-2 font-semibold'
+                          } rounded-full text-sm ${
+                            isDirect ? 'bg-primary text-primary-foreground animate-pulse' : ''
+                          }`}
+                        >
+                          {isCurrentSpeaker 
+                            ? (isDirect ? "🎤 Direct Response" : "🎤 Speaking") 
+                            : `#${index + 1}`
+                          }
+                        </Badge>
+                        <div className="flex items-center gap-2">
+                          {isDirect && <MessageCircle className="h-4 w-4 text-primary" />}
+                          {isPointInfo && <Info className="h-4 w-4 text-blue-600" />}
+                          {isClarify && <Settings className="h-4 w-4 text-purple-600" />}
+                          <span className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}>
+                            {entry.participantName}
                           </span>
                         </div>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${
+                            isDirect ? 'border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300' :
+                            isPointInfo ? 'border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300' :
+                            isClarify ? 'border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300' :
+                            'border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300'
+                          }`}
+                        >
+                          {getQueueTypeDisplay(entry.type)}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {formatTime(entry.timestamp)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {isCurrentSpeaker && (
+                          <div className="flex items-center text-primary">
+                            <Play className="w-4 h-4 mr-1" />
+                            <span className="text-sm font-medium">Next</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    {index === 0 && (
-                      <div className="flex items-center text-blue-600 dark:text-blue-400">
-                        <Play className="w-4 h-4 mr-1" />
-                        <span className="text-sm font-medium">Next</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Participants */}
         <ParticipantList
