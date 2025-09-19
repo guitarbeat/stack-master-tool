@@ -5,8 +5,7 @@ import { useParticipantManagement } from "@/hooks/useParticipantManagement";
 import { useDirectResponse } from "@/hooks/useDirectResponse";
 import { useSpeakingHistory } from "@/hooks/useSpeakingHistory";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { StackHeader } from "./StackHeader";
-import { AddParticipant } from "./AddParticipant";
+import { CombinedNavbar } from "./CombinedNavbar";
 import { CurrentSpeaker } from "./CurrentSpeaker";
 import { SpeakingQueue } from "./SpeakingQueue";
 import { InterventionsPanel } from "./InterventionsPanel";
@@ -230,20 +229,16 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <StackHeader
+      <CombinedNavbar
         stackLength={stack.length}
         undoHistoryLength={undoHistory.length}
         onUndo={handleUndo}
         onToggleShortcuts={toggleShortcuts}
         showKeyboardShortcuts={showKeyboardShortcuts}
-      />
-
-      <AddParticipant
         newParticipantName={newParticipantName}
         onNameChange={setNewParticipantName}
         onAddToStack={handleAddToStack}
         onFocusAddInput={() => inputRef.current?.focus()}
-        showKeyboardShortcuts={showKeyboardShortcuts}
       />
 
       <SpeakingQueue
