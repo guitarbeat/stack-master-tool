@@ -4,26 +4,7 @@ import useTiltEffect from '@/hooks/use-tilt'
 export const HowItWorks = () => {
   const cardsRef = useTiltEffect()
 
-  const steps = [
-    {
-      icon: '🌱',
-      title: 'Seed the Space',
-      summary: 'A facilitator creates the meeting environment.',
-      details: 'Participants join with a simple code - no accounts, just authentic presence.'
-    },
-    {
-      icon: '🌿',
-      title: 'Nurture Names',
-      summary: 'Everyone enters their name to join the circle.',
-      details: 'No barriers, no complexity - just human connection in its simplest form.'
-    },
-    {
-      icon: '🌳',
-      title: 'Flourish Together',
-      summary: 'Voices queue naturally like branches reaching for light.',
-      details: 'Direct responses and interventions keep the dialogue healthy and balanced.'
-    }
-  ]
+  const steps = []
 
   return (
     <div className="max-w-6xl mx-auto">
