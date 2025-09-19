@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client'
-import apiService from './api.js'
-import { AppError, ErrorCode, logError } from '../utils/errorHandling.js'
+import apiService from './api'
+import { AppError, ErrorCode, logError } from '../utils/errorHandling'
 
 class SocketService {
   constructor() {
@@ -157,7 +157,7 @@ class SocketService {
         cleanup()
         
         // Map server error messages to specific error codes
-        let errorCode = ErrorCode.UNKNOWN
+        let errorCode = ErrorCode.INTERNAL_SERVER_ERROR
         if (error.code) {
           // Use the error code from server if available
           errorCode = error.code
