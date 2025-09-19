@@ -9,7 +9,6 @@ import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
 import CreateMeeting from "./pages/CreateMeeting";
 import JoinMeeting from "./pages/JoinMeeting";
-import CreateOrJoinMeeting from "./pages/CreateOrJoinMeeting";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
 import AppLayout from "./components/layout/AppLayout";
@@ -45,7 +44,6 @@ const App = () => {
             <Route path="/manual" element={<ManualStack />} />
             <Route path="/create" element={<CreateMeeting />} />
             <Route path="/join" element={<JoinMeeting />} />
-            <Route path="/create-or-join" element={<CreateOrJoinMeeting />} />
             <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
             <Route path="/facilitate/:meetingId" element={<FacilitatorView />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
