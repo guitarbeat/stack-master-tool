@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Users, Play, SkipForward, LogOut, Loader2, MessageCircle, Info, Settings, RotateCcw } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
@@ -12,6 +12,7 @@ import { SpeakingDistribution } from '../components/StackKeeper/SpeakingDistribu
 import { InterventionsPanel } from '../components/StackKeeper/InterventionsPanel'
 import useFacilitatorSocket from '../hooks/useFacilitatorSocket'
 import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
+import { useMeetingCreator } from '../hooks/useMeetingCreator'
 
 interface MeetingData {
   code: string
@@ -24,23 +25,67 @@ function FacilitatorView(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const { creatorData, validateFacilitator, clearCreator } = useMeetingCreator()
+  const [isValidating, setIsValidating] = useState(false)
+  const [validationError, setValidationError] = useState<string | null>(null)
+  
   const showToast = (payload: { title: string; description?: string }) => {
     toast(payload)
   }
+  
+  // Get facilitator data from either location state (direct navigation) or stored creator data
   const { facilitatorName, meetingName, meetingCode } = location.state || {}
+  const storedCreatorData = creatorData
+  
+  // Use stored data if available, otherwise fall back to location state
+  const effectiveMeetingCode = meetingCode || storedCreatorData?.meetingCode || meetingId
+  const effectiveFacilitatorName = facilitatorName || storedCreatorData?.facilitatorName
+  const effectiveMeetingName = meetingName || storedCreatorData?.meetingTitle || 'Meeting'
+  const facilitatorToken = storedCreatorData?.facilitatorToken
 
   const meetingData = {
-    code: meetingCode || meetingId,
-    title: meetingName || 'Meeting',
-    facilitator: facilitatorName || 'Facilitator',
+    code: effectiveMeetingCode,
+    title: effectiveMeetingName,
+    facilitator: effectiveFacilitatorName || 'Facilitator',
     isActive: true
   }
 
+  // Validate facilitator access on component mount
   useEffect(() => {
-    if (!facilitatorName || !meetingCode) {
-      navigate('/create')
+    const validateAccess = async () => {
+      if (!effectiveFacilitatorName || !effectiveMeetingCode) {
+        navigate('/create')
+        return
+      }
+
+      // If we have a token, validate it with the server
+      if (facilitatorToken) {
+        setIsValidating(true)
+        setValidationError(null)
+        
+        try {
+          const isValid = await validateFacilitator(effectiveMeetingCode, effectiveFacilitatorName, facilitatorToken)
+          if (!isValid) {
+            setValidationError('Invalid facilitator credentials')
+            showToast({ type: 'error', title: 'Access Denied', description: 'Invalid facilitator credentials' })
+            navigate('/create')
+          }
+        } catch (error) {
+          console.error('Error validating facilitator:', error)
+          setValidationError('Failed to validate facilitator access')
+          showToast({ type: 'error', title: 'Validation Error', description: 'Failed to validate facilitator access' })
+          navigate('/create')
+        } finally {
+          setIsValidating(false)
+        }
+      } else {
+        // No token available, redirect to create
+        navigate('/create')
+      }
     }
-  }, [facilitatorName, meetingCode, navigate])
+
+    validateAccess()
+  }, [effectiveFacilitatorName, effectiveMeetingCode, facilitatorToken, validateFacilitator, navigate, showToast])
 
   const {
     participants,
@@ -63,16 +108,29 @@ function FacilitatorView(): JSX.Element {
     addIntervention,
     undoHistory,
     handleUndo
-  } = useFacilitatorSocket(meetingCode, facilitatorName, showToast)
+  } = useFacilitatorSocket(effectiveMeetingCode, effectiveFacilitatorName, showToast, facilitatorToken)
 
   const leaveMeeting = () => {
     disconnect()
+    clearCreator() // Clear stored facilitator data
     navigate('/')
   }
 
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  if (isValidating) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="bg-white rounded-2xl p-8 shadow-lg text-center dark:bg-zinc-900 dark:border dark:border-zinc-800">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">Validating access...</h2>
+          <p className="text-gray-600 dark:text-zinc-400">Please wait while we verify your facilitator credentials.</p>
+        </div>
+      </div>
+    )
   }
 
   if (!isConnected && !error) {

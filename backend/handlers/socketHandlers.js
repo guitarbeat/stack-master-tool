@@ -14,7 +14,7 @@ const sendSocketError = (socket, errorCode, message, details = {}) => {
 
 // Join a meeting
 function handleJoinMeeting(socket, data) {
-  const { meetingCode, participantName, isFacilitator = false } = data;
+  const { meetingCode, participantName, isFacilitator = false, facilitatorToken } = data;
   
   // Validate input data
   if (!meetingCode || typeof meetingCode !== 'string') {
@@ -47,11 +47,18 @@ function handleJoinMeeting(socket, data) {
     return;
   }
   
-  // Verify facilitator access - only the original facilitator can join as facilitator
-  if (isFacilitator && sanitizedName !== meeting.facilitator) {
-    console.log(`Unauthorized facilitator attempt: ${sanitizedName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
-    sendSocketError(socket, 'UNAUTHORIZED_FACILITATOR', 'Only the meeting creator can join as facilitator');
-    return;
+  // Verify facilitator access - validate token if joining as facilitator
+  if (isFacilitator) {
+    if (!facilitatorToken || typeof facilitatorToken !== 'string') {
+      sendSocketError(socket, 'MISSING_FACILITATOR_TOKEN', 'Facilitator token is required');
+      return;
+    }
+    
+    if (!meetingsService.isFacilitator(meetingCode, sanitizedName, facilitatorToken)) {
+      console.log(`Unauthorized facilitator attempt: ${sanitizedName} tried to join meeting ${meetingCode} with invalid token`);
+      sendSocketError(socket, 'UNAUTHORIZED_FACILITATOR', 'Invalid facilitator credentials');
+      return;
+    }
   }
   
   // Prevent duplicate joins from the same socket

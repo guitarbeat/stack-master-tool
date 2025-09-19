@@ -115,7 +115,7 @@ class SocketService {
   }
 
   // Meeting operations
-  joinMeeting(meetingCode, participantName, isFacilitator = false) {
+  joinMeeting(meetingCode, participantName, isFacilitator = false, facilitatorToken = null) {
     if (!this.socket) {
       throw new AppError(ErrorCode.CONNECTION_FAILED, undefined, 'Socket not connected')
     }
@@ -174,7 +174,8 @@ class SocketService {
       this.socket.emit('join-meeting', {
         meetingCode: meetingCode.toUpperCase(),
         participantName: participantName.trim(),
-        isFacilitator
+        isFacilitator,
+        facilitatorToken
       })
     })
   }

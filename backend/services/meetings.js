@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 // In-memory storage for meetings
 const meetings = new Map();
@@ -13,6 +14,11 @@ function generateMeetingCode() {
   return result;
 }
 
+// Generate a secure facilitator token
+function generateFacilitatorToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
 // Create a new meeting
 function createMeeting(facilitatorName, meetingTitle) {
   if (!facilitatorName || !meetingTitle) {
@@ -21,12 +27,14 @@ function createMeeting(facilitatorName, meetingTitle) {
 
   const meetingCode = generateMeetingCode();
   const meetingId = uuidv4();
+  const facilitatorToken = generateFacilitatorToken();
   
   const meeting = {
     id: meetingId,
     code: meetingCode,
     title: meetingTitle,
     facilitator: facilitatorName,
+    facilitatorToken: facilitatorToken,
     participants: [],
     queue: [],
     createdAt: new Date().toISOString(),
@@ -165,6 +173,31 @@ function updateParticipantQueueStatus(meetingCode, participantId, isInQueue, que
   return true;
 }
 
+// Validate facilitator token
+function validateFacilitatorToken(meetingCode, facilitatorToken) {
+  const meeting = getMeeting(meetingCode);
+  if (!meeting) return false;
+  
+  return meeting.facilitatorToken === facilitatorToken;
+}
+
+// Get facilitator token for a meeting (for API responses)
+function getFacilitatorToken(meetingCode) {
+  const meeting = getMeeting(meetingCode);
+  if (!meeting) return null;
+  
+  return meeting.facilitatorToken;
+}
+
+// Check if user is facilitator (by name and token)
+function isFacilitator(meetingCode, facilitatorName, facilitatorToken) {
+  const meeting = getMeeting(meetingCode);
+  if (!meeting) return false;
+  
+  return meeting.facilitator === facilitatorName && 
+         meeting.facilitatorToken === facilitatorToken;
+}
+
 module.exports = {
   createMeeting,
   getMeeting,
@@ -174,5 +207,8 @@ module.exports = {
   addToQueue,
   removeFromQueue,
   getNextSpeaker,
-  updateParticipantQueueStatus
+  updateParticipantQueueStatus,
+  validateFacilitatorToken,
+  getFacilitatorToken,
+  isFacilitator
 };

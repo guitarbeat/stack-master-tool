@@ -22,6 +22,7 @@ export enum ErrorCode {
   INVALID_PARTICIPANT_NAME = 'INVALID_PARTICIPANT_NAME',
   INVALID_QUEUE_TYPE = 'INVALID_QUEUE_TYPE',
   MISSING_REQUIRED_FIELD = 'MISSING_REQUIRED_FIELD',
+  MISSING_FACILITATOR_TOKEN = 'MISSING_FACILITATOR_TOKEN',
   
   // Authentication/Authorization errors
   UNAUTHORIZED_FACILITATOR = 'UNAUTHORIZED_FACILITATOR',
@@ -95,6 +96,11 @@ export const ERROR_MESSAGES: Record<ErrorCode, { title: string; description: str
     title: 'Missing Information',
     description: 'Please fill in all required fields.',
     action: 'Complete all required fields and try again.'
+  },
+  MISSING_FACILITATOR_TOKEN: {
+    title: 'Missing Facilitator Token',
+    description: 'Facilitator token is required to join as facilitator.',
+    action: 'Contact the meeting creator for facilitator access.'
   },
   
   // Authentication/Authorization errors

@@ -32,7 +32,8 @@ type ToastFn = (opts: { type: string; title: string }) => void
 export function useFacilitatorSocket(
   meetingCode?: string,
   facilitatorName?: string,
-  showToast?: ToastFn
+  showToast?: ToastFn,
+  facilitatorToken?: string
 ) {
   const [participants, setParticipants] = useState<Participant[]>([])
   const [speakingQueue, setSpeakingQueue] = useState<QueueEntry[]>([])
@@ -107,7 +108,7 @@ export function useFacilitatorSocket(
           socketService.connect()
         }
         setupSocketListeners()
-        await socketService.joinMeeting(meetingCode, facilitatorName, true)
+        await socketService.joinMeeting(meetingCode, facilitatorName, true, facilitatorToken)
         setIsConnected(true)
       } catch (err) {
         if (err.message && err.message.includes('Only the meeting creator can join as facilitator')) {
