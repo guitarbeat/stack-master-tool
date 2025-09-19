@@ -7,9 +7,10 @@ interface Speaker {
 }
 
 interface SpeakerTimer {
-  id: string
-  startTime: Date
-  isActive: boolean
+  participantId: string;
+  startTime: Date;
+  isActive: boolean;
+  pausedTime?: number;
 }
 
 interface CurrentSpeakerCardProps {

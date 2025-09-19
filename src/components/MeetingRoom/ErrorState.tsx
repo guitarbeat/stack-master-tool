@@ -1,7 +1,7 @@
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ErrorDisplay } from "../ErrorDisplay";
-import { AppError } from "../../utils/errorHandling";
+import { AppError, ErrorCode } from "../../utils/errorHandling";
 
 interface ErrorStateProps {
   error: string | AppError;
@@ -20,7 +20,7 @@ export const ErrorState = ({ error }: ErrorStateProps) => {
 
   // Convert string error to AppError if needed
   const appError = typeof error === 'string' 
-    ? new AppError('CONNECTION_FAILED', undefined, error)
+    ? new AppError(ErrorCode.CONNECTION_FAILED, undefined, error)
     : error;
 
   return (

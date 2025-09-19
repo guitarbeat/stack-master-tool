@@ -49,7 +49,7 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
   }, []);
 
   const handleError = useCallback((error: Error | AppError, customContext?: string) => {
-    const appError = error instanceof AppError ? error : new AppError(ErrorCode.UNKNOWN, error);
+    const appError = error instanceof AppError ? error : new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error);
     const errorContext = customContext || context;
 
     // Log the error

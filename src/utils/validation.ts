@@ -143,7 +143,9 @@ export const validateValue = (value: string, rules: ValidationRule[]): Validatio
   return { isValid: true };
 };
 
-// Real-time validation hook
+// Real-time validation hook - requires React imports
+import { useState, useEffect } from 'react';
+
 export const useValidation = (
   value: string,
   rules: ValidationRule[],
