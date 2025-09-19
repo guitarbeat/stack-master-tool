@@ -1,39 +1,15 @@
 
 import { Hero } from '@/components/Hero'
 import { ActionCards } from '@/components/ActionCards'
-import { HowItWorks } from '@/components/HowItWorks'
-import { Features } from '@/components/Features'
-import { Testimonials } from '@/components/Testimonials'
-// Removed CallToAction to reduce redundancy with ActionCards and header nav
-
 
 function HomePage() {
   return (
     <main className="min-h-screen relative overflow-hidden" role="main">
-      {/* Organic Background Elements - Mobile Responsive */}
-      <div className="absolute inset-0 -z-10" aria-hidden="true">
-        <div className="absolute top-10 sm:top-20 left-2 sm:left-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-primary/10 organic-blob"></div>
-        <div className="absolute bottom-10 sm:bottom-20 right-2 sm:right-10 w-40 sm:w-60 md:w-80 h-40 sm:h-60 md:h-80 bg-accent/8 organic-blob organic-blob-delay-2"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-primary/5 organic-blob organic-blob-delay-4"></div>
-      </div>
-
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
         <Hero />
         <section aria-labelledby="action-cards-heading" className="mb-8 sm:mb-12">
           <h2 id="action-cards-heading" className="sr-only">Main Actions</h2>
           <ActionCards />
-        </section>
-        <section aria-labelledby="how-it-works-heading" className="mb-8 sm:mb-12">
-          <h2 id="how-it-works-heading" className="sr-only">How It Works</h2>
-          <HowItWorks />
-        </section>
-        <section aria-labelledby="features-heading" className="mb-8 sm:mb-12">
-          <h2 id="features-heading" className="sr-only">Platform Features</h2>
-          <Features />
-        </section>
-        <section aria-labelledby="testimonials-heading">
-          <h2 id="testimonials-heading" className="sr-only">Community Testimonials</h2>
-          <Testimonials />
         </section>
       </div>
     </main>
