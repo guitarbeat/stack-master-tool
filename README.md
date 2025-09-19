@@ -5,7 +5,7 @@ Stack Master Tool is an open-source application for democratic meeting facilitat
 
 ## Features
 
-This project features a warm, earthy theme with a soft felt texture for a cozy feel. Layered radial gradients in the page background create a subtle felt-like texture using natural tones.
+This project provides a clean, accessible interface for democratic meeting facilitation.
 ## Project info
 
 - Create meetings with shareable join codes
