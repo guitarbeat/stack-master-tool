@@ -5,7 +5,13 @@ import { toast } from '@/hooks/use-toast';
 interface UndoAction {
   id: string;
   type: 'remove' | 'next' | 'clear';
-  data: any;
+  data: {
+    participant?: Participant;
+    index?: number;
+    previousStack?: Participant[];
+    speaker?: Participant;
+    previousInterventions?: SpecialIntervention[];
+  };
   timestamp: Date;
   description: string;
 }

@@ -154,7 +154,7 @@ export function useFacilitatorSocket(
       showToast?.({ type: 'error', title: 'Failed to call next speaker' })
       playBeep(220, 200)
     }
-  }, [speakingQueue, isConnected, speakerTimer, currentSpeaker, addSpeakingSegment, startSpeakerTimer, stopSpeakerTimer])
+  }, [speakingQueue, isConnected, speakerTimer, currentSpeaker, addSpeakingSegment, startSpeakerTimer, stopSpeakerTimer, showToast])
 
   const finishSpeaking = useCallback(() => {
     // Record speaking segment for current speaker if timer is active

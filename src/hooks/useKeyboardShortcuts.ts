@@ -50,7 +50,7 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [config.onFocusAddInput, config.onFocusSearch, config.onNextSpeaker, config.onUndo, toggleShortcuts]);
+  }, [config, toggleShortcuts]);
 
   return {
     showKeyboardShortcuts,

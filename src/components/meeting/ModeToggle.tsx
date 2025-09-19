@@ -10,12 +10,12 @@ interface ModeToggleProps {
 }
 
 function ModeToggle({ mode, step, onSelectCreate, onSelectJoin }: ModeToggleProps): JSX.Element | null {
-  if (step !== 1) return null
-
   const { containerRef, mousePosition, isHovering, handleMouseMove, handleMouseEnter, handleMouseLeave } = useMouseFollow({
-    enabled: true,
+    enabled: step === 1,
     smoothness: 0.2
   })
+
+  if (step !== 1) return null
 
   // Calculate indicator position based on mouse or selected state
   const getIndicatorStyle = () => {

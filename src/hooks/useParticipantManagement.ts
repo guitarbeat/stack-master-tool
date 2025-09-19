@@ -34,7 +34,7 @@ export const useParticipantManagement = () => {
     });
   }, []);
 
-  const addExistingToStack = useCallback((name: string, addToStackFn: (name: string) => any) => {
+  const addExistingToStack = useCallback((name: string, addToStackFn: (name: string) => void) => {
     addRecentParticipant(name);
     return addToStackFn(name);
   }, [addRecentParticipant]);
