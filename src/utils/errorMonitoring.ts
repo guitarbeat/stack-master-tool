@@ -6,13 +6,23 @@ interface ErrorMetrics {
   errorsByType: Record<ErrorType, number>;
   errorsByCode: Record<ErrorCode, number>;
   errorsByContext: Record<string, number>;
+  errorsBySeverity: Record<'low' | 'medium' | 'high', number>;
+  errorsByHour: Record<number, number>;
   recentErrors: Array<{
     timestamp: string;
     type: ErrorType;
     code: ErrorCode;
     context?: string;
     message: string;
+    severity?: 'low' | 'medium' | 'high';
+    userAgent?: string;
+    url?: string;
   }>;
+  errorTrends: {
+    last24Hours: number;
+    lastHour: number;
+    lastMinute: number;
+  };
 }
 
 class ErrorMonitor {
@@ -21,7 +31,14 @@ class ErrorMonitor {
     errorsByType: {} as Record<ErrorType, number>,
     errorsByCode: {} as Record<ErrorCode, number>,
     errorsByContext: {},
-    recentErrors: []
+    errorsBySeverity: { low: 0, medium: 0, high: 0 },
+    errorsByHour: {},
+    recentErrors: [],
+    errorTrends: {
+      last24Hours: 0,
+      lastHour: 0,
+      lastMinute: 0
+    }
   };
 
   private maxRecentErrors = 50;
@@ -29,9 +46,12 @@ class ErrorMonitor {
   // Track an error occurrence
   trackError(error: AppError | Error, context?: string) {
     this.metrics.totalErrors++;
+    const now = new Date();
+    const timestamp = now.toISOString();
+    const hour = now.getHours();
 
     if (error instanceof AppError) {
-      const { type, code } = error.details;
+      const { type, code, severity } = error.details;
       
       // Track by type
       this.metrics.errorsByType[type] = (this.metrics.errorsByType[type] || 0) + 1;
@@ -39,10 +59,18 @@ class ErrorMonitor {
       // Track by code
       this.metrics.errorsByCode[code] = (this.metrics.errorsByCode[code] || 0) + 1;
       
+      // Track by severity
+      if (severity) {
+        this.metrics.errorsBySeverity[severity] = (this.metrics.errorsBySeverity[severity] || 0) + 1;
+      }
+      
       // Track by context
       if (context) {
         this.metrics.errorsByContext[context] = (this.metrics.errorsByContext[context] || 0) + 1;
       }
+      
+      // Track by hour
+      this.metrics.errorsByHour[hour] = (this.metrics.errorsByHour[hour] || 0) + 1;
       
       // Add to recent errors
       this.metrics.recentErrors.unshift({
@@ -50,24 +78,36 @@ class ErrorMonitor {
         type,
         code,
         context,
-        message: error.details.message
+        message: error.details.message,
+        severity,
+        userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,
+        url: typeof window !== 'undefined' ? window.location.href : undefined
       });
     } else {
       // Track unknown errors
       this.metrics.errorsByType[ErrorType.UNKNOWN] = (this.metrics.errorsByType[ErrorType.UNKNOWN] || 0) + 1;
+      this.metrics.errorsBySeverity.medium = (this.metrics.errorsBySeverity.medium || 0) + 1;
       
       if (context) {
         this.metrics.errorsByContext[context] = (this.metrics.errorsByContext[context] || 0) + 1;
       }
       
+      this.metrics.errorsByHour[hour] = (this.metrics.errorsByHour[hour] || 0) + 1;
+      
       this.metrics.recentErrors.unshift({
-        timestamp: new Date().toISOString(),
+        timestamp,
         type: ErrorType.UNKNOWN,
         code: 'UNKNOWN' as ErrorCode,
         context,
-        message: error.message
+        message: error.message,
+        severity: 'medium',
+        userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,
+        url: typeof window !== 'undefined' ? window.location.href : undefined
       });
     }
+
+    // Update error trends
+    this.updateErrorTrends();
 
     // Keep only recent errors
     if (this.metrics.recentErrors.length > this.maxRecentErrors) {
@@ -76,6 +116,26 @@ class ErrorMonitor {
 
     // Send to external monitoring service in production
     this.sendToMonitoringService(error, context);
+  }
+
+  // Update error trends
+  private updateErrorTrends() {
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    this.metrics.errorTrends = {
+      lastMinute: this.metrics.recentErrors.filter(
+        error => new Date(error.timestamp) > oneMinuteAgo
+      ).length,
+      lastHour: this.metrics.recentErrors.filter(
+        error => new Date(error.timestamp) > oneHourAgo
+      ).length,
+      last24Hours: this.metrics.recentErrors.filter(
+        error => new Date(error.timestamp) > oneDayAgo
+      ).length
+    };
   }
 
   // Get current error metrics
@@ -126,7 +186,14 @@ class ErrorMonitor {
       errorsByType: {} as Record<ErrorType, number>,
       errorsByCode: {} as Record<ErrorCode, number>,
       errorsByContext: {},
-      recentErrors: []
+      errorsBySeverity: { low: 0, medium: 0, high: 0 },
+      errorsByHour: {},
+      recentErrors: [],
+      errorTrends: {
+        last24Hours: 0,
+        lastHour: 0,
+        lastMinute: 0
+      }
     };
   }
 

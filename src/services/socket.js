@@ -158,7 +158,10 @@ class SocketService {
         
         // Map server error messages to specific error codes
         let errorCode = ErrorCode.UNKNOWN
-        if (error.message === 'Meeting not found') {
+        if (error.code) {
+          // Use the error code from server if available
+          errorCode = error.code
+        } else if (error.message === 'Meeting not found') {
           errorCode = ErrorCode.MEETING_NOT_FOUND
         } else if (error.message === 'Only the meeting creator can join as facilitator') {
           errorCode = ErrorCode.UNAUTHORIZED_FACILITATOR
@@ -166,6 +169,14 @@ class SocketService {
           errorCode = ErrorCode.INVALID_PARTICIPANT_NAME
         } else if (error.message === 'Meeting code is required') {
           errorCode = ErrorCode.INVALID_MEETING_CODE
+        } else if (error.message === 'Already in queue') {
+          errorCode = ErrorCode.ALREADY_IN_QUEUE
+        } else if (error.message === 'Queue is empty') {
+          errorCode = ErrorCode.QUEUE_EMPTY
+        } else if (error.message === 'Not in a meeting') {
+          errorCode = ErrorCode.NOT_IN_MEETING
+        } else if (error.message === 'Not authorized - facilitator access required') {
+          errorCode = ErrorCode.FACILITATOR_REQUIRED
         }
         
         reject(new AppError(errorCode, error, error.message || 'Failed to join meeting'))

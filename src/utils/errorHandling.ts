@@ -16,33 +16,54 @@ export enum ErrorCode {
   CONNECTION_FAILED = 'CONNECTION_FAILED',
   NETWORK_TIMEOUT = 'NETWORK_TIMEOUT',
   OFFLINE = 'OFFLINE',
+  WEBSOCKET_DISCONNECTED = 'WEBSOCKET_DISCONNECTED',
+  SERVER_UNREACHABLE = 'SERVER_UNREACHABLE',
   
   // Validation errors
   INVALID_MEETING_CODE = 'INVALID_MEETING_CODE',
   INVALID_PARTICIPANT_NAME = 'INVALID_PARTICIPANT_NAME',
   INVALID_QUEUE_TYPE = 'INVALID_QUEUE_TYPE',
   MISSING_REQUIRED_FIELD = 'MISSING_REQUIRED_FIELD',
+  INVALID_MEETING_TITLE = 'INVALID_MEETING_TITLE',
+  NAME_TOO_LONG = 'NAME_TOO_LONG',
+  NAME_TOO_SHORT = 'NAME_TOO_SHORT',
+  INVALID_CHARACTERS = 'INVALID_CHARACTERS',
   
   // Authentication/Authorization errors
   UNAUTHORIZED_FACILITATOR = 'UNAUTHORIZED_FACILITATOR',
   NOT_IN_MEETING = 'NOT_IN_MEETING',
   MEETING_ACCESS_DENIED = 'MEETING_ACCESS_DENIED',
+  FACILITATOR_REQUIRED = 'FACILITATOR_REQUIRED',
+  INSUFFICIENT_PERMISSIONS = 'INSUFFICIENT_PERMISSIONS',
   
   // Not found errors
   MEETING_NOT_FOUND = 'MEETING_NOT_FOUND',
   PARTICIPANT_NOT_FOUND = 'PARTICIPANT_NOT_FOUND',
+  QUEUE_ITEM_NOT_FOUND = 'QUEUE_ITEM_NOT_FOUND',
   
   // Conflict errors
   ALREADY_IN_QUEUE = 'ALREADY_IN_QUEUE',
   DUPLICATE_PARTICIPANT = 'DUPLICATE_PARTICIPANT',
+  MEETING_CODE_EXISTS = 'MEETING_CODE_EXISTS',
+  QUEUE_EMPTY = 'QUEUE_EMPTY',
+  PARTICIPANT_ALREADY_EXISTS = 'PARTICIPANT_ALREADY_EXISTS',
   
   // Server errors
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE',
+  DATABASE_ERROR = 'DATABASE_ERROR',
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
   
   // Timeout errors
   JOIN_TIMEOUT = 'JOIN_TIMEOUT',
-  SOCKET_TIMEOUT = 'SOCKET_TIMEOUT'
+  SOCKET_TIMEOUT = 'SOCKET_TIMEOUT',
+  REQUEST_TIMEOUT = 'REQUEST_TIMEOUT',
+  
+  // Business logic errors
+  MEETING_ENDED = 'MEETING_ENDED',
+  MEETING_FULL = 'MEETING_FULL',
+  INVALID_OPERATION = 'INVALID_OPERATION',
+  QUEUE_LIMIT_REACHED = 'QUEUE_LIMIT_REACHED'
 }
 
 export interface ErrorDetails {
@@ -52,114 +73,249 @@ export interface ErrorDetails {
   userMessage: string;
   action?: string;
   retryable: boolean;
+  severity?: 'low' | 'medium' | 'high';
   timestamp: string;
   originalError?: Error;
 }
 
 // User-friendly error messages
-export const ERROR_MESSAGES: Record<ErrorCode, { title: string; description: string; action?: string }> = {
+export const ERROR_MESSAGES: Record<ErrorCode, { title: string; description: string; action?: string; severity?: 'low' | 'medium' | 'high' }> = {
   // Network errors
   CONNECTION_FAILED: {
     title: 'Connection Failed',
-    description: 'Unable to connect to the meeting server. Please check your internet connection and try again.',
-    action: 'Check your internet connection and refresh the page.'
+    description: 'Unable to connect to the meeting server. This could be due to network issues or server maintenance.',
+    action: 'Check your internet connection and try refreshing the page.',
+    severity: 'high'
   },
   NETWORK_TIMEOUT: {
     title: 'Connection Timeout',
     description: 'The connection timed out. This might be due to a slow network or server issues.',
-    action: 'Try again or check your internet connection.'
+    action: 'Try again or check your internet connection. If the problem persists, try using a different network.',
+    severity: 'medium'
   },
   OFFLINE: {
     title: 'You\'re Offline',
     description: 'Please check your internet connection and try again.',
-    action: 'Check your internet connection and refresh the page.'
+    action: 'Check your internet connection and refresh the page.',
+    severity: 'high'
+  },
+  WEBSOCKET_DISCONNECTED: {
+    title: 'Connection Lost',
+    description: 'Your connection to the meeting was lost. We\'re trying to reconnect you automatically.',
+    action: 'Wait for automatic reconnection or refresh the page if it takes too long.',
+    severity: 'medium'
+  },
+  SERVER_UNREACHABLE: {
+    title: 'Server Unreachable',
+    description: 'We can\'t reach our servers right now. This might be due to maintenance or a temporary outage.',
+    action: 'Please try again in a few minutes. Check our status page for updates.',
+    severity: 'high'
   },
   
   // Validation errors
   INVALID_MEETING_CODE: {
     title: 'Invalid Meeting Code',
-    description: 'The meeting code you entered is not valid. Please check the code and try again.',
-    action: 'Double-check the meeting code and ensure it\'s exactly 6 characters.'
+    description: 'The meeting code you entered is not valid. Meeting codes are exactly 6 characters long.',
+    action: 'Double-check the meeting code and ensure it\'s exactly 6 characters. Ask the facilitator to share the code again.',
+    severity: 'low'
   },
   INVALID_PARTICIPANT_NAME: {
     title: 'Invalid Name',
-    description: 'Please enter a valid name (1-50 characters).',
-    action: 'Enter a name between 1 and 50 characters.'
+    description: 'Please enter a valid name. Names should be 1-50 characters and contain only letters, numbers, and spaces.',
+    action: 'Enter a name between 1 and 50 characters using only letters, numbers, and spaces.',
+    severity: 'low'
   },
   INVALID_QUEUE_TYPE: {
     title: 'Invalid Queue Type',
-    description: 'The queue type is not supported.',
-    action: 'Try joining the speaking queue instead.'
+    description: 'The queue type you selected is not supported.',
+    action: 'Try joining the speaking queue instead.',
+    severity: 'low'
   },
   MISSING_REQUIRED_FIELD: {
     title: 'Missing Information',
-    description: 'Please fill in all required fields.',
-    action: 'Complete all required fields and try again.'
+    description: 'Please fill in all required fields to continue.',
+    action: 'Complete all required fields and try again.',
+    severity: 'low'
+  },
+  INVALID_MEETING_TITLE: {
+    title: 'Invalid Meeting Title',
+    description: 'Please enter a valid meeting title. Titles should be 1-100 characters.',
+    action: 'Enter a meeting title between 1 and 100 characters.',
+    severity: 'low'
+  },
+  NAME_TOO_LONG: {
+    title: 'Name Too Long',
+    description: 'Your name is too long. Please keep it under 50 characters.',
+    action: 'Shorten your name to 50 characters or less.',
+    severity: 'low'
+  },
+  NAME_TOO_SHORT: {
+    title: 'Name Too Short',
+    description: 'Please enter a name with at least 1 character.',
+    action: 'Enter a name with at least 1 character.',
+    severity: 'low'
+  },
+  INVALID_CHARACTERS: {
+    title: 'Invalid Characters',
+    description: 'Your name contains invalid characters. Please use only letters, numbers, and spaces.',
+    action: 'Remove any special characters and use only letters, numbers, and spaces.',
+    severity: 'low'
   },
   
   // Authentication/Authorization errors
   UNAUTHORIZED_FACILITATOR: {
     title: 'Access Denied',
-    description: 'Only the meeting creator can join as facilitator.',
-    action: 'Join as a regular participant or contact the meeting creator.'
+    description: 'Only the meeting creator can join as facilitator. You can join as a regular participant instead.',
+    action: 'Join as a regular participant or contact the meeting creator for facilitator access.',
+    severity: 'medium'
   },
   NOT_IN_MEETING: {
     title: 'Not in Meeting',
     description: 'You must be in a meeting to perform this action.',
-    action: 'Join a meeting first.'
+    action: 'Join a meeting first.',
+    severity: 'medium'
   },
   MEETING_ACCESS_DENIED: {
     title: 'Access Denied',
     description: 'You don\'t have permission to access this meeting.',
-    action: 'Contact the meeting facilitator for access.'
+    action: 'Contact the meeting facilitator for access or check if you have the correct meeting code.',
+    severity: 'medium'
+  },
+  FACILITATOR_REQUIRED: {
+    title: 'Facilitator Required',
+    description: 'This action requires facilitator privileges.',
+    action: 'Only the meeting facilitator can perform this action.',
+    severity: 'medium'
+  },
+  INSUFFICIENT_PERMISSIONS: {
+    title: 'Insufficient Permissions',
+    description: 'You don\'t have the required permissions to perform this action.',
+    action: 'Contact the meeting facilitator for assistance.',
+    severity: 'medium'
   },
   
   // Not found errors
   MEETING_NOT_FOUND: {
     title: 'Meeting Not Found',
     description: 'The meeting code you entered doesn\'t exist or the meeting has ended.',
-    action: 'Check the meeting code or ask the facilitator for a new one.'
+    action: 'Check the meeting code or ask the facilitator for a new one. The meeting may have ended.',
+    severity: 'medium'
   },
   PARTICIPANT_NOT_FOUND: {
     title: 'Participant Not Found',
     description: 'The participant information could not be found.',
-    action: 'Try rejoining the meeting.'
+    action: 'Try rejoining the meeting or contact the facilitator for assistance.',
+    severity: 'medium'
+  },
+  QUEUE_ITEM_NOT_FOUND: {
+    title: 'Queue Item Not Found',
+    description: 'The requested queue item could not be found.',
+    action: 'Try refreshing the page or rejoining the queue.',
+    severity: 'low'
   },
   
   // Conflict errors
   ALREADY_IN_QUEUE: {
     title: 'Already in Queue',
-    description: 'You\'re already in the speaking queue.',
-    action: 'Wait for your turn or leave the queue first.'
+    description: 'You\'re already in the speaking queue. You can only be in one queue at a time.',
+    action: 'Wait for your turn or leave the current queue first.',
+    severity: 'low'
   },
   DUPLICATE_PARTICIPANT: {
     title: 'Already Joined',
-    description: 'You\'ve already joined this meeting.',
-    action: 'You can continue participating in the meeting.'
+    description: 'You\'ve already joined this meeting with this name.',
+    action: 'You can continue participating in the meeting or try joining with a different name.',
+    severity: 'low'
+  },
+  MEETING_CODE_EXISTS: {
+    title: 'Meeting Code Already Exists',
+    description: 'A meeting with this code already exists. Please try creating a new meeting.',
+    action: 'Try creating a new meeting - a new code will be generated automatically.',
+    severity: 'low'
+  },
+  QUEUE_EMPTY: {
+    title: 'Queue is Empty',
+    description: 'There are no participants in the speaking queue.',
+    action: 'Wait for participants to join the queue or ask them to raise their hands.',
+    severity: 'low'
+  },
+  PARTICIPANT_ALREADY_EXISTS: {
+    title: 'Participant Already Exists',
+    description: 'A participant with this name already exists in the meeting.',
+    action: 'Try joining with a different name or ask the existing participant to leave.',
+    severity: 'low'
   },
   
   // Server errors
   INTERNAL_SERVER_ERROR: {
     title: 'Server Error',
     description: 'Something went wrong on our end. We\'re working to fix it.',
-    action: 'Please try again in a few moments.'
+    action: 'Please try again in a few moments. If the problem persists, contact support.',
+    severity: 'high'
   },
   SERVICE_UNAVAILABLE: {
     title: 'Service Unavailable',
-    description: 'The meeting service is temporarily unavailable.',
-    action: 'Please try again later.'
+    description: 'The meeting service is temporarily unavailable due to maintenance or high load.',
+    action: 'Please try again later. Check our status page for updates.',
+    severity: 'high'
+  },
+  DATABASE_ERROR: {
+    title: 'Database Error',
+    description: 'We\'re experiencing database issues. Your data is safe.',
+    action: 'Please try again in a few moments. If the problem persists, contact support.',
+    severity: 'high'
+  },
+  RATE_LIMIT_EXCEEDED: {
+    title: 'Rate Limit Exceeded',
+    description: 'You\'re making requests too quickly. Please slow down and try again.',
+    action: 'Wait a moment before trying again.',
+    severity: 'medium'
   },
   
   // Timeout errors
   JOIN_TIMEOUT: {
     title: 'Join Timeout',
-    description: 'Joining the meeting took too long. Please try again.',
-    action: 'Try joining the meeting again.'
+    description: 'Joining the meeting took too long. This might be due to network issues.',
+    action: 'Try joining the meeting again. Check your internet connection if the problem persists.',
+    severity: 'medium'
   },
   SOCKET_TIMEOUT: {
     title: 'Connection Timeout',
     description: 'The connection timed out. Please try reconnecting.',
-    action: 'Refresh the page to reconnect.'
+    action: 'Refresh the page to reconnect.',
+    severity: 'medium'
+  },
+  REQUEST_TIMEOUT: {
+    title: 'Request Timeout',
+    description: 'Your request timed out. This might be due to network issues.',
+    action: 'Try again or check your internet connection.',
+    severity: 'medium'
+  },
+  
+  // Business logic errors
+  MEETING_ENDED: {
+    title: 'Meeting Ended',
+    description: 'This meeting has ended and is no longer available.',
+    action: 'Ask the facilitator to create a new meeting or check if you have the correct meeting code.',
+    severity: 'medium'
+  },
+  MEETING_FULL: {
+    title: 'Meeting Full',
+    description: 'This meeting has reached its maximum capacity.',
+    action: 'Ask the facilitator to increase the capacity or try joining later.',
+    severity: 'medium'
+  },
+  INVALID_OPERATION: {
+    title: 'Invalid Operation',
+    description: 'This operation is not allowed in the current context.',
+    action: 'Check the meeting state and try again.',
+    severity: 'low'
+  },
+  QUEUE_LIMIT_REACHED: {
+    title: 'Queue Limit Reached',
+    description: 'The speaking queue has reached its maximum capacity.',
+    action: 'Wait for someone to leave the queue or ask the facilitator to increase the limit.',
+    severity: 'low'
   }
 };
 
@@ -184,6 +340,7 @@ export class AppError extends Error {
       userMessage: errorInfo.title,
       action: errorInfo.action,
       retryable: isRetryableError(code),
+      severity: errorInfo.severity,
       timestamp: new Date().toISOString(),
       originalError
     };
@@ -191,27 +348,55 @@ export class AppError extends Error {
 }
 
 function getErrorTypeFromCode(code: ErrorCode): ErrorType {
-  if (code.startsWith('CONNECTION') || code === 'NETWORK_TIMEOUT' || code === 'OFFLINE') {
+  // Network errors
+  if (code.startsWith('CONNECTION') || code === 'NETWORK_TIMEOUT' || code === 'OFFLINE' || 
+      code === 'WEBSOCKET_DISCONNECTED' || code === 'SERVER_UNREACHABLE') {
     return ErrorType.NETWORK;
   }
-  if (code.startsWith('INVALID') || code === 'MISSING_REQUIRED_FIELD') {
+  
+  // Validation errors
+  if (code.startsWith('INVALID') || code === 'MISSING_REQUIRED_FIELD' || 
+      code.startsWith('NAME_') || code === 'INVALID_CHARACTERS') {
     return ErrorType.VALIDATION;
   }
-  if (code.startsWith('UNAUTHORIZED') || code.startsWith('NOT_IN') || code.startsWith('MEETING_ACCESS')) {
+  
+  // Authentication/Authorization errors
+  if (code.startsWith('UNAUTHORIZED') || code.startsWith('NOT_IN') || 
+      code.startsWith('MEETING_ACCESS') || code.startsWith('FACILITATOR') || 
+      code === 'INSUFFICIENT_PERMISSIONS') {
     return ErrorType.AUTHENTICATION;
   }
-  if (code.startsWith('NOT_FOUND') || code === 'MEETING_NOT_FOUND' || code === 'PARTICIPANT_NOT_FOUND') {
+  
+  // Not found errors
+  if (code.startsWith('NOT_FOUND') || code === 'MEETING_NOT_FOUND' || 
+      code === 'PARTICIPANT_NOT_FOUND' || code === 'QUEUE_ITEM_NOT_FOUND') {
     return ErrorType.NOT_FOUND;
   }
-  if (code.startsWith('ALREADY') || code.startsWith('DUPLICATE')) {
+  
+  // Conflict errors
+  if (code.startsWith('ALREADY') || code.startsWith('DUPLICATE') || 
+      code.startsWith('MEETING_CODE') || code === 'QUEUE_EMPTY' || 
+      code === 'PARTICIPANT_ALREADY_EXISTS') {
     return ErrorType.CONFLICT;
   }
-  if (code.startsWith('INTERNAL') || code.startsWith('SERVICE')) {
+  
+  // Server errors
+  if (code.startsWith('INTERNAL') || code.startsWith('SERVICE') || 
+      code === 'DATABASE_ERROR' || code === 'RATE_LIMIT_EXCEEDED') {
     return ErrorType.SERVER;
   }
-  if (code.includes('TIMEOUT')) {
+  
+  // Timeout errors
+  if (code.includes('TIMEOUT') || code === 'REQUEST_TIMEOUT') {
     return ErrorType.TIMEOUT;
   }
+  
+  // Business logic errors (mapped to appropriate types)
+  if (code === 'MEETING_ENDED' || code === 'MEETING_FULL' || 
+      code === 'INVALID_OPERATION' || code === 'QUEUE_LIMIT_REACHED') {
+    return ErrorType.CONFLICT; // These are business logic conflicts
+  }
+  
   return ErrorType.UNKNOWN;
 }
 
@@ -220,10 +405,15 @@ function isRetryableError(code: ErrorCode): boolean {
     'CONNECTION_FAILED',
     'NETWORK_TIMEOUT',
     'OFFLINE',
+    'WEBSOCKET_DISCONNECTED',
+    'SERVER_UNREACHABLE',
     'INTERNAL_SERVER_ERROR',
     'SERVICE_UNAVAILABLE',
+    'DATABASE_ERROR',
     'JOIN_TIMEOUT',
-    'SOCKET_TIMEOUT'
+    'SOCKET_TIMEOUT',
+    'REQUEST_TIMEOUT',
+    'RATE_LIMIT_EXCEEDED'
   ];
   return retryableCodes.includes(code);
 }
@@ -261,7 +451,8 @@ export const getErrorDisplayInfo = (error: AppError | Error) => {
       title: error.details.userMessage,
       description: error.details.message,
       action: error.details.action,
-      retryable: error.details.retryable
+      retryable: error.details.retryable,
+      severity: error.details.severity
     };
   }
 
@@ -269,6 +460,7 @@ export const getErrorDisplayInfo = (error: AppError | Error) => {
     title: 'Something went wrong',
     description: 'An unexpected error occurred. Please try again.',
     action: 'Refresh the page or try again later.',
-    retryable: true
+    retryable: true,
+    severity: 'medium' as const
   };
 };
