@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import socketService from '@/services/socket'
 import { playBeep } from '@/utils/sound'
+import { useSpeakerTimer } from './useSpeakerTimer'
+import { useSpeakingHistory } from './useSpeakingHistory'
+import { useStackManagement } from './useStackManagement'
 
 type Speaker = {
   participantName: string
@@ -36,6 +39,32 @@ export function useFacilitatorSocket(
   const [isConnected, setIsConnected] = useState(false)
   const [error, setError] = useState('')
   const [currentSpeaker, setCurrentSpeaker] = useState<Speaker | null>(null)
+
+  // Timer and speaking history hooks
+  const {
+    speakerTimer,
+    elapsedTime,
+    startTimer: startSpeakerTimer,
+    pauseTimer: pauseSpeakerTimer,
+    resumeTimer: resumeSpeakerTimer,
+    resetTimer: resetSpeakerTimer,
+    stopTimer: stopSpeakerTimer,
+    formatTime
+  } = useSpeakerTimer()
+
+  const {
+    addSpeakingSegment,
+    clearSpeakingHistory,
+    getSpeakingDistribution
+  } = useSpeakingHistory()
+
+  const {
+    interventions,
+    setInterventions,
+    addIntervention,
+    undoHistory,
+    handleUndo
+  } = useStackManagement()
 
   useEffect(() => {
     if (!meetingCode || !facilitatorName) return
@@ -96,20 +125,62 @@ export function useFacilitatorSocket(
     }
   }, [meetingCode, facilitatorName, showToast])
 
-  const nextSpeaker = () => {
+  const nextSpeaker = useCallback(() => {
     if (speakingQueue.length === 0 || !isConnected) return
+    
+    // Record speaking segment for current speaker if timer is active
+    if (speakerTimer && currentSpeaker) {
+      const durationMs = Date.now() - speakerTimer.startTime.getTime()
+      addSpeakingSegment(
+        currentSpeaker.participantName,
+        currentSpeaker.participantName,
+        durationMs,
+        currentSpeaker.type === 'direct-response'
+      )
+    }
+    
     try {
       socketService.nextSpeaker()
+      
+      // Start timer for next speaker
+      if (speakingQueue.length > 1) {
+        const nextSpeakerName = speakingQueue[1].participantName
+        startSpeakerTimer(nextSpeakerName)
+      } else {
+        stopSpeakerTimer()
+      }
     } catch (err) {
       setError('Failed to call next speaker')
       showToast?.({ type: 'error', title: 'Failed to call next speaker' })
       playBeep(220, 200)
     }
-  }
+  }, [speakingQueue, isConnected, speakerTimer, currentSpeaker, addSpeakingSegment, startSpeakerTimer, stopSpeakerTimer])
 
-  const finishSpeaking = () => {
+  const finishSpeaking = useCallback(() => {
+    // Record speaking segment for current speaker if timer is active
+    if (speakerTimer && currentSpeaker) {
+      const durationMs = Date.now() - speakerTimer.startTime.getTime()
+      addSpeakingSegment(
+        currentSpeaker.participantName,
+        currentSpeaker.participantName,
+        durationMs,
+        currentSpeaker.type === 'direct-response'
+      )
+    }
+    
     setCurrentSpeaker(null)
-  }
+    stopSpeakerTimer()
+  }, [speakerTimer, currentSpeaker, addSpeakingSegment, stopSpeakerTimer])
+
+  // Timer controls
+  const toggleSpeakerTimer = useCallback(() => {
+    if (!speakerTimer) return
+    if (speakerTimer.isActive) {
+      pauseSpeakerTimer()
+    } else {
+      resumeSpeakerTimer()
+    }
+  }, [speakerTimer, pauseSpeakerTimer, resumeSpeakerTimer])
 
   const disconnect = () => {
     socketService.disconnect()
@@ -123,7 +194,23 @@ export function useFacilitatorSocket(
     error,
     nextSpeaker,
     finishSpeaking,
-    disconnect
+    disconnect,
+    // Timer functionality
+    speakerTimer,
+    elapsedTime,
+    toggleSpeakerTimer,
+    resetSpeakerTimer,
+    formatTime,
+    // Speaking history
+    getSpeakingDistribution,
+    clearSpeakingHistory,
+    // Interventions
+    interventions,
+    setInterventions,
+    addIntervention,
+    // Undo functionality
+    undoHistory,
+    handleUndo
   }
 }
 

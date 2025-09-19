@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { Users, Play, SkipForward, LogOut, Loader2, MessageCircle, Info, Settings } from 'lucide-react'
+import { Users, Play, SkipForward, LogOut, Loader2, MessageCircle, Info, Settings, RotateCcw } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import FacilitatorHeader from '../components/FacilitatorHeader'
 import ParticipantList from '../components/ParticipantList'
 import CurrentSpeakerCard from '../components/CurrentSpeakerCard'
+import { SpeakingDistribution } from '../components/StackKeeper/SpeakingDistribution'
+import { InterventionsPanel } from '../components/StackKeeper/InterventionsPanel'
 import useFacilitatorSocket from '../hooks/useFacilitatorSocket'
 import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
 
@@ -48,7 +50,19 @@ function FacilitatorView(): JSX.Element {
     error,
     nextSpeaker,
     finishSpeaking,
-    disconnect
+    disconnect,
+    speakerTimer,
+    elapsedTime,
+    toggleSpeakerTimer,
+    resetSpeakerTimer,
+    formatTime,
+    getSpeakingDistribution,
+    clearSpeakingHistory,
+    interventions,
+    setInterventions,
+    addIntervention,
+    undoHistory,
+    handleUndo
   } = useFacilitatorSocket(meetingCode, facilitatorName, showToast)
 
   const leaveMeeting = () => {
@@ -56,7 +70,7 @@ function FacilitatorView(): JSX.Element {
     navigate('/')
   }
 
-  const formatTime = (timestamp: number) => {
+  const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
@@ -105,6 +119,11 @@ function FacilitatorView(): JSX.Element {
       <CurrentSpeakerCard
         currentSpeaker={currentSpeaker}
         finishSpeaking={finishSpeaking}
+        speakerTimer={speakerTimer}
+        elapsedTime={elapsedTime}
+        onToggleTimer={toggleSpeakerTimer}
+        onResetTimer={resetSpeakerTimer}
+        formatTime={formatTime}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -112,14 +131,27 @@ function FacilitatorView(): JSX.Element {
         <Card className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-xl font-bold text-gray-900 dark:text-zinc-100">Speaking Queue</CardTitle>
-            <Button
-              onClick={nextSpeaker}
-              disabled={speakingQueue.length === 0}
-              className="floating-glow rounded-xl"
-            >
-              <SkipForward className="w-4 h-4 mr-2" />
-              Next Speaker
-            </Button>
+            <div className="flex items-center gap-2">
+              {undoHistory.length > 0 && (
+                <Button
+                  onClick={handleUndo}
+                  variant="outline"
+                  className="rounded-xl"
+                  title={`Undo (${undoHistory.length} actions available)`}
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Undo ({undoHistory.length})
+                </Button>
+              )}
+              <Button
+                onClick={nextSpeaker}
+                disabled={speakingQueue.length === 0}
+                className="floating-glow rounded-xl"
+              >
+                <SkipForward className="w-4 h-4 mr-2" />
+                Next Speaker
+              </Button>
+            </div>
           </CardHeader>
           
           <CardContent>
@@ -182,10 +214,38 @@ function FacilitatorView(): JSX.Element {
                           {getQueueTypeDisplay(entry.type)}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {formatTime(entry.timestamp)}
+                          {formatTimestamp(entry.timestamp)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
+                        {!isCurrentSpeaker && (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => addIntervention('direct-response', entry.participantName)}
+                              className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors"
+                              title="Direct Response"
+                            >
+                              Direct Response
+                            </button>
+                            <button
+                              onClick={() => addIntervention('clarifying-question', entry.participantName)}
+                              className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors"
+                              title="Clarifying Question"
+                            >
+                              Clarify
+                            </button>
+                            <button
+                              onClick={() => {
+                                // TODO: Implement remove from queue functionality
+                                console.log('Remove from queue:', entry.participantName)
+                              }}
+                              className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                              title="Remove from Queue"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
                         {isCurrentSpeaker && (
                           <div className="flex items-center text-primary">
                             <Play className="w-4 h-4 mr-1" />
@@ -207,6 +267,20 @@ function FacilitatorView(): JSX.Element {
           meetingData={meetingData}
         />
       </div>
+
+      {/* Speaking Distribution */}
+      <SpeakingDistribution
+        speakingData={getSpeakingDistribution(true)}
+        includeDirectResponses={true}
+        onToggleIncludeDirectResponses={() => {}}
+      />
+
+      {/* Interventions Panel */}
+      <InterventionsPanel
+        interventions={interventions}
+        onClearInterventions={() => setInterventions([])}
+        showInterventionsPanel={true}
+      />
     </div>
   )
 }
