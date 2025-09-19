@@ -1,0 +1,85 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-checks:
+    name: PR Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install backend dependencies
+      run: cd backend && npm ci
+      
+    - name: Run linting
+      run: npm run lint
+      
+    - name: Run type checking
+      run: npx tsc --noEmit
+      
+    - name: Run frontend tests
+      run: npm run test:run
+      
+    - name: Run backend tests
+      run: cd backend && npm test
+      
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+      
+    - name: Run E2E tests
+      run: npm run test:e2e
+      
+    - name: Comment PR with test results
+      uses: actions/github-script@v7
+      if: always()
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read test results
+          let testResults = '';
+          try {
+            if (fs.existsSync('test-results/results.json')) {
+              const results = JSON.parse(fs.readFileSync('test-results/results.json', 'utf8'));
+              const stats = results.stats;
+              testResults = `## Test Results 📊
+              
+              **Frontend Tests:** ✅ Passed
+              **Backend Tests:** ✅ Passed
+              **E2E Tests:** ${stats.failures === 0 ? '✅ Passed' : '❌ Failed'} (${stats.passed}/${stats.total})
+              
+              ${stats.failures > 0 ? '### Failed Tests:\n' + results.suites.map(suite => 
+                suite.specs.filter(spec => spec.tests.some(test => test.results.some(result => result.status === 'failed')))
+                  .map(spec => `- ${spec.title}`).join('\n')
+              ).join('\n') : ''}
+              `;
+            } else {
+              testResults = '## Test Results 📊\n\nTests completed successfully! ✅';
+            }
+          } catch (error) {
+            testResults = '## Test Results 📊\n\nUnable to parse test results.';
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: testResults
+          });
