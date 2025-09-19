@@ -120,8 +120,8 @@ function AppLayout({ children }: AppLayoutProps) {
                       onClick={() => navigate('/manual')}
                       className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'manual'
-                          ? 'text-white shadow-sm'
-                          : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
+                          ? 'text-white shadow-sm transform scale-[1.02]'
+                          : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
                       }`}
                       aria-current={mode === 'manual' ? 'page' : undefined}
                     >
@@ -131,8 +131,8 @@ function AppLayout({ children }: AppLayoutProps) {
                       onClick={() => navigate('/create')}
                       className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'create'
-                          ? 'text-white shadow-sm'
-                          : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
+                          ? 'text-white shadow-sm transform scale-[1.02]'
+                          : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
                       }`}
                       aria-current={mode === 'create' ? 'page' : undefined}
                     >
@@ -145,8 +145,8 @@ function AppLayout({ children }: AppLayoutProps) {
                       onClick={() => navigate('/join')}
                       className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'join'
-                          ? 'text-white shadow-sm'
-                          : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
+                          ? 'text-white shadow-sm transform scale-[1.02]'
+                          : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
                       }`}
                       aria-current={mode === 'join' ? 'page' : undefined}
                     >
