@@ -7,6 +7,7 @@ const path = require('path');
 // Import services and handlers
 const meetingsRoutes = require('./routes/meetings');
 const socketHandlers = require('./handlers/socketHandlers');
+const meetingsService = require('./services/meetings');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,9 +22,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Serve static assets from the frontend public directory
+// Serve static assets from the built frontend dist directory
 app.use(
-  express.static(path.join(__dirname, '..', 'public'), {
+  express.static(path.join(__dirname, '..', 'dist'), {
     maxAge: '7d',
     index: false,
   })
@@ -136,7 +137,14 @@ app.get('/join/:code', (req, res) => {
 });
 
 // Serve the React app for all other routes (client-side routing)
+// This must be the last route to catch all non-API routes
 app.get('*', (req, res) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  
+  // Serve the React app for all other routes
   res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
 
