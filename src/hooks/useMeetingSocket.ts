@@ -55,11 +55,11 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       setParticipants(participantsList);
     };
 
-    const participantJoinedCallback = (data: any) => {
+    const participantJoinedCallback = (data: { participant: { name: string } }) => {
       notify('info', `${data.participant.name} joined`);
     };
 
-    const participantLeftCallback = (data: any) => {
+    const participantLeftCallback = (data: { participantName: string }) => {
       notify('info', `${data.participantName} left`);
     };
 
@@ -72,7 +72,7 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       }, 5000);
     };
 
-    const errorCallback = (error: any) => {
+    const errorCallback = (error: { message?: string }) => {
       setError(error.message || 'Connection error');
       notify('error', error.message || 'Connection error');
     };
@@ -91,9 +91,10 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
         socketService.connect();
         setupSocketListeners();
         setIsConnected(true);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Connection error:', err);
-        setError(err.message || 'Failed to connect to meeting. Please check your internet connection and try again.');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to connect to meeting. Please check your internet connection and try again.';
+        setError(errorMessage);
       }
     } else {
       setupSocketListeners();
@@ -118,10 +119,11 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       socketService.joinQueue(type);
       notify('success', 'Joined queue', type === 'speak' ? 'Speak' : type.replace('-', ' '));
       playBeep(1000, 120);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Join queue error:', err);
-      setError(err.message || 'Failed to join queue. Please try again.');
-      notify('error', err.message || 'Failed to join queue');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to join queue. Please try again.';
+      setError(errorMessage);
+      notify('error', errorMessage);
       playBeep(220, 200);
     }
   }, [isInQueue, isConnected, notify]);
@@ -133,10 +135,11 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       socketService.leaveQueue();
       notify('info', 'Left queue');
       playBeep(600, 100);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Leave queue error:', err);
-      setError(err.message || 'Failed to leave queue. Please try again.');
-      notify('error', err.message || 'Failed to leave queue');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to leave queue. Please try again.';
+      setError(errorMessage);
+      notify('error', errorMessage);
       playBeep(220, 200);
     }
   }, [isInQueue, isConnected, notify]);

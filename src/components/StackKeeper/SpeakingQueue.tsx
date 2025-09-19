@@ -12,7 +12,7 @@ interface SpeakingQueueProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onRemoveFromStack: (id: string) => void;
-  onIntervention: (participantName: string, type: any) => void;
+  onIntervention: (participantName: string, type: string) => void;
   onFinishDirectResponse: () => void;
   onClearAll: () => void;
   onReorderStack: (dragIndex: number, targetIndex: number) => void;

@@ -133,4 +133,5 @@ const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = "SidebarProvider"
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { SidebarProvider, useSidebar }

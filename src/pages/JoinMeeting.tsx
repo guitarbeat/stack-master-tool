@@ -32,7 +32,7 @@ function JoinMeeting(): JSX.Element {
     meetingCode: 'idle',
     participantName: 'idle'
   })
-  const [meetingInfo, setMeetingInfo] = useState<any>(null)
+  const [meetingInfo, setMeetingInfo] = useState<{ title: string; code: string; facilitator: string } | null>(null)
 
   // Real-time validation for meeting code
   useEffect(() => {
@@ -96,7 +96,7 @@ function JoinMeeting(): JSX.Element {
       })
     } catch (err) {
       console.error('Error joining meeting:', err)
-      if ((err as any).message === 'Meeting not found') {
+      if (err instanceof Error && err.message === 'Meeting not found') {
         setError('Meeting not found. Please check the code and try again.')
         notify('error', 'Meeting not found')
       } else {
