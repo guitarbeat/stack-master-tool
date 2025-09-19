@@ -1,41 +1,82 @@
-import { Leaf, Users, Sparkles } from 'lucide-react'
+import { Leaf, Users, Sparkles, ArrowRight, CheckCircle } from 'lucide-react'
 
 export const Hero = () => (
-  <div className="text-center mb-8 sm:mb-12 relative px-4">
-    <div className="mb-4 sm:mb-6 inline-block">
-      <div className="relative">
-        <div className="absolute inset-0 bg-primary/20 blur-2xl organic-blob"></div>
-        <div className="relative liquid-glass p-4 sm:p-6 rounded-2xl sm:rounded-3xl inline-flex items-center justify-center gap-3">
-          {/* ICC Logos */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm group-hover:bg-primary/20 transition-standard"></div>
+  <div className="text-center mb-8 sm:mb-16 relative px-4">
+    {/* Enhanced Logo Section */}
+    <div className="mb-6 sm:mb-8 inline-block">
+      <div className="relative group">
+        <div className="absolute inset-0 bg-primary/20 blur-3xl organic-blob group-hover:bg-primary/30 transition-all duration-500"></div>
+        <div className="relative liquid-glass p-5 sm:p-7 rounded-3xl sm:rounded-[2rem] inline-flex items-center justify-center gap-4 shadow-elegant group-hover:shadow-glow transition-all duration-500">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="relative group/logo">
+              <div className="absolute inset-0 bg-primary/15 rounded-full blur-md group-hover/logo:bg-primary/25 transition-all duration-300"></div>
               <img 
                 src="/icc-removebg-preview.png" 
                 alt="ICC Austin primary logo" 
-                className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-standard dark:brightness-110"
+                className="relative w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-lg group-hover/logo:scale-110 transition-all duration-300 dark:brightness-110"
               />
             </div>
+            <div className="flex flex-col items-start">
+              <span className="text-xl sm:text-2xl font-bold gradient-text">ICC Austin</span>
+              <span className="text-xs sm:text-sm text-muted-foreground font-medium">Stack Platform</span>
+            </div>
           </div>
-          <span className="text-xl sm:text-2xl font-semibold">ICC Austin</span>
         </div>
       </div>
     </div>
 
-    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold hero-text leading-tight tracking-tight">
-        Organic Stack
-        <br />
-        <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light">Facilitation</span>
-      </h1>
+    <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto">
+      {/* Main Headline */}
+      <div className="space-y-4">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold hero-text leading-tight tracking-tight">
+          Organic Stack
+          <br />
+          <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Facilitation
+          </span>
+        </h1>
 
-      <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-primary via-accent to-primary mx-auto rounded-full opacity-60"></div>
+        <div className="flex items-center justify-center gap-2 sm:gap-4">
+          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-primary via-accent to-primary rounded-full opacity-60"></div>
+          <div className="flex items-center gap-1 text-primary">
+            <Leaf className="w-4 h-4" />
+            <span className="text-sm font-medium">Natural Growth</span>
+          </div>
+          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-primary via-accent to-primary rounded-full opacity-60"></div>
+        </div>
+      </div>
 
-      <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light">
-        Nurture inclusive conversations that grow naturally.
-        <br />
-        <span className="text-primary font-medium">Democratic • Sustainable • Human-centered</span>
-      </p>
+      {/* Enhanced Description */}
+      <div className="space-y-4 max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed font-light">
+          Nurture inclusive conversations that grow naturally through democratic, 
+          sustainable, and human-centered facilitation.
+        </p>
+        
+        {/* Key Benefits */}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm sm:text-base">
+          <div className="flex items-center gap-2 text-primary font-medium">
+            <CheckCircle className="w-4 h-4" />
+            <span>Democratic</span>
+          </div>
+          <div className="flex items-center gap-2 text-accent font-medium">
+            <CheckCircle className="w-4 h-4" />
+            <span>Sustainable</span>
+          </div>
+          <div className="flex items-center gap-2 text-primary font-medium">
+            <CheckCircle className="w-4 h-4" />
+            <span>Human-centered</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Call to Action */}
+      <div className="pt-4">
+        <div className="inline-flex items-center gap-2 text-primary font-semibold group cursor-pointer hover:gap-3 transition-all duration-300">
+          <span>Start Your Journey</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
     </div>
   </div>
 )
