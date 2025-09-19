@@ -40,7 +40,7 @@ export const ActionCards = () => {
       <div ref={(el) => (cardsRef.current[1] = el)} className="tilt-card group">
         <Link to="/join" className="block h-full">
           <div className="liquid-glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden">
-            <div className="absolute bottom-0 left-0 w-16 sm:w-20 h-16 sm:h-20 bg-accent/10 organic-blob opacity-50" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute bottom-0 left-0 w-16 sm:w-20 h-16 sm:h-20 bg-accent/10 organic-blob organic-blob-delay-1 opacity-50"></div>
 
             <div className="relative z-10">
               <div className="mb-6">
@@ -69,7 +69,7 @@ export const ActionCards = () => {
       <div ref={(el) => (cardsRef.current[2] = el)} className="tilt-card group">
         <Link to="/manual" className="block h-full">
           <div className="liquid-glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-16 sm:w-20 h-16 sm:h-20 bg-primary/10 organic-blob opacity-50" style={{ animationDelay: '3s' }}></div>
+            <div className="absolute top-0 left-0 w-16 sm:w-20 h-16 sm:h-20 bg-primary/10 organic-blob organic-blob-delay-3 opacity-50"></div>
 
             <div className="relative z-10">
               <div className="mb-6">

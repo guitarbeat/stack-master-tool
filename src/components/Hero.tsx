@@ -9,11 +9,11 @@ export const Hero = () => (
           {/* ICC Logos */}
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative group">
-              <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm group-hover:bg-primary/20 transition-colors duration-300"></div>
+              <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm group-hover:bg-primary/20 transition-standard"></div>
               <img 
                 src="/icc-removebg-preview.png" 
                 alt="ICC Austin primary logo" 
-                className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-all duration-300 dark:brightness-110"
+                className="relative w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow-lg hover:scale-110 transition-standard dark:brightness-110"
               />
             </div>
           </div>
