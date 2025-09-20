@@ -14,13 +14,131 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      meetings: {
+        Row: {
+          created_at: string
+          facilitator_id: string | null
+          facilitator_name: string
+          id: string
+          is_active: boolean | null
+          meeting_code: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          facilitator_id?: string | null
+          facilitator_name: string
+          id?: string
+          is_active?: boolean | null
+          meeting_code: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          facilitator_id?: string | null
+          facilitator_name?: string
+          id?: string
+          is_active?: boolean | null
+          meeting_code?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      participants: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          is_facilitator: boolean | null
+          joined_at: string
+          meeting_id: string
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          is_facilitator?: boolean | null
+          joined_at?: string
+          meeting_id: string
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          is_facilitator?: boolean | null
+          joined_at?: string
+          meeting_id?: string
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participants_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      speaking_queue: {
+        Row: {
+          id: string
+          is_speaking: boolean | null
+          joined_queue_at: string
+          meeting_id: string
+          participant_id: string
+          position: number
+          queue_type: string
+        }
+        Insert: {
+          id?: string
+          is_speaking?: boolean | null
+          joined_queue_at?: string
+          meeting_id: string
+          participant_id: string
+          position: number
+          queue_type?: string
+        }
+        Update: {
+          id?: string
+          is_speaking?: boolean | null
+          joined_queue_at?: string
+          meeting_id?: string
+          participant_id?: string
+          position?: number
+          queue_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "speaking_queue_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "speaking_queue_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_meeting_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

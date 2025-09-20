@@ -1,11 +1,9 @@
 import { AppError, ErrorCode, ErrorType, logError } from '../utils/errorHandling'
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://stack-facilitation-app-simple-backend.onrender.com'
+import { supabase } from '@/integrations/supabase/client'
 
 class ApiService {
   constructor() {
-    this.baseUrl = API_BASE_URL
+    // No longer needed - using Supabase
   }
 
   async createMeeting(facilitatorName, meetingTitle) {
@@ -19,59 +17,46 @@ class ApiService {
         throw new AppError(ErrorCode.MISSING_REQUIRED_FIELD, undefined, 'Meeting title is required')
       }
 
-      const response = await fetch(`${this.baseUrl}/api/meetings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          facilitatorName: facilitatorName.trim(),
-          meetingTitle: meetingTitle.trim()
-        })
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        
-        switch (response.status) {
-          case 400:
-            // Map specific error codes from server
-            if (errorData.code) {
-              throw new AppError(errorData.code, undefined, errorData.error || 'Invalid request data')
-            }
-            throw new AppError(ErrorCode.INVALID_PARTICIPANT_NAME, undefined, errorData.error || 'Invalid request data')
-          case 404:
-            throw new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, errorData.error || 'Meeting not found')
-          case 409:
-            throw new AppError(ErrorCode.MEETING_CODE_EXISTS, undefined, errorData.error || 'Meeting code already exists')
-          case 429:
-            throw new AppError(ErrorCode.RATE_LIMIT_EXCEEDED, undefined, errorData.error || 'Too many requests')
-          case 500:
-            throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, 'Server error occurred')
-          case 503:
-            throw new AppError(ErrorCode.SERVICE_UNAVAILABLE, undefined, 'Service temporarily unavailable')
-          case 504:
-            throw new AppError(ErrorCode.REQUEST_TIMEOUT, undefined, 'Request timed out')
-          default:
-            throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, `Server error: ${response.status}`)
-        }
+      // Generate meeting code
+      const { data: codeData, error: codeError } = await supabase.rpc('generate_meeting_code')
+      
+      if (codeError) {
+        logError(codeError, 'generateMeetingCode')
+        throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, codeError, 'Failed to generate meeting code')
       }
 
-      const data = await response.json()
-      return data
+      // Create meeting in Supabase
+      const { data, error } = await supabase
+        .from('meetings')
+        .insert({
+          meeting_code: codeData,
+          title: meetingTitle.trim(),
+          facilitator_name: facilitatorName.trim(),
+          facilitator_id: null // No auth yet
+        })
+        .select()
+        .single()
+
+      if (error) {
+        logError(error, 'createMeeting')
+        
+        // Handle specific Supabase errors
+        if (error.code === '23505') { // Unique constraint violation
+          throw new AppError(ErrorCode.MEETING_CODE_EXISTS, error, 'Meeting code already exists')
+        }
+        
+        throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to create meeting')
+      }
+
+      return {
+        meetingId: data.id,
+        meetingCode: data.meeting_code,
+        meetingTitle: data.title,
+        facilitatorName: data.facilitator_name
+      }
     } catch (error) {
       if (error instanceof AppError) {
         throw error
-      }
-      
-      // Handle network errors
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new AppError(ErrorCode.CONNECTION_FAILED, error, 'Unable to connect to server')
-      }
-      
-      // Handle timeout errors
-      if (error.name === 'AbortError') {
-        throw new AppError(ErrorCode.NETWORK_TIMEOUT, error, 'Request timed out')
       }
       
       logError(error, 'createMeeting')
@@ -86,48 +71,32 @@ class ApiService {
         throw new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, 'Meeting code must be 6 characters')
       }
 
-      const response = await fetch(`${this.baseUrl}/api/meetings/${meetingCode.toUpperCase()}`)
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        
-        switch (response.status) {
-          case 400:
-            // Map specific error codes from server
-            if (errorData.code) {
-              throw new AppError(errorData.code, undefined, errorData.error || 'Invalid request data')
-            }
-            throw new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, 'Invalid meeting code format')
-          case 404:
-            throw new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, errorData.error || 'Meeting not found')
-          case 429:
-            throw new AppError(ErrorCode.RATE_LIMIT_EXCEEDED, undefined, errorData.error || 'Too many requests')
-          case 500:
-            throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, 'Server error occurred')
-          case 503:
-            throw new AppError(ErrorCode.SERVICE_UNAVAILABLE, undefined, 'Service temporarily unavailable')
-          case 504:
-            throw new AppError(ErrorCode.REQUEST_TIMEOUT, undefined, 'Request timed out')
-          default:
-            throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, undefined, `Server error: ${response.status}`)
+      const { data, error } = await supabase
+        .from('meetings')
+        .select('*')
+        .eq('meeting_code', meetingCode.toUpperCase())
+        .eq('is_active', true)
+        .single()
+
+      if (error) {
+        if (error.code === 'PGRST116') { // No rows returned
+          throw new AppError(ErrorCode.MEETING_NOT_FOUND, error, 'Meeting not found')
         }
+        
+        logError(error, 'getMeeting')
+        throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to get meeting')
       }
 
-      const data = await response.json()
-      return data
+      return {
+        meetingId: data.id,
+        meetingCode: data.meeting_code,
+        meetingTitle: data.title,
+        facilitatorName: data.facilitator_name,
+        createdAt: data.created_at
+      }
     } catch (error) {
       if (error instanceof AppError) {
         throw error
-      }
-      
-      // Handle network errors
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new AppError(ErrorCode.CONNECTION_FAILED, error, 'Unable to connect to server')
-      }
-      
-      // Handle timeout errors
-      if (error.name === 'AbortError') {
-        throw new AppError(ErrorCode.NETWORK_TIMEOUT, error, 'Request timed out')
       }
       
       logError(error, 'getMeeting')
@@ -136,11 +105,12 @@ class ApiService {
   }
 
   getJoinUrl(meetingCode) {
-    return `${this.baseUrl}/join/${meetingCode}`
+    return `${window.location.origin}/join?code=${meetingCode}`
   }
 
+  // No longer needed - using Supabase real-time
   getSocketUrl() {
-    return this.baseUrl
+    return null
   }
 }
 
