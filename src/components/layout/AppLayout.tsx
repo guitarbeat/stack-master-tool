@@ -194,40 +194,27 @@ function AppLayout({ children }: AppLayoutProps) {
                 Manual
               </Link>
               <Link
-                to="/create-or-join"
+                to="/create"
                 onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive('/create-or-join') ? 'page' : undefined}
+                aria-current={isActive('/create') ? 'page' : undefined}
                 className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/create-or-join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Create or Join Meeting
+                Create Meeting
               </Link>
-              <div className="ml-6 space-y-1">
-                <Link
-                  to="/create"
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-current={isActive('/create') ? 'page' : undefined}
-                  className={`h-8 flex items-center px-4 rounded-lg text-sm font-medium ${
-                    isActive('/create') ? 'bg-primary/20 text-primary' : 'text-gray-600 hover:bg-gray-100 dark:text-zinc-300 dark:hover:bg-zinc-800'
-                  }`}
-                >
-                  <MessageSquare className="w-3 h-3 mr-2" />
-                  Create Meeting
-                </Link>
-                <Link
-                  to="/join"
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-current={isActive('/join') ? 'page' : undefined}
-                  className={`h-8 flex items-center px-4 rounded-lg text-sm font-medium ${
-                    isActive('/join') ? 'bg-primary/20 text-primary' : 'text-gray-600 hover:bg-gray-100 dark:text-zinc-300 dark:hover:bg-zinc-800'
-                  }`}
-                >
-                  <QrCode className="w-3 h-3 mr-2" />
-                  Join Meeting
-                </Link>
-              </div>
+              <Link
+                to="/join"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-current={isActive('/join') ? 'page' : undefined}
+                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
+                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                }`}
+              >
+                <QrCode className="w-4 h-4 mr-2" />
+                Join Meeting
+              </Link>
             </div>
           </nav>
         )}
