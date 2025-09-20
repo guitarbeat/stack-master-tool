@@ -25,27 +25,32 @@ export const SpeakingDistribution = ({
       <ExpandableCard
         className="bg-white rounded-2xl p-0 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800"
         trigger={
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Users className="h-5 w-5 text-primary" />
+          <div className="flex w-full items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-zinc-100">Speaking Distribution</h3>
-                <p className="text-xs text-muted-foreground">Pie chart of who has talked the most</p>
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-zinc-100 truncate">Speaking Distribution</h3>
+                <p className="text-xs text-muted-foreground hidden sm:block">Pie chart of who has talked the most</p>
               </div>
             </div>
             <Button
               variant={includeDirectResponses ? "default" : "outline"}
               size="sm"
-              className="rounded-xl"
+              className="rounded-xl text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 min-w-0 flex-shrink-0"
               onClick={(e) => {
                 e.preventDefault();
                 onToggleIncludeDirectResponses();
               }}
               title="Toggle including direct responses"
             >
-              {includeDirectResponses ? "Including Direct Responses" : "Excluding Direct Responses"}
+              <span className="hidden sm:inline">
+                {includeDirectResponses ? "Including Direct Responses" : "Excluding Direct Responses"}
+              </span>
+              <span className="sm:hidden">
+                {includeDirectResponses ? "With DR" : "No DR"}
+              </span>
             </Button>
           </div>
         }
