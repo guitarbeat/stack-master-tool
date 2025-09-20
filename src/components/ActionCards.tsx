@@ -11,7 +11,7 @@ export const ActionCards = () => {
       icon: <MessageSquare className="w-8 h-8 text-primary" />,
       title: "Create Meeting",
       description: "Set up a new meeting room with a shareable code for participants to join.",
-      cta: "Create Meeting",
+      cta: "Start Creating",
       emoji: "🌱",
       gradient: "from-primary to-primary/80",
       bgBlob: "bg-primary/10",
@@ -22,7 +22,7 @@ export const ActionCards = () => {
       icon: <QrCode className="w-8 h-8 text-accent" />,
       title: "Join Meeting",
       description: "Enter a meeting code to join an existing discussion and participate in the speaking queue.",
-      cta: "Join Meeting",
+      cta: "Join Now",
       emoji: "🌿",
       gradient: "from-accent to-accent/80",
       bgBlob: "bg-accent/10",
@@ -47,7 +47,7 @@ export const ActionCards = () => {
       <div className="text-center mb-8 sm:mb-12">
         <div className="inline-flex items-center gap-2 text-primary font-semibold text-sm sm:text-base mb-4">
           <Sparkles className="w-4 h-4" />
-          <span>Get Started</span>
+          <span>Choose Your Path</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
           Get
