@@ -139,7 +139,7 @@ function CreateMeeting(): JSX.Element {
                   disabled={loading}
                   value={meetingData.name}
                   onChange={(e) => setMeetingData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="w-full px-4 py-3 bg-card border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-foreground placeholder:text-muted-foreground"
                   placeholder="e.g., Weekly Team Meeting"
                 />
               </div>
@@ -154,7 +154,7 @@ function CreateMeeting(): JSX.Element {
                   disabled={loading}
                   value={meetingData.facilitatorName}
                   onChange={(e) => setMeetingData(prev => ({ ...prev, facilitatorName: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100"
+                  className="w-full px-4 py-3 bg-card border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-foreground placeholder:text-muted-foreground"
                   placeholder="Your name"
                 />
               </div>
