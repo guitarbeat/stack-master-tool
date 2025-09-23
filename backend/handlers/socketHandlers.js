@@ -13,7 +13,7 @@ const sendSocketError = (socket, errorCode, message, details = {}) => {
 };
 
 // Join a meeting
-function handleJoinMeeting(socket, data) {
+async function handleJoinMeeting(socket, data) {
   const { meetingCode, participantName, isFacilitator = false } = data;
   
   // Validate input data
@@ -46,74 +46,80 @@ function handleJoinMeeting(socket, data) {
   // Sanitize participant name
   const sanitizedName = participantName.trim();
   
-  const meeting = meetingsService.getMeeting(meetingCode);
-  
-  if (!meeting) {
-    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
-    return;
-  }
-  
-  // Verify facilitator access - only the original facilitator can join as facilitator
-  if (isFacilitator && sanitizedName !== meeting.facilitator) {
-    console.log(`Unauthorized facilitator attempt: ${sanitizedName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
-    sendSocketError(socket, 'UNAUTHORIZED_FACILITATOR', 'Only the meeting creator can join as facilitator');
-    return;
-  }
-  
-  // Prevent duplicate joins from the same socket
-  const existingParticipant = participantsService.getParticipant(socket.id);
-  if (existingParticipant) {
-    const existingMeeting = meetingsService.getMeeting(existingParticipant.meetingCode);
-    if (existingMeeting) {
-      // Already joined; just re-emit joined event for idempotency
-      socket.emit('meeting-joined', {
-        meeting: {
-          code: existingMeeting.code,
-          title: existingMeeting.title,
-          facilitator: existingMeeting.facilitator
-        },
-        participant: existingParticipant.participant,
-        queue: existingMeeting.queue,
-        participants: existingMeeting.participants
-      });
+  try {
+    const meeting = await meetingsService.getOrCreateActiveSession(meetingCode);
+    
+    if (!meeting) {
+      sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
       return;
     }
+    
+    // Verify facilitator access - only the original facilitator can join as facilitator
+    if (isFacilitator && sanitizedName !== meeting.facilitator) {
+      console.log(`Unauthorized facilitator attempt: ${sanitizedName} tried to join meeting ${meetingCode} as facilitator (actual facilitator: ${meeting.facilitator})`);
+      sendSocketError(socket, 'UNAUTHORIZED_FACILITATOR', 'Only the meeting creator can join as facilitator');
+      return;
+    }
+    
+    // Prevent duplicate joins from the same socket
+    const existingParticipant = participantsService.getParticipant(socket.id);
+    if (existingParticipant) {
+      const existingMeeting = await meetingsService.getMeeting(existingParticipant.meetingCode);
+      if (existingMeeting) {
+        // Already joined; just re-emit joined event for idempotency
+        socket.emit('meeting-joined', {
+          meeting: {
+            code: existingMeeting.code,
+            title: existingMeeting.title,
+            facilitator: existingMeeting.facilitator
+          },
+          participant: existingParticipant.participant,
+          queue: existingMeeting.queue,
+          participants: existingMeeting.participants
+        });
+        return;
+      }
+    }
+
+    const participant = {
+      id: socket.id,
+      name: sanitizedName,
+      isFacilitator,
+      joinedAt: new Date().toISOString(),
+      isInQueue: false,
+      queuePosition: null
+    };
+
+    const addedParticipant = await meetingsService.addParticipant(meetingCode, participant);
+    participantsService.addParticipant(socket.id, meetingCode, addedParticipant);
+    
+    // Join the meeting room
+    socket.join(meetingCode.toUpperCase());
+    
+    console.log(`${sanitizedName} joined meeting ${meetingCode} as ${isFacilitator ? 'facilitator' : 'participant'}`);
+    
+    // Send meeting info to the participant
+    socket.emit('meeting-joined', {
+      meeting: {
+        code: meeting.code,
+        title: meeting.title,
+        facilitator: meeting.facilitator
+      },
+      participant: addedParticipant,
+      queue: meeting.queue,
+      participants: meeting.participants
+    });
+    
+    return { meeting, participant: addedParticipant };
+  } catch (error) {
+    console.error('Error in handleJoinMeeting:', error);
+    sendSocketError(socket, 'INTERNAL_SERVER_ERROR', 'Internal server error');
+    return;
   }
-
-  const participant = {
-    id: socket.id,
-    name: sanitizedName,
-    isFacilitator,
-    joinedAt: new Date().toISOString(),
-    isInQueue: false,
-    queuePosition: null
-  };
-
-  const addedParticipant = meetingsService.addParticipant(meetingCode, participant);
-  participantsService.addParticipant(socket.id, meetingCode, addedParticipant);
-  
-  // Join the meeting room
-  socket.join(meetingCode.toUpperCase());
-  
-  console.log(`${sanitizedName} joined meeting ${meetingCode} as ${isFacilitator ? 'facilitator' : 'participant'}`);
-  
-  // Send meeting info to the participant
-  socket.emit('meeting-joined', {
-    meeting: {
-      code: meeting.code,
-      title: meeting.title,
-      facilitator: meeting.facilitator
-    },
-    participant: addedParticipant,
-    queue: meeting.queue,
-    participants: meeting.participants
-  });
-  
-  return { meeting, participant: addedParticipant };
 }
 
 // Join speaking queue
-function handleJoinQueue(socket, data) {
+async function handleJoinQueue(socket, data) {
   const { type = 'speak' } = data; // 'speak', 'direct-response', 'point-of-info', 'clarification'
   const participantData = participantsService.getParticipant(socket.id);
   
@@ -130,7 +136,7 @@ function handleJoinQueue(socket, data) {
   }
   
   const { meetingCode, participant } = participantData;
-  const meeting = meetingsService.getMeeting(meetingCode);
+  const meeting = await meetingsService.getOrCreateActiveSession(meetingCode);
   
   if (!meeting) {
     sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
@@ -146,13 +152,13 @@ function handleJoinQueue(socket, data) {
     position: meeting.queue.length + 1
   };
   
-  const addedQueueItem = meetingsService.addToQueue(meetingCode, queueItem);
+  const addedQueueItem = await meetingsService.addToQueue(meetingCode, queueItem);
   if (!addedQueueItem) {
     sendSocketError(socket, 'ALREADY_IN_QUEUE', 'Already in queue');
     return;
   }
   
-  meetingsService.updateParticipantQueueStatus(meetingCode, socket.id, true, meeting.queue.length);
+  await meetingsService.updateParticipantQueueStatus(meetingCode, socket.id, true, meeting.queue.length);
   
   console.log(`${participant.name} joined queue for ${type} in meeting ${meetingCode}`);
   

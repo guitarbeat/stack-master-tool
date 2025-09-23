@@ -108,9 +108,13 @@ class ApiService {
     return `${window.location.origin}/join?code=${meetingCode}`
   }
 
-  // No longer needed - using Supabase real-time
   getSocketUrl() {
-    return null
+    // Return the backend WebSocket URL based on environment
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:3000'
+    }
+    // For production, use the current origin (assuming backend is served from same domain)
+    return window.location.origin
   }
 }
 

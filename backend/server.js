@@ -42,8 +42,8 @@ io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   // Join a meeting
-  socket.on('join-meeting', (data) => {
-    const result = socketHandlers.handleJoinMeeting(socket, data);
+  socket.on('join-meeting', async (data) => {
+    const result = await socketHandlers.handleJoinMeeting(socket, data);
     if (result) {
       const { meeting, participant } = result;
       
@@ -59,8 +59,8 @@ io.on('connection', (socket) => {
   });
 
   // Join speaking queue
-  socket.on('join-queue', (data) => {
-    const result = socketHandlers.handleJoinQueue(socket, data);
+  socket.on('join-queue', async (data) => {
+    const result = await socketHandlers.handleJoinQueue(socket, data);
     if (result) {
       const { meeting, queueItem } = result;
       
