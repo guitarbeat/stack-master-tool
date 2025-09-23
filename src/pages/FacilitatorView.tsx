@@ -10,37 +10,23 @@ import ParticipantList from '../components/ParticipantList'
 import CurrentSpeakerCard from '../components/CurrentSpeakerCard'
 import { SpeakingDistribution } from '../components/StackKeeper/SpeakingDistribution'
 import { InterventionsPanel } from '../components/StackKeeper/InterventionsPanel'
-import useFacilitatorSocket from '../hooks/useFacilitatorSocket'
+import { useSupabaseFacilitator } from '../hooks/useSupabaseFacilitator'
 import { getQueueTypeDisplay, getQueueTypeColor } from '../utils/queue'
-
-interface MeetingData {
-  code: string
-  title: string
-  facilitator: string
-  isActive: boolean
-}
 
 function FacilitatorView(): JSX.Element {
   const { meetingId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const showToast = (payload: { title: string; description?: string }) => {
-    toast(payload)
-  }
   const { facilitatorName, meetingName, meetingCode } = location.state || {}
 
-  const meetingData = {
-    code: meetingCode || meetingId,
-    title: meetingName || 'Meeting',
-    facilitator: facilitatorName || 'Facilitator',
-    isActive: true
-  }
+  // Use meeting code from URL params if not in state
+  const finalMeetingCode = meetingCode || meetingId
 
   useEffect(() => {
-    if (!facilitatorName || !meetingCode) {
+    if (!facilitatorName || !finalMeetingCode) {
       navigate('/create')
     }
-  }, [facilitatorName, meetingCode, navigate])
+  }, [facilitatorName, finalMeetingCode, navigate])
 
   const {
     participants,
@@ -48,6 +34,7 @@ function FacilitatorView(): JSX.Element {
     currentSpeaker,
     isConnected,
     error,
+    meetingData,
     nextSpeaker,
     finishSpeaking,
     disconnect,
@@ -63,14 +50,14 @@ function FacilitatorView(): JSX.Element {
     addIntervention,
     undoHistory,
     handleUndo
-  } = useFacilitatorSocket(meetingCode, facilitatorName, showToast)
+  } = useSupabaseFacilitator(finalMeetingCode, facilitatorName)
 
   const leaveMeeting = () => {
     disconnect()
     navigate('/')
   }
 
-  const formatTimestamp = (timestamp: number) => {
+  const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
@@ -110,14 +97,17 @@ function FacilitatorView(): JSX.Element {
   return (
     <div className="container mx-auto px-4 py-8">
       <FacilitatorHeader
-        title={meetingData.title}
-        code={meetingData.code}
+        title={meetingData?.title || 'Loading...'}
+        code={meetingData?.meeting_code || finalMeetingCode || ''}
         participantCount={participants.length}
         leaveMeeting={leaveMeeting}
       />
 
       <CurrentSpeakerCard
-        currentSpeaker={currentSpeaker}
+        currentSpeaker={currentSpeaker ? {
+          participantName: currentSpeaker.participantName || 'Unknown',
+          type: currentSpeaker.queue_type
+        } : null}
         finishSpeaking={finishSpeaking}
         speakerTimer={speakerTimer}
         elapsedTime={elapsedTime}
@@ -164,41 +154,41 @@ function FacilitatorView(): JSX.Element {
             ) : (
               <div className="space-y-3">
                 {speakingQueue.map((entry, index) => {
-                  const isCurrentSpeaker = index === 0;
-                  const isDirect = entry.type === 'direct-response';
-                  const isPointInfo = entry.type === 'point-of-info';
-                  const isClarify = entry.type === 'clarification';
+                  const isSpeaking = entry.is_speaking;
+                  const isDirect = entry.queue_type === 'direct-response';
+                  const isPointInfo = entry.queue_type === 'point-of-info';
+                  const isClarify = entry.queue_type === 'clarification';
                   
                   return (
                     <div
                       key={entry.id}
                       className={`stack-card flex items-center justify-between p-6 rounded-xl border transition-standard ${
-                        isCurrentSpeaker
+                        isSpeaking
                           ? 'current-speaker border-primary/40 text-primary-foreground'
                           : 'glass-card hover:bg-muted/40 border-border/60'
                       }`}
                     >
                       <div className="flex items-center gap-4">
                         <Badge
-                          variant={isCurrentSpeaker ? "default" : "secondary"}
+                          variant={isSpeaking ? "default" : "secondary"}
                           className={`${
-                            isCurrentSpeaker
+                            isSpeaking
                               ? 'animate-pulse bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30'
                               : 'px-4 py-2 font-semibold'
                           } rounded-full text-sm ${
                             isDirect ? 'bg-primary text-primary-foreground animate-pulse' : ''
                           }`}
                         >
-                          {isCurrentSpeaker 
+                          {isSpeaking 
                             ? (isDirect ? "🎤 Direct Response" : "🎤 Speaking") 
-                            : `#${index + 1}`
+                            : `#${entry.position}`
                           }
                         </Badge>
                         <div className="flex items-center gap-2">
                           {isDirect && <MessageCircle className="h-4 w-4 text-primary" />}
                           {isPointInfo && <Info className="h-4 w-4 text-blue-600" />}
                           {isClarify && <Settings className="h-4 w-4 text-purple-600" />}
-                          <span className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}>
+                          <span className={`font-semibold text-lg ${isSpeaking ? 'text-primary-foreground' : 'text-foreground'}`}>
                             {entry.participantName}
                           </span>
                         </div>
@@ -211,45 +201,35 @@ function FacilitatorView(): JSX.Element {
                             'border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300'
                           }`}
                         >
-                          {getQueueTypeDisplay(entry.type)}
+                          {getQueueTypeDisplay(entry.queue_type)}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {formatTimestamp(entry.timestamp)}
+                          {formatTimestamp(entry.joined_queue_at)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        {!isCurrentSpeaker && (
+                        {!isSpeaking && (
                           <div className="flex items-center gap-1">
                             <button
-                              onClick={() => addIntervention('direct-response', entry.participantName)}
+                              onClick={() => addIntervention('direct-response', entry.participantName || 'Unknown')}
                               className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors"
                               title="Direct Response"
                             >
                               Direct Response
                             </button>
                             <button
-                              onClick={() => addIntervention('clarifying-question', entry.participantName)}
+                              onClick={() => addIntervention('clarifying-question', entry.participantName || 'Unknown')}
                               className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors"
                               title="Clarifying Question"
                             >
                               Clarify
                             </button>
-                            <button
-                              onClick={() => {
-                                // TODO: Implement remove from queue functionality
-                                console.log('Remove from queue:', entry.participantName)
-                              }}
-                              className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
-                              title="Remove from Queue"
-                            >
-                              Remove
-                            </button>
                           </div>
                         )}
-                        {isCurrentSpeaker && (
+                        {isSpeaking && (
                           <div className="flex items-center text-primary">
                             <Play className="w-4 h-4 mr-1" />
-                            <span className="text-sm font-medium">Next</span>
+                            <span className="text-sm font-medium">Speaking</span>
                           </div>
                         )}
                       </div>
@@ -263,8 +243,17 @@ function FacilitatorView(): JSX.Element {
 
         {/* Participants */}
         <ParticipantList
-          participants={participants}
-          meetingData={meetingData}
+          participants={participants.map(p => ({
+            id: p.id,
+            name: p.name,
+            isFacilitator: p.is_facilitator,
+            isInQueue: speakingQueue.some(q => q.participant_id === p.id),
+            joinedAt: p.joined_at
+          }))}
+          meetingData={{
+            code: meetingData?.meeting_code || finalMeetingCode || '',
+            facilitator: meetingData?.facilitator_name || 'Facilitator'
+          }}
         />
       </div>
 
