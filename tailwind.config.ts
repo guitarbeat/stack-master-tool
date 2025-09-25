@@ -30,47 +30,73 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					hover: 'hsl(var(--primary-hover))'
+					hover: 'hsl(var(--primary-hover))',
+					light: 'hsl(var(--primary-light))',
+					dark: 'hsl(var(--primary-dark))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))',
-					hover: 'hsl(var(--secondary-hover))'
+					hover: 'hsl(var(--secondary-hover))',
+					light: 'hsl(var(--secondary-light))',
+					dark: 'hsl(var(--secondary-dark))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+					foreground: 'hsl(var(--destructive-foreground))',
+					hover: 'hsl(var(--destructive-hover))',
+					light: 'hsl(var(--destructive-light))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))',
+					hover: 'hsl(var(--success-hover))',
+					light: 'hsl(var(--success-light))'
+				},
+				info: {
+					DEFAULT: 'hsl(var(--info))',
+					foreground: 'hsl(var(--info-foreground))',
+					hover: 'hsl(var(--info-hover))',
+					light: 'hsl(var(--info-light))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					foreground: 'hsl(var(--muted-foreground))',
+					light: 'hsl(var(--muted-light))',
+					dark: 'hsl(var(--muted-dark))'
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))',
-					hover: 'hsl(var(--accent-hover))'
+					hover: 'hsl(var(--accent-hover))',
+					light: 'hsl(var(--accent-light))',
+					dark: 'hsl(var(--accent-dark))'
 				},
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))',
-					hover: 'hsl(var(--warning-hover))'
+					hover: 'hsl(var(--warning-hover))',
+					light: 'hsl(var(--warning-light))'
 				},
-                                popover: {
-                                        DEFAULT: 'hsl(var(--popover))',
-                                        foreground: 'hsl(var(--popover-foreground))'
-                                },
-                                card: {
-                                        DEFAULT: 'hsl(var(--card))',
-                                        foreground: 'hsl(var(--card-foreground))'
-                                },
-                                'earthy-brown': 'hsl(var(--earthy-brown))',
-                                'moss-green': 'hsl(var(--moss-green))',
-                                'sage-green': 'hsl(var(--sage-green))',
-                                sidebar: {
-                                        DEFAULT: 'hsl(var(--sidebar-background))',
-                                        foreground: 'hsl(var(--sidebar-foreground))',
-                                        primary: 'hsl(var(--sidebar-primary))',
-                                        'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+				popover: {
+					DEFAULT: 'hsl(var(--popover))',
+					foreground: 'hsl(var(--popover-foreground))'
+				},
+				card: {
+					DEFAULT: 'hsl(var(--card))',
+					foreground: 'hsl(var(--card-foreground))'
+				},
+				'earthy-brown': 'hsl(var(--earthy-brown))',
+				'moss-green': 'hsl(var(--moss-green))',
+				'sage-green': 'hsl(var(--sage-green))',
+				'forest-green': 'hsl(var(--forest-green))',
+				'warm-beige': 'hsl(var(--warm-beige))',
+				'deep-forest': 'hsl(var(--deep-forest))',
+				sidebar: {
+					DEFAULT: 'hsl(var(--sidebar-background))',
+					foreground: 'hsl(var(--sidebar-foreground))',
+					primary: 'hsl(var(--sidebar-primary))',
+					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
 					accent: 'hsl(var(--sidebar-accent))',
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
@@ -135,6 +161,8 @@ export default {
 				'glow': 'var(--shadow-glow)',
 				'elegant': 'var(--shadow-elegant)',
 				'card': 'var(--shadow-card)',
+				'soft': 'var(--shadow-soft)',
+				'strong': 'var(--shadow-strong)',
 			},
                         animation: {
                                 'accordion-down': 'accordion-down 0.2s ease-out',
