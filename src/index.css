@@ -4,45 +4,70 @@
 
 @layer base {
   :root {
-    /* Core Colors - Darker light mode */
-    --background: 30 25% 20%;
-    --foreground: 60 9% 95%;
-    --card: 30 25% 25%;
-    --card-foreground: 60 9% 95%;
-    --border: 120 13% 30%;
-    --input: 120 13% 25%;
-    --ring: 100 40% 35%;
+    /* Core Colors - Enhanced earthy palette */
+    --background: 30 20% 15%;
+    --foreground: 60 8% 98%;
+    --card: 30 20% 18%;
+    --card-foreground: 60 8% 98%;
+    --border: 120 15% 25%;
+    --input: 120 15% 20%;
+    --ring: 100 45% 40%;
     
-    /* Primary Colors */
-    --primary: 100 40% 35%;
-    --primary-foreground: 60 9% 100%;
-    --primary-hover: 100 40% 40%;
+    /* Primary Colors - Rich forest green */
+    --primary: 100 45% 40%;
+    --primary-foreground: 60 8% 100%;
+    --primary-hover: 100 45% 45%;
+    --primary-light: 100 45% 60%;
+    --primary-dark: 100 45% 30%;
     
-    /* Secondary Colors */
-    --secondary: 120 13% 25%;
-    --secondary-foreground: 60 9% 95%;
-    --secondary-hover: 120 13% 30%;
+    /* Secondary Colors - Warm earth tone */
+    --secondary: 30 25% 25%;
+    --secondary-foreground: 60 8% 95%;
+    --secondary-hover: 30 25% 30%;
+    --secondary-light: 30 25% 40%;
+    --secondary-dark: 30 25% 20%;
     
-    /* Accent Colors */
-    --accent: 120 25% 45%;
-    --accent-foreground: 60 9% 100%;
-    --accent-hover: 120 25% 50%;
+    /* Accent Colors - Sage green */
+    --accent: 120 30% 50%;
+    --accent-foreground: 30 20% 15%;
+    --accent-hover: 120 30% 55%;
+    --accent-light: 120 30% 65%;
+    --accent-dark: 120 30% 40%;
     
     /* Muted Colors */
-    --muted: 120 13% 25%;
-    --muted-foreground: 120 5% 80%;
+    --muted: 120 15% 20%;
+    --muted-foreground: 120 8% 75%;
+    --muted-light: 120 15% 30%;
+    --muted-dark: 120 15% 15%;
     
-    /* Status Colors */
-    --warning: 43 96% 56%;
-    --warning-foreground: 48 96% 89%;
-    --warning-hover: 43 96% 50%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 60 9% 100%;
+    /* Status Colors - Enhanced for better contrast */
+    --success: 120 50% 45%;
+    --success-foreground: 60 8% 100%;
+    --success-hover: 120 50% 50%;
+    --success-light: 120 50% 60%;
     
-    /* Theme Colors */
-    --earthy-brown: 30 25% 20%;
-    --moss-green: 100 40% 25%;
-    --sage-green: 120 20% 60%;
+    --warning: 45 90% 55%;
+    --warning-foreground: 30 20% 15%;
+    --warning-hover: 45 90% 60%;
+    --warning-light: 45 90% 70%;
+    
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 60 8% 100%;
+    --destructive-hover: 0 75% 60%;
+    --destructive-light: 0 75% 70%;
+    
+    --info: 200 80% 50%;
+    --info-foreground: 60 8% 100%;
+    --info-hover: 200 80% 55%;
+    --info-light: 200 80% 65%;
+    
+    /* Theme Colors - Refined earthy palette */
+    --earthy-brown: 30 25% 18%;
+    --moss-green: 100 40% 30%;
+    --sage-green: 120 25% 55%;
+    --forest-green: 100 50% 25%;
+    --warm-beige: 45 20% 85%;
+    --deep-forest: 100 30% 15%;
     
     /* Design Tokens */
     --radius: 1.2rem;
@@ -53,10 +78,15 @@
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
-    --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)/0.3));
+    /* Enhanced Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary-light)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)), hsl(var(--accent-light)));
+    --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)/0.4), hsl(var(--card)));
+    --gradient-forest: linear-gradient(135deg, hsl(var(--forest-green)), hsl(var(--moss-green)), hsl(var(--sage-green)));
+    --gradient-earth: linear-gradient(135deg, hsl(var(--earthy-brown)), hsl(var(--secondary)), hsl(var(--warm-beige)));
+    --gradient-sunset: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--warning)), hsl(var(--accent)));
+    --gradient-ocean: linear-gradient(135deg, hsl(var(--info)), hsl(var(--accent)), hsl(var(--primary)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-light)), hsl(var(--accent)));
     
     /* Shadows */
     --shadow-elegant: 0 20px 25px -5px hsl(var(--primary)/0.1), 0 10px 10px -5px hsl(var(--primary)/0.04);
@@ -79,50 +109,79 @@
   }
 
   .dark {
-    /* Core Colors */
-    --background: 30 25% 10%;
-    --foreground: 60 9% 95%;
-    --card: 30 25% 12%;
-    --card-foreground: 60 9% 95%;
-    --border: 120 13% 15%;
-    --input: 120 13% 15%;
-    --ring: 100 40% 20%;
+    /* Core Colors - Enhanced dark mode */
+    --background: 30 15% 8%;
+    --foreground: 60 8% 98%;
+    --card: 30 15% 10%;
+    --card-foreground: 60 8% 98%;
+    --border: 120 12% 18%;
+    --input: 120 12% 12%;
+    --ring: 100 45% 35%;
     
-    /* Primary Colors */
-    --primary: 100 40% 20%;
-    --primary-foreground: 60 9% 95%;
-    --primary-hover: 100 40% 25%;
+    /* Primary Colors - Vibrant in dark mode */
+    --primary: 100 45% 35%;
+    --primary-foreground: 30 15% 8%;
+    --primary-hover: 100 45% 40%;
+    --primary-light: 100 45% 50%;
+    --primary-dark: 100 45% 25%;
     
     /* Secondary Colors */
-    --secondary: 120 13% 15%;
-    --secondary-foreground: 60 9% 95%;
-    --secondary-hover: 120 13% 20%;
+    --secondary: 30 20% 15%;
+    --secondary-foreground: 60 8% 95%;
+    --secondary-hover: 30 20% 20%;
+    --secondary-light: 30 20% 25%;
+    --secondary-dark: 30 20% 12%;
     
     /* Accent Colors */
-    --accent: 120 20% 50%;
-    --accent-foreground: 30 25% 10%;
-    --accent-hover: 120 20% 55%;
+    --accent: 120 35% 55%;
+    --accent-foreground: 30 15% 8%;
+    --accent-hover: 120 35% 60%;
+    --accent-light: 120 35% 70%;
+    --accent-dark: 120 35% 45%;
     
     /* Muted Colors */
-    --muted: 120 13% 15%;
-    --muted-foreground: 120 5% 80%;
+    --muted: 120 12% 12%;
+    --muted-foreground: 120 8% 70%;
+    --muted-light: 120 12% 18%;
+    --muted-dark: 120 12% 8%;
     
-    /* Status Colors */
-    --warning: 43 96% 56%;
-    --warning-foreground: 48 96% 89%;
-    --warning-hover: 43 96% 62%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 60 9% 95%;
+    /* Status Colors - Enhanced for dark mode */
+    --success: 120 55% 50%;
+    --success-foreground: 30 15% 8%;
+    --success-hover: 120 55% 55%;
+    --success-light: 120 55% 65%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
-    --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--card)));
+    --warning: 45 95% 60%;
+    --warning-foreground: 30 15% 8%;
+    --warning-hover: 45 95% 65%;
+    --warning-light: 45 95% 75%;
     
-    /* Shadows */
-    --shadow-elegant: 0 20px 25px -5px hsl(var(--primary)/0.2), 0 10px 10px -5px hsl(var(--primary)/0.08);
-    --shadow-glow: 0 0 40px hsl(var(--primary)/0.5);
-    --shadow-card: 0 4px 6px -1px hsl(var(--primary)/0.2), 0 2px 4px -1px hsl(var(--primary)/0.1);
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 60 8% 98%;
+    --destructive-hover: 0 80% 65%;
+    --destructive-light: 0 80% 75%;
+    
+    --info: 200 85% 55%;
+    --info-foreground: 30 15% 8%;
+    --info-hover: 200 85% 60%;
+    --info-light: 200 85% 70%;
+    
+    /* Enhanced Dark Mode Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary-light)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)), hsl(var(--accent-light)));
+    --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--card)), hsl(var(--muted)/0.3));
+    --gradient-forest: linear-gradient(135deg, hsl(var(--forest-green)), hsl(var(--moss-green)), hsl(var(--sage-green)));
+    --gradient-earth: linear-gradient(135deg, hsl(var(--earthy-brown)), hsl(var(--secondary)), hsl(var(--warm-beige)));
+    --gradient-sunset: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--warning)), hsl(var(--accent)));
+    --gradient-ocean: linear-gradient(135deg, hsl(var(--info)), hsl(var(--accent)), hsl(var(--primary)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-light)), hsl(var(--accent)));
+    
+    /* Enhanced Shadows for Dark Mode */
+    --shadow-elegant: 0 20px 25px -5px hsl(var(--primary)/0.25), 0 10px 10px -5px hsl(var(--primary)/0.1);
+    --shadow-glow: 0 0 50px hsl(var(--primary)/0.4), 0 0 100px hsl(var(--primary)/0.1);
+    --shadow-card: 0 4px 6px -1px hsl(var(--primary)/0.25), 0 2px 4px -1px hsl(var(--primary)/0.15);
+    --shadow-soft: 0 2px 8px hsl(var(--primary)/0.1), 0 1px 3px hsl(var(--primary)/0.05);
+    --shadow-strong: 0 10px 25px -3px hsl(var(--primary)/0.3), 0 4px 6px -2px hsl(var(--primary)/0.2);
     
     /* Glass Effects */
     --liquid-glass: rgba(255, 255, 255, 0.03);
@@ -158,10 +217,11 @@
     -moz-osx-font-smoothing: grayscale;
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(at 20% 30%, hsl(var(--primary)/0.08), transparent 50%),
-      radial-gradient(at 80% 20%, hsl(var(--accent)/0.06), transparent 50%),
-      radial-gradient(at 40% 80%, hsl(var(--primary)/0.04), transparent 60%),
-      linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)/0.5));
+      radial-gradient(at 20% 30%, hsl(var(--primary)/0.12), transparent 50%),
+      radial-gradient(at 80% 20%, hsl(var(--accent)/0.08), transparent 50%),
+      radial-gradient(at 40% 80%, hsl(var(--primary)/0.06), transparent 60%),
+      radial-gradient(at 60% 40%, hsl(var(--forest-green)/0.05), transparent 70%),
+      linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)/0.3), hsl(var(--card)/0.2));
     background-attachment: fixed;
     }
 }
@@ -352,6 +412,26 @@
     background: var(--gradient-elegant);
   }
 
+  .bg-gradient-forest {
+    background: var(--gradient-forest);
+  }
+
+  .bg-gradient-earth {
+    background: var(--gradient-earth);
+  }
+
+  .bg-gradient-sunset {
+    background: var(--gradient-sunset);
+  }
+
+  .bg-gradient-ocean {
+    background: var(--gradient-ocean);
+  }
+
+  .bg-gradient-success {
+    background: var(--gradient-success);
+  }
+
   /* Glass Effects */
   .glass-morphism {
     backdrop-filter: blur(20px) saturate(180%);
@@ -359,7 +439,7 @@
     border: 1px solid var(--liquid-border);
   }
 
-  /* Card Variants */
+  /* Enhanced Card Variants */
   .card-elevated {
     @apply shadow-elegant hover:shadow-glow transition-standard;
   }
@@ -368,13 +448,102 @@
     @apply hover-lift cursor-pointer;
   }
 
-  /* Button Variants */
+  .card-primary {
+    @apply bg-primary/5 border border-primary/20 hover:border-primary/30 transition-standard;
+  }
+
+  .card-accent {
+    @apply bg-accent/5 border border-accent/20 hover:border-accent/30 transition-standard;
+  }
+
+  .card-success {
+    @apply bg-success/5 border border-success/20 hover:border-success/30 transition-standard;
+  }
+
+  .card-warning {
+    @apply bg-warning/5 border border-warning/20 hover:border-warning/30 transition-standard;
+  }
+
+  .card-info {
+    @apply bg-info/5 border border-info/20 hover:border-info/30 transition-standard;
+  }
+
+  .card-forest {
+    @apply bg-gradient-forest/10 border border-forest-green/20 hover:border-forest-green/30 transition-standard;
+  }
+
+  .card-earth {
+    @apply bg-gradient-earth/10 border border-earthy-brown/20 hover:border-earthy-brown/30 transition-standard;
+  }
+
+  /* Status Indicators */
+  .status-success {
+    @apply bg-success text-success-foreground border border-success/20;
+  }
+
+  .status-warning {
+    @apply bg-warning text-warning-foreground border border-warning/20;
+  }
+
+  .status-error {
+    @apply bg-destructive text-destructive-foreground border border-destructive/20;
+  }
+
+  .status-info {
+    @apply bg-info text-info-foreground border border-info/20;
+  }
+
+  .status-neutral {
+    @apply bg-muted text-muted-foreground border border-muted/20;
+  }
+
+  /* Enhanced Button Variants */
   .btn-primary-gradient {
     @apply bg-gradient-primary text-white hover:opacity-90 transition-fast;
   }
 
+  .btn-secondary-gradient {
+    @apply bg-gradient-secondary text-white hover:opacity-90 transition-fast;
+  }
+
+  .btn-forest-gradient {
+    @apply bg-gradient-forest text-white hover:opacity-90 transition-fast;
+  }
+
+  .btn-earth-gradient {
+    @apply bg-gradient-earth text-white hover:opacity-90 transition-fast;
+  }
+
+  .btn-sunset-gradient {
+    @apply bg-gradient-sunset text-white hover:opacity-90 transition-fast;
+  }
+
+  .btn-ocean-gradient {
+    @apply bg-gradient-ocean text-white hover:opacity-90 transition-fast;
+  }
+
+  .btn-success-gradient {
+    @apply bg-gradient-success text-white hover:opacity-90 transition-fast;
+  }
+
   .btn-glass {
     @apply glass-morphism hover:bg-opacity-20 transition-fast;
+  }
+
+  .btn-outline-primary {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-fast;
+  }
+
+  .btn-outline-accent {
+    @apply border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-fast;
+  }
+
+  .btn-ghost-primary {
+    @apply text-primary hover:bg-primary/10 transition-fast;
+  }
+
+  .btn-ghost-accent {
+    @apply text-accent hover:bg-accent/10 transition-fast;
   }
 
   /* Layout Utilities */
@@ -386,13 +555,48 @@
     @apply py-8 sm:py-12 lg:py-16;
   }
 
-  /* Text Utilities */
+  /* Enhanced Text Utilities */
   .text-gradient-primary {
     @apply gradient-text;
   }
 
   .text-gradient-hero {
     @apply hero-text;
+  }
+
+  .text-gradient-forest {
+    background: var(--gradient-forest);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-earth {
+    background: var(--gradient-earth);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-sunset {
+    background: var(--gradient-sunset);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-ocean {
+    background: var(--gradient-ocean);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-success {
+    background: var(--gradient-success);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   /* Transition Utilities */
@@ -417,6 +621,57 @@
   @keyframes organic-morph {
     0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
     50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  }
+
+  /* Enhanced Focus States for Accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .focus-ring-accent {
+    @apply focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .focus-ring-success {
+    @apply focus:outline-none focus:ring-2 focus:ring-success/50 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .focus-ring-warning {
+    @apply focus:outline-none focus:ring-2 focus:ring-warning/50 focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    .card-elevated {
+      @apply border-2 border-foreground/20;
+    }
+    
+    .btn-outline-primary {
+      @apply border-2 border-primary;
+    }
+    
+    .btn-outline-accent {
+      @apply border-2 border-accent;
+    }
+  }
+
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    .organic-blob {
+      animation: none;
+    }
+    
+    .hero-text {
+      animation: none;
+    }
+    
+    .hover-scale {
+      @apply hover:scale-100;
+    }
+    
+    .hover-lift {
+      @apply hover:transform-none hover:translate-y-0;
+    }
   }
 
   /* Mobile-specific optimizations */
