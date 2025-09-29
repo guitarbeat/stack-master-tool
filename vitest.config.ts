@@ -9,11 +9,19 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: true,
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/backend/**', // Exclude backend tests (they use Jest)
+      '**/tests/e2e/**', // Exclude E2E tests (they use Playwright)
+      '**/*.{config,spec}.js'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
+        'backend/', // Exclude backend from coverage
         'src/test/',
         '**/*.d.ts',
         '**/*.config.*',

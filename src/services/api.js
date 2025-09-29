@@ -105,7 +105,7 @@ class ApiService {
   }
 
   getJoinUrl(meetingCode) {
-    return `${window.location.origin}/join?code=${meetingCode}`
+    return `${window.location.origin}/join/${meetingCode}`
   }
 
   getSocketUrl() {
