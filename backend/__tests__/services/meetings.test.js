@@ -1,13 +1,31 @@
+// Mock Supabase for testing
+jest.mock('../../config/supabase', () => ({
+  from: jest.fn(() => ({
+    insert: jest.fn(() => ({
+      select: jest.fn(() => ({
+        single: jest.fn(() => ({ data: null, error: null }))
+      }))
+    })),
+    select: jest.fn(() => ({
+      eq: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn(() => ({ data: null, error: null }))
+        }))
+      }))
+    }))
+  }))
+}));
+
 const {
   createMeeting,
-  getMeeting,
-  getMeetingInfo,
-  addParticipant,
-  removeParticipant,
-  addToQueue,
-  removeFromQueue,
-  getNextSpeaker,
-  updateParticipantQueueStatus
+  getMeetingSync: getMeeting,
+  getMeetingInfoSync: getMeetingInfo,
+  addParticipantSync: addParticipant,
+  removeParticipantSync: removeParticipant,
+  addToQueueSync: addToQueue,
+  removeFromQueueSync: removeFromQueue,
+  getNextSpeakerSync: getNextSpeaker,
+  updateParticipantQueueStatusSync: updateParticipantQueueStatus
 } = require('../../services/meetings');
 
 describe('Meetings Service', () => {
@@ -15,6 +33,9 @@ describe('Meetings Service', () => {
     // Clear meetings map before each test
     const meetings = require('../../services/meetings').meetings || new Map();
     meetings.clear();
+    
+    // Reset mocks
+    jest.clearAllMocks();
   });
 
   describe('createMeeting', () => {

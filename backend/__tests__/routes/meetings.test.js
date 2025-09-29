@@ -258,15 +258,29 @@ describe('Meetings API Routes', () => {
         .expect(404); // Express returns 404 for empty path segments
     });
 
-    it('should return 400 for non-string meeting code', async () => {
+    it('should return meeting info for 6-character numeric code', async () => {
+      // Create a meeting first
+      const meetingData = {
+        facilitatorName: 'John Doe',
+        meetingTitle: 'Test Meeting'
+      };
+
+      const createResponse = await request(app)
+        .post('/api/meetings')
+        .send(meetingData);
+
+      const meetingCode = createResponse.body.meetingCode;
+
       const response = await request(app)
-        .get('/api/meetings/123456')
-        .expect(200); // This would be valid as a string
+        .get(`/api/meetings/${meetingCode}`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('code', meetingCode);
     });
 
     it('should return 404 for non-existent meeting', async () => {
       const response = await request(app)
-        .get('/api/meetings/NONEXISTENT')
+        .get('/api/meetings/ABC123') // Valid format but non-existent
         .expect(404);
 
       expect(response.body).toHaveProperty('error', 'Meeting not found');
