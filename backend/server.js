@@ -74,11 +74,20 @@ io.on('connection', (socket) => {
   socket.on('leave-queue', () => {
     const result = socketHandlers.handleLeaveQueue(socket);
     if (result) {
-      const { meeting } = result;
+      const { meeting, removedQueueItem } = result;
       
       // Notify all participants about queue update
       io.to(meeting.code).emit('queue-updated', meeting.queue);
       io.to(meeting.code).emit('participants-updated', meeting.participants);
+      
+      // Notify about the specific removal for UI state consistency
+      if (removedQueueItem) {
+        io.to(meeting.code).emit('participant-left-queue', {
+          participantId: removedQueueItem.participantId,
+          participantName: removedQueueItem.participantName,
+          queueLength: meeting.queue.length
+        });
+      }
     }
   });
 
@@ -92,6 +101,13 @@ io.on('connection', (socket) => {
       io.to(meeting.code).emit('next-speaker', nextSpeaker);
       io.to(meeting.code).emit('queue-updated', meeting.queue);
       io.to(meeting.code).emit('participants-updated', meeting.participants);
+      
+      // Notify about speaker change for UI state consistency
+      io.to(meeting.code).emit('speaker-changed', {
+        previousSpeaker: nextSpeaker,
+        currentQueue: meeting.queue,
+        queueLength: meeting.queue.length
+      });
     }
   });
 
