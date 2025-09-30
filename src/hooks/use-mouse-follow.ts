@@ -6,7 +6,7 @@ interface MouseFollowOptions {
 }
 
 export function useMouseFollow(options: MouseFollowOptions = {}) {
-  const { enabled = true, smoothness = 0.3 } = options
+  const { enabled = true, smoothness = 0.15 } = options
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
