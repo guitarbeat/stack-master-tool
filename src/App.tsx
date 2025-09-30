@@ -10,6 +10,7 @@ import CreateMeeting from "./pages/CreateMeeting";
 import JoinMeeting from "./pages/JoinMeeting";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
+import FacilitatePage from "./pages/FacilitatePage";
 import AppLayout from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/manual" element={<ManualStack />} />
+            <Route path="/facilitate" element={<FacilitatePage />} />
             <Route path="/create" element={<CreateMeeting />} />
             <Route path="/join" element={<JoinMeeting />} />
             <Route path="/meeting/:meetingId" element={<MeetingRoom />} />

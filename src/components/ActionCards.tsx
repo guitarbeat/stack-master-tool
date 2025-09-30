@@ -7,6 +7,28 @@ export const ActionCards = () => {
 
   const actions = [
     {
+      to: "/manual",
+      icon: <Users className="w-8 h-8 text-primary" />,
+      title: "Manual Stack",
+      description: "Manage speaking queues offline. Perfect for in-person meetings and direct facilitation.",
+      cta: "Start Facilitating",
+      emoji: "📝",
+      gradient: "from-primary to-accent",
+      bgBlob: "bg-primary/10",
+      features: ["Offline management", "In-person facilitation", "Direct control"]
+    },
+    {
+      to: "/facilitate",
+      icon: <MessageSquare className="w-8 h-8 text-accent" />,
+      title: "Facilitate Meeting",
+      description: "Take control of an active meeting room and manage the speaking queue in real-time.",
+      cta: "Start Facilitating",
+      emoji: "🎯",
+      gradient: "from-accent to-accent/80",
+      bgBlob: "bg-accent/10",
+      features: ["Real-time control", "Meeting management", "Live facilitation"]
+    },
+    {
       to: "/create",
       icon: <MessageSquare className="w-8 h-8 text-primary" />,
       title: "Create Meeting",
@@ -27,17 +49,6 @@ export const ActionCards = () => {
       gradient: "from-accent to-accent/80",
       bgBlob: "bg-accent/10",
       features: ["Enter meeting code", "Join active discussion", "Contribute to dialogue"]
-    },
-    {
-      to: "/manual",
-      icon: <Users className="w-8 h-8 text-primary" />,
-      title: "Manual Stack",
-      description: "Manage speaking queues offline. Perfect for in-person meetings and direct facilitation.",
-      cta: "Start Facilitating",
-      emoji: "📝",
-      gradient: "from-primary to-accent",
-      bgBlob: "bg-primary/10",
-      features: ["Offline management", "In-person facilitation", "Direct control"]
     }
   ]
 
@@ -58,7 +69,7 @@ export const ActionCards = () => {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="grid lg:grid-cols-4 gap-6 sm:gap-8">
         {actions.map((action, index) => (
           <div key={index} ref={(el) => (cardsRef.current[index] = el)} className="tilt-card group">
             <Link to={action.to} className="block h-full">
