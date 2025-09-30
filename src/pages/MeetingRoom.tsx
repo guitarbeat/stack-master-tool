@@ -1,3 +1,3 @@
-import { MeetingRoom as MeetingRoomRefactored } from '../components/MeetingRoom';
+import { MeetingRoomWithModes } from '../components/MeetingRoom/MeetingRoomWithModes';
 
-export default MeetingRoomRefactored;
+export default MeetingRoomWithModes;

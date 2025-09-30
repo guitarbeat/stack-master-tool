@@ -12,6 +12,18 @@ const sendSocketError = (socket, errorCode, message, details = {}) => {
   });
 };
 
+// Role-based event filtering helper
+const emitToRole = (socket, event, data, role) => {
+  // Events that watchers should not receive
+  const watcherBlockedEvents = ['next-speaker', 'queue-managed', 'intervention-added', 'participant-management'];
+  
+  if (role === 'watcher' && watcherBlockedEvents.includes(event)) {
+    return; // Don't send control events to watchers
+  }
+  
+  socket.emit(event, data);
+};
+
 // Join a meeting
 async function handleJoinMeeting(socket, data) {
   const { meetingCode, participantName, isFacilitator = false } = data;
@@ -43,6 +55,7 @@ async function handleJoinMeeting(socket, data) {
     return;
   }
   
+  
   // Sanitize participant name
   const sanitizedName = participantName.trim();
   
@@ -60,6 +73,7 @@ async function handleJoinMeeting(socket, data) {
       sendSocketError(socket, 'UNAUTHORIZED_FACILITATOR', 'Only the meeting creator can join as facilitator');
       return;
     }
+    
     
     // Prevent duplicate joins from the same socket
     const existingParticipant = participantsService.getParticipant(socket.id);
@@ -96,7 +110,8 @@ async function handleJoinMeeting(socket, data) {
     // Join the meeting room
     socket.join(meetingCode.toUpperCase());
     
-    console.log(`${sanitizedName} joined meeting ${meetingCode} as ${isFacilitator ? 'facilitator' : 'participant'}`);
+    const role = isFacilitator ? 'facilitator' : 'participant';
+    console.log(`${sanitizedName} joined meeting ${meetingCode} as ${role}`);
     
     // Send meeting info to the participant
     socket.emit('meeting-joined', {
@@ -127,6 +142,7 @@ async function handleJoinQueue(socket, data) {
     sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
     return;
   }
+  
   
   // Validate queue type
   const validTypes = ['speak', 'direct-response', 'point-of-info', 'clarification'];
@@ -181,6 +197,7 @@ function handleLeaveQueue(socket) {
     sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
     return;
   }
+  
   
   const { meetingCode, participant } = participantData;
   const meeting = meetingsService.getMeeting(meetingCode);

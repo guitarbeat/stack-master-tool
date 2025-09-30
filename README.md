@@ -1,42 +1,36 @@
 # Stack Master Tool
 
-
-Stack Master Tool is an open-source application for democratic meeting facilitation. It combines an automatic meeting-based speaking queue with a manual stack keeper so facilitators can manage turn-taking in both online and in-person gatherings.
+Stack Master Tool is an open-source application for democratic meeting facilitation. It provides three distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), and **WATCH** (public observer) - similar to jparty.tv's approach.
 
 ## Features
 
-This project provides a clean, accessible interface for democratic meeting facilitation.
-## Project info
+### Three Meeting Views
 
-- Create meetings with shareable join codes
+- **HOST** - Full facilitator controls and meeting management
+- **JOIN** - Participant view with queue interaction capabilities
+- **WATCH** - Public read-only observer view (no authentication required)
+
+### Core Functionality
+
+- Create meetings with shareable codes
 - Real-time speaking queue powered by Socket.io
 - Manual stack keeper for offline use
+- Public watch URLs for easy sharing
+- Role-based access control
 - React + TypeScript + Tailwind CSS frontend
+
+## URL Structure
+
+- **`/meeting/ABC123?mode=host`** - Host view (facilitator controls)
+- **`/meeting/ABC123?mode=join`** - Join view (participant actions) - _default_
+- **`/watch/ABC123`** - Public watch view (read-only, no auth)
 
 ## Getting Started
 
 Clone the repository, install dependencies, and start the development server:
 
 ```bash
-
-You can edit this application in several ways.
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-
+# Clone the repository
 git clone <YOUR_GIT_URL>
 cd stack-master-tool
 npm install
@@ -50,13 +44,25 @@ npm run build
 npm test
 ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Development Options
 
-## What technologies are used for this project?
+**Use Lovable**
+Simply visit the [Lovable Project](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and start prompting. Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+**Use GitHub Codespaces**
+
+- Navigate to the main page of your repository
+- Click on the "Code" button (green button) near the top right
+- Select the "Codespaces" tab
+- Click on "New codespace" to launch a new Codespace environment
+- Edit files directly within the Codespace and commit and push your changes once you're done
+
+## Technology Stack
 
 This project combines two related tools for democratic meeting facilitation:
 
@@ -90,11 +96,29 @@ npm install
 npm start # or node server.js
 ```
 
-## How can I deploy this project?
+## Documentation
+
+### Three Meeting Views
+
+- **[Three Meeting Views Implementation](docs/three-meeting-views.md)** - Complete specification and implementation status
+
+### Additional Documentation
+
+- [Quick Start Guide](docs/QUICK_START.md)
+- [Development Environment](docs/DEVELOPMENT.md)
+- [Environment Setup](docs/ENVIRONMENT_SETUP.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Facilitation Guide](docs/FACILITATION_GUIDE.md)
+- [Moderation Guide](docs/MODERATION_GUIDE.md)
+- [Architecture / Rebuild Plan](docs/REBUILD_PLAN.md)
+
+## Deployment
+
+### Lovable Deployment
 
 Simply open [Lovable](https://lovable.dev/projects/4d5f4ee6-fcac-40c3-8f0c-62fe54a85e2c) and click on Share -> Publish.
 
-## Render deployment
+### Render Deployment
 
 This project can also be deployed as a Render Web Service using the following configuration:
 
@@ -108,18 +132,10 @@ This project can also be deployed as a Render Web Service using the following co
 - **Health check path:** `/healthz`
 - **Auto-deploy:** On commit
 
-## Can I connect a custom domain to my Lovable project?
+### Custom Domain
 
-
-## Documentation
-
-- [Project documentation](docs/README.md)
-- [Deployment guide](docs/DEPLOYMENT.md)
-
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+You can connect a custom domain to your Lovable project. Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-

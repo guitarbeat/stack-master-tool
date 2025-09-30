@@ -1,9 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import socketService from '../services/socket';
-import { toast } from '@/hooks/use-toast';
-import { playBeep } from '../utils/sound.js';
-import { AppError, getErrorDisplayInfo } from '../utils/errorHandling';
+import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import socketService from "../services/socket";
+import { toast } from "@/hooks/use-toast";
+import { playBeep } from "../utils/sound.js";
+import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
 
 interface Participant {
   id: string;
@@ -25,30 +25,42 @@ interface QueueItem {
   timestamp: number;
 }
 
-export const useMeetingSocket = (participantName: string, meetingInfo: MeetingData) => {
+export const useMeetingSocket = (
+  participantName: string,
+  meetingInfo: MeetingData
+) => {
   const navigate = useNavigate();
   const [meetingData, setMeetingData] = useState<MeetingData>(meetingInfo);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [speakingQueue, setSpeakingQueue] = useState<QueueItem[]>([]);
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [currentSpeaker, setCurrentSpeaker] = useState<QueueItem | null>(null);
 
-  const notify = useCallback((type: 'success' | 'error' | 'info', title: string, description?: string) => {
-    toast({ title, description });
-  }, []);
+  const notify = useCallback(
+    (
+      type: "success" | "error" | "info",
+      title: string,
+      description?: string
+    ) => {
+      toast({ title, description });
+    },
+    []
+  );
 
   useEffect(() => {
     if (!participantName) {
-      navigate('/join');
+      navigate("/join");
       return;
     }
 
     // Store callback references for proper cleanup
     const queueUpdatedCallback = (queue: QueueItem[]) => {
       setSpeakingQueue(queue);
-      const userInQueue = queue.find(item => item.participantName === participantName);
+      const userInQueue = queue.find(
+        item => item.participantName === participantName
+      );
       setIsInQueue(!!userInQueue);
     };
 
@@ -56,25 +68,30 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       setParticipants(participantsList);
     };
 
-    const participantJoinedCallback = (data: { participant: { name: string } }) => {
-      notify('info', `${data.participant.name} joined`);
+    const participantJoinedCallback = (data: {
+      participant: { name: string };
+    }) => {
+      notify("info", `${data.participant.name} joined`);
     };
 
     const participantLeftCallback = (data: { participantName: string }) => {
-      notify('info', `${data.participantName} left`);
+      notify("info", `${data.participantName} left`);
     };
 
     const nextSpeakerCallback = (speaker: QueueItem) => {
       setCurrentSpeaker(speaker);
-      notify('success', `${speaker.participantName} is up next`);
+      notify("success", `${speaker.participantName} is up next`);
       playBeep(1200, 120);
       setTimeout(() => {
         setCurrentSpeaker(null);
       }, 5000);
     };
 
-    const participantLeftQueueCallback = (data: { participantName: string; queueLength: number }) => {
-      notify('info', `${data.participantName} left the queue`);
+    const participantLeftQueueCallback = (data: {
+      participantName: string;
+      queueLength: number;
+    }) => {
+      notify("info", `${data.participantName} left the queue`);
       // Update local state to reflect queue changes
       setIsInQueue(prev => {
         // If we're the one who left, update our state
@@ -85,18 +102,30 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       });
     };
 
-    const speakerChangedCallback = (data: { previousSpeaker: QueueItem; currentQueue: QueueItem[]; queueLength: number }) => {
+    const speakerChangedCallback = (data: {
+      previousSpeaker: QueueItem;
+      currentQueue: QueueItem[];
+      queueLength: number;
+    }) => {
       // Update queue state to ensure consistency
       setSpeakingQueue(data.currentQueue);
       // Update our queue status if we're in the queue
-      const userInQueue = data.currentQueue.find(item => item.participantName === participantName);
+      const userInQueue = data.currentQueue.find(
+        item => item.participantName === participantName
+      );
       setIsInQueue(!!userInQueue);
     };
 
     const errorCallback = (error: { message?: string; code?: string }) => {
-      const errorInfo = getErrorDisplayInfo(new AppError(error.code as any || 'UNKNOWN', undefined, error.message || 'Connection error'));
+      const errorInfo = getErrorDisplayInfo(
+        new AppError(
+          (error.code as any) || "UNKNOWN",
+          undefined,
+          error.message || "Connection error"
+        )
+      );
       setError(errorInfo.description);
-      notify('error', errorInfo.title, errorInfo.description);
+      notify("error", errorInfo.title, errorInfo.description);
     };
 
     const setupSocketListeners = () => {
@@ -106,11 +135,14 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       socketService.onParticipantLeft(participantLeftCallback);
       socketService.onNextSpeaker(nextSpeakerCallback);
       socketService.onError(errorCallback);
-      
+
       // Add new event listeners for better state synchronization
       if (socketService.socket) {
-        socketService.socket.on('participant-left-queue', participantLeftQueueCallback);
-        socketService.socket.on('speaker-changed', speakerChangedCallback);
+        socketService.socket.on(
+          "participant-left-queue",
+          participantLeftQueueCallback
+        );
+        socketService.socket.on("speaker-changed", speakerChangedCallback);
       }
     };
 
@@ -120,7 +152,7 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
         setupSocketListeners();
         setIsConnected(true);
       } catch (err: unknown) {
-        console.error('Connection error:', err);
+        console.error("Connection error:", err);
         const errorInfo = getErrorDisplayInfo(err as AppError);
         setError(errorInfo.description);
       }
@@ -129,56 +161,77 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       setIsConnected(true);
     }
 
+    // Join the meeting as a participant
+    if (isConnected && participantName) {
+      try {
+        socketService.joinMeeting(meetingInfo.code, participantName, false);
+      } catch (err: unknown) {
+        console.error("Join meeting error:", err);
+        const errorInfo = getErrorDisplayInfo(err as AppError);
+        setError(errorInfo.description);
+      }
+    }
+
     return () => {
       // Remove specific listeners using stored callback references
       if (socketService.socket) {
-        socketService.off('queue-updated', queueUpdatedCallback);
-        socketService.off('participants-updated', participantsUpdatedCallback);
-        socketService.off('participant-joined', participantJoinedCallback);
-        socketService.off('participant-left', participantLeftCallback);
-        socketService.off('next-speaker', nextSpeakerCallback);
-        socketService.off('error', errorCallback);
-        socketService.socket.off('participant-left-queue', participantLeftQueueCallback);
-        socketService.socket.off('speaker-changed', speakerChangedCallback);
+        socketService.off("queue-updated", queueUpdatedCallback);
+        socketService.off("participants-updated", participantsUpdatedCallback);
+        socketService.off("participant-joined", participantJoinedCallback);
+        socketService.off("participant-left", participantLeftCallback);
+        socketService.off("next-speaker", nextSpeakerCallback);
+        socketService.off("error", errorCallback);
+        socketService.socket.off(
+          "participant-left-queue",
+          participantLeftQueueCallback
+        );
+        socketService.socket.off("speaker-changed", speakerChangedCallback);
       }
     };
   }, [participantName, navigate, notify]);
 
-  const joinQueue = useCallback((type: string = 'speak') => {
-    if (isInQueue || !isConnected) return;
-    
-    try {
-      socketService.joinQueue(type);
-      notify('success', 'Joined queue', type === 'speak' ? 'Speak' : type.replace('-', ' '));
-      playBeep(1000, 120);
-    } catch (err: unknown) {
-      console.error('Join queue error:', err);
-      const errorInfo = getErrorDisplayInfo(err as AppError);
-      setError(errorInfo.description);
-      notify('error', errorInfo.title, errorInfo.description);
-      playBeep(220, 200);
-    }
-  }, [isInQueue, isConnected, notify]);
+  const joinQueue = useCallback(
+    (type: string = "speak") => {
+      if (isInQueue || !isConnected) return;
+
+      try {
+        socketService.joinQueue(type);
+        notify(
+          "success",
+          "Joined queue",
+          type === "speak" ? "Speak" : type.replace("-", " ")
+        );
+        playBeep(1000, 120);
+      } catch (err: unknown) {
+        console.error("Join queue error:", err);
+        const errorInfo = getErrorDisplayInfo(err as AppError);
+        setError(errorInfo.description);
+        notify("error", errorInfo.title, errorInfo.description);
+        playBeep(220, 200);
+      }
+    },
+    [isInQueue, isConnected, notify]
+  );
 
   const leaveQueue = useCallback(() => {
     if (!isInQueue || !isConnected) return;
-    
+
     try {
       socketService.leaveQueue();
-      notify('info', 'Left queue');
+      notify("info", "Left queue");
       playBeep(600, 100);
     } catch (err: unknown) {
-      console.error('Leave queue error:', err);
+      console.error("Leave queue error:", err);
       const errorInfo = getErrorDisplayInfo(err as AppError);
       setError(errorInfo.description);
-      notify('error', errorInfo.title, errorInfo.description);
+      notify("error", errorInfo.title, errorInfo.description);
       playBeep(220, 200);
     }
   }, [isInQueue, isConnected, notify]);
 
   const leaveMeeting = useCallback(() => {
     socketService.disconnect();
-    navigate('/');
+    navigate("/");
   }, [navigate]);
 
   return {
@@ -191,6 +244,6 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
     currentSpeaker,
     joinQueue,
     leaveQueue,
-    leaveMeeting
+    leaveMeeting,
   };
 };
