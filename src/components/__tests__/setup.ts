@@ -85,16 +85,8 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: '/', search: '', hash: '', state: null }),
   useParams: () => ({}),
-  Link: ({ children, to, ...props }: any) => (
-    <a href={to} {...props}>
-      {children}
-    </a>
-  ),
-  NavLink: ({ children, to, ...props }: any) => (
-    <a href={to} {...props}>
-      {children}
-    </a>
-  ),
+  Link: ({ children, to, ...props }: any) => React.createElement('a', { href: to, ...props }, children),
+  NavLink: ({ children, to, ...props }: any) => React.createElement('a', { href: to, ...props }, children),
 }));
 
 // Mock React Query
