@@ -35,6 +35,9 @@ export enum ErrorCode {
   MEETING_ACCESS_DENIED = 'MEETING_ACCESS_DENIED',
   FACILITATOR_REQUIRED = 'FACILITATOR_REQUIRED',
   INSUFFICIENT_PERMISSIONS = 'INSUFFICIENT_PERMISSIONS',
+  INVALID_ROLE = 'INVALID_ROLE',
+  WATCHER_CANNOT_JOIN_QUEUE = 'WATCHER_CANNOT_JOIN_QUEUE',
+  WATCHER_CANNOT_LEAVE_QUEUE = 'WATCHER_CANNOT_LEAVE_QUEUE',
   
   // Not found errors
   MEETING_NOT_FOUND = 'MEETING_NOT_FOUND',
@@ -168,6 +171,24 @@ export const ERROR_MESSAGES: Record<ErrorCode, { title: string; description: str
     description: 'Only the meeting creator can join as facilitator. You can join as a regular participant instead.',
     action: 'Join as a regular participant or contact the meeting creator for facilitator access.',
     severity: 'medium'
+  },
+  INVALID_ROLE: {
+    title: 'Invalid Role',
+    description: 'Cannot be both facilitator and watcher. Please choose one role.',
+    action: 'Select either facilitator or watcher role, not both.',
+    severity: 'low'
+  },
+  WATCHER_CANNOT_JOIN_QUEUE: {
+    title: 'Read-Only Access',
+    description: 'Watchers cannot join the speaking queue. You can only observe the meeting.',
+    action: 'Switch to participant mode if you want to join the speaking queue.',
+    severity: 'low'
+  },
+  WATCHER_CANNOT_LEAVE_QUEUE: {
+    title: 'Read-Only Access',
+    description: 'Watchers cannot leave the speaking queue as they cannot join it.',
+    action: 'Switch to participant mode if you want to manage your queue participation.',
+    severity: 'low'
   },
   NOT_IN_MEETING: {
     title: 'Not in Meeting',

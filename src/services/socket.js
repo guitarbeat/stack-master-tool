@@ -131,7 +131,7 @@ class SocketService {
   }
 
   // Meeting operations
-  joinMeeting(meetingCode, participantName, isFacilitator = false) {
+  joinMeeting(meetingCode, participantName, isFacilitator = false, isWatcher = false) {
     if (!this.socket) {
       throw new AppError(ErrorCode.CONNECTION_FAILED, undefined, 'Socket not connected')
     }
@@ -147,6 +147,11 @@ class SocketService {
 
     if (participantName.trim().length > 50) {
       throw new AppError(ErrorCode.INVALID_PARTICIPANT_NAME, undefined, 'Participant name must be 50 characters or less')
+    }
+
+    // Validate role exclusivity
+    if (isFacilitator && isWatcher) {
+      throw new AppError(ErrorCode.INVALID_ROLE, undefined, 'Cannot be both facilitator and watcher')
     }
 
     return new Promise((resolve, reject) => {
@@ -201,7 +206,8 @@ class SocketService {
       this.socket.emit('join-meeting', {
         meetingCode: meetingCode.toUpperCase(),
         participantName: participantName.trim(),
-        isFacilitator
+        isFacilitator,
+        isWatcher
       })
     })
   }

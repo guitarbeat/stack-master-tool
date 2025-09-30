@@ -25,7 +25,7 @@ interface QueueItem {
   timestamp: number;
 }
 
-export const useMeetingSocket = (participantName: string, meetingInfo: MeetingData) => {
+export const useMeetingSocket = (participantName: string, meetingInfo: MeetingData, isWatcher: boolean = false) => {
   const navigate = useNavigate();
   const [meetingData, setMeetingData] = useState<MeetingData>(meetingInfo);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -129,6 +129,17 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       setIsConnected(true);
     }
 
+    // Join the meeting with the appropriate role
+    if (isConnected && participantName) {
+      try {
+        socketService.joinMeeting(meetingInfo.code, participantName, false, isWatcher);
+      } catch (err: unknown) {
+        console.error('Join meeting error:', err);
+        const errorInfo = getErrorDisplayInfo(err as AppError);
+        setError(errorInfo.description);
+      }
+    }
+
     return () => {
       // Remove specific listeners using stored callback references
       if (socketService.socket) {
@@ -147,6 +158,12 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
   const joinQueue = useCallback((type: string = 'speak') => {
     if (isInQueue || !isConnected) return;
     
+    // Watchers cannot join the queue
+    if (isWatcher) {
+      notify('error', 'Read-Only Access', 'Watchers cannot join the speaking queue');
+      return;
+    }
+    
     try {
       socketService.joinQueue(type);
       notify('success', 'Joined queue', type === 'speak' ? 'Speak' : type.replace('-', ' '));
@@ -158,10 +175,16 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       notify('error', errorInfo.title, errorInfo.description);
       playBeep(220, 200);
     }
-  }, [isInQueue, isConnected, notify]);
+  }, [isInQueue, isConnected, isWatcher, notify]);
 
   const leaveQueue = useCallback(() => {
     if (!isInQueue || !isConnected) return;
+    
+    // Watchers cannot leave the queue (they can't be in it)
+    if (isWatcher) {
+      notify('error', 'Read-Only Access', 'Watchers cannot leave the speaking queue');
+      return;
+    }
     
     try {
       socketService.leaveQueue();
@@ -174,7 +197,7 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       notify('error', errorInfo.title, errorInfo.description);
       playBeep(220, 200);
     }
-  }, [isInQueue, isConnected, notify]);
+  }, [isInQueue, isConnected, isWatcher, notify]);
 
   const leaveMeeting = useCallback(() => {
     socketService.disconnect();
