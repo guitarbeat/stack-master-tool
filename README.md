@@ -1,23 +1,35 @@
 # Stack Master Tool
 
-
-Stack Master Tool is an open-source application for democratic meeting facilitation. It combines an automatic meeting-based speaking queue with a manual stack keeper so facilitators can manage turn-taking in both online and in-person gatherings.
+Stack Master Tool is an open-source application for democratic meeting facilitation. It provides three distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), and **WATCH** (public observer) - similar to jparty.tv's approach.
 
 ## Features
 
-This project provides a clean, accessible interface for democratic meeting facilitation.
-## Project info
+### Three Meeting Views
 
-- Create meetings with shareable join codes
+- **HOST** - Full facilitator controls and meeting management
+- **JOIN** - Participant view with queue interaction capabilities
+- **WATCH** - Public read-only observer view (no authentication required)
+
+### Core Functionality
+
+- Create meetings with shareable codes
 - Real-time speaking queue powered by Socket.io
 - Manual stack keeper for offline use
+- Public watch URLs for easy sharing
+- Role-based access control
 - React + TypeScript + Tailwind CSS frontend
+
+## URL Structure
+
+- **`/meeting/ABC123?mode=host`** - Host view (facilitator controls)
+- **`/meeting/ABC123?mode=join`** - Join view (participant actions) - _default_
+- **`/watch/ABC123`** - Public watch view (read-only, no auth)
 
 ## Getting Started
 
 Clone the repository, install dependencies, and start the development server:
 
-```bash
+````bash
 
 You can edit this application in several ways.
 **Use Lovable**
@@ -41,7 +53,7 @@ git clone <YOUR_GIT_URL>
 cd stack-master-tool
 npm install
 npm run dev
-```
+````
 
 Build the project and run the basic test script:
 
@@ -110,16 +122,13 @@ This project can also be deployed as a Render Web Service using the following co
 
 ## Can I connect a custom domain to my Lovable project?
 
-
 ## Documentation
 
 - [Project documentation](docs/README.md)
 - [Deployment guide](docs/DEPLOYMENT.md)
-
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
