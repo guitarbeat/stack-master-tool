@@ -21,7 +21,7 @@ function AppLayout({ children }: AppLayoutProps) {
 
   const { containerRef, mousePosition, isHovering, handleMouseMove, handleMouseEnter, handleMouseLeave } = useMouseFollow({
     enabled: true,
-    smoothness: 0.2
+    smoothness: 0.1
   })
 
   
@@ -52,34 +52,29 @@ function AppLayout({ children }: AppLayoutProps) {
                 // Calculate indicator position based on mouse or selected state
                 const getIndicatorStyle = () => {
                   if (isHovering) {
-                    // Follow mouse position when hovering
+                    // Follow mouse position when hovering - smooth fluid movement
                     const containerWidth = containerRef.current?.offsetWidth || 0
                     const mouseX = mousePosition.x
+                    const indicatorWidth = containerWidth / 3 - 4
                     
-                    // Determine which section we're in
+                    // Smoothly follow mouse with some constraints
+                    let leftPosition = Math.max(4, Math.min(mouseX - indicatorWidth / 2, containerWidth - indicatorWidth - 4))
+                    
+                    // Determine background based on which section we're closest to
                     const sectionWidth = containerWidth / 3
-                    let leftPosition, width, background
+                    let background
                     
                     if (mouseX < sectionWidth) {
-                      // Manual section - full button width
-                      leftPosition = 4
-                      width = sectionWidth - 4
                       background = 'linear-gradient(to right, hsl(var(--secondary)), hsl(var(--secondary-foreground)))'
                     } else if (mouseX < sectionWidth * 2) {
-                      // Create section - smaller indicator
-                      leftPosition = sectionWidth + 2
-                      width = sectionWidth - 4
                       background = 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)))'
                     } else {
-                      // Join section - smaller indicator
-                      leftPosition = sectionWidth * 2 + 2
-                      width = sectionWidth - 4
                       background = 'linear-gradient(to right, hsl(var(--moss-green)), hsl(var(--sage-green)))'
                     }
                     
                     return {
                       left: `${leftPosition}px`,
-                      width: `${width}px`,
+                      width: `${indicatorWidth}px`,
                       background
                     }
                   } else {
@@ -118,53 +113,45 @@ function AppLayout({ children }: AppLayoutProps) {
                       className="toggle-indicator"
                       style={getIndicatorStyle()}
                     />
-                    {/* Manual Button - Prominent rounded rectangular style */}
                     <button
                       onClick={() => navigate('/manual')}
-                      className={`relative z-10 px-4 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                      className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
                         mode === 'manual'
-                          ? 'bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-800 dark:text-gray-100 shadow-sm transform scale-[1.02] border-2 border-blue-500'
-                          : 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700 hover:scale-[1.01] border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                          ? 'text-white shadow-sm transform scale-[1.02]'
+                          : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
                       }`}
                       aria-current={mode === 'manual' ? 'page' : undefined}
                     >
-                      <span className="text-xs font-medium">Manual</span>
+                      <span className="text-xs">Manual</span>
                     </button>
-                    
-                    {/* Create and Join - Simple text link style */}
-                    <div className="flex items-center justify-center flex-1 px-2">
-                      <button
-                        onClick={() => navigate('/create')}
-                        className={`flex items-center justify-center text-sm font-medium transition-all duration-300 ease-out hover:scale-[1.02] ${
-                          mode === 'create'
-                            ? 'text-primary dark:text-primary-light'
-                            : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
-                        }`}
-                        aria-current={mode === 'create' ? 'page' : undefined}
-                      >
-                        <Plus className={`w-3 h-3 mr-1 transition-all duration-300 ${
-                          mode === 'create' ? 'text-primary dark:text-primary-light' : 'text-primary'
-                        }`} />
-                        <span className="text-xs">Create</span>
-                      </button>
-                    </div>
-                    
-                    <div className="flex items-center justify-center flex-1 px-2">
-                      <button
-                        onClick={() => navigate('/join')}
-                        className={`flex items-center justify-center text-sm font-medium transition-all duration-300 ease-out hover:scale-[1.02] ${
-                          mode === 'join'
-                            ? 'text-moss-green dark:text-sage-green'
-                            : 'text-foreground/70 hover:text-foreground dark:text-zinc-300 dark:hover:text-zinc-100'
-                        }`}
-                        aria-current={mode === 'join' ? 'page' : undefined}
-                      >
-                        <UserPlus className={`w-3 h-3 mr-1 transition-all duration-300 ${
-                          mode === 'join' ? 'text-moss-green dark:text-sage-green' : 'text-moss-green'
-                        }`} />
-                        <span className="text-xs">Join</span>
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => navigate('/create')}
+                      className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                        mode === 'create'
+                          ? 'text-white shadow-sm transform scale-[1.02]'
+                          : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
+                      }`}
+                      aria-current={mode === 'create' ? 'page' : undefined}
+                    >
+                      <Plus className={`w-3 h-3 mr-1 transition-all duration-300 ${
+                        mode === 'create' ? 'text-white' : 'text-primary'
+                      }`} />
+                      <span className="text-xs">Create</span>
+                    </button>
+                    <button
+                      onClick={() => navigate('/join')}
+                      className={`toggle-button relative z-10 px-3 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
+                        mode === 'join'
+                          ? 'text-white shadow-sm transform scale-[1.02]'
+                          : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
+                      }`}
+                      aria-current={mode === 'join' ? 'page' : undefined}
+                    >
+                      <UserPlus className={`w-3 h-3 mr-1 transition-all duration-300 ${
+                        mode === 'join' ? 'text-white' : 'text-moss-green'
+                      }`} />
+                      <span className="text-xs">Join</span>
+                    </button>
                   </div>
                 )
               })()}
@@ -197,10 +184,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/manual"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-current={isActive('/manual') ? 'page' : undefined}
-                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium border-2 ${
-                  isActive('/manual') 
-                    ? 'bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-800 dark:text-gray-100 border-blue-500' 
-                    : 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
+                  isActive('/manual') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
                 Manual
@@ -210,9 +195,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 aria-current={isActive('/create') ? 'page' : undefined}
                 className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/create') 
-                    ? 'text-primary dark:text-primary-light' 
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/create') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
@@ -223,9 +206,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 aria-current={isActive('/join') ? 'page' : undefined}
                 className={`h-10 flex items-center px-4 rounded-lg text-sm font-medium ${
-                  isActive('/join') 
-                    ? 'text-moss-green dark:text-sage-green' 
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                  isActive('/join') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
                 }`}
               >
                 <QrCode className="w-4 h-4 mr-2" />
