@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
 import CreateMeeting from "./pages/CreateMeeting";
 import JoinMeeting from "./pages/JoinMeeting";
+import WatchMeeting from "./pages/WatchMeeting";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
 import FacilitatePage from "./pages/FacilitatePage";
@@ -16,7 +17,6 @@ import AppLayout from "./components/layout/AppLayout";
 const queryClient = new QueryClient();
 
 const App = () => {
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -30,8 +30,12 @@ const App = () => {
             <Route path="/facilitate" element={<FacilitatePage />} />
             <Route path="/create" element={<CreateMeeting />} />
             <Route path="/join" element={<JoinMeeting />} />
+            <Route path="/watch" element={<WatchMeeting />} />
             <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
-            <Route path="/facilitate/:meetingId" element={<FacilitatorView />} />
+            <Route
+              path="/facilitate/:meetingId"
+              element={<FacilitatorView />}
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -42,5 +46,3 @@ const App = () => {
 };
 
 export default App;
-
-
