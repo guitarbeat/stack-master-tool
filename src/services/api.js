@@ -1,9 +1,17 @@
 import { AppError, ErrorCode, ErrorType, logError } from '../utils/errorHandling'
-import { supabase } from '@/integrations/supabase/client'
 
 class ApiService {
   constructor() {
-    // No longer needed - using Supabase
+    this.baseUrl = this.getBaseUrl()
+  }
+
+  getBaseUrl() {
+    // Return the backend API URL based on environment
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:3000/api'
+    }
+    // For production, use the current origin (assuming backend is served from same domain)
+    return `${window.location.origin}/api`
   }
 
   async createMeeting(facilitatorName, meetingTitle) {
@@ -17,46 +25,50 @@ class ApiService {
         throw new AppError(ErrorCode.MISSING_REQUIRED_FIELD, undefined, 'Meeting title is required')
       }
 
-      // Generate meeting code
-      const { data: codeData, error: codeError } = await supabase.rpc('generate_meeting_code')
-      
-      if (codeError) {
-        logError(codeError, 'generateMeetingCode')
-        throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, codeError, 'Failed to generate meeting code')
-      }
-
-      // Create meeting in Supabase
-      const { data, error } = await supabase
-        .from('meetings')
-        .insert({
-          meeting_code: codeData,
-          title: meetingTitle.trim(),
-          facilitator_name: facilitatorName.trim(),
-          facilitator_id: null // No auth yet
+      const response = await fetch(`${this.baseUrl}/meetings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          facilitatorName: facilitatorName.trim(),
+          meetingTitle: meetingTitle.trim()
         })
-        .select()
-        .single()
+      })
 
-      if (error) {
-        logError(error, 'createMeeting')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
         
-        // Handle specific Supabase errors
-        if (error.code === '23505') { // Unique constraint violation
-          throw new AppError(ErrorCode.MEETING_CODE_EXISTS, error, 'Meeting code already exists')
+        // Map server error codes to client error codes
+        let errorCode = ErrorCode.INTERNAL_SERVER_ERROR
+        if (errorData.code) {
+          errorCode = errorData.code
+        } else if (response.status === 400) {
+          errorCode = ErrorCode.INVALID_PARTICIPANT_NAME
+        } else if (response.status === 409) {
+          errorCode = ErrorCode.MEETING_CODE_EXISTS
+        } else if (response.status === 500) {
+          errorCode = ErrorCode.INTERNAL_SERVER_ERROR
         }
         
-        throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to create meeting')
+        throw new AppError(errorCode, errorData, errorData.error || 'Failed to create meeting')
       }
 
+      const data = await response.json()
       return {
-        meetingId: data.id,
-        meetingCode: data.meeting_code,
-        meetingTitle: data.title,
-        facilitatorName: data.facilitator_name
+        meetingId: data.meetingId,
+        meetingCode: data.meetingCode,
+        meetingTitle: meetingTitle.trim(),
+        facilitatorName: facilitatorName.trim()
       }
     } catch (error) {
       if (error instanceof AppError) {
         throw error
+      }
+      
+      // Handle network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new AppError(ErrorCode.CONNECTION_FAILED, error, 'Unable to connect to server')
       }
       
       logError(error, 'createMeeting')
@@ -71,32 +83,42 @@ class ApiService {
         throw new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, 'Meeting code must be 6 characters')
       }
 
-      const { data, error } = await supabase
-        .from('meetings')
-        .select('*')
-        .eq('meeting_code', meetingCode.toUpperCase())
-        .eq('is_active', true)
-        .single()
+      const response = await fetch(`${this.baseUrl}/meetings/${meetingCode.toUpperCase()}`)
 
-      if (error) {
-        if (error.code === 'PGRST116') { // No rows returned
-          throw new AppError(ErrorCode.MEETING_NOT_FOUND, error, 'Meeting not found')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        
+        // Map server error codes to client error codes
+        let errorCode = ErrorCode.INTERNAL_SERVER_ERROR
+        if (errorData.code) {
+          errorCode = errorData.code
+        } else if (response.status === 400) {
+          errorCode = ErrorCode.INVALID_MEETING_CODE
+        } else if (response.status === 404) {
+          errorCode = ErrorCode.MEETING_NOT_FOUND
+        } else if (response.status === 500) {
+          errorCode = ErrorCode.INTERNAL_SERVER_ERROR
         }
         
-        logError(error, 'getMeeting')
-        throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to get meeting')
+        throw new AppError(errorCode, errorData, errorData.error || 'Failed to get meeting')
       }
 
+      const data = await response.json()
       return {
         meetingId: data.id,
-        meetingCode: data.meeting_code,
+        meetingCode: data.code,
         meetingTitle: data.title,
-        facilitatorName: data.facilitator_name,
-        createdAt: data.created_at
+        facilitatorName: data.facilitator,
+        createdAt: data.createdAt
       }
     } catch (error) {
       if (error instanceof AppError) {
         throw error
+      }
+      
+      // Handle network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new AppError(ErrorCode.CONNECTION_FAILED, error, 'Unable to connect to server')
       }
       
       logError(error, 'getMeeting')

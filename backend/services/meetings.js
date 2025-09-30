@@ -264,18 +264,25 @@ async function removeParticipant(meetingCode, participantId) {
   return participant;
 }
 
-// Add to queue
+// Add to queue with race condition protection
 async function addToQueue(meetingCode, queueItem) {
   // In test environment, use in-memory storage
   if (process.env.NODE_ENV === 'test') {
     const meeting = meetings.get(meetingCode.toUpperCase());
     if (!meeting) return null;
     
-    // Check if already in queue
+    // Use atomic check-and-add to prevent race conditions
     const existingIndex = meeting.queue.findIndex(item => item.participantId === queueItem.participantId);
-    if (existingIndex !== -1) return null;
+    if (existingIndex !== -1) {
+      console.log(`Participant ${queueItem.participantName} already in queue for meeting ${meetingCode}`);
+      return null; // Already in queue
+    }
     
+    // Add to queue and update position atomically
     meeting.queue.push(queueItem);
+    queueItem.position = meeting.queue.length;
+    
+    console.log(`Added ${queueItem.participantName} to queue for meeting ${meetingCode} at position ${queueItem.position}`);
     return queueItem;
   }
 
@@ -283,11 +290,18 @@ async function addToQueue(meetingCode, queueItem) {
   const meeting = activeMeetings.get(meetingCode);
   if (!meeting) return null;
   
-  // Check if already in queue
+  // Use atomic check-and-add to prevent race conditions
   const existingIndex = meeting.queue.findIndex(item => item.participantId === queueItem.participantId);
-  if (existingIndex !== -1) return null;
+  if (existingIndex !== -1) {
+    console.log(`Participant ${queueItem.participantName} already in queue for meeting ${meetingCode}`);
+    return null; // Already in queue
+  }
   
+  // Add to queue and update position atomically
   meeting.queue.push(queueItem);
+  queueItem.position = meeting.queue.length;
+  
+  console.log(`Added ${queueItem.participantName} to queue for meeting ${meetingCode} at position ${queueItem.position}`);
   return queueItem;
 }
 
@@ -470,11 +484,18 @@ const addToQueueSync = (meetingCode, queueItem) => {
   const meeting = meetings.get(meetingCode.toUpperCase());
   if (!meeting) return null;
   
-  // Check if already in queue
+  // Use atomic check-and-add to prevent race conditions
   const existingIndex = meeting.queue.findIndex(item => item.participantId === queueItem.participantId);
-  if (existingIndex !== -1) return null;
+  if (existingIndex !== -1) {
+    console.log(`Participant ${queueItem.participantName} already in queue for meeting ${meetingCode}`);
+    return null; // Already in queue
+  }
   
+  // Add to queue and update position atomically
   meeting.queue.push(queueItem);
+  queueItem.position = meeting.queue.length;
+  
+  console.log(`Added ${queueItem.participantName} to queue for meeting ${meetingCode} at position ${queueItem.position}`);
   return queueItem;
 };
 

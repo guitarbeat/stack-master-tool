@@ -1,19 +1,20 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Meeting Joining', () => {
-  test('should show join form', async ({ page }) => {
+  test('should show join form with proper elements', async ({ page }) => {
     await page.goto('/join');
     
     // Check for join form elements
     await expect(page.locator('input[placeholder*="code" i], input[name="meetingCode"]')).toBeVisible();
     await expect(page.locator('input[placeholder*="name" i], input[name="participantName"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"], button:has-text("Join")')).toBeVisible();
   });
 
-  test('should show validation error for invalid meeting code', async ({ page }) => {
+  test('should show validation error for invalid meeting code format', async ({ page }) => {
     await page.goto('/join');
     
-    // Enter invalid meeting code
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'INVALID');
+    // Enter invalid meeting code (too short)
+    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'ABC');
     await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
     
     const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
@@ -24,6 +25,18 @@ test.describe('Meeting Joining', () => {
   });
 
   test('should show error for non-existent meeting', async ({ page }) => {
+    // Mock API to return 404 for non-existent meeting
+    await page.route('**/api/meetings/*', route => {
+      route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Meeting not found',
+          code: 'MEETING_NOT_FOUND'
+        })
+      });
+    });
+
     await page.goto('/join');
     
     // Enter valid format but non-existent meeting code
@@ -35,5 +48,128 @@ test.describe('Meeting Joining', () => {
     
     // Should show error for non-existent meeting
     await expect(page.locator('text=not found, text=error')).toBeVisible();
+  });
+
+  test('should show validation error for empty participant name', async ({ page }) => {
+    await page.goto('/join');
+    
+    // Enter valid meeting code but empty name
+    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'ABCDEF');
+    await page.fill('input[placeholder*="name" i], input[name="participantName"]', '');
+    
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    await joinButton.click();
+    
+    // Should show validation error
+    await expect(page.locator('input[placeholder*="name" i], input[name="participantName"]')).toHaveAttribute('required');
+  });
+
+  test('should handle server errors gracefully', async ({ page }) => {
+    // Mock server error
+    await page.route('**/api/meetings/*', route => {
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Internal server error',
+          code: 'INTERNAL_SERVER_ERROR'
+        })
+      });
+    });
+
+    await page.goto('/join');
+    
+    // Enter valid data
+    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'ABCDEF');
+    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    await joinButton.click();
+    
+    // Should show error message
+    await expect(page.locator('text=Internal server error, text=Failed to get meeting')).toBeVisible();
+  });
+
+  test('should join meeting successfully with valid data', async ({ page }) => {
+    // Mock successful meeting creation and joining
+    await page.route('**/api/meetings', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          meetingCode: 'TEST12',
+          meetingId: 'test-meeting-id',
+          shareUrl: 'http://localhost:3000/join/TEST12'
+        })
+      });
+    });
+
+    await page.route('**/api/meetings/*', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'test-meeting-id',
+          code: 'TEST12',
+          title: 'Test Meeting',
+          facilitator: 'Test Facilitator',
+          participantCount: 0,
+          isActive: true
+        })
+      });
+    });
+
+    await page.goto('/join');
+    
+    // Enter valid data
+    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'TEST12');
+    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    await joinButton.click();
+    
+    // Should navigate to meeting room
+    await expect(page).toHaveURL(/.*\/meeting\/|.*\/room\//);
+  });
+
+  test('should auto-fill meeting code from URL parameter', async ({ page }) => {
+    // Navigate with meeting code in URL
+    await page.goto('/join?code=TEST12');
+    
+    // Should auto-fill the meeting code
+    const codeInput = page.locator('input[placeholder*="code" i], input[name="meetingCode"]');
+    await expect(codeInput).toHaveValue('TEST12');
+  });
+
+  test('should show loading state during join process', async ({ page }) => {
+    // Mock slow API response
+    await page.route('**/api/meetings/*', route => {
+      setTimeout(() => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'test-meeting-id',
+            code: 'TEST12',
+            title: 'Test Meeting',
+            facilitator: 'Test Facilitator',
+            participantCount: 0,
+            isActive: true
+          })
+        });
+      }, 1000);
+    });
+
+    await page.goto('/join');
+    
+    // Enter valid data
+    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'TEST12');
+    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    await joinButton.click();
+    
+    // Should show loading state
+    await expect(page.locator('text=Joining, text=Loading')).toBeVisible();
   });
 });

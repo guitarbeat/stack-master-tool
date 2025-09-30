@@ -136,6 +136,13 @@ async function handleJoinQueue(socket, data) {
   }
   
   const { meetingCode, participant } = participantData;
+  
+  // Check if participant is already in queue before proceeding
+  if (participant.isInQueue) {
+    sendSocketError(socket, 'ALREADY_IN_QUEUE', 'Already in queue');
+    return;
+  }
+  
   const meeting = await meetingsService.getOrCreateActiveSession(meetingCode);
   
   if (!meeting) {
@@ -158,9 +165,10 @@ async function handleJoinQueue(socket, data) {
     return;
   }
   
-  await meetingsService.updateParticipantQueueStatus(meetingCode, socket.id, true, meeting.queue.length);
+  // Update participant status atomically after successful queue addition
+  await meetingsService.updateParticipantQueueStatus(meetingCode, socket.id, true, addedQueueItem.position);
   
-  console.log(`${participant.name} joined queue for ${type} in meeting ${meetingCode}`);
+  console.log(`${participant.name} joined queue for ${type} in meeting ${meetingCode} at position ${addedQueueItem.position}`);
   
   return { meeting, queueItem: addedQueueItem };
 }

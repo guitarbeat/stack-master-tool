@@ -36,6 +36,13 @@ class SocketService {
       })
     }
 
+    // Clean up existing socket and listeners to prevent memory leaks
+    if (this.socket) {
+      this.socket.removeAllListeners()
+      this.socket.disconnect()
+      this.socket = null
+    }
+
     this.connecting = true
     const socketUrl = apiService.getSocketUrl()
     console.log('Connecting to socket:', socketUrl)
@@ -49,68 +56,77 @@ class SocketService {
       reconnectionDelay: this.reconnectDelay
     })
 
-    this.socket.on('connect', () => {
-      console.log('Socket connected:', this.socket.id)
-      this.isConnected = true
-      this.connecting = false
-      this.reconnectAttempts = 0
-    })
-
-    this.socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason)
-      this.isConnected = false
-      this.connecting = false
-      
-      // Handle different disconnect reasons
-      if (reason === 'io server disconnect') {
-        // Server initiated disconnect, don't reconnect
-        this.socket.disconnect()
-      } else if (reason === 'io client disconnect') {
-        // Client initiated disconnect, don't reconnect
-        this.socket.disconnect()
+    // Store event handler references for proper cleanup
+    this.eventHandlers = {
+      connect: () => {
+        console.log('Socket connected:', this.socket.id)
+        this.isConnected = true
+        this.connecting = false
+        this.reconnectAttempts = 0
+      },
+      disconnect: (reason) => {
+        console.log('Socket disconnected:', reason)
+        this.isConnected = false
+        this.connecting = false
+        
+        // Handle different disconnect reasons
+        if (reason === 'io server disconnect') {
+          // Server initiated disconnect, don't reconnect
+          this.socket.disconnect()
+        } else if (reason === 'io client disconnect') {
+          // Client initiated disconnect, don't reconnect
+          this.socket.disconnect()
+        }
+        // For other reasons (network issues), let socket.io handle reconnection
+      },
+      reconnect: (attemptNumber) => {
+        console.log('Socket reconnected after', attemptNumber, 'attempts')
+        this.isConnected = true
+        this.connecting = false
+        this.reconnectAttempts = 0
+      },
+      reconnect_attempt: (attemptNumber) => {
+        console.log('Socket reconnection attempt', attemptNumber)
+        this.reconnectAttempts = attemptNumber
+      },
+      reconnect_error: (error) => {
+        console.error('Socket reconnection error:', error)
+        logError(error, 'socketReconnect')
+      },
+      reconnect_failed: () => {
+        console.error('Socket reconnection failed after', this.maxReconnectAttempts, 'attempts')
+        this.isConnected = false
+        this.connecting = false
+        this.reconnectAttempts = 0
+      },
+      error: (error) => {
+        console.error('Socket error:', error)
+        this.connecting = false
+        logError(error, 'socketError')
       }
-      // For other reasons (network issues), let socket.io handle reconnection
-    })
+    }
 
-    this.socket.on('reconnect', (attemptNumber) => {
-      console.log('Socket reconnected after', attemptNumber, 'attempts')
-      this.isConnected = true
-      this.connecting = false
-      this.reconnectAttempts = 0
-    })
-
-    this.socket.on('reconnect_attempt', (attemptNumber) => {
-      console.log('Socket reconnection attempt', attemptNumber)
-      this.reconnectAttempts = attemptNumber
-    })
-
-    this.socket.on('reconnect_error', (error) => {
-      console.error('Socket reconnection error:', error)
-      logError(error, 'socketReconnect')
-    })
-
-    this.socket.on('reconnect_failed', () => {
-      console.error('Socket reconnection failed after', this.maxReconnectAttempts, 'attempts')
-      this.isConnected = false
-      this.connecting = false
-      this.reconnectAttempts = 0
-    })
-
-    this.socket.on('error', (error) => {
-      console.error('Socket error:', error)
-      this.connecting = false
-      logError(error, 'socketError')
-    })
+    // Attach event handlers
+    this.socket.on('connect', this.eventHandlers.connect)
+    this.socket.on('disconnect', this.eventHandlers.disconnect)
+    this.socket.on('reconnect', this.eventHandlers.reconnect)
+    this.socket.on('reconnect_attempt', this.eventHandlers.reconnect_attempt)
+    this.socket.on('reconnect_error', this.eventHandlers.reconnect_error)
+    this.socket.on('reconnect_failed', this.eventHandlers.reconnect_failed)
+    this.socket.on('error', this.eventHandlers.error)
 
     return this.socket
   }
 
   disconnect() {
     if (this.socket) {
+      // Remove all event listeners to prevent memory leaks
+      this.socket.removeAllListeners()
       this.socket.disconnect()
       this.socket = null
       this.isConnected = false
       this.connecting = false
+      this.eventHandlers = null
     }
   }
 

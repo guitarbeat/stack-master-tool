@@ -73,6 +73,26 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       }, 5000);
     };
 
+    const participantLeftQueueCallback = (data: { participantName: string; queueLength: number }) => {
+      notify('info', `${data.participantName} left the queue`);
+      // Update local state to reflect queue changes
+      setIsInQueue(prev => {
+        // If we're the one who left, update our state
+        if (data.participantName === participantName) {
+          return false;
+        }
+        return prev;
+      });
+    };
+
+    const speakerChangedCallback = (data: { previousSpeaker: QueueItem; currentQueue: QueueItem[]; queueLength: number }) => {
+      // Update queue state to ensure consistency
+      setSpeakingQueue(data.currentQueue);
+      // Update our queue status if we're in the queue
+      const userInQueue = data.currentQueue.find(item => item.participantName === participantName);
+      setIsInQueue(!!userInQueue);
+    };
+
     const errorCallback = (error: { message?: string; code?: string }) => {
       const errorInfo = getErrorDisplayInfo(new AppError(error.code as any || 'UNKNOWN', undefined, error.message || 'Connection error'));
       setError(errorInfo.description);
@@ -86,6 +106,12 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
       socketService.onParticipantLeft(participantLeftCallback);
       socketService.onNextSpeaker(nextSpeakerCallback);
       socketService.onError(errorCallback);
+      
+      // Add new event listeners for better state synchronization
+      if (socketService.socket) {
+        socketService.socket.on('participant-left-queue', participantLeftQueueCallback);
+        socketService.socket.on('speaker-changed', speakerChangedCallback);
+      }
     };
 
     if (!socketService.isConnected) {
@@ -105,12 +131,16 @@ export const useMeetingSocket = (participantName: string, meetingInfo: MeetingDa
 
     return () => {
       // Remove specific listeners using stored callback references
-      socketService.off('queue-updated', queueUpdatedCallback);
-      socketService.off('participants-updated', participantsUpdatedCallback);
-      socketService.off('participant-joined', participantJoinedCallback);
-      socketService.off('participant-left', participantLeftCallback);
-      socketService.off('next-speaker', nextSpeakerCallback);
-      socketService.off('error', errorCallback);
+      if (socketService.socket) {
+        socketService.off('queue-updated', queueUpdatedCallback);
+        socketService.off('participants-updated', participantsUpdatedCallback);
+        socketService.off('participant-joined', participantJoinedCallback);
+        socketService.off('participant-left', participantLeftCallback);
+        socketService.off('next-speaker', nextSpeakerCallback);
+        socketService.off('error', errorCallback);
+        socketService.socket.off('participant-left-queue', participantLeftQueueCallback);
+        socketService.socket.off('speaker-changed', speakerChangedCallback);
+      }
     };
   }, [participantName, navigate, notify]);
 
