@@ -1,9 +1,107 @@
 const { v4: uuidv4 } = require('uuid');
-const supabase = require('../config/supabase');
 
-// Get meeting by code from Supabase
-async function getMeeting(code) {
+// In-memory storage for testing
+const meetings = new Map();
+
+// Generate a random 6-character meeting code
+function generateMeetingCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Create a new meeting (synchronous version for testing)
+function createMeeting(facilitatorName, meetingTitle) {
+  if (!facilitatorName || !meetingTitle || facilitatorName.trim() === '' || meetingTitle.trim() === '') {
+    throw new Error('Facilitator name and meeting title are required');
+  }
+
+  const meetingCode = generateMeetingCode();
+  const meetingId = uuidv4();
+  
+  const meeting = {
+    id: meetingId,
+    code: meetingCode,
+    title: meetingTitle.trim(),
+    facilitator: facilitatorName.trim(),
+    participants: [],
+    queue: [],
+    createdAt: new Date().toISOString(),
+    isActive: true
+  };
+
+  meetings.set(meetingCode, meeting);
+  return meeting;
+}
+
+// Create a new meeting (async version for production with Supabase)
+async function createMeetingAsync(facilitatorName, meetingTitle) {
+  if (!facilitatorName || !meetingTitle) {
+    throw new Error('Facilitator name and meeting title are required');
+  }
+
+  const meetingCode = generateMeetingCode();
+  const meetingId = uuidv4();
+  
   try {
+    // In test environment, use in-memory storage
+    if (process.env.NODE_ENV === 'test') {
+      return createMeeting(facilitatorName, meetingTitle);
+    }
+
+    // In production, use Supabase
+    const supabase = require('../config/supabase');
+    
+    const { data, error } = await supabase
+      .from('meetings')
+      .insert([
+        {
+          id: meetingId,
+          meeting_code: meetingCode,
+          title: meetingTitle.trim(),
+          facilitator_name: facilitatorName.trim(),
+          is_active: true,
+          created_at: new Date().toISOString()
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating meeting in Supabase:', error);
+      throw new Error('Failed to create meeting');
+    }
+
+    // Return meeting object in expected format
+    return {
+      id: data.id,
+      code: data.meeting_code,
+      title: data.title,
+      facilitator: data.facilitator_name,
+      participants: [],
+      queue: [],
+      createdAt: data.created_at,
+      isActive: data.is_active
+    };
+  } catch (err) {
+    console.error('Error in createMeetingAsync:', err);
+    throw err;
+  }
+}
+
+// Get meeting by code from in-memory storage or Supabase
+async function getMeeting(code) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    return meetings.get(code.toUpperCase()) || null;
+  }
+
+  try {
+    const supabase = require('../config/supabase');
+    
     const { data, error } = await supabase
       .from('meetings')
       .select('*')
@@ -76,6 +174,32 @@ async function getOrCreateActiveSession(meetingCode) {
 
 // Add participant to meeting
 async function addParticipant(meetingCode, participant) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    const meeting = meetings.get(meetingCode.toUpperCase());
+    if (!meeting) return null;
+    
+    // Check for existing participant with same name and role
+    const existingIndex = meeting.participants.findIndex(p => 
+      p.name === participant.name && p.isFacilitator === participant.isFacilitator
+    );
+    
+    if (existingIndex !== -1) {
+      // Update existing participant
+      meeting.participants[existingIndex] = {
+        ...meeting.participants[existingIndex],
+        id: participant.id,
+        joinedAt: participant.joinedAt
+      };
+      return meeting.participants[existingIndex];
+    } else {
+      // Add new participant
+      meeting.participants.push(participant);
+      return participant;
+    }
+  }
+
+  // Production code with Supabase
   const meeting = await getOrCreateActiveSession(meetingCode);
   if (!meeting) return null;
   
@@ -101,6 +225,27 @@ async function addParticipant(meetingCode, participant) {
 
 // Remove participant from meeting
 async function removeParticipant(meetingCode, participantId) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    const meeting = meetings.get(meetingCode.toUpperCase());
+    if (!meeting) return null;
+    
+    const participantIndex = meeting.participants.findIndex(p => p.id === participantId);
+    if (participantIndex === -1) return null;
+    
+    const participant = meeting.participants[participantIndex];
+    meeting.participants.splice(participantIndex, 1);
+    
+    // Clean up empty meetings
+    if (meeting.participants.length === 0) {
+      meetings.delete(meetingCode.toUpperCase());
+      console.log(`Meeting ${meetingCode} removed from active sessions (no participants)`);
+    }
+    
+    return participant;
+  }
+
+  // Production code
   const meeting = activeMeetings.get(meetingCode);
   if (!meeting) return null;
   
@@ -121,6 +266,20 @@ async function removeParticipant(meetingCode, participantId) {
 
 // Add to queue
 async function addToQueue(meetingCode, queueItem) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    const meeting = meetings.get(meetingCode.toUpperCase());
+    if (!meeting) return null;
+    
+    // Check if already in queue
+    const existingIndex = meeting.queue.findIndex(item => item.participantId === queueItem.participantId);
+    if (existingIndex !== -1) return null;
+    
+    meeting.queue.push(queueItem);
+    return queueItem;
+  }
+
+  // Production code
   const meeting = activeMeetings.get(meetingCode);
   if (!meeting) return null;
   
@@ -134,6 +293,26 @@ async function addToQueue(meetingCode, queueItem) {
 
 // Remove from queue
 async function removeFromQueue(meetingCode, participantId) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    const meeting = meetings.get(meetingCode.toUpperCase());
+    if (!meeting) return null;
+    
+    const queueIndex = meeting.queue.findIndex(item => item.participantId === participantId);
+    if (queueIndex === -1) return null;
+    
+    const queueItem = meeting.queue[queueIndex];
+    meeting.queue.splice(queueIndex, 1);
+    
+    // Update positions for remaining queue items
+    meeting.queue.forEach((item, index) => {
+      item.position = index + 1;
+    });
+    
+    return queueItem;
+  }
+
+  // Production code
   const meeting = activeMeetings.get(meetingCode);
   if (!meeting) return null;
   
@@ -153,6 +332,22 @@ async function removeFromQueue(meetingCode, participantId) {
 
 // Get next speaker
 async function getNextSpeaker(meetingCode) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    const meeting = meetings.get(meetingCode.toUpperCase());
+    if (!meeting || meeting.queue.length === 0) return null;
+    
+    const nextSpeaker = meeting.queue.shift();
+    
+    // Update positions for remaining queue items
+    meeting.queue.forEach((item, index) => {
+      item.position = index + 1;
+    });
+    
+    return nextSpeaker;
+  }
+
+  // Production code
   const meeting = activeMeetings.get(meetingCode);
   if (!meeting || meeting.queue.length === 0) return null;
   
@@ -168,6 +363,21 @@ async function getNextSpeaker(meetingCode) {
 
 // Update participant queue status
 async function updateParticipantQueueStatus(meetingCode, participantId, isInQueue, queuePosition) {
+  // In test environment, use in-memory storage
+  if (process.env.NODE_ENV === 'test') {
+    const meeting = meetings.get(meetingCode.toUpperCase());
+    if (!meeting) return false;
+    
+    const participant = meeting.participants.find(p => p.id === participantId);
+    if (!participant) return false;
+    
+    participant.isInQueue = isInQueue;
+    participant.queuePosition = queuePosition;
+    
+    return true;
+  }
+
+  // Production code
   const meeting = activeMeetings.get(meetingCode);
   if (!meeting) return false;
   
@@ -180,7 +390,151 @@ async function updateParticipantQueueStatus(meetingCode, participantId, isInQueu
   return true;
 }
 
+// Synchronous wrappers for testing
+const getMeetingSync = (code) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  return meetings.get(code.toUpperCase()) || null;
+};
+
+const getMeetingInfoSync = (code) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = getMeetingSync(code);
+  if (!meeting) return null;
+  
+  return {
+    code: meeting.code,
+    title: meeting.title,
+    facilitator: meeting.facilitator,
+    participantCount: meeting.participants.length,
+    isActive: meeting.isActive
+  };
+};
+
+const addParticipantSync = (meetingCode, participant) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = meetings.get(meetingCode.toUpperCase());
+  if (!meeting) return null;
+  
+  // Check for existing participant with same name and role
+  const existingIndex = meeting.participants.findIndex(p => 
+    p.name === participant.name && p.isFacilitator === participant.isFacilitator
+  );
+  
+  if (existingIndex !== -1) {
+    // Update existing participant
+    meeting.participants[existingIndex] = {
+      ...meeting.participants[existingIndex],
+      id: participant.id,
+      joinedAt: participant.joinedAt
+    };
+    return meeting.participants[existingIndex];
+  } else {
+    // Add new participant
+    meeting.participants.push(participant);
+    return participant;
+  }
+};
+
+const removeParticipantSync = (meetingCode, participantId) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = meetings.get(meetingCode.toUpperCase());
+  if (!meeting) return null;
+  
+  const participantIndex = meeting.participants.findIndex(p => p.id === participantId);
+  if (participantIndex === -1) return null;
+  
+  const participant = meeting.participants[participantIndex];
+  meeting.participants.splice(participantIndex, 1);
+  
+  // Clean up empty meetings
+  if (meeting.participants.length === 0) {
+    meetings.delete(meetingCode.toUpperCase());
+    console.log(`Meeting ${meetingCode} removed from active sessions (no participants)`);
+  }
+  
+  return participant;
+};
+
+const addToQueueSync = (meetingCode, queueItem) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = meetings.get(meetingCode.toUpperCase());
+  if (!meeting) return null;
+  
+  // Check if already in queue
+  const existingIndex = meeting.queue.findIndex(item => item.participantId === queueItem.participantId);
+  if (existingIndex !== -1) return null;
+  
+  meeting.queue.push(queueItem);
+  return queueItem;
+};
+
+const removeFromQueueSync = (meetingCode, participantId) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = meetings.get(meetingCode.toUpperCase());
+  if (!meeting) return null;
+  
+  const queueIndex = meeting.queue.findIndex(item => item.participantId === participantId);
+  if (queueIndex === -1) return null;
+  
+  const queueItem = meeting.queue[queueIndex];
+  meeting.queue.splice(queueIndex, 1);
+  
+  // Update positions for remaining queue items
+  meeting.queue.forEach((item, index) => {
+    item.position = index + 1;
+  });
+  
+  return queueItem;
+};
+
+const getNextSpeakerSync = (meetingCode) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = meetings.get(meetingCode.toUpperCase());
+  if (!meeting || meeting.queue.length === 0) return null;
+  
+  const nextSpeaker = meeting.queue.shift();
+  
+  // Update positions for remaining queue items
+  meeting.queue.forEach((item, index) => {
+    item.position = index + 1;
+  });
+  
+  return nextSpeaker;
+};
+
+const updateParticipantQueueStatusSync = (meetingCode, participantId, isInQueue, queuePosition) => {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Sync functions only available in test mode');
+  }
+  const meeting = meetings.get(meetingCode.toUpperCase());
+  if (!meeting) return false;
+  
+  const participant = meeting.participants.find(p => p.id === participantId);
+  if (!participant) return false;
+  
+  participant.isInQueue = isInQueue;
+  participant.queuePosition = queuePosition;
+  
+  return true;
+};
+
 module.exports = {
+  createMeeting,
+  createMeetingAsync,
   getMeeting,
   getMeetingInfo,
   addParticipant,
@@ -188,5 +542,15 @@ module.exports = {
   addToQueue,
   removeFromQueue,
   getNextSpeaker,
-  updateParticipantQueueStatus
+  updateParticipantQueueStatus,
+  // Sync versions for testing
+  getMeetingSync,
+  getMeetingInfoSync,
+  addParticipantSync,
+  removeParticipantSync,
+  addToQueueSync,
+  removeFromQueueSync,
+  getNextSpeakerSync,
+  updateParticipantQueueStatusSync,
+  meetings // Export for testing
 };

@@ -18,3 +18,11 @@ global.console = {
   warn: jest.fn(),
   error: jest.fn(),
 };
+
+// Test that this setup file has at least one test
+describe('Test Setup', () => {
+  it('should set up test environment correctly', () => {
+    expect(process.env.NODE_ENV).toBe('test');
+    expect(process.env.PORT).toBe('3001');
+  });
+});

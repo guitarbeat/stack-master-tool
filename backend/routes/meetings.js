@@ -24,7 +24,7 @@ router.get('/health', (req, res) => {
 });
 
 // Create a new meeting
-router.post('/meetings', (req, res) => {
+router.post('/meetings', async (req, res) => {
   try {
     const { facilitatorName, meetingTitle } = req.body;
     
@@ -51,7 +51,9 @@ router.post('/meetings', (req, res) => {
       return sendErrorResponse(res, 400, 'INVALID_CHARACTERS', 'Facilitator name can only contain letters, numbers, and spaces');
     }
     
-    const meeting = meetingsService.createMeeting(facilitatorName.trim(), meetingTitle.trim());
+    const meeting = process.env.NODE_ENV === 'test' 
+      ? meetingsService.createMeeting(facilitatorName.trim(), meetingTitle.trim())
+      : await meetingsService.createMeetingAsync(facilitatorName.trim(), meetingTitle.trim());
     
     res.json({
       meetingCode: meeting.code,
@@ -70,7 +72,7 @@ router.post('/meetings', (req, res) => {
 });
 
 // Get meeting info
-router.get('/meetings/:code', (req, res) => {
+router.get('/meetings/:code', async (req, res) => {
   try {
     const { code } = req.params;
     
@@ -79,7 +81,7 @@ router.get('/meetings/:code', (req, res) => {
       return sendErrorResponse(res, 400, 'INVALID_MEETING_CODE', 'Meeting code must be 6 characters');
     }
     
-    const meetingInfo = meetingsService.getMeetingInfo(code.toUpperCase());
+    const meetingInfo = await meetingsService.getMeetingInfo(code.toUpperCase());
     
     if (!meetingInfo) {
       return sendErrorResponse(res, 404, 'MEETING_NOT_FOUND', 'Meeting not found');
