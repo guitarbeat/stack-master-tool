@@ -1,8 +1,9 @@
 import { ReactNode, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, Plus, UserPlus, MessageSquare, QrCode } from 'lucide-react'
+import { Menu, X, Plus, UserPlus, MessageSquare, QrCode, Users } from 'lucide-react'
 import ThemeToggle from '../ui/ThemeToggle'
 import { useMouseFollow } from '@/hooks/use-mouse-follow'
+import { useFacilitatorSession } from '@/hooks/useFacilitatorSession'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -18,6 +19,7 @@ function AppLayout({ children }: AppLayoutProps) {
   }
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const { hasActiveSession, getSessionInfo, restoreSession } = useFacilitatorSession()
 
   const { containerRef, mousePosition, isHovering, handleMouseMove, handleMouseEnter, handleMouseLeave } = useMouseFollow({
     enabled: true,
@@ -44,6 +46,18 @@ function AppLayout({ children }: AppLayoutProps) {
             <span className="font-semibold text-gray-900 dark:text-zinc-100">ICC Austin Stack</span>
           </Link>
           <div className="flex items-center space-x-3">
+            {/* Facilitate Button - Show if user has active session */}
+            {hasActiveSession() && (
+              <button
+                onClick={restoreSession}
+                className="hidden md:flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-lg hover:from-primary/90 hover:to-accent/90 transition-all duration-200 shadow-sm hover:shadow-md"
+                title={`Resume facilitating ${getSessionInfo()?.meetingCode}`}
+              >
+                <Users className="w-4 h-4" />
+                <span className="text-sm font-medium">Facilitate</span>
+              </button>
+            )}
+            
             <nav className="hidden md:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
               {/* Manual/Create/Join toggle */}
               {(() => {
@@ -193,6 +207,20 @@ function AppLayout({ children }: AppLayoutProps) {
             aria-label="Mobile navigation"
           >
             <div className="container mx-auto px-4 py-3 flex flex-col space-y-1">
+              {/* Facilitate Button for Mobile */}
+              {hasActiveSession() && (
+                <button
+                  onClick={() => {
+                    restoreSession();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="h-10 flex items-center px-4 rounded-lg text-sm font-medium bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 transition-all duration-200"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Resume Facilitating
+                </button>
+              )}
+              
               <Link
                 to="/manual"
                 onClick={() => setMobileMenuOpen(false)}

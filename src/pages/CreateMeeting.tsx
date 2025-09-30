@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast'
 import { playBeep } from '../utils/sound.js'
 import Confetti from '../components/ui/Confetti.jsx'
 import { AppError, getErrorDisplayInfo } from '../utils/errorHandling'
+import { useFacilitatorSession } from '@/hooks/useFacilitatorSession'
 
 interface MeetingData {
   name: string
@@ -18,6 +19,7 @@ interface MeetingData {
 
 function CreateMeeting(): JSX.Element {
   const navigate = useNavigate()
+  const { saveSession } = useFacilitatorSession()
   const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
     toast({ title, description })
   }
@@ -55,6 +57,13 @@ function CreateMeeting(): JSX.Element {
         shareableLink
       }))
       setStep(2)
+
+      // Save facilitator session for persistence
+      saveSession({
+        meetingCode: response.meetingCode,
+        facilitatorName: meetingData.facilitatorName,
+        meetingTitle: meetingData.name
+      })
 
       // Generate QR in background
       ;(async () => {

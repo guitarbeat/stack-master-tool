@@ -121,7 +121,10 @@ export function useFacilitatorSocket(
     connectAsFacilitator()
 
     return () => {
-      socketService.removeAllListeners()
+      // Clean up listeners to prevent memory leaks
+      if (socketService.socket) {
+        socketService.removeAllListeners()
+      }
     }
   }, [meetingCode, facilitatorName, showToast])
 
