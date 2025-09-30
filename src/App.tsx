@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import CreateMeeting from "./pages/CreateMeeting";
 import JoinMeeting from "./pages/JoinMeeting";
 import WatchMeeting from "./pages/WatchMeeting";
+import PublicWatch from "./pages/PublicWatch";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
 import FacilitatePage from "./pages/FacilitatePage";
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="/create" element={<CreateMeeting />} />
             <Route path="/join" element={<JoinMeeting />} />
             <Route path="/watch" element={<WatchMeeting />} />
+            <Route path="/watch/:code" element={<PublicWatch />} />
             <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
             <Route
               path="/facilitate/:meetingId"

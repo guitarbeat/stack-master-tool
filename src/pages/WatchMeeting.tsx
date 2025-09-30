@@ -93,12 +93,8 @@ function WatchMeeting(): JSX.Element {
       notify("success", "Joining meeting as watcher", meetingInfo.title);
       playBeep(1000, 120);
 
-      navigate(`/meeting/${formData.meetingCode}?mode=watch`, {
-        state: {
-          watcherName: formData.watcherName,
-          meetingInfo: meetingInfo,
-        },
-      });
+      // Redirect to public watch URL
+      navigate(`/watch/${formData.meetingCode}`);
     } catch (err) {
       console.error("Error joining meeting as watcher:", err);
 

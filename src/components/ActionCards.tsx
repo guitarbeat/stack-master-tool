@@ -83,15 +83,15 @@ export const ActionCards = () => {
       icon: <Eye className="w-8 h-8 text-primary" />,
       title: "Watch Meeting",
       description:
-        "Observe a meeting in read-only mode. Perfect for board members, students, or stakeholders.",
+        "Enter a meeting code to watch in read-only mode. Perfect for observers and stakeholders.",
       cta: "Watch Now",
       emoji: "👁️",
       gradient: "from-primary to-primary/80",
       bgBlob: "bg-primary/10",
       features: [
+        "Enter meeting code",
         "Read-only viewing",
         "No participation required",
-        "Perfect for observers",
       ],
     },
   ];
