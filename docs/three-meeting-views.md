@@ -1,43 +1,28 @@
 # Three Meeting Views Implementation - COMPLETED ✅
 
-## Goal
+This document describes the three distinct meeting views implemented in the stack facilitation app, inspired by jparty.tv's approach.
 
-Implement three distinct meeting interfaces: HOST (facilitator controls), JOIN (simplified participant), and WATCH (public observer) - similar to jparty.tv's approach.
+## Overview
+
+The app now supports three distinct ways to interact with meetings:
+
+1. **HOST** - Full facilitator controls and meeting management
+2. **JOIN** - Participant view with queue interaction capabilities
+3. **WATCH** - Public read-only observer view (no authentication required)
 
 ## Implementation Status: COMPLETED ✅
 
 All three meeting views have been successfully implemented and are fully functional.
 
-## Final Implementation
-
-### URL Structure
+## URL Structure
 
 - **`/meeting/ABC123?mode=host`** - Host view (facilitator controls)
 - **`/meeting/ABC123?mode=join`** - Join view (participant actions) - _default_
 - **`/watch/ABC123`** - Public watch view (read-only, no auth)
 
-### Architecture Overview
+## Current Implementation Status
 
-#### Backend Changes ✅
-
-- **Socket.io handlers** updated to support role-based permissions
-- **No watcher role** - everyone joins as regular participants
-- **Event filtering** based on user permissions
-- **Meeting validation** for all access methods
-
-#### Frontend Architecture ✅
-
-- **`useMeetingMode` hook** - detects mode from URL parameters
-- **Mode-specific components**:
-  - `HostView.tsx` - Facilitator interface
-  - `JoinView.tsx` - Participant interface
-  - `WatchView.tsx` - Read-only observer interface
-- **`MeetingRoomWithModes.tsx`** - Routes to appropriate view based on mode
-- **`PublicWatch.tsx`** - Standalone public watch page
-
-### Key Features by View
-
-#### HOST View ✅
+### ✅ HOST View (Implemented)
 
 - **Route**: `/meeting/:code?mode=host`
 - **Access**: Facilitator authentication required
@@ -50,9 +35,9 @@ All three meeting views have been successfully implemented and are fully functio
   - Interventions panel
   - Real-time updates via Socket.io
 
-#### JOIN View ✅
+### ✅ JOIN View (Implemented)
 
-- **Route**: `/meeting/:code?mode=join` (default)
+- **Route**: `/meeting/:code?mode=join` (default when no mode specified)
 - **Access**: Participant name required
 - **Features**:
   - Join/leave speaking queue
@@ -61,7 +46,7 @@ All three meeting views have been successfully implemented and are fully functio
   - Real-time updates via Socket.io
   - Clean, focused participant interface
 
-#### WATCH View ✅
+### ✅ WATCH View (Implemented)
 
 - **Route**: `/watch/:code` (public URL)
 - **Access**: No authentication required - anyone with the URL can watch
@@ -69,76 +54,34 @@ All three meeting views have been successfully implemented and are fully functio
   - Read-only queue display
   - Current speaker indicator
   - Participant list (names and roles)
-  - Meeting information display
-  - "Join Meeting" call-to-action
-  - Real-time updates (when available)
-  - Public access (no authentication)
+  - Meeting information
+  - Real-time updates (when connected)
+  - "Join Meeting" button for participation
 
-## Implementation Details
+## User Flows
 
-### Mode Detection System ✅
-
-```typescript
-// useMeetingMode hook
-const useMeetingMode = () => {
-  const [searchParams] = useSearchParams();
-  const mode = searchParams.get("mode") || "join";
-  return mode as "host" | "join" | "watch";
-};
-```
-
-### Component Routing ✅
-
-```typescript
-// MeetingRoomWithModes.tsx
-const MeetingRoomWithModes = () => {
-  const mode = useMeetingMode();
-
-  switch(mode) {
-    case 'host':
-      return <HostView />;
-    case 'join':
-      return <JoinView />;
-    case 'watch':
-      return <WatchView />;
-    default:
-      return <JoinView />;
-  }
-};
-```
-
-### Public Watch Implementation ✅
-
-- **Standalone route**: `/watch/:code`
-- **No authentication required**
-- **Direct URL access** - anyone can bookmark and access
-- **Real-time updates** via Socket.io (when connected)
-- **"Join Meeting" button** for participation
-
-### User Flows ✅
-
-#### 1. Hosting a Meeting
+### 1. Hosting a Meeting
 
 1. User clicks "Host Meeting" on home page
 2. Creates meeting → gets meeting code (e.g., `ABC123`)
 3. Automatically navigates to `/meeting/ABC123?mode=host`
 4. Full facilitator controls available
 
-#### 2. Joining a Meeting
+### 2. Joining a Meeting
 
 1. User clicks "Join Meeting" on home page
 2. Enters meeting code and their name
 3. Navigates to `/meeting/ABC123?mode=join`
 4. Can participate in speaking queue
 
-#### 3. Watching a Meeting
+### 3. Watching a Meeting
 
 1. User clicks "Watch Meeting" on home page
 2. Enters meeting code
 3. Redirects to `/watch/ABC123` (public URL)
 4. Read-only view of meeting
 
-#### 4. Direct URL Access
+### 4. Direct URL Access
 
 - **`/watch/ABC123`** - Anyone can access immediately (no name required)
 - **`/meeting/ABC123`** - Defaults to join mode, requires participant name
@@ -162,6 +105,47 @@ const MeetingRoomWithModes = () => {
   - `WatchView.tsx` - Read-only observer interface
 - **`MeetingRoomWithModes.tsx`** - Routes to appropriate view based on mode
 - **`PublicWatch.tsx`** - Standalone public watch page
+
+### Implementation Details
+
+#### Mode Detection System ✅
+
+```typescript
+// useMeetingMode hook
+const useMeetingMode = () => {
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode") || "join";
+  return mode as "host" | "join" | "watch";
+};
+```
+
+#### Component Routing ✅
+
+```typescript
+// MeetingRoomWithModes.tsx
+const MeetingRoomWithModes = () => {
+  const mode = useMeetingMode();
+
+  switch(mode) {
+    case 'host':
+      return <HostView />;
+    case 'join':
+      return <JoinView />;
+    case 'watch':
+      return <WatchView />;
+    default:
+      return <JoinView />;
+  }
+};
+```
+
+#### Public Watch Implementation ✅
+
+- **Standalone route**: `/watch/:code`
+- **No authentication required**
+- **Direct URL access** - anyone can bookmark and access
+- **Real-time updates** via Socket.io (when connected)
+- **"Join Meeting" button** for participation
 
 ### Key Features by View
 

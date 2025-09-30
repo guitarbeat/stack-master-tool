@@ -100,8 +100,7 @@ npm start # or node server.js
 
 ### Three Meeting Views
 
-- **[HOST, JOIN, WATCH Specification](docs/host-join-watch-spec.md)** - Complete specification of the three meeting views
-- **[Implementation Status](docs/todo-three-views.md)** - Detailed implementation status and technical details
+- **[Three Meeting Views Implementation](docs/three-meeting-views.md)** - Complete specification and implementation status
 
 ### Additional Documentation
 
