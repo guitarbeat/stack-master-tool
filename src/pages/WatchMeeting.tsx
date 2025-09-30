@@ -97,7 +97,6 @@ function WatchMeeting(): JSX.Element {
         state: {
           watcherName: formData.watcherName,
           meetingInfo: meetingInfo,
-          isWatcher: true,
         },
       });
     } catch (err) {

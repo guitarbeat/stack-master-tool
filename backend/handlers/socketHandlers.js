@@ -26,7 +26,7 @@ const emitToRole = (socket, event, data, role) => {
 
 // Join a meeting
 async function handleJoinMeeting(socket, data) {
-  const { meetingCode, participantName, isFacilitator = false, isWatcher = false } = data;
+  const { meetingCode, participantName, isFacilitator = false } = data;
   
   // Validate input data
   if (!meetingCode || typeof meetingCode !== 'string') {
@@ -55,11 +55,6 @@ async function handleJoinMeeting(socket, data) {
     return;
   }
   
-  // Validate role exclusivity - cannot be both facilitator and watcher
-  if (isFacilitator && isWatcher) {
-    sendSocketError(socket, 'INVALID_ROLE', 'Cannot be both facilitator and watcher');
-    return;
-  }
   
   // Sanitize participant name
   const sanitizedName = participantName.trim();
@@ -79,8 +74,6 @@ async function handleJoinMeeting(socket, data) {
       return;
     }
     
-    // Watchers can join with any name, no facilitator validation needed
-    // Watchers have read-only access and don't need special permissions
     
     // Prevent duplicate joins from the same socket
     const existingParticipant = participantsService.getParticipant(socket.id);
@@ -106,7 +99,6 @@ async function handleJoinMeeting(socket, data) {
       id: socket.id,
       name: sanitizedName,
       isFacilitator,
-      isWatcher,
       joinedAt: new Date().toISOString(),
       isInQueue: false,
       queuePosition: null
@@ -118,7 +110,7 @@ async function handleJoinMeeting(socket, data) {
     // Join the meeting room
     socket.join(meetingCode.toUpperCase());
     
-    const role = isFacilitator ? 'facilitator' : isWatcher ? 'watcher' : 'participant';
+    const role = isFacilitator ? 'facilitator' : 'participant';
     console.log(`${sanitizedName} joined meeting ${meetingCode} as ${role}`);
     
     // Send meeting info to the participant
@@ -151,11 +143,6 @@ async function handleJoinQueue(socket, data) {
     return;
   }
   
-  // Check if participant is a watcher - watchers cannot join the queue
-  if (participantData.participant.isWatcher) {
-    sendSocketError(socket, 'WATCHER_CANNOT_JOIN_QUEUE', 'Watchers cannot join the speaking queue');
-    return;
-  }
   
   // Validate queue type
   const validTypes = ['speak', 'direct-response', 'point-of-info', 'clarification'];
@@ -211,11 +198,6 @@ function handleLeaveQueue(socket) {
     return;
   }
   
-  // Check if participant is a watcher - watchers cannot leave the queue (they can't be in it)
-  if (participantData.participant.isWatcher) {
-    sendSocketError(socket, 'WATCHER_CANNOT_LEAVE_QUEUE', 'Watchers cannot leave the speaking queue');
-    return;
-  }
   
   const { meetingCode, participant } = participantData;
   const meeting = meetingsService.getMeeting(meetingCode);

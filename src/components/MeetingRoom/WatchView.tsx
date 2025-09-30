@@ -1,16 +1,16 @@
-import React from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { useMeetingSocket } from '../../hooks/useMeetingSocket';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Users, Eye, Clock, MessageCircle, Info, Settings } from 'lucide-react';
-import { getQueueTypeDisplay } from '../../utils/queue';
+import React from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { useMeetingSocket } from "../../hooks/useMeetingSocket";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Users, Eye, Clock, MessageCircle, Info, Settings } from "lucide-react";
+import { getQueueTypeDisplay } from "../../utils/queue";
 
 export const WatchView = (): JSX.Element => {
   const { meetingId } = useParams();
   const location = useLocation();
   const { watcherName, meetingInfo } = location.state || {};
-  
+
   const {
     meetingData,
     participants,
@@ -18,12 +18,15 @@ export const WatchView = (): JSX.Element => {
     isConnected,
     error,
     currentSpeaker,
-    leaveMeeting
-  } = useMeetingSocket(watcherName, meetingInfo || {
-    code: meetingId || '',
-    title: 'Loading...',
-    facilitator: 'Loading...'
-  }, true); // isWatcher = true
+    leaveMeeting,
+  } = useMeetingSocket(
+    watcherName,
+    meetingInfo || {
+      code: meetingId || "",
+      title: "Loading...",
+      facilitator: "Loading...",
+    }
+  );
 
   if (!isConnected && !error) {
     return (
@@ -51,11 +54,9 @@ export const WatchView = (): JSX.Element => {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">
             Connection Error
           </h2>
-          <p className="text-gray-600 dark:text-zinc-400 mb-6">
-            {error}
-          </p>
+          <p className="text-gray-600 dark:text-zinc-400 mb-6">{error}</p>
           <button
-            onClick={() => window.location.href = '/join'}
+            onClick={() => (window.location.href = "/join")}
             className="w-full bg-primary text-white py-2 px-6 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
           >
             Try Joining as Participant
@@ -77,10 +78,13 @@ export const WatchView = (): JSX.Element => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">
-              {meetingData?.title || 'Meeting'}
+              {meetingData?.title || "Meeting"}
             </h1>
             <p className="text-gray-600 dark:text-zinc-400">
-              Meeting Code: <span className="font-mono font-semibold">{meetingData?.code}</span>
+              Meeting Code:{" "}
+              <span className="font-mono font-semibold">
+                {meetingData?.code}
+              </span>
             </p>
             <p className="text-sm text-gray-500 dark:text-zinc-500">
               Facilitated by {meetingData?.facilitator}
@@ -143,45 +147,54 @@ export const WatchView = (): JSX.Element => {
             {speakingQueue.length === 0 ? (
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-zinc-400">No one in queue</p>
+                <p className="text-gray-500 dark:text-zinc-400">
+                  No one in queue
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
                 {speakingQueue.map((entry, index) => {
-                  const isDirect = entry.type === 'direct-response';
-                  const isPointInfo = entry.type === 'point-of-info';
-                  const isClarify = entry.type === 'clarification';
+                  const isDirect = entry.type === "direct-response";
+                  const isPointInfo = entry.type === "point-of-info";
+                  const isClarify = entry.type === "clarification";
                   const isCurrentSpeaker = index === 0;
-                  
+
                   return (
                     <div
                       key={entry.id}
                       className={`flex items-center justify-between p-4 rounded-xl border ${
                         isCurrentSpeaker
-                          ? 'border-primary/40 bg-primary/5'
-                          : 'border-gray-200 dark:border-zinc-700'
+                          ? "border-primary/40 bg-primary/5"
+                          : "border-gray-200 dark:border-zinc-700"
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <Badge
                           variant={isCurrentSpeaker ? "default" : "secondary"}
                           className={`${
-                            isCurrentSpeaker
-                              ? 'animate-pulse'
-                              : ''
+                            isCurrentSpeaker ? "animate-pulse" : ""
                           } ${
-                            isDirect ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300' : ''
+                            isDirect
+                              ? "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300"
+                              : ""
                           }`}
                         >
-                          {isCurrentSpeaker 
-                            ? (isDirect ? "🎤 Direct Response" : "🎤 Speaking") 
-                            : `#${index + 1}`
-                          }
+                          {isCurrentSpeaker
+                            ? isDirect
+                              ? "🎤 Direct Response"
+                              : "🎤 Speaking"
+                            : `#${index + 1}`}
                         </Badge>
                         <div className="flex items-center gap-2">
-                          {isDirect && <MessageCircle className="h-4 w-4 text-orange-600" />}
-                          {isPointInfo && <Info className="h-4 w-4 text-blue-600" />}
-                          {isClarify && <Settings className="h-4 w-4 text-purple-600" />}
+                          {isDirect && (
+                            <MessageCircle className="h-4 w-4 text-orange-600" />
+                          )}
+                          {isPointInfo && (
+                            <Info className="h-4 w-4 text-blue-600" />
+                          )}
+                          {isClarify && (
+                            <Settings className="h-4 w-4 text-purple-600" />
+                          )}
                           <span className="font-semibold">
                             {entry.participantName}
                           </span>
@@ -190,12 +203,12 @@ export const WatchView = (): JSX.Element => {
                           variant="outline"
                           className={`text-xs ${
                             isDirect
-                              ? 'border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300'
+                              ? "border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300"
                               : isPointInfo
-                                ? 'border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300'
+                                ? "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300"
                                 : isClarify
-                                  ? 'border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300'
-                                  : 'border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300'
+                                  ? "border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300"
+                                  : "border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300"
                           }`}
                         >
                           {getQueueTypeDisplay(entry.type)}
@@ -224,13 +237,17 @@ export const WatchView = (): JSX.Element => {
             {participants.length === 0 ? (
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-zinc-400">No participants yet</p>
+                <p className="text-gray-500 dark:text-zinc-400">
+                  No participants yet
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
-                {participants.map((participant) => {
-                  const isInQueue = speakingQueue.some(q => q.participantName === participant.name);
-                  
+                {participants.map(participant => {
+                  const isInQueue = speakingQueue.some(
+                    q => q.participantName === participant.name
+                  );
+
                   return (
                     <div
                       key={participant.id}
@@ -274,7 +291,8 @@ export const WatchView = (): JSX.Element => {
         <div className="flex items-center gap-2">
           <Eye className="w-5 h-5 text-blue-600" />
           <p className="text-sm text-blue-700 dark:text-blue-300">
-            You are watching this meeting in read-only mode. To participate, join as a participant instead.
+            You are watching this meeting in read-only mode. To participate,
+            join as a participant instead.
           </p>
         </div>
       </div>

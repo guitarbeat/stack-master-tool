@@ -1,18 +1,18 @@
-import React from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { useMeetingSocket } from '../../hooks/useMeetingSocket';
-import { MeetingHeader } from './MeetingHeader';
-import { CurrentSpeakerAlert } from './CurrentSpeakerAlert';
-import { SpeakingQueue } from './SpeakingQueue';
-import { ActionsPanel } from './ActionsPanel';
-import { LoadingState } from './LoadingState';
-import { ErrorState } from './ErrorState';
+import React from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { useMeetingSocket } from "../../hooks/useMeetingSocket";
+import { MeetingHeader } from "./MeetingHeader";
+import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
+import { SpeakingQueue } from "./SpeakingQueue";
+import { ActionsPanel } from "./ActionsPanel";
+import { LoadingState } from "./LoadingState";
+import { ErrorState } from "./ErrorState";
 
 export const JoinView = (): JSX.Element => {
   const { meetingId } = useParams();
   const location = useLocation();
   const { participantName, meetingInfo } = location.state || {};
-  
+
   const {
     meetingData,
     participants,
@@ -23,12 +23,15 @@ export const JoinView = (): JSX.Element => {
     currentSpeaker,
     joinQueue,
     leaveQueue,
-    leaveMeeting
-  } = useMeetingSocket(participantName, meetingInfo || {
-    code: meetingId || '',
-    title: 'Loading...',
-    facilitator: 'Loading...'
-  }, false); // isWatcher = false (participant)
+    leaveMeeting,
+  } = useMeetingSocket(
+    participantName,
+    meetingInfo || {
+      code: meetingId || "",
+      title: "Loading...",
+      facilitator: "Loading...",
+    }
+  );
 
   if (!isConnected && !error) {
     return <LoadingState />;
