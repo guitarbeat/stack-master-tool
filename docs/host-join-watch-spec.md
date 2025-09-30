@@ -8,17 +8,30 @@ This app facilitates democratic meetings with a real-time speaking queue. Today 
 - Document an optional future WATCH concept without implying it exists now.
 
 ### Current flows (as implemented)
-- HOST (currently labeled "Create")
-  - Route: `/create`
-  - Page/components: `src/pages/CreateMeeting.tsx`, `src/components/meeting/MeetingCreationForm.tsx`
-  - Backend: `POST /api/meetings` returns `{ meetingCode, meetingId, shareUrl }` via `backend/routes/meetings.js`
-  - After creation, facilitator can navigate to `/facilitate/{code}` to run the meeting.
-- JOIN
-  - Route: `/join`
-  - Page: `src/pages/JoinMeeting.tsx`
-  - Validates 6-char meeting code, then navigates to `/meeting/{code}` as a participant.
-- Facilitate existing meeting
-  - Card links to `/facilitate` (entry to facilitation tools) and `/facilitate/{code}` when starting a created meeting.
+1. **Manual Stack** (`/manual`)
+   - Offline facilitation tool
+   - No meeting creation or codes needed
+   - Direct stack management without networking
+   - Perfect for in-person meetings
+
+2. **HOST (currently labeled "Create")** (`/create`)
+   - Page/components: `src/pages/CreateMeeting.tsx`, `src/components/meeting/MeetingCreationForm.tsx`
+   - Backend: `POST /api/meetings` returns `{ meetingCode, meetingId, shareUrl }` via `backend/routes/meetings.js`
+   - After creation, facilitator can navigate to `/facilitate/{code}` to run the meeting.
+
+3. **JOIN** (`/join`)
+   - Page: `src/pages/JoinMeeting.tsx`
+   - Validates 6-char meeting code, then navigates to `/meeting/{code}` as a participant.
+
+4. **Facilitate Meeting** (`/facilitate` or `/facilitate/{code}`)
+   - Facilitator controls for an active meeting
+   - Real-time queue management via Socket.io
+   - Participant management and meeting controls
+
+5. **Meeting Room** (`/meeting/{code}`)
+   - Participant view in an active meeting
+   - Can join speaking queue, make responses
+   - Real-time updates via Socket.io
 
 ### What to rename (UI copy only)
 - Buttons and headings:
@@ -42,6 +55,27 @@ This app facilitates democratic meetings with a real-time speaking queue. Today 
   - UI: Add a tertiary action on home: "Watch" that opens a simple form to enter a code.
   - Route: `/watch` → redirect to `/meeting/{code}?mode=watch`.
   - Behavior: read-only view; no queue interactions. Requires frontend permission checks and server support (none today).
+
+### Three Meeting Views (future concept)
+1. **HOST View** (Facilitator Controls)
+   - Similar to current `/manual` or `/facilitate` pages
+   - Full facilitator dashboard with all controls
+   - Speaking queue management, participant management, meeting settings
+   - All the power tools facilitators need
+
+2. **JOIN View** (Participant Actions)  
+   - Simplified interface focused on queue participation
+   - Just essential buttons: "Join Speaking Queue", "Make Direct Response", "Point of Information", "Clarification Request"
+   - Queue view showing current speaker, your position, who's ahead/behind
+   - Clean, minimal UI - no facilitator clutter
+
+3. **WATCH View** (Observer)
+   - Read-only queue view
+   - See current speaker and full queue
+   - Participant list (names only)
+   - Meeting info and progress
+   - No interaction buttons
+   - Stream-like interface for observers
 
 ### Acceptance criteria for this doc’s scope
 - All visible user-facing "Create" labels that start a meeting are updated to "Host".
