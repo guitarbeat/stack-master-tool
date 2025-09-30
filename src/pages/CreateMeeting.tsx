@@ -1,109 +1,131 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Users, Copy, QrCode as QrCodeIcon, Loader2 } from 'lucide-react'
-import QRCode from 'qrcode'
-import apiService from '../services/api'
-import { toast } from '@/hooks/use-toast'
-import { playBeep } from '../utils/sound.js'
-import Confetti from '../components/ui/Confetti.jsx'
-import { AppError, getErrorDisplayInfo } from '../utils/errorHandling'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Users,
+  Copy,
+  QrCode as QrCodeIcon,
+  Loader2,
+} from "lucide-react";
+import QRCode from "qrcode";
+import apiService from "../services/api";
+import { toast } from "@/hooks/use-toast";
+import { playBeep } from "../utils/sound.js";
+import Confetti from "../components/ui/Confetti.jsx";
+import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
 
 interface MeetingData {
-  name: string
-  facilitatorName: string
-  meetingCode: string
-  meetingId: string
-  shareableLink: string
+  name: string;
+  facilitatorName: string;
+  meetingCode: string;
+  meetingId: string;
+  shareableLink: string;
 }
 
 function CreateMeeting(): JSX.Element {
-  const navigate = useNavigate()
-  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
-    toast({ title, description })
-  }
-  const [step, setStep] = useState<number>(1)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string>('')
+  const navigate = useNavigate();
+  const notify = (
+    type: "success" | "error" | "info",
+    title: string,
+    description?: string
+  ) => {
+    toast({ title, description });
+  };
+  const [step, setStep] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const [meetingData, setMeetingData] = useState<MeetingData>({
-    name: '',
-    facilitatorName: '',
-    meetingCode: '',
-    meetingId: '',
-    shareableLink: ''
-  })
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
-  const [confettiKey, setConfettiKey] = useState<number>(0)
+    name: "",
+    facilitatorName: "",
+    meetingCode: "",
+    meetingId: "",
+    shareableLink: "",
+  });
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [confettiKey, setConfettiKey] = useState<number>(0);
 
   const handleCreateMeeting = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
     try {
       const response = await apiService.createMeeting(
         meetingData.facilitatorName,
         meetingData.name
-      )
-      
-      const shareableLink = `${window.location.origin}/join?code=${response.meetingCode}`
+      );
+
+      const shareableLink = `${window.location.origin}/join?code=${response.meetingCode}`;
 
       // Set state and advance UI before generating QR to avoid perceived slowness
       setMeetingData(prev => ({
         ...prev,
         meetingCode: response.meetingCode,
         meetingId: response.meetingId,
-        shareableLink
-      }))
-      setStep(2)
+        shareableLink,
+      }));
+
+      // Store meeting data in localStorage for facilitate button access
+      localStorage.setItem(
+        "currentMeeting",
+        JSON.stringify({
+          meetingCode: response.meetingCode,
+          meetingId: response.meetingId,
+          facilitatorName: meetingData.facilitatorName,
+          meetingName: meetingData.name,
+        })
+      );
+
+      setStep(2);
 
       // Generate QR in background
-      ;(async () => {
+      (async () => {
         try {
-          const qrUrl = await QRCode.toDataURL(shareableLink)
-          setQrCodeUrl(qrUrl)
+          const qrUrl = await QRCode.toDataURL(shareableLink);
+          setQrCodeUrl(qrUrl);
         } catch (err) {
-          console.error('Error generating QR code:', err)
+          console.error("Error generating QR code:", err);
         }
-      })()
+      })();
 
-      notify('success', 'Meeting created', `Code: ${response.meetingCode}`)
-      playBeep(880, 140)
-      setConfettiKey((k) => k + 1)
+      notify("success", "Meeting created", `Code: ${response.meetingCode}`);
+      playBeep(880, 140);
+      setConfettiKey(k => k + 1);
     } catch (err) {
-      console.error('Error creating meeting:', err)
-      
-      const errorInfo = getErrorDisplayInfo(err as AppError)
-      setError(errorInfo.description)
-      notify('error', errorInfo.title, errorInfo.description)
-      playBeep(220, 200)
+      console.error("Error creating meeting:", err);
+
+      const errorInfo = getErrorDisplayInfo(err as AppError);
+      setError(errorInfo.description);
+      notify("error", errorInfo.title, errorInfo.description);
+      playBeep(220, 200);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    notify('success', 'Copied to clipboard')
-    playBeep(1200, 80)
-  }
+    navigator.clipboard.writeText(text);
+    notify("success", "Copied to clipboard");
+    playBeep(1200, 80);
+  };
 
   const startMeeting = () => {
     navigate(`/facilitate/${meetingData.meetingCode}`, {
-      state: { 
+      state: {
         facilitatorName: meetingData.facilitatorName,
         meetingName: meetingData.name,
-        meetingCode: meetingData.meetingCode
-      }
-    })
-  }
+        meetingCode: meetingData.meetingCode,
+      },
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <Confetti triggerKey={confettiKey} />
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button 
-          onClick={() => step === 1 ? navigate('/') : setStep(1)}
+        <button
+          onClick={() => (step === 1 ? navigate("/") : setStep(1))}
           className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
@@ -118,14 +140,20 @@ function CreateMeeting(): JSX.Element {
               <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4">
                 <Users className="w-8 h-8 text-primary mx-auto" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Create Meeting</h1>
-              <p className="text-gray-600 dark:text-zinc-400">Set up your meeting and share the invitation link</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">
+                Create Meeting
+              </h1>
+              <p className="text-gray-600 dark:text-zinc-400">
+                Set up your meeting and share the invitation link
+              </p>
             </div>
 
             <form onSubmit={handleCreateMeeting} className="space-y-6">
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-900/40">
-                  <p className="text-red-600 dark:text-red-300 text-sm">{error}</p>
+                  <p className="text-red-600 dark:text-red-300 text-sm">
+                    {error}
+                  </p>
                 </div>
               )}
 
@@ -138,7 +166,9 @@ function CreateMeeting(): JSX.Element {
                   required
                   disabled={loading}
                   value={meetingData.name}
-                  onChange={(e) => setMeetingData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={e =>
+                    setMeetingData(prev => ({ ...prev, name: e.target.value }))
+                  }
                   className="w-full px-4 py-3 bg-card border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-foreground placeholder:text-muted-foreground"
                   placeholder="e.g., Weekly Team Meeting"
                 />
@@ -153,7 +183,12 @@ function CreateMeeting(): JSX.Element {
                   required
                   disabled={loading}
                   value={meetingData.facilitatorName}
-                  onChange={(e) => setMeetingData(prev => ({ ...prev, facilitatorName: e.target.value }))}
+                  onChange={e =>
+                    setMeetingData(prev => ({
+                      ...prev,
+                      facilitatorName: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-3 bg-card border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed text-foreground placeholder:text-muted-foreground"
                   placeholder="Your name"
                 />
@@ -170,7 +205,7 @@ function CreateMeeting(): JSX.Element {
                     Creating Meeting...
                   </>
                 ) : (
-                  'Create Meeting'
+                  "Create Meeting"
                 )}
               </button>
             </form>
@@ -183,8 +218,12 @@ function CreateMeeting(): JSX.Element {
               <div className="bg-accent/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
                 <QrCodeIcon className="w-8 h-8 text-accent mx-auto" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Your meeting is ready!</h1>
-              <p className="text-gray-600 dark:text-zinc-400">Share this code or link with participants</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">
+                Your meeting is ready!
+              </h1>
+              <p className="text-gray-600 dark:text-zinc-400">
+                Share this code or link with participants
+              </p>
             </div>
 
             <div className="space-y-6">
@@ -255,8 +294,7 @@ function CreateMeeting(): JSX.Element {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default CreateMeeting
-
+export default CreateMeeting;
