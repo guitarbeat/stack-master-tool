@@ -21,6 +21,7 @@ import CurrentSpeakerCard from "../components/CurrentSpeakerCard";
 import { SpeakingDistribution } from "../components/StackKeeper/SpeakingDistribution";
 import { InterventionsPanel } from "../components/StackKeeper/InterventionsPanel";
 import { useSupabaseFacilitator } from "../hooks/useSupabaseFacilitator";
+import { useFacilitatorSession } from "../hooks/useFacilitatorSession";
 import { getQueueTypeDisplay, getQueueTypeColor } from "../utils/queue";
 
 function FacilitatorView(): JSX.Element {
@@ -28,6 +29,7 @@ function FacilitatorView(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const { facilitatorName, meetingName, meetingCode } = location.state || {};
+  const { saveSession, clearSession } = useFacilitatorSession();
 
   // Use meeting code from URL params if not in state
   const finalMeetingCode = meetingCode || meetingId;
@@ -46,8 +48,15 @@ function FacilitatorView(): JSX.Element {
           meetingName: meetingName || "Meeting",
         })
       );
+
+      // Save session data for facilitator session management
+      saveSession({
+        meetingCode: finalMeetingCode,
+        facilitatorName,
+        meetingTitle: meetingName || "Meeting",
+      });
     }
-  }, [facilitatorName, finalMeetingCode, meetingName, navigate]);
+  }, [facilitatorName, finalMeetingCode, meetingName, navigate, saveSession]);
 
   const {
     participants,
@@ -77,6 +86,7 @@ function FacilitatorView(): JSX.Element {
     disconnect();
     // Clear stored meeting data when leaving
     localStorage.removeItem("currentMeeting");
+    clearSession();
     navigate("/");
   };
 
@@ -102,6 +112,9 @@ function FacilitatorView(): JSX.Element {
   }
 
   if (error) {
+    const isMeetingNotFound = error.includes("Meeting not found");
+    const isUnauthorized = error.includes("not authorized");
+
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md mx-auto dark:bg-zinc-900 dark:border dark:border-zinc-800">
@@ -109,15 +122,27 @@ function FacilitatorView(): JSX.Element {
             <LogOut className="w-8 h-8 text-red-600 mx-auto" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">
-            Connection Error
+            {isMeetingNotFound ? "Meeting Not Found" : "Connection Error"}
           </h2>
-          <p className="text-gray-600 dark:text-zinc-400 mb-6">{error}</p>
-          <button
-            onClick={() => navigate("/create")}
-            className="bg-red-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors"
-          >
-            Try Again
-          </button>
+          <p className="text-gray-600 dark:text-zinc-400 mb-6">
+            {isMeetingNotFound
+              ? `The meeting code "${finalMeetingCode}" was not found. It may have ended or the code may be incorrect.`
+              : error}
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate("/facilitate")}
+              className="w-full bg-primary text-white py-2 px-6 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Try Different Code
+            </button>
+            <button
+              onClick={() => navigate("/create")}
+              className="w-full bg-gray-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+            >
+              Create New Meeting
+            </button>
+          </div>
         </div>
       </div>
     );
