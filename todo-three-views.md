@@ -6,9 +6,27 @@ Implement three distinct meeting interfaces: HOST (facilitator controls), JOIN (
 ## Investigation Phase
 
 ### Architecture Analysis
-- [ ] Analyze current meeting room architecture - how Socket.io events flow, role management, and UI state handling
+- [x] Analyze current meeting room architecture - how Socket.io events flow, role management, and UI state handling
 - [ ] Review how facilitator vs participant roles are currently determined and managed in the codebase
 - [ ] Study current `/meeting/:code` participant view to understand queue interaction patterns
+
+#### Current Architecture Findings:
+**Socket.io Event Flow:**
+- `join-meeting` event with `{meetingCode, participantName, isFacilitator}` 
+- Role determined by `isFacilitator` boolean + name validation against meeting.facilitator
+- Events: `meeting-joined`, `queue-updated`, `participants-updated`, `next-speaker`, `error`
+- Room-based: `socket.join(meetingCode.toUpperCase())` for broadcasting
+
+**Role Management:**
+- Only original facilitator can join as facilitator (name must match meeting.facilitator)
+- Participants join with `isFacilitator: false`
+- Facilitator permissions checked in `handleNextSpeaker()` - requires `participant.isFacilitator`
+- No watcher role exists yet
+
+**UI State Handling:**
+- `useMeetingSocket` hook manages participant state and Socket.io listeners
+- `useSupabaseFacilitator` hook for facilitator-specific functionality
+- Separate pages: `/meeting/:code` (participant), `/facilitate/:code` (facilitator), `/manual` (offline)
 
 ### UI Pattern Study
 - [ ] Deep dive into `/manual` and `/facilitate` pages to understand facilitator control patterns and UI components
