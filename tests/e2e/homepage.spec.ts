@@ -11,11 +11,11 @@ test.describe('Homepage', () => {
     await expect(page.locator('h1')).toBeVisible();
   });
 
-  test('should navigate to create meeting page', async ({ page }) => {
+  test('should navigate to host meeting page', async ({ page }) => {
     await page.goto('/');
     
-    // Look for create meeting button/link
-    const createButton = page.locator('a[href="/create"], button:has-text("Create")').first();
+    // Look for host meeting button/link
+    const createButton = page.locator('a[href="/create"], button:has-text("Host")').first();
     await expect(createButton).toBeVisible();
     
     await createButton.click();
