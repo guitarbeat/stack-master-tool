@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
@@ -23,7 +23,7 @@ interface State {
 class ErrorBoundaryWrapper extends Component<Props, State> {
   private resetTimeoutId: number | null = null;
 
-  public state: State = {
+  public override state: State = {
     hasError: false
   };
 
@@ -35,7 +35,7 @@ class ErrorBoundaryWrapper extends Component<Props, State> {
     };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     logError(error, 'ErrorBoundary');
     
@@ -47,7 +47,7 @@ class ErrorBoundaryWrapper extends Component<Props, State> {
     }
   }
 
-  public componentDidUpdate(prevProps: Props) {
+  public override componentDidUpdate(prevProps: Props) {
     const { resetKeys, resetOnPropsChange } = this.props;
     const { hasError } = this.state;
 
@@ -58,7 +58,7 @@ class ErrorBoundaryWrapper extends Component<Props, State> {
     }
   }
 
-  public componentWillUnmount() {
+  public override componentWillUnmount() {
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId);
     }
@@ -69,7 +69,7 @@ class ErrorBoundaryWrapper extends Component<Props, State> {
       clearTimeout(this.resetTimeoutId);
     }
 
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined, errorId: undefined });
+    this.setState({ hasError: false });
   };
 
   private handleRetry = () => {
@@ -113,7 +113,7 @@ class ErrorBoundaryWrapper extends Component<Props, State> {
     }
   };
 
-  public render() {
+  public override render() {
     if (this.state.hasError) {
       // Use custom fallback if provided
       if (this.props.fallback) {

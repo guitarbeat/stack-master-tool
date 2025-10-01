@@ -10,7 +10,7 @@ import { CurrentSpeaker } from "./CurrentSpeaker";
 import { SpeakingQueue } from "./SpeakingQueue";
 import { InterventionsPanel } from "./InterventionsPanel";
 import { SpeakingDistribution } from "./SpeakingDistribution";
-import { Participant, SpecialIntervention, INTERVENTION_TYPES } from "@/types";
+import { SpecialIntervention } from "@/types";
 
 interface StackKeeperProps {
   showInterventionsPanel?: boolean;
@@ -48,7 +48,6 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
   } = useParticipantManagement();
 
   const {
-    directResponse,
     startDirectResponse,
     finishDirectResponse,
     isDirectResponseActive,
@@ -246,7 +245,7 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onRemoveFromStack={handleRemoveFromStack}
-        onIntervention={handleInterventionSubmit}
+        onIntervention={(name, type) => handleInterventionSubmit(name, type as SpecialIntervention['type'])}
         onFinishDirectResponse={handleFinishDirectResponse}
         onClearAll={handleClearAll}
         onReorderStack={reorderStack}
@@ -262,7 +261,7 @@ export const StackKeeperRefactored = ({ showInterventionsPanel = true }: StackKe
           showAllUpNext={showAllUpNext}
           onToggleShowAllUpNext={() => setShowAllUpNext(!showAllUpNext)}
           onNextSpeaker={handleNextSpeaker}
-          speakerTimer={speakerTimer}
+          {...(speakerTimer && { speakerTimer: { isActive: speakerTimer.isActive, startTime: speakerTimer.startTime } })}
           elapsedTime={elapsedTime}
           onToggleTimer={toggleSpeakerTimer}
           onResetTimer={resetSpeakerTimer}

@@ -1,8 +1,8 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { AppError, getErrorDisplayInfo, logError } from '../utils/errorHandling';
+import { getErrorDisplayInfo, logError } from '../utils/errorHandling';
 
 interface Props {
   children: ReactNode;
@@ -14,7 +14,7 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
+  public override state: State = {
     hasError: false
   };
 
@@ -22,7 +22,7 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     logError(error, 'ErrorBoundary');
   }
@@ -35,7 +35,7 @@ class ErrorBoundary extends Component<Props, State> {
     window.location.href = '/';
   };
 
-  public render() {
+  public override render() {
     if (this.state.hasError) {
       const errorInfo = getErrorDisplayInfo(this.state.error || new Error('Unknown error'));
       

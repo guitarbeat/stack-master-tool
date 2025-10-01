@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { RefreshCw, Wifi, WifiOff, Clock, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RefreshCw, Wifi, Clock, AlertTriangle } from 'lucide-react';
 import { AppError, ErrorType, ErrorCode } from '../utils/errorHandling';
 
 interface ErrorRecoveryProps {
@@ -26,6 +26,25 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
   const isRetryable = error.details.retryable;
   const canRetry = isRetryable && retryCount < maxRetries;
 
+  const handleRetry = useCallback(async () => {
+    if (!canRetry) return;
+
+    setIsRetrying(true);
+    setRetryCount(prev => prev + 1);
+
+    try {
+      await onRetry();
+      setIsRetrying(false);
+    } catch (err) {
+      setIsRetrying(false);
+      
+      // If retry failed and we have more attempts, schedule next retry
+      if (retryCount < maxRetries - 1) {
+        setNextRetryIn(Math.min(retryDelay / 1000, 10)); // Max 10 seconds
+      }
+    }
+  }, [canRetry, onRetry, retryCount, maxRetries, retryDelay]);
+
   // Auto-retry for certain error types
   useEffect(() => {
     if (isRetryable && retryCount === 0) {
@@ -44,7 +63,8 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
         return () => clearTimeout(timer);
       }
     }
-  }, [error.details.code, isRetryable, retryCount, retryDelay]);
+    return undefined;
+  }, [error.details.code, isRetryable, retryCount, retryDelay, handleRetry]);
 
   // Countdown timer for retry
   useEffect(() => {
@@ -57,26 +77,8 @@ export const ErrorRecovery: React.FC<ErrorRecoveryProps> = ({
     } else if (isRetrying && nextRetryIn === 0) {
       handleRetry();
     }
-  }, [isRetrying, nextRetryIn]);
-
-  const handleRetry = async () => {
-    if (!canRetry) return;
-
-    setIsRetrying(true);
-    setRetryCount(prev => prev + 1);
-
-    try {
-      await onRetry();
-      setIsRetrying(false);
-    } catch (err) {
-      setIsRetrying(false);
-      
-      // If retry failed and we have more attempts, schedule next retry
-      if (retryCount < maxRetries - 1) {
-        setNextRetryIn(Math.min(retryDelay / 1000, 10)); // Max 10 seconds
-      }
-    }
-  };
+    return undefined;
+  }, [isRetrying, nextRetryIn, handleRetry]);
 
   const getRetryIcon = () => {
     switch (error.details.type) {
