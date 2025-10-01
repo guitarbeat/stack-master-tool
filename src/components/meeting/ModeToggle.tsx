@@ -75,8 +75,8 @@ function ModeToggle({ mode, step, onSelectCreate, onSelectJoin }: ModeToggleProp
           <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
             mode === 'create' ? 'text-white' : 'text-primary'
           }`} />
-          <span className="hidden sm:inline">Create</span>
-          <span className="sm:hidden">Create</span>
+          <span className="hidden sm:inline">Host</span>
+          <span className="sm:hidden">Host</span>
         </button>
         <button
           onClick={onSelectJoin}
