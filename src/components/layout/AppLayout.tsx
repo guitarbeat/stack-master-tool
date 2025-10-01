@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, UserPlus, Settings, Users } from "lucide-react";
+import { Plus, UserPlus, Users } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
 
 interface AppLayoutProps {
@@ -48,26 +48,15 @@ function AppLayout({ children }: AppLayoutProps) {
               aria-label="Main navigation"
             >
               <Link
-                to="/manual"
+                to="/watch"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/manual")
+                  isActive("/watch")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
               >
                 <Users className="w-4 h-4 mr-1 inline" />
-                Manual
-              </Link>
-              <Link
-                to="/facilitate"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/facilitate")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                }`}
-              >
-                <Settings className="w-4 h-4 mr-1 inline" />
-                Facilitate
+                Watch
               </Link>
               <Link
                 to="/create"
@@ -78,7 +67,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 }`}
               >
                 <Plus className="w-4 h-4 mr-1" />
-                Create
+                Host
               </Link>
               <Link
                 to="/join"

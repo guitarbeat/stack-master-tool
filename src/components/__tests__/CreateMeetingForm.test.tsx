@@ -32,13 +32,13 @@ describe('CreateMeetingForm Component', () => {
 
     expect(screen.getByLabelText(/meeting name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/your name/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /create meeting/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /host meeting/i })).toBeInTheDocument();
   });
 
   it('validates required fields', async () => {
     render(<CreateMeetingForm onSuccess={mockOnSuccess} />);
 
-    const submitButton = screen.getByRole('button', { name: /create meeting/i });
+    const submitButton = screen.getByRole('button', { name: /host meeting/i });
     fireEvent.click(submitButton);
 
     // Check for HTML5 validation
@@ -70,7 +70,7 @@ describe('CreateMeetingForm Component', () => {
     });
 
     // Submit the form
-    const submitButton = screen.getByRole('button', { name: /create meeting/i });
+    const submitButton = screen.getByRole('button', { name: /host meeting/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -101,7 +101,7 @@ describe('CreateMeetingForm Component', () => {
     });
 
     // Submit the form
-    const submitButton = screen.getByRole('button', { name: /create meeting/i });
+    const submitButton = screen.getByRole('button', { name: /host meeting/i });
     fireEvent.click(submitButton);
 
     // Check for loading state
@@ -124,7 +124,7 @@ describe('CreateMeetingForm Component', () => {
     });
 
     // Submit the form
-    const submitButton = screen.getByRole('button', { name: /create meeting/i });
+    const submitButton = screen.getByRole('button', { name: /host meeting/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {

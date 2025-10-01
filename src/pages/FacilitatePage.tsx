@@ -123,10 +123,10 @@ function FacilitatePage() {
               <Settings className="w-8 h-8 text-primary mx-auto" />
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900 dark:text-zinc-100">
-              Facilitate Meeting
+              Host Meeting
             </CardTitle>
             <p className="text-gray-600 dark:text-zinc-400 mt-2">
-              Enter the meeting code to take control of the facilitation
+              Enter the meeting code to take control of hosting
             </p>
           </CardHeader>
 
@@ -203,7 +203,7 @@ function FacilitatePage() {
                   onClick={() => navigate("/create")}
                   className="text-primary hover:underline font-medium"
                 >
-                  Create a meeting
+                  Host a meeting
                 </button>
               </p>
             </div>

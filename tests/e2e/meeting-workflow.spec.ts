@@ -18,7 +18,7 @@ test.describe('Complete Meeting Workflow', () => {
       await facilitatorPage.fill('input[placeholder*="Your Name" i]', 'Test Facilitator');
       
       // Submit the form
-      const createButton = facilitatorPage.locator('button:has-text("Create Meeting")');
+      const createButton = facilitatorPage.locator('button:has-text("Host Meeting")');
       await createButton.click();
       
       // Wait for success page
@@ -80,7 +80,7 @@ test.describe('Complete Meeting Workflow', () => {
       await facilitatorPage.fill('input[placeholder*="Meeting Name" i]', 'Multi-Participant Test');
       await facilitatorPage.fill('input[placeholder*="Your Name" i]', 'Test Facilitator');
       
-      const createButton = facilitatorPage.locator('button:has-text("Create Meeting")');
+      const createButton = facilitatorPage.locator('button:has-text("Host Meeting")');
       await createButton.click();
       
       await expect(facilitatorPage.locator('text=Your meeting is ready!')).toBeVisible();
@@ -127,7 +127,7 @@ test.describe('Complete Meeting Workflow', () => {
       await facilitatorPage.goto('/create');
       await facilitatorPage.fill('input[placeholder*="Meeting Name" i]', 'Rejoin Test');
       await facilitatorPage.fill('input[placeholder*="Your Name" i]', 'Test Facilitator');
-      await facilitatorPage.locator('button:has-text("Create Meeting")').click();
+      await facilitatorPage.locator('button:has-text("Host Meeting")').click();
       
       const meetingCodeElement = facilitatorPage.locator('text=/[A-Z0-9]{6}/').first();
       const meetingCode = await meetingCodeElement.textContent();
@@ -182,7 +182,7 @@ test.describe('Complete Meeting Workflow', () => {
       await facilitatorPage.goto('/create');
       await facilitatorPage.fill('input[placeholder*="Meeting Name" i]', 'Network Test');
       await facilitatorPage.fill('input[placeholder*="Your Name" i]', 'Test Facilitator');
-      await facilitatorPage.locator('button:has-text("Create Meeting")').click();
+      await facilitatorPage.locator('button:has-text("Host Meeting")').click();
       
       const meetingCodeElement = facilitatorPage.locator('text=/[A-Z0-9]{6}/').first();
       const meetingCode = await meetingCodeElement.textContent();

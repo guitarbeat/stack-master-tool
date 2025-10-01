@@ -87,7 +87,7 @@ function JoinMeetingForm({ error, loading, joinFormData, onChange, onSubmit, onS
             onClick={onSwitchToCreate}
             className="text-moss-green hover:text-moss-green/90 font-medium"
           >
-            Create a meeting
+            Host a meeting
           </button>
         </p>
       </div>

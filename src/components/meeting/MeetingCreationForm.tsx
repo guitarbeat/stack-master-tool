@@ -28,7 +28,7 @@ function MeetingCreationForm({
           <Users className="w-8 h-8 text-primary mx-auto" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">
-          Create Meeting
+          Host Meeting
         </h1>
         <p className="text-gray-600 dark:text-zinc-400">
           Set up your meeting and share the invitation link
@@ -82,10 +82,10 @@ function MeetingCreationForm({
           {loading ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Creating Meeting...
+              Hosting Meeting...
             </>
           ) : (
-            "Create Meeting"
+            "Host Meeting"
           )}
         </button>
       </form>
