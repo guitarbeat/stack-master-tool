@@ -1,290 +1,330 @@
-import { useParams, useLocation } from 'react-router-dom';
-import { useSupabaseFacilitator } from '../../hooks/useSupabaseFacilitator';
-import { useFacilitatorSession } from '../../hooks/useFacilitatorSession';
-import FacilitatorHeader from '../FacilitatorHeader';
-import ParticipantList from '../ParticipantList';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ArrowLeft, SkipForward, Users, RotateCcw, Plus } from 'lucide-react';
+import { useUnifiedFacilitator } from '../../hooks/useUnifiedFacilitator';
+import { RemoteModeToggle } from '../Facilitator/RemoteModeToggle';
 import CurrentSpeakerCard from '../CurrentSpeakerCard';
+import ParticipantList from '../ParticipantList';
 import { SpeakingDistribution } from '../StackKeeper/SpeakingDistribution';
 import { InterventionsPanel } from '../StackKeeper/InterventionsPanel';
 import { getQueueTypeDisplay } from '../../utils/queue';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { SkipForward, RotateCcw, Play, Users } from 'lucide-react';
 
 export const HostView = (): JSX.Element => {
-  const { meetingId } = useParams();
-  const location = useLocation();
-  const { facilitatorName, meetingCode } = location.state || {};
-  const { clearSession } = useFacilitatorSession();
-
-  // Use meeting code from URL params if not in state
-  const finalMeetingCode = meetingCode || meetingId;
+  const navigate = useNavigate();
+  const [facilitatorName] = useState(() => {
+    const stored = localStorage.getItem('facilitatorName');
+    return stored || 'Facilitator';
+  });
 
   const {
+    isRemoteEnabled,
+    meetingCode,
+    meetingTitle,
+    isCreatingMeeting,
+    enableRemoteMode,
+    disableRemoteMode,
     participants,
     speakingQueue,
     currentSpeaker,
-    isConnected,
-    error,
-    meetingData,
     nextSpeaker,
-    finishSpeaking,
-    disconnect,
-    speakerTimer,
-    elapsedTime,
-    toggleSpeakerTimer,
-    resetSpeakerTimer,
-    formatTime,
-    getSpeakingDistribution,
-    interventions,
-    setInterventions,
-    addIntervention,
-    undoHistory,
-    handleUndo,
-  } = useSupabaseFacilitator(finalMeetingCode, facilitatorName);
+    addParticipant,
+    manualStack,
+    remoteManagement,
+  } = useUnifiedFacilitator(facilitatorName);
 
-  const leaveMeeting = () => {
-    disconnect();
-    clearSession();
-    window.location.href = '/';
+  const [newParticipantName, setNewParticipantName] = useState('');
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+
+  const handleAddParticipant = () => {
+    if (newParticipantName.trim()) {
+      addParticipant(newParticipantName.trim());
+      setNewParticipantName('');
+      setAddDialogOpen(false);
+    }
+  };
+
+  const handleAddIntervention = (type: string, participantName: string) => {
+    if (isRemoteEnabled && remoteManagement.addIntervention) {
+      remoteManagement.addIntervention(type as any, participantName);
+    } else {
+      manualStack.addToStack(participantName, type as any);
+    }
   };
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  if (!isConnected && !error) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-white rounded-2xl p-8 shadow-lg text-center dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">
-            Setting up facilitator view...
-          </h2>
-          <p className="text-gray-600 dark:text-zinc-400">
-            Please wait while we prepare your facilitator controls.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-white rounded-2xl p-8 shadow-lg text-center max-w-md mx-auto dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-            <Users className="w-8 h-8 text-red-600 mx-auto" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-2">
-            Connection Error
-          </h2>
-          <p className="text-gray-600 dark:text-zinc-400 mb-6">
-            {error}
-          </p>
-          <Button
-            onClick={() => window.location.href = '/facilitate'}
-            className="w-full bg-primary text-white py-2 px-6 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-          >
-            Try Different Code
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <FacilitatorHeader
-        title={meetingData?.title || "Loading..."}
-        code={meetingData?.meeting_code || finalMeetingCode || ""}
-        participantCount={participants.length}
-        leaveMeeting={leaveMeeting}
-      />
-
-      <CurrentSpeakerCard
-        currentSpeaker={
-          currentSpeaker
-            ? {
-                participantName: currentSpeaker.participantName || "Unknown",
-                type: currentSpeaker.queue_type,
-              }
-            : null
-        }
-        finishSpeaking={finishSpeaking}
-        speakerTimer={speakerTimer}
-        elapsedTime={elapsedTime}
-        onToggleTimer={toggleSpeakerTimer}
-        onResetTimer={resetSpeakerTimer}
-        formatTime={formatTime}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Speaking Queue */}
-        <Card className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="text-xl font-bold text-gray-900 dark:text-zinc-100">
-              Speaking Queue
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              {undoHistory.length > 0 && (
-                <Button
-                  onClick={handleUndo}
-                  variant="outline"
-                  className="rounded-xl"
-                  title={`Undo (${undoHistory.length} actions available)`}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Undo ({undoHistory.length})
-                </Button>
-              )}
-              <Button
-                onClick={nextSpeaker}
-                disabled={speakingQueue.length === 0}
-                className="floating-glow rounded-xl"
-              >
-                <SkipForward className="w-4 h-4 mr-2" />
-                Next Speaker
-              </Button>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Button onClick={() => navigate('/')} variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Home
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Host Meeting</h1>
+              <p className="text-muted-foreground">
+                Welcome, {facilitatorName}
+              </p>
             </div>
-          </CardHeader>
+          </div>
 
-          <CardContent>
-            {speakingQueue.length === 0 ? (
-              <div className="text-center py-12">
-                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-zinc-400 text-lg">
-                  No one in queue
-                </p>
-                <p className="text-sm text-gray-400 dark:text-zinc-500">
-                  Participants can raise their hand to join the queue
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {speakingQueue.map((entry) => {
-                  const isSpeaking = entry.is_speaking;
-                  const isDirect = entry.queue_type === "direct-response";
-                  const isPointInfo = entry.queue_type === "point-of-info";
-                  const isClarify = entry.queue_type === "clarification";
+          <div className="flex items-center gap-2">
+            <Badge variant={isRemoteEnabled ? 'default' : 'secondary'}>
+              {isRemoteEnabled ? 'Remote Enabled' : 'Manual Mode'}
+            </Badge>
+            {isRemoteEnabled && (
+              <Badge variant="outline">
+                <Users className="w-3 h-3 mr-1" />
+                {participants.length} participants
+              </Badge>
+            )}
+          </div>
+        </div>
 
-                  return (
-                    <div
-                      key={entry.id}
-                      className={`stack-card flex items-center justify-between p-6 rounded-xl border transition-standard ${
-                        isSpeaking
-                          ? "current-speaker border-primary/40 text-primary-foreground"
-                          : "glass-card hover:bg-muted/40 border-border/60"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                          isSpeaking
-                            ? 'animate-pulse bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30'
-                            : 'px-4 py-2 font-semibold'
-                        } ${
-                          isDirect ? 'bg-primary text-primary-foreground animate-pulse' : ''
-                        }`}>
-                          {isSpeaking
-                            ? (isDirect ? "🎤 Direct Response" : "🎤 Speaking")
-                            : `#${entry.position}`}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Remote Mode Toggle */}
+          <div className="lg:col-span-1">
+            <RemoteModeToggle
+              isRemoteEnabled={isRemoteEnabled}
+              meetingCode={meetingCode}
+              meetingTitle={meetingTitle}
+              isCreatingMeeting={isCreatingMeeting}
+              onEnableRemote={enableRemoteMode}
+              onDisableRemote={disableRemoteMode}
+              facilitatorName={facilitatorName}
+            />
+          </div>
+
+          {/* Current Speaker */}
+          <div className="lg:col-span-2">
+            <CurrentSpeakerCard
+              currentSpeaker={
+                currentSpeaker
+                  ? {
+                      participantName: currentSpeaker.participantName || 'Unknown',
+                      type: currentSpeaker.queue_type,
+                    }
+                  : null
+              }
+              finishSpeaking={nextSpeaker}
+              speakerTimer={
+                isRemoteEnabled ? remoteManagement.speakerTimer : null
+              }
+              elapsedTime={
+                isRemoteEnabled ? remoteManagement.elapsedTime : 0
+              }
+              onToggleTimer={
+                isRemoteEnabled ? remoteManagement.toggleSpeakerTimer : undefined
+              }
+              onResetTimer={
+                isRemoteEnabled ? remoteManagement.resetSpeakerTimer : undefined
+              }
+              formatTime={
+                isRemoteEnabled ? remoteManagement.formatTime : undefined
+              }
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Speaking Queue */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between pb-4">
+              <CardTitle>Speaking Queue</CardTitle>
+              <div className="flex items-center gap-2">
+                {isRemoteEnabled && remoteManagement.undoHistory?.length > 0 && (
+                  <Button
+                    onClick={remoteManagement.handleUndo}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Undo ({remoteManagement.undoHistory.length})
+                  </Button>
+                )}
+                {!isRemoteEnabled && (
+                  <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Participant</DialogTitle>
+                        <DialogDescription>
+                          Add a participant to the speaking queue
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="participant-name">Name</Label>
+                          <Input
+                            id="participant-name"
+                            placeholder="Participant name"
+                            value={newParticipantName}
+                            onChange={(e) => setNewParticipantName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAddParticipant();
+                            }}
+                          />
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`font-semibold text-lg ${isSpeaking ? 'text-primary-foreground' : 'text-foreground'}`}>
+                        <Button onClick={handleAddParticipant} className="w-full">
+                          Add to Queue
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+                <Button
+                  onClick={nextSpeaker}
+                  disabled={speakingQueue.length === 0}
+                  className="floating-glow"
+                >
+                  <SkipForward className="w-4 h-4 mr-2" />
+                  Next Speaker
+                </Button>
+              </div>
+            </CardHeader>
+
+            <CardContent>
+              {speakingQueue.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-muted-foreground text-lg">No one in queue</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isRemoteEnabled
+                      ? 'Participants can raise their hand to join'
+                      : 'Click "Add" to add participants manually'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {speakingQueue.map((entry) => {
+                    const isSpeaking = entry.is_speaking;
+
+                    return (
+                      <div
+                        key={entry.id}
+                        className={`flex items-center justify-between p-6 rounded-xl border transition-standard ${
+                          isSpeaking
+                            ? 'bg-primary/10 border-primary/40'
+                            : 'bg-muted/20 hover:bg-muted/40'
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                              isSpeaking
+                                ? 'bg-primary text-primary-foreground animate-pulse'
+                                : 'bg-muted'
+                            }`}
+                          >
+                            {isSpeaking ? '🎤 Speaking' : `#${entry.position}`}
+                          </div>
+                          <span className="font-semibold text-lg">
                             {entry.participantName}
                           </span>
+                          <Badge variant="outline">
+                            {getQueueTypeDisplay(entry.queue_type)}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTimestamp(entry.joined_queue_at)}
+                          </span>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-xs ${
-                          isDirect
-                            ? 'border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300'
-                            : isPointInfo
-                              ? 'border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300'
-                              : isClarify
-                                ? 'border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300'
-                                : 'border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300'
-                        }`}>
-                          {getQueueTypeDisplay(entry.queue_type)}
+                        <div className="flex items-center gap-2">
+                          {!isSpeaking && (
+                            <div className="flex items-center gap-1">
+                              <Button
+                                onClick={() =>
+                                  handleAddIntervention(
+                                    'direct-response',
+                                    entry.participantName || 'Unknown'
+                                  )
+                                }
+                                variant="outline"
+                                size="sm"
+                              >
+                                Direct Response
+                              </Button>
+                              <Button
+                                onClick={() =>
+                                  handleAddIntervention(
+                                    'clarifying-question',
+                                    entry.participantName || 'Unknown'
+                                  )
+                                }
+                                variant="outline"
+                                size="sm"
+                              >
+                                Clarify
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {formatTimestamp(entry.joined_queue_at)}
-                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {!isSpeaking && (
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() =>
-                                addIntervention(
-                                  "direct-response",
-                                  entry.participantName || "Unknown"
-                                )
-                              }
-                              className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors dark:bg-orange-900/30 dark:text-orange-300"
-                              title="Direct Response"
-                            >
-                              Direct Response
-                            </button>
-                            <button
-                              onClick={() =>
-                                addIntervention(
-                                  "clarifying-question",
-                                  entry.participantName || "Unknown"
-                                )
-                              }
-                              className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors dark:bg-purple-900/30 dark:text-purple-300"
-                              title="Clarifying Question"
-                            >
-                              Clarify
-                            </button>
-                          </div>
-                        )}
-                        {isSpeaking && (
-                          <div className="flex items-center text-primary">
-                            <Play className="w-4 h-4 mr-1" />
-                            <span className="text-sm font-medium">
-                              Speaking
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Participants */}
-        <ParticipantList
-          participants={participants.map(p => ({
-            id: p.id,
-            name: p.name,
-            isFacilitator: p.is_facilitator,
-            isInQueue: speakingQueue.some(q => q.participant_id === p.id),
-            joinedAt: p.joined_at,
-          }))}
-          meetingData={{
-            code: meetingData?.meeting_code || finalMeetingCode || "",
-            facilitator: meetingData?.facilitator_name || "Facilitator",
-          }}
-        />
+          {/* Participants */}
+          <ParticipantList
+            participants={participants.map((p) => ({
+              id: p.id,
+              name: p.name,
+              isFacilitator: p.is_facilitator,
+              isInQueue: speakingQueue.some((q) => q.participant_id === p.id),
+              joinedAt: p.joined_at,
+            }))}
+            meetingData={{
+              code: meetingCode || 'MANUAL',
+              facilitator: facilitatorName,
+            }}
+          />
+        </div>
+
+        {/* Analytics - Only show in remote mode */}
+        {isRemoteEnabled && (
+          <>
+            <SpeakingDistribution
+              speakingData={remoteManagement.getSpeakingDistribution?.(true) || []}
+              includeDirectResponses={true}
+              onToggleIncludeDirectResponses={() => {}}
+            />
+
+            <InterventionsPanel
+              interventions={remoteManagement.interventions || []}
+              onClearInterventions={() =>
+                remoteManagement.setInterventions?.([])
+              }
+              showInterventionsPanel={true}
+            />
+          </>
+        )}
       </div>
-
-      {/* Speaking Distribution */}
-      <SpeakingDistribution
-        speakingData={getSpeakingDistribution(true)}
-        includeDirectResponses={true}
-        onToggleIncludeDirectResponses={() => {}}
-      />
-
-      {/* Interventions Panel */}
-      <InterventionsPanel
-        interventions={interventions}
-        onClearInterventions={() => setInterventions([])}
-        showInterventionsPanel={true}
-      />
     </div>
   );
 };

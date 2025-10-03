@@ -27,10 +27,10 @@ interface QueueItem {
 
 export const useMeetingSocket = (
   participantName: string,
-  meetingInfo: MeetingData
+  meetingInfo: MeetingData | null
 ) => {
   const navigate = useNavigate();
-  const [meetingData, setMeetingData] = useState<MeetingData>(meetingInfo);
+  const [meetingData, setMeetingData] = useState<MeetingData | null>(meetingInfo);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [speakingQueue, setSpeakingQueue] = useState<QueueItem[]>([]);
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export const useMeetingSocket = (
 
   const notify = useCallback(
     (
-      type: "success" | "error" | "info",
+      _type: "success" | "error" | "info",
       title: string,
       description?: string
     ) => {
@@ -50,8 +50,7 @@ export const useMeetingSocket = (
   );
 
   useEffect(() => {
-    if (!participantName) {
-      navigate("/join");
+    if (!participantName || !meetingInfo) {
       return;
     }
 

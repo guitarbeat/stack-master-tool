@@ -14,51 +14,51 @@ export const ActionCards = () => {
 
   const actions = [
     {
-      to: "/stack",
+      to: "/meeting?mode=host",
       icon: <Users className="w-8 h-8 text-primary" />,
-      title: "Start Facilitating",
+      title: "Host a Meeting",
       description:
-        "Begin with local stack management. Enable remote access anytime to let participants join with a code.",
-      cta: "Start Now",
+        "Facilitate speakers with manual control or enable remote access for participants to join.",
+      cta: "Start Hosting",
       emoji: "🎯",
       gradient: "from-primary to-accent",
       bgBlob: "bg-primary/10",
       features: [
-        "Local stack management",
+        "Manual stack management",
         "Enable remote access",
-        "Unified experience",
+        "Full facilitator controls",
       ],
     },
     {
-      to: "/join",
+      to: "/meeting?mode=join",
       icon: <QrCode className="w-8 h-8 text-accent" />,
-      title: "Join Meeting",
+      title: "Join a Meeting",
       description:
-        "Enter a meeting code to join an existing discussion and participate in the speaking queue.",
-      cta: "Join Now",
+        "Enter a meeting code to participate in an active discussion and join the speaking queue.",
+      cta: "Join Meeting",
       emoji: "🌿",
       gradient: "from-accent to-accent/80",
       bgBlob: "bg-accent/10",
       features: [
         "Enter meeting code",
         "Join active discussion",
-        "Contribute to dialogue",
+        "Raise your hand to speak",
       ],
     },
     {
-      to: "/watch",
+      to: "/meeting?mode=watch",
       icon: <Eye className="w-8 h-8 text-primary" />,
-      title: "Watch Meeting",
+      title: "Watch a Meeting",
       description:
-        "Enter a meeting code to watch in read-only mode. Perfect for observers and stakeholders.",
-      cta: "Watch Now",
+        "Observe a meeting in read-only mode. Perfect for stakeholders and observers.",
+      cta: "Watch Meeting",
       emoji: "👁️",
       gradient: "from-primary to-primary/80",
       bgBlob: "bg-primary/10",
       features: [
         "Enter meeting code",
         "Read-only viewing",
-        "No participation required",
+        "No participation needed",
       ],
     },
   ];
