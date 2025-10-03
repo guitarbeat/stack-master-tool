@@ -13,6 +13,7 @@ import PublicWatch from "./pages/PublicWatch";
 import MeetingRoom from "./pages/MeetingRoom";
 import FacilitatorView from "./pages/FacilitatorView";
 import FacilitatePage from "./pages/FacilitatePage";
+import UnifiedFacilitator from "./pages/UnifiedFacilitator";
 import AppLayout from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/stack" element={<UnifiedFacilitator />} />
             <Route path="/manual" element={<ManualStack />} />
             <Route path="/facilitate" element={<FacilitatePage />} />
             <Route path="/create" element={<CreateMeeting />} />

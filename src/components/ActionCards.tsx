@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import {
-  MessageSquare,
   QrCode,
   ArrowRight,
   Users,
@@ -15,51 +14,19 @@ export const ActionCards = () => {
 
   const actions = [
     {
-      to: "/manual",
+      to: "/stack",
       icon: <Users className="w-8 h-8 text-primary" />,
-      title: "Manual Stack",
+      title: "Start Facilitating",
       description:
-        "Manage speaking queues offline. Perfect for in-person meetings and direct facilitation.",
-      cta: "Start Facilitating",
-      emoji: "📝",
+        "Begin with local stack management. Enable remote access anytime to let participants join with a code.",
+      cta: "Start Now",
+      emoji: "🎯",
       gradient: "from-primary to-accent",
       bgBlob: "bg-primary/10",
       features: [
-        "Offline management",
-        "In-person facilitation",
-        "Direct control",
-      ],
-    },
-    {
-      to: "/facilitate",
-      icon: <MessageSquare className="w-8 h-8 text-accent" />,
-      title: "Facilitate Meeting",
-      description:
-        "Take control of an active meeting room and manage the speaking queue in real-time.",
-      cta: "Start Facilitating",
-      emoji: "🎯",
-      gradient: "from-accent to-accent/80",
-      bgBlob: "bg-accent/10",
-      features: [
-        "Real-time control",
-        "Meeting management",
-        "Live facilitation",
-      ],
-    },
-    {
-      to: "/create",
-      icon: <MessageSquare className="w-8 h-8 text-primary" />,
-      title: "Create Meeting",
-      description:
-        "Set up a new meeting room with a shareable code for participants to join.",
-      cta: "Start Creating",
-      emoji: "🌱",
-      gradient: "from-primary to-primary/80",
-      bgBlob: "bg-primary/10",
-      features: [
-        "Create unique meeting room",
-        "Generate shareable code",
-        "Set up facilitation tools",
+        "Local stack management",
+        "Enable remote access",
+        "Unified experience",
       ],
     },
     {
@@ -113,7 +80,7 @@ export const ActionCards = () => {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-6 sm:gap-8">
+      <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
         {actions.map((action, index) => (
           <div
             key={index}
