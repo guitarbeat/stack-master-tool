@@ -8,9 +8,9 @@ This document tracks tasks and improvements for the Stack Master Tool, a democra
 - [ ] Address inconsistent UI state after removing speakers
 - [ ] Handle server errors gracefully when creating meetings
 - [ ] Fix CI workflow failures (all recent builds failing)
+- [ ] Write integration tests for manual stack keeper
 
 ## 🧪 Testing & Quality Assurance
-- [ ] Write integration tests for manual stack keeper
 - [x] Fix missing dependencies causing test failures (`vitest: not found`) - RESOLVED
 - [ ] Implement E2E tests for meeting creation and joining workflow
 - [x] Add unit tests for socket.io event handlers in backend - RESOLVED (52 tests passing)
