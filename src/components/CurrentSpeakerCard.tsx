@@ -18,9 +18,9 @@ interface CurrentSpeakerCardProps {
   finishSpeaking: () => void
   speakerTimer?: SpeakerTimer | null
   elapsedTime: number
-  onToggleTimer?: () => void
-  onResetTimer?: () => void
-  formatTime?: (ms: number) => string
+  onToggleTimer?: (() => void) | undefined
+  onResetTimer?: (() => void) | undefined
+  formatTime?: ((ms: number) => string) | undefined
 }
 
 export default function CurrentSpeakerCard({

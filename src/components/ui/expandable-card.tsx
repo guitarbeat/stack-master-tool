@@ -50,9 +50,9 @@ const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
     ref,
   ) => (
     <Collapsible
-      defaultOpen={defaultOpen}
-      open={open}
-      onOpenChange={onOpenChange}
+      defaultOpen={defaultOpen ?? false}
+      open={open ?? false}
+      onOpenChange={onOpenChange ?? (() => {})}
       asChild
     >
       <Card ref={ref} className={className} {...props}>

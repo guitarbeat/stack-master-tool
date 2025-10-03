@@ -82,7 +82,7 @@ export const WatchView = (): JSX.Element => {
   return (
     <div className="container mx-auto px-4 py-8">
       <MeetingHeader
-        meetingData={meetingData}
+        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
         participantCount={0}
         onLeaveMeeting={() => navigate('/')}
         additionalBadge={

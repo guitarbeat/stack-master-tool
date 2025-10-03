@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useSupabaseFacilitator } from './useSupabaseFacilitator';
 import { useStackManagement } from './useStackManagement';
 // @ts-ignore
-import apiService from '../services/api';
+import apiService from '../services/api.js';
 import { toast } from './use-toast';
 // @ts-ignore
 import { playBeep } from '../utils/sound.js';

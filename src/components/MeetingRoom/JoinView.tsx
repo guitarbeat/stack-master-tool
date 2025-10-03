@@ -14,7 +14,6 @@ import { ErrorState } from "./ErrorState";
 
 export const JoinView = (): JSX.Element => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [meetingCode, setMeetingCode] = useState('');
   const [participantName, setParticipantName] = useState('');
   const [hasJoined, setHasJoined] = useState(false);
@@ -104,7 +103,7 @@ export const JoinView = (): JSX.Element => {
   return (
     <div className="container mx-auto px-4 py-8">
       <MeetingHeader
-        meetingData={meetingData}
+        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
         participantCount={participants.length}
         onLeaveMeeting={leaveMeeting}
       />

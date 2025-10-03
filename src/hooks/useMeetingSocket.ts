@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import socketService from "../services/socket";
+import socketService from "../services/socket.js";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../utils/sound.js";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
