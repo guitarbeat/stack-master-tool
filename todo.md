@@ -125,72 +125,82 @@ docs/
 
 ## 📋 File Usage Reference
 
-| File | Purpose | Key Features | Dependencies |
-|------|---------|--------------|--------------|
+**Status Legend:**
+- ✅ **Active** - Currently in use and maintained
+- ⚠️ **Legacy** - Outdated but kept for backward compatibility
+- 🗑️ **Deprecated** - Marked for removal, not recommended for new development
+- 🔄 **Refactoring** - Being updated or consolidated
+
+| File | Purpose | Key Features | Dependencies | Status |
+|------|---------|--------------|--------------|--------|
 | **Frontend Core** |
-| `src/App.tsx` | Main React app component with routing | React Router setup, QueryClient, Toast providers | React, React Router, TanStack Query |
-| `src/main.tsx` | React app entry point | Error boundary, theme provider, router setup | React, React Router, Theme Provider |
-| `src/index.css` | Global CSS styles | Tailwind CSS imports, custom CSS variables | Tailwind CSS |
+| `src/App.tsx` | Main React app component with routing | React Router setup, QueryClient, Toast providers | React, React Router, TanStack Query | ✅ Active |
+| `src/main.tsx` | React app entry point | Error boundary, theme provider, router setup | React, React Router, Theme Provider | ✅ Active |
+| `src/index.css` | Global CSS styles | Tailwind CSS imports, custom CSS variables | Tailwind CSS | ✅ Active |
 | **Pages** |
-| `src/pages/HomePage.tsx` | Landing page | Hero section, action cards for meeting modes | Hero, ActionCards components |
-| `src/pages/MeetingRoom.tsx` | Meeting room wrapper | Delegates to MeetingRoomWithModes component | MeetingRoomWithModes |
-| `src/pages/CreateMeeting.tsx` | Meeting creation page | Form for creating new meetings | Meeting creation form components |
-| `src/pages/JoinMeeting.tsx` | Meeting joining page | Form for entering meeting codes | Join meeting form components |
-| `src/pages/FacilitatePage.tsx` | Facilitator interface | Stack management tools for facilitators | StackKeeper components |
-| `src/pages/PublicWatch.tsx` | Read-only meeting view | Observer mode for meetings | Watch-only components |
+| `src/pages/HomePage.tsx` | Landing page | Hero section, action cards for meeting modes | Hero, ActionCards components | ✅ Active |
+| `src/pages/MeetingRoom.tsx` | Meeting room wrapper | Delegates to MeetingRoomWithModes component | MeetingRoomWithModes | ✅ Active |
+| `src/pages/CreateMeeting.tsx` | Meeting creation page | Form for creating new meetings | Meeting creation form components | ✅ Active |
+| `src/pages/JoinMeeting.tsx` | Meeting joining page | Form for entering meeting codes | Join meeting form components | ✅ Active |
+| `src/pages/FacilitatePage.tsx` | Facilitator interface | Stack management tools for facilitators | StackKeeper components | ✅ Active |
+| `src/pages/PublicWatch.tsx` | Read-only meeting view | Observer mode for meetings | Watch-only components | ✅ Active |
 | **Core Components** |
-| `src/components/Hero.tsx` | Landing page hero section | Main headline and description | Basic styling |
-| `src/components/ActionCards.tsx` | Landing page action cards | Three main actions (Host, Join, Watch) | React Router, Lucide icons |
-| `src/components/MeetingRoom/MeetingRoomWithModes.tsx` | Meeting room mode switcher | Routes to HostView, JoinView, or WatchView | useMeetingMode hook |
-| `src/components/StackKeeper/StackKeeperRefactored.tsx` | Main facilitator interface | Complete stack management with timer, interventions | Multiple custom hooks |
-| `src/components/StackKeeper/CurrentSpeaker.tsx` | Current speaker display | Shows who's speaking, timer controls | Speaker timer hook |
-| `src/components/StackKeeper/SpeakingQueue.tsx` | Speaking queue management | Add/remove participants, reorder queue | Drag and drop, search |
-| `src/components/StackKeeper/InterventionsPanel.tsx` | Interventions tracking | Records special interventions | Intervention types |
-| `src/components/StackKeeper/SpeakingDistribution.tsx` | Speaking time analytics | Charts showing speaking time distribution | Recharts library |
+| `src/components/Hero.tsx` | Landing page hero section | Main headline and description | Basic styling | ✅ Active |
+| `src/components/ActionCards.tsx` | Landing page action cards | Three main actions (Host, Join, Watch) | React Router, Lucide icons | ✅ Active |
+| `src/components/MeetingRoom/MeetingRoomWithModes.tsx` | Meeting room mode switcher | Routes to HostView, JoinView, or WatchView | useMeetingMode hook | ✅ Active |
+| `src/components/StackKeeper/StackKeeperRefactored.tsx` | Main facilitator interface | Complete stack management with timer, interventions | Multiple custom hooks | ✅ Active |
+| `src/components/StackKeeper/CurrentSpeaker.tsx` | Current speaker display | Shows who's speaking, timer controls | Speaker timer hook | ✅ Active |
+| `src/components/StackKeeper/SpeakingQueue.tsx` | Speaking queue management | Add/remove participants, reorder queue | Drag and drop, search | ✅ Active |
+| `src/components/StackKeeper/InterventionsPanel.tsx` | Interventions tracking | Records special interventions | Intervention types | ✅ Active |
+| `src/components/StackKeeper/SpeakingDistribution.tsx` | Speaking time analytics | Charts showing speaking time distribution | Recharts library | ✅ Active |
 | **Custom Hooks** |
-| `src/hooks/useMeetingSocket.ts` | Meeting socket management | Socket.io connection, queue management | Socket service |
-| `src/hooks/useStackManagement.ts` | Stack state management | Add/remove participants, undo functionality | Local state management |
-| `src/hooks/useSpeakerTimer.ts` | Speaker timing | Start/stop/pause timer for current speaker | Timer state management |
-| `src/hooks/useParticipantManagement.ts` | Participant state | Recent participants, existing participant handling | Local storage |
-| `src/hooks/useDirectResponse.ts` | Direct response handling | Special speaking priority for responses | Stack management integration |
-| `src/hooks/useSpeakingHistory.ts` | Speaking time tracking | Records and analyzes speaking segments | Time tracking |
-| `src/hooks/useKeyboardShortcuts.ts` | Keyboard shortcuts | Global keyboard shortcuts for facilitator | Keyboard event handling |
-| `src/hooks/useMeetingMode.ts` | Meeting mode detection | Determines if user is host/join/watch | URL parameter parsing |
+| `src/hooks/useMeetingSocket.ts` | Meeting socket management | Socket.io connection, queue management | Socket service | ✅ Active |
+| `src/hooks/useStackManagement.ts` | Stack state management | Add/remove participants, undo functionality | Local state management | ✅ Active |
+| `src/hooks/useSpeakerTimer.ts` | Speaker timing | Start/stop/pause timer for current speaker | Timer state management | ✅ Active |
+| `src/hooks/useParticipantManagement.ts` | Participant state | Recent participants, existing participant handling | Local storage | ✅ Active |
+| `src/hooks/useDirectResponse.ts` | Direct response handling | Special speaking priority for responses | Stack management integration | ✅ Active |
+| `src/hooks/useSpeakingHistory.ts` | Speaking time tracking | Records and analyzes speaking segments | Time tracking | ✅ Active |
+| `src/hooks/useKeyboardShortcuts.ts` | Keyboard shortcuts | Global keyboard shortcuts for facilitator | Keyboard event handling | ✅ Active |
+| `src/hooks/useMeetingMode.ts` | Meeting mode detection | Determines if user is host/join/watch | URL parameter parsing | ✅ Active |
 | **Services** |
-| `src/services/socket.js` | Socket.io client service | Connection management, event handling | Socket.io-client |
-| `src/services/api.js` | API service | HTTP requests to backend | Fetch API |
+| `src/services/socket.js` | Socket.io client service | Connection management, event handling | Socket.io-client | ✅ Active |
+| `src/services/api.js` | API service | HTTP requests to backend | Fetch API | ✅ Active |
 | **Backend Core** |
-| `backend/server.js` | Main Express server | Socket.io server, static file serving, API routes | Express, Socket.io |
-| `backend/routes/meetings.js` | Meeting API routes | Create/get meeting endpoints | Express router |
-| `backend/services/meetings.js` | Meeting business logic | Meeting CRUD operations, Supabase integration | Supabase client |
-| `backend/services/participants.js` | Participant management | In-memory participant tracking | Local state |
-| `backend/handlers/socketHandlers.js` | Socket event handlers | Real-time meeting operations | Socket.io events |
-| `backend/config/supabase.js` | Supabase configuration | Database client setup | Supabase client |
+| `backend/server.js` | Main Express server | Socket.io server, static file serving, API routes | Express, Socket.io | ✅ Active |
+| `backend/routes/meetings.js` | Meeting API routes | Create/get meeting endpoints | Express router | ✅ Active |
+| `backend/services/meetings.js` | Meeting business logic | Meeting CRUD operations, Supabase integration | Supabase client | ✅ Active |
+| `backend/services/participants.js` | Participant management | In-memory participant tracking | Local state | ✅ Active |
+| `backend/handlers/socketHandlers.js` | Socket event handlers | Real-time meeting operations | Socket.io events | ✅ Active |
+| `backend/config/supabase.js` | Supabase configuration | Database client setup | Supabase client | ✅ Active |
 | **Database** |
-| `supabase/config.toml` | Supabase project config | Project settings and configuration | Supabase CLI |
-| `supabase/migrations/*.sql` | Database migrations | Schema changes and initial setup | SQL |
+| `supabase/config.toml` | Supabase project config | Project settings and configuration | Supabase CLI | ✅ Active |
+| `supabase/migrations/*.sql` | Database migrations | Schema changes and initial setup | SQL | ✅ Active |
 | **Configuration** |
-| `package.json` | Frontend dependencies | React, Vite, testing, UI libraries | npm |
-| `backend/package.json` | Backend dependencies | Express, Socket.io, Supabase | npm |
-| `vite.config.ts` | Vite build configuration | Build optimization, aliases, plugins | Vite |
-| `tailwind.config.ts` | Tailwind CSS configuration | Custom colors, themes, animations | Tailwind CSS |
-| `tsconfig.json` | TypeScript configuration | Compiler options, path mapping | TypeScript |
-| `eslint.config.js` | ESLint configuration | Code quality rules and formatting | ESLint |
-| `vitest.config.ts` | Vitest test configuration | Frontend testing setup | Vitest |
-| `playwright.config.ts` | E2E test configuration | End-to-end testing setup | Playwright |
+| `package.json` | Frontend dependencies | React, Vite, testing, UI libraries | npm | ✅ Active |
+| `backend/package.json` | Backend dependencies | Express, Socket.io, Supabase | npm | ✅ Active |
+| `vite.config.ts` | Vite build configuration | Build optimization, aliases, plugins | Vite | ✅ Active |
+| `tailwind.config.ts` | Tailwind CSS configuration | Custom colors, themes, animations | Tailwind CSS | ✅ Active |
+| `tsconfig.json` | TypeScript configuration | Compiler options, path mapping | TypeScript | ✅ Active |
+| `eslint.config.js` | ESLint configuration | Code quality rules and formatting | ESLint | ✅ Active |
+| `vitest.config.ts` | Vitest test configuration | Frontend testing setup | Vitest | ✅ Active |
+| `playwright.config.ts` | E2E test configuration | End-to-end testing setup | Playwright | ✅ Active |
 | **Testing** |
-| `backend/__tests__/` | Backend unit tests | Jest tests for API and services | Jest |
-| `src/test/` | Frontend test utilities | Test setup and helpers | Testing Library |
-| `tests/e2e/` | End-to-end tests | Playwright tests for user flows | Playwright |
+| `backend/__tests__/` | Backend unit tests | Jest tests for API and services | Jest | ✅ Active |
+| `src/test/` | Frontend test utilities | Test setup and helpers | Testing Library | ✅ Active |
+| `tests/e2e/` | End-to-end tests | Playwright tests for user flows | Playwright | ✅ Active |
 | **Documentation** |
-| `docs/DEVELOPMENT.md` | Development setup guide | Local development instructions | Markdown |
-| `docs/DEPLOYMENT.md` | Deployment instructions | Production deployment guide | Markdown |
-| `docs/FACILITATION_GUIDE.md` | User guide for facilitators | How to use the tool | Markdown |
-| `docs/MODERATION_GUIDE.md` | Moderation guidelines | Best practices for moderation | Markdown |
+| `docs/DEVELOPMENT.md` | Development setup guide | Local development instructions | Markdown | ✅ Active |
+| `docs/DEPLOYMENT.md` | Deployment instructions | Production deployment guide | Markdown | ✅ Active |
+| `docs/FACILITATION_GUIDE.md` | User guide for facilitators | How to use the tool | Markdown | ✅ Active |
+| `docs/MODERATION_GUIDE.md` | Moderation guidelines | Best practices for moderation | Markdown | ✅ Active |
 | **Deployment** |
-| `deploy/deploy.sh` | Deployment script | Automated deployment commands | Shell script |
-| `docker/` | Docker configuration | Container setup for production | Docker |
-| `scripts/` | Build and utility scripts | Test runners, coverage reports | Node.js |
+| `deploy/deploy.sh` | Deployment script | Automated deployment commands | Shell script | ✅ Active |
+| `docker/` | Docker configuration | Container setup for production | Docker | ✅ Active |
+| `scripts/` | Build and utility scripts | Test runners, coverage reports | Node.js | ✅ Active |
+| **Legacy Files** |
+| `render.yaml` | Legacy Render deployment config | Old deployment configuration | Render | ⚠️ Legacy |
+| `docker-compose.yml` | Legacy Docker Compose config | Old container orchestration | Docker Compose | ⚠️ Legacy |
+| `frontend/` | Legacy frontend directory | Older React app version | React, Vite | ⚠️ Legacy |
 
 ## 🔥 Critical Bug Fixes
 - [ ] Fix race condition causing duplicate speakers in queue
