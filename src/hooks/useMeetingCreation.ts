@@ -46,7 +46,7 @@ export function useMeetingCreation(): UseMeetingCreationReturn {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("")
   const [confettiKey, setConfettiKey] = useState<number>(0)
 
-  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
+  const notify = (_type: 'success' | 'error' | 'info', title: string, description?: string) => {
     toast({ title, description })
   }
 

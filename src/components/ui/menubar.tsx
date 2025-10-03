@@ -125,7 +125,9 @@ MenubarItem.displayName = MenubarPrimitive.Item.displayName
 
 const MenubarCheckboxItem = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem>
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem> & {
+    checked?: boolean | 'indeterminate';
+  }
 >(({ className, children, checked, ...props }, ref) => (
   <MenubarPrimitive.CheckboxItem
     ref={ref}

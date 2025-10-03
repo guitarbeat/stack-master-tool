@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import apiService from "../services/api";
+import apiService from "../services/api.js";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
 
 export const usePublicWatch = (meetingCode: string) => {

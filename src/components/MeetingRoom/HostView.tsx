@@ -58,9 +58,9 @@ export const HostView = (): JSX.Element => {
 
   const handleAddIntervention = (type: string, participantName: string) => {
     if (isRemoteEnabled && remoteManagement.addIntervention) {
-      remoteManagement.addIntervention(type as any, participantName);
+      remoteManagement.addIntervention(type, participantName);
     } else {
-      manualStack.addToStack(participantName, type as any);
+      manualStack.addToStack(participantName, type);
     }
   };
 

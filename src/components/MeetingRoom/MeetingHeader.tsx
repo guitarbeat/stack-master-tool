@@ -8,9 +8,10 @@ interface MeetingHeaderProps {
   };
   participantCount: number;
   onLeaveMeeting: () => void;
+  additionalBadge?: React.ReactElement;
 }
 
-export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting }: MeetingHeaderProps) => {
+export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, additionalBadge }: MeetingHeaderProps) => {
   const copyMeetingCode = () => {
     navigator.clipboard.writeText(meetingData.code);
   };
@@ -29,6 +30,7 @@ export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting }:
             <Users className="w-5 h-5 mr-2" />
             <span>{participantCount} participants</span>
           </div>
+          {additionalBadge}
           <button
             onClick={copyMeetingCode}
             className="px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Users, Loader2 } from 'lucide-react'
 import apiService from '../../services/api'
 import { toast } from '@/hooks/use-toast'
-import { playBeep } from '../../utils/sound.js'
+import { playBeep } from '../../utils/sound'
 import { AppError, getErrorDisplayInfo } from '../../utils/errorHandling'
 
 interface MeetingData {
