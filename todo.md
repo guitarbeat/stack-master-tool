@@ -21,7 +21,7 @@ This document tracks tasks and improvements for the Stack Master Tool, a democra
 - [ ] Configure hot reload for both frontend and backend
 
 ## 🚀 CI/CD & Deployment
-- [ ] Configure deployment automation to Render
+- [ ] Configure deployment automation to Supabase
 - [ ] Add health check endpoints for monitoring
 - [ ] Set up staging environment deployment
 - [ ] Implement blue-green deployment strategy
@@ -114,4 +114,4 @@ Last updated: 2025-01-27
 2. Configure hot reload for both frontend and backend
 3. Set up test coverage reporting and thresholds
 4. Add component testing for React UI components
-5. Configure deployment automation to Render
+5. Configure deployment automation to Supabase
