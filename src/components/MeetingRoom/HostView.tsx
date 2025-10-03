@@ -213,6 +213,34 @@ export const HostView = (): JSX.Element => {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
+                        {!isSpeaking && (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() =>
+                                addIntervention(
+                                  "direct-response",
+                                  entry.participantName || "Unknown"
+                                )
+                              }
+                              className="px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors dark:bg-orange-900/30 dark:text-orange-300"
+                              title="Direct Response"
+                            >
+                              Direct Response
+                            </button>
+                            <button
+                              onClick={() =>
+                                addIntervention(
+                                  "clarifying-question",
+                                  entry.participantName || "Unknown"
+                                )
+                              }
+                              className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors dark:bg-purple-900/30 dark:text-purple-300"
+                              title="Clarifying Question"
+                            >
+                              Clarify
+                            </button>
+                          </div>
+                        )}
                         {isSpeaking && (
                           <div className="flex items-center text-primary">
                             <Play className="w-4 h-4 mr-1" />
