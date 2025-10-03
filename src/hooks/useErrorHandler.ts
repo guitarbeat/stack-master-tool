@@ -27,7 +27,7 @@ export const useErrorHandler = (options: ErrorHandlerOptions = {}) => {
     maxRetries = 3,
     retryDelay = 2000,
     autoRetry = false,
-    showToast = true
+    showToast: _showToast = true
   } = options;
 
   const [errorState, setErrorState] = useState<ErrorState>({

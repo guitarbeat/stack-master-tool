@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useMeetingSocket } from "../../hooks/useMeetingSocket";
 import { MeetingHeader } from "./MeetingHeader";

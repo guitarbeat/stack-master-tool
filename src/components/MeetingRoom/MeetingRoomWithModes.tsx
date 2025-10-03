@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useMeetingMode } from '../../hooks/useMeetingMode';
 import { HostView } from './HostView';
 import { JoinView } from './JoinView';

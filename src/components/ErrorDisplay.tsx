@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, RefreshCw, Wifi, WifiOff, Clock, Shield, XCircle, AlertCircle, Info, AlertOctagon } from 'lucide-react';
+import { AlertTriangle, RefreshCw, WifiOff, Clock, Shield, XCircle, AlertCircle, Info, AlertOctagon } from 'lucide-react';
 import { AppError, getErrorDisplayInfo, ErrorType } from '../utils/errorHandling';
 
 interface ErrorDisplayProps {

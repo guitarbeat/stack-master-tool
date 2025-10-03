@@ -22,7 +22,7 @@ function CreateMeetingForm({ onSuccess }: CreateMeetingFormProps): JSX.Element {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
+  const notify = (_type: "success" | "error" | "info", title: string, description?: string) => {
     toast({ title, description })
   }
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { QrCode as QrCodeIcon, Copy } from 'lucide-react'
 
 interface CreateSuccessProps {

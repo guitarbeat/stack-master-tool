@@ -23,8 +23,7 @@ export const CombinedNavbar = ({
   showKeyboardShortcuts,
   newParticipantName,
   onNameChange,
-  onAddToStack,
-  onFocusAddInput
+  onAddToStack
 }: CombinedNavbarProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Plus, UserPlus } from 'lucide-react'
 import { useMouseFollow } from '@/hooks/use-mouse-follow'
 

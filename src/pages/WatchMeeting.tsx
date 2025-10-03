@@ -55,25 +55,30 @@ function WatchMeeting(): JSX.Element {
 
   // Real-time validation for meeting code
   React.useEffect(() => {
+    if (formData.meetingCode.length !== 6) {
+      setMeetingInfo(null);
+      return;
+    }
+
+    if (!meetingCodeValidation.isValid) {
+      setMeetingInfo(null);
+      return;
+    }
+
     const validateMeetingCode = async () => {
-      if (formData.meetingCode.length === 6 && meetingCodeValidation.isValid) {
-        try {
-          const meeting = await apiService.getMeeting(formData.meetingCode);
-          setMeetingInfo(meeting);
-          setError("");
-        } catch (err) {
-          setError("Meeting not found. Please check the code and try again.");
-        }
-      } else if (formData.meetingCode.length > 0) {
+      try {
+        const meeting = await apiService.getMeeting(formData.meetingCode);
+        setMeetingInfo(meeting);
         setError("");
-      } else {
-        setError("");
+      } catch (err) {
+        setMeetingInfo(null);
+        setError("Meeting not found. Please check the code and try again.");
       }
     };
 
     const timeoutId = setTimeout(validateMeetingCode, 500);
     return () => clearTimeout(timeoutId);
-  }, [formData.meetingCode, meetingCodeValidation.isValid]);
+  }, [formData.meetingCode]);
 
   const handleWatchMeeting = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

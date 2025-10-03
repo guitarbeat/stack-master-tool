@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+
 import { Users, Filter, Search, X, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { StackItem } from "../StackItem";
@@ -35,8 +35,6 @@ export const SpeakingQueue = ({
   directResponseParticipantId
 }: SpeakingQueueProps) => {
   const {
-    dragIndex,
-    dragOverIndex,
     handleDragStart,
     handleDragOver,
     handleDragLeave,

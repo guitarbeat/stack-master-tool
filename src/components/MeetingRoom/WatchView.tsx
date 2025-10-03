@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useMeetingSocket } from "../../hooks/useMeetingSocket";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

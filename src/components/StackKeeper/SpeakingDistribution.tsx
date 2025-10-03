@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import { ExpandableCard } from "@/components/ui/expandable-card";
@@ -64,7 +64,7 @@ export const SpeakingDistribution = ({
             >
               <PieChart>
                 <Pie dataKey="value" data={speakingData} cx="50%" cy="50%" outerRadius={90} label>
-                  {speakingData.map((entry, index) => (
+                  {speakingData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

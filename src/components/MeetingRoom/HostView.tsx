@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSupabaseFacilitator } from '../../hooks/useSupabaseFacilitator';
 import { useFacilitatorSession } from '../../hooks/useFacilitatorSession';
@@ -15,8 +14,8 @@ import { SkipForward, RotateCcw, Play, Users } from 'lucide-react';
 export const HostView = (): JSX.Element => {
   const { meetingId } = useParams();
   const location = useLocation();
-  const { facilitatorName, meetingName, meetingCode } = location.state || {};
-  const { saveSession, clearSession } = useFacilitatorSession();
+  const { facilitatorName, meetingCode } = location.state || {};
+  const { clearSession } = useFacilitatorSession();
 
   // Use meeting code from URL params if not in state
   const finalMeetingCode = meetingCode || meetingId;
@@ -37,7 +36,6 @@ export const HostView = (): JSX.Element => {
     resetSpeakerTimer,
     formatTime,
     getSpeakingDistribution,
-    clearSpeakingHistory,
     interventions,
     setInterventions,
     addIntervention,
@@ -165,7 +163,7 @@ export const HostView = (): JSX.Element => {
               </div>
             ) : (
               <div className="space-y-3">
-                {speakingQueue.map((entry, index) => {
+                {speakingQueue.map((entry) => {
                   const isSpeaking = entry.is_speaking;
                   const isDirect = entry.queue_type === "direct-response";
                   const isPointInfo = entry.queue_type === "point-of-info";

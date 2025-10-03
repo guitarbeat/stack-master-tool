@@ -2,7 +2,7 @@ import { Hand, MessageCircle, Info, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getQueueTypeDisplay, getQueueTypeColor } from "../../utils/queue";
+import { getQueueTypeDisplay } from "../../utils/queue";
 
 interface QueueItem {
   id: string;

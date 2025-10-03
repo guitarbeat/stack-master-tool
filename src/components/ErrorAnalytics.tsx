@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, AlertTriangle, TrendingUp, Clock, Wifi, Shield, XCircle } from 'lucide-react';
+import { BarChart3, AlertTriangle, Clock, Wifi, Shield, XCircle } from 'lucide-react';
 import { errorMonitor } from '../utils/errorMonitoring';
 import { ErrorType } from '../utils/errorHandling';
 

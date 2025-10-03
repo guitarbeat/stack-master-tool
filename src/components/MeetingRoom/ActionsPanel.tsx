@@ -8,7 +8,7 @@ interface ActionsPanelProps {
   participantName: string;
 }
 
-export const ActionsPanel = ({ isInQueue, onJoinQueue, onLeaveQueue, participantName }: ActionsPanelProps) => {
+export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: ActionsPanelProps) => {
   const [showDirectOptions, setShowDirectOptions] = useState(false);
 
   return (
