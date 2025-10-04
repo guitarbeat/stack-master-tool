@@ -1,11 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useSupabaseFacilitator } from './useSupabaseFacilitator';
 import { useStackManagement } from './useStackManagement';
-// @ts-ignore
-import apiService from '../services/api.js';
+import { useSimpleMeetingCreation } from './useSimpleMeetingCreation';
 import { toast } from './use-toast';
-// @ts-ignore
-import { playBeep } from '../utils/sound.js';
 
 interface Participant {
   id: string;
@@ -24,142 +21,138 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
   // Manual stack management (always available)
   const manualStack = useStackManagement();
 
+  // Meeting creation
+  const { createMeeting: createMeetingAPI, isCreating } = useSimpleMeetingCreation();
+
   // Remote meeting management (only when enabled)
   const remoteManagement = useSupabaseFacilitator(
     isRemoteEnabled ? meetingCode || '' : '',
     facilitatorName
   );
 
-  const enableRemoteMode = useCallback(async (title: string) => {
+  const enableRemoteMode = useCallback(async (title: string): Promise<string> => {
     setIsCreatingMeeting(true);
     try {
-      const response = await apiService.createMeeting(facilitatorName, title);
-      setMeetingCode(response.meetingCode);
+      const result = await createMeetingAPI(facilitatorName, title);
+      
+      setMeetingCode(result.meetingCode);
       setMeetingTitle(title);
       setIsRemoteEnabled(true);
       
       toast({
-        title: 'Remote access enabled',
-        description: `Meeting code: ${response.meetingCode}`,
+        title: 'Remote Access Enabled',
+        description: `Meeting code: ${result.meetingCode}`,
       });
-      playBeep(1000, 120);
       
-      return response.meetingCode;
+      return result.meetingCode;
     } catch (error) {
-      console.error('Error creating meeting:', error);
+      console.error('Error enabling remote mode:', error);
       toast({
         title: 'Error',
         description: 'Failed to enable remote access',
         variant: 'destructive',
       });
-      playBeep(220, 200);
       throw error;
     } finally {
       setIsCreatingMeeting(false);
     }
-  }, [facilitatorName]);
+  }, [createMeetingAPI, facilitatorName]);
 
   const disableRemoteMode = useCallback(() => {
-    if (remoteManagement.disconnect) {
-      remoteManagement.disconnect();
-    }
     setIsRemoteEnabled(false);
     setMeetingCode(null);
-    
+    setMeetingTitle('');
     toast({
-      title: 'Remote access disabled',
-      description: 'Meeting is now local only',
+      title: 'Remote Access Disabled',
+      description: 'Switched to manual mode',
     });
-  }, [remoteManagement]);
+  }, []);
 
-  // Unified participant list (manual + remote)
-  const allParticipants = isRemoteEnabled
-    ? remoteManagement.participants
-    : manualStack.stack.map((p): Participant => ({
-        id: p.id,
-        name: p.name,
-        is_facilitator: false,
-        joined_at: new Date().toISOString(),
-        is_active: true,
-      }));
-
-  // Unified speaking queue
-  const speakingQueue = isRemoteEnabled
-    ? remoteManagement.speakingQueue
-    : manualStack.stack.map((p, index) => ({
-        id: p.id,
-        participantName: p.name,
-        queue_type: 'speak' as const,
-        position: index + 1,
-        joined_queue_at: new Date().toISOString(),
-        is_speaking: index === 0,
-        participant_id: p.id,
-        meeting_id: '',
-      }));
-
-  // Unified current speaker
-  const currentSpeaker = isRemoteEnabled
-    ? remoteManagement.currentSpeaker
-    : manualStack.stack.length > 0
-      ? {
-          id: manualStack.stack[0].id,
-          participantName: manualStack.stack[0].name,
-          queue_type: 'speak' as const,
-          participant_id: manualStack.stack[0].id,
-          meeting_id: '',
-        }
-      : null;
-
-  // Unified next speaker action
-  const nextSpeaker = useCallback(() => {
-    if (isRemoteEnabled) {
-      remoteManagement.nextSpeaker();
-    } else {
-      manualStack.removeFromStack(manualStack.stack[0]?.id);
-    }
-  }, [isRemoteEnabled, remoteManagement, manualStack]);
-
-  // Unified add participant
+  // Unified actions that work with both manual and remote
   const addParticipant = useCallback((name: string) => {
     if (isRemoteEnabled) {
-      // Remote participants join via their own interface
+      // In remote mode, participants join themselves
       toast({
         title: 'Remote Mode',
-        description: 'Participants join using the meeting code',
+        description: 'Participants can join using the meeting code',
       });
     } else {
       manualStack.addToStack(name);
     }
   }, [isRemoteEnabled, manualStack]);
 
+  const nextSpeaker = useCallback(() => {
+    if (isRemoteEnabled && remoteManagement.nextSpeaker) {
+      return remoteManagement.nextSpeaker();
+    } else {
+      return manualStack.nextSpeaker();
+    }
+  }, [isRemoteEnabled, remoteManagement, manualStack]);
+
+  const removeFromStack = useCallback((id: string) => {
+    if (isRemoteEnabled && remoteManagement.removeFromQueue) {
+      remoteManagement.removeFromQueue(id);
+    } else {
+      manualStack.removeFromStack(id);
+    }
+  }, [isRemoteEnabled, remoteManagement, manualStack]);
+
+  const addIntervention = useCallback((type: 'direct-response' | 'clarifying-question', participantName: string) => {
+    if (isRemoteEnabled && remoteManagement.addIntervention) {
+      remoteManagement.addIntervention(type, participantName);
+    } else {
+      manualStack.addIntervention(type, participantName);
+    }
+  }, [isRemoteEnabled, remoteManagement, manualStack]);
+
+  const clearAll = useCallback(() => {
+    if (isRemoteEnabled && remoteManagement.clearQueue) {
+      remoteManagement.clearQueue();
+    } else {
+      manualStack.clearAll();
+    }
+  }, [isRemoteEnabled, remoteManagement, manualStack]);
+
+  const handleUndo = useCallback(() => {
+    if (!isRemoteEnabled) {
+      manualStack.handleUndo();
+    }
+  }, [isRemoteEnabled, manualStack]);
+
+  const reorderStack = useCallback((dragIndex: number, targetIndex: number) => {
+    if (!isRemoteEnabled) {
+      manualStack.reorderStack(dragIndex, targetIndex);
+    }
+  }, [isRemoteEnabled, manualStack]);
+
   return {
-    // Mode state
+    // State
     isRemoteEnabled,
     meetingCode,
     meetingTitle,
-    isCreatingMeeting,
+    isCreatingMeeting: isCreating || isCreatingMeeting,
+    facilitatorName,
+
+    // Current data (manual or remote)
+    stack: isRemoteEnabled ? remoteManagement.queue : manualStack.stack,
+    interventions: manualStack.interventions,
+    participants: isRemoteEnabled ? remoteManagement.participants : [],
+    currentSpeaker: isRemoteEnabled ? remoteManagement.currentSpeaker : null,
     
-    // Mode actions
+    // Expose underlying managers for backward compatibility
+    manualStack,
+    remoteManagement,
+    speakingQueue: isRemoteEnabled ? remoteManagement.queue : [],
+    
+    // Actions
     enableRemoteMode,
     disableRemoteMode,
-    
-    // Unified data
-    participants: allParticipants,
-    speakingQueue,
-    currentSpeaker,
-    
-    // Unified actions
-    nextSpeaker,
     addParticipant,
-    
-    // Manual stack actions (when in manual mode)
-    manualStack,
-    
-    // Remote management (when in remote mode)
-    remoteManagement,
-    
-    // Connection state
-    isConnected: isRemoteEnabled ? remoteManagement.isConnected : true,
-    error: isRemoteEnabled ? remoteManagement.error : null,
+    nextSpeaker,
+    removeFromStack,
+    addIntervention,
+    clearAll,
+    handleUndo,
+    reorderStack,
   };
 };
