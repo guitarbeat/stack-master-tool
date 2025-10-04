@@ -4,14 +4,6 @@ import { useStackManagement } from './useStackManagement';
 import { useSimpleMeetingCreation } from './useSimpleMeetingCreation';
 import { toast } from './use-toast';
 
-interface Participant {
-  id: string;
-  name: string;
-  is_facilitator: boolean;
-  joined_at: string;
-  is_active: boolean;
-}
-
 export const useUnifiedFacilitator = (facilitatorName: string) => {
   const [isRemoteEnabled, setIsRemoteEnabled] = useState(false);
   const [meetingCode, setMeetingCode] = useState<string | null>(null);

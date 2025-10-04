@@ -9,8 +9,8 @@ interface Participant {
   id: string;
   name: string;
   meeting_id: string;
-  is_facilitator: boolean;
-  is_active: boolean;
+  is_facilitator: boolean | null;
+  is_active: boolean | null;
   joined_at: string;
 }
 
@@ -21,7 +21,7 @@ interface QueueEntry {
   queue_type: string;
   position: number;
   joined_queue_at: string;
-  is_speaking: boolean;
+  is_speaking: boolean | null;
   // Joined data
   participantName?: string;
 }
@@ -336,15 +336,52 @@ export function useSupabaseFacilitator(
     setIsConnected(false);
   }, []);
 
+  const removeFromQueue = useCallback(async (entryId: string) => {
+    if (!meetingData) return;
+    
+    try {
+      await supabase
+        .from("speaking_queue")
+        .delete()
+        .eq("id", entryId);
+      
+      toast({
+        title: "Removed from queue",
+      });
+    } catch (err) {
+      console.error("Error removing from queue:", err);
+    }
+  }, [meetingData]);
+
+  const clearQueue = useCallback(async () => {
+    if (!meetingData) return;
+    
+    try {
+      await supabase
+        .from("speaking_queue")
+        .delete()
+        .eq("meeting_id", meetingData.id);
+      
+      toast({
+        title: "Queue cleared",
+      });
+    } catch (err) {
+      console.error("Error clearing queue:", err);
+    }
+  }, [meetingData]);
+
   return {
     participants,
     speakingQueue,
+    queue: speakingQueue, // Alias for compatibility
     currentSpeaker,
     isConnected,
     error,
     meetingData,
     nextSpeaker,
     finishSpeaking,
+    removeFromQueue,
+    clearQueue,
     disconnect,
     // Timer functionality
     speakerTimer,

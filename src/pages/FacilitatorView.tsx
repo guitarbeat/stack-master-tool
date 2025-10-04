@@ -336,7 +336,7 @@ function FacilitatorView(): JSX.Element {
           participants={participants.map(p => ({
             id: p.id,
             name: p.name,
-            isFacilitator: p.is_facilitator,
+            isFacilitator: p.is_facilitator ?? false,
             isInQueue: speakingQueue.some(q => q.participant_id === p.id),
             joinedAt: p.joined_at,
           }))}

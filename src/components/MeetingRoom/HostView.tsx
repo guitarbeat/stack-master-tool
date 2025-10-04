@@ -220,7 +220,7 @@ export const HostView = (): JSX.Element => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {speakingQueue.map((entry) => {
+                  {speakingQueue.map((entry: any) => {
                     const isSpeaking = entry.is_speaking;
 
                     return (
@@ -295,8 +295,8 @@ export const HostView = (): JSX.Element => {
             participants={participants.map((p) => ({
               id: p.id,
               name: p.name,
-              isFacilitator: p.is_facilitator,
-              isInQueue: speakingQueue.some((q) => q.participant_id === p.id),
+              isFacilitator: p.is_facilitator ?? false,
+              isInQueue: speakingQueue.some((q: any) => q.participant_id === p.id),
               joinedAt: p.joined_at,
             }))}
             meetingData={{
