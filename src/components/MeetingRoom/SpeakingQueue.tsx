@@ -15,10 +15,9 @@ interface SpeakingQueueProps {
   speakingQueue: QueueItem[];
   participantName: string;
   onLeaveQueue: () => void;
-  isWatchMode?: boolean;
 }
 
-export const SpeakingQueue = ({ speakingQueue, participantName, onLeaveQueue, isWatchMode = false }: SpeakingQueueProps) => {
+export const SpeakingQueue = ({ speakingQueue, participantName, onLeaveQueue }: SpeakingQueueProps) => {
   if (speakingQueue.length === 0) {
     return (
       <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">

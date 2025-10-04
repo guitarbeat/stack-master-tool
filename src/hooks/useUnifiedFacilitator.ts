@@ -120,7 +120,7 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
   }, [isRemoteEnabled, remoteManagement, manualStack]);
 
   // Unified add participant
-  const addParticipant = useCallback((name: string, type = 'speak') => {
+  const addParticipant = useCallback((name: string) => {
     if (isRemoteEnabled) {
       // Remote participants join via their own interface
       toast({
@@ -128,7 +128,7 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
         description: 'Participants join using the meeting code',
       });
     } else {
-      manualStack.addToStack(name, type as any);
+      manualStack.addToStack(name);
     }
   }, [isRemoteEnabled, manualStack]);
 

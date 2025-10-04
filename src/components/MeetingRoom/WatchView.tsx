@@ -100,7 +100,6 @@ export const WatchView = (): JSX.Element => {
           speakingQueue={speakingQueue}
           participantName=""
           onLeaveQueue={() => {}}
-          isWatchMode={true}
         />
       </div>
 

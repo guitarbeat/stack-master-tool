@@ -129,20 +129,28 @@ export const useStackManagement = () => {
     switch (lastAction.type) {
       case 'remove': {
         const { participant, index } = lastAction.data;
-        setStack(prev => {
-          const newStack = [...prev];
-          newStack.splice(index, 0, participant);
-          return newStack;
-        });
+        if (participant && index !== undefined) {
+          setStack(prev => {
+            const newStack = [...prev];
+            newStack.splice(index, 0, participant);
+            return newStack;
+          });
+        }
         break;
       }
       case 'next': {
-        setStack(lastAction.data.previousStack);
+        if (lastAction.data.previousStack) {
+          setStack(lastAction.data.previousStack);
+        }
         break;
       }
       case 'clear': {
-        setStack(lastAction.data.previousStack);
-        setInterventions(lastAction.data.previousInterventions);
+        if (lastAction.data.previousStack) {
+          setStack(lastAction.data.previousStack);
+        }
+        if (lastAction.data.previousInterventions) {
+          setInterventions(lastAction.data.previousInterventions);
+        }
         break;
       }
     }

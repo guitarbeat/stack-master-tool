@@ -56,11 +56,11 @@ export const HostView = (): JSX.Element => {
     }
   };
 
-  const handleAddIntervention = (type: string, participantName: string) => {
+  const handleAddIntervention = (type: 'direct-response' | 'clarifying-question', participantName: string) => {
     if (isRemoteEnabled && remoteManagement.addIntervention) {
       remoteManagement.addIntervention(type, participantName);
     } else {
-      manualStack.addToStack(participantName, type);
+      manualStack.addIntervention(type, participantName);
     }
   };
 
