@@ -2,6 +2,33 @@
 
 Stack Master Tool is an open-source application for democratic meeting facilitation. It provides three distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), and **WATCH** (public observer).
 
+## ⚠️ Project Status
+
+This project is currently undergoing a major backend migration from Express/Socket.io to Supabase. The migration enables serverless deployment and eliminates the need for a separate backend server.
+
+### Recent Changes
+
+- ✅ **Supabase Database Schema Created** - Tables for meetings, participants, and speaking queues
+- ✅ **Meeting Creation Migrated** - Now uses Supabase instead of Express API
+- ✅ **Real-time Subscriptions** - Supabase Realtime replaces Socket.io for live updates
+- ✅ **Unified Facilitator Hook** - Seamlessly switches between manual and remote modes
+
+### Known Issues
+
+- ⚠️ **TypeScript Compilation Errors** - Multiple type mismatches with legacy code (non-blocking for runtime)
+- ⚠️ **Legacy Backend Code** - Old Express/Socket.io code in `/backend` directory should be removed
+- ⚠️ **Incomplete Migration** - Join and Watch views still reference old Socket.io implementation
+- ⚠️ **Missing Type Declarations** - Several `.js` files need `.d.ts` type declarations
+
+### What's Left to Do
+
+1. **Fix TypeScript Errors** - Resolve type mismatches and add missing type declarations
+2. **Complete Migration** - Update Join and Watch views to use Supabase
+3. **Remove Legacy Code** - Delete `/backend` directory and old API/Socket service files
+4. **Update Documentation** - Reflect Supabase architecture in all docs
+5. **Test Full Flow** - Verify create → join → watch flow works end-to-end
+6. **Add RLS Policies** - Review and tighten Row Level Security policies for production
+
 ## Features
 
 ### Three Meeting Views
@@ -67,34 +94,53 @@ You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm
 This project provides a unified facilitation interface that supports both manual (offline) and remote (online) meeting management:
 
 - **Host Mode** – Facilitators can start with manual stack management and enable remote participation with one click
-- **Real-time Updates** – Socket.io powers live queue updates when remote mode is enabled
+- **Real-time Updates** – Supabase Realtime powers live queue updates when remote mode is enabled
 - **Flexible Deployment** – Works offline for manual facilitation or online for distributed meetings
 
 The project is built with:
 
+**Frontend:**
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+
+**Backend (New):**
+- Supabase (PostgreSQL database)
+- Supabase Realtime (WebSocket subscriptions)
+- Row Level Security (RLS) for data access control
+
+**Backend (Legacy - To Be Removed):**
+- Express.js
 - Socket.io
+- In-memory data storage
 
 ## Backend Setup
 
-The backend provides an Express and Socket.io server that manages meetings and real-time speaking queues.
-It exposes a few REST endpoints:
+### Supabase Backend (Current)
 
-- `GET /health` – basic health check
-- `POST /api/meetings` – create a new meeting
-- `GET /api/meetings/:code` – fetch meeting details
+The application now uses Supabase as its backend. The database schema includes:
 
-To run the backend locally:
+**Tables:**
+- `meetings` - Meeting metadata and codes
+- `participants` - Users who have joined meetings
+- `speaking_queue` - Real-time speaking queue with position tracking
 
-```sh
-cd backend
-npm install
-npm start # or node server.js
-```
+**Features:**
+- Real-time subscriptions for live updates
+- Row Level Security (RLS) policies for data access
+- Automatic meeting code generation
+- PostgreSQL triggers and functions
+
+**Configuration:**
+- Supabase URL: `https://jectngcrpikxwnjdwana.supabase.co`
+- Client configuration: `src/integrations/supabase/client.ts`
+- Type definitions: `src/integrations/supabase/types.ts`
+
+### Legacy Express Backend (Deprecated)
+
+The old Express/Socket.io backend in `/backend` directory is deprecated and will be removed. Do not use for new development.
 
 ## Documentation
 
