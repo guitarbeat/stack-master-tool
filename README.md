@@ -1,29 +1,29 @@
 # Stack Master Tool
 
-Stack Master Tool is an open-source application for democratic meeting facilitation. It provides three distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), and **WATCH** (public observer) - similar to jparty.tv's approach.
+Stack Master Tool is an open-source application for democratic meeting facilitation. It provides three distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), and **WATCH** (public observer).
 
 ## Features
 
 ### Three Meeting Views
 
-- **HOST** - Full facilitator controls and meeting management
+- **HOST** - Full facilitator controls with both manual and remote meeting management
 - **JOIN** - Participant view with queue interaction capabilities
 - **WATCH** - Public read-only observer view (no authentication required)
 
 ### Core Functionality
 
-- Create meetings with shareable codes
+- Unified facilitator interface supporting manual and remote modes
+- Create meetings with shareable codes for remote participation
 - Real-time speaking queue powered by Socket.io
-- Manual stack keeper for offline use
 - Public watch URLs for easy sharing
 - Role-based access control
 - React + TypeScript + Tailwind CSS frontend
 
 ## URL Structure
 
-- **`/meeting/ABC123?mode=host`** - Host view (facilitator controls)
-- **`/meeting/ABC123?mode=join`** - Join view (participant actions) - _default_
-- **`/watch/ABC123`** - Public watch view (read-only, no auth)
+- **`/meeting?mode=host`** - Host view (facilitator controls)
+- **`/meeting?mode=join`** - Join view (participant actions)
+- **`/watch/:code`** - Public watch view (read-only, no auth)
 
 ## Getting Started
 
@@ -64,12 +64,11 @@ You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm
 
 ## Technology Stack
 
-This project combines two related tools for democratic meeting facilitation:
+This project provides a unified facilitation interface that supports both manual (offline) and remote (online) meeting management:
 
-1. **Automatic Stack App** – A full-stack React/Socket.io application for creating meetings, letting participants join with a code, and managing the speaking queue in real time.
-2. **Manual Stack Keeper** – A lightweight interface for facilitators to manually manage a speaking stack without networking.
-
-You can access the manual stack keeper at `/manual`, while the default route `/` leads to the meeting-based workflow.
+- **Host Mode** – Facilitators can start with manual stack management and enable remote participation with one click
+- **Real-time Updates** – Socket.io powers live queue updates when remote mode is enabled
+- **Flexible Deployment** – Works offline for manual facilitation or online for distributed meetings
 
 The project is built with:
 
@@ -78,6 +77,7 @@ The project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Socket.io
 
 ## Backend Setup
 
