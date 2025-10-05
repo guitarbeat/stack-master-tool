@@ -130,12 +130,26 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
     stack: isRemoteEnabled ? remoteManagement.queue : manualStack.stack,
     interventions: manualStack.interventions,
     participants: isRemoteEnabled ? remoteManagement.participants : [],
-    currentSpeaker: isRemoteEnabled ? remoteManagement.currentSpeaker : null,
+    currentSpeaker: isRemoteEnabled ? remoteManagement.currentSpeaker : (manualStack.stack[0] ? {
+      participantName: manualStack.stack[0].name,
+      queue_type: 'speak',
+      participant_id: manualStack.stack[0].id,
+      id: manualStack.stack[0].id,
+      is_speaking: true
+    } : null),
     
     // Expose underlying managers for backward compatibility
     manualStack,
     remoteManagement,
-    speakingQueue: isRemoteEnabled ? remoteManagement.queue : [],
+    speakingQueue: isRemoteEnabled ? remoteManagement.queue : manualStack.stack.map((p, index) => ({
+      id: p.id,
+      participantName: p.name,
+      queue_type: 'speak',
+      position: index + 1,
+      joined_queue_at: p.addedAt?.toISOString() || new Date().toISOString(),
+      is_speaking: index === 0,
+      participant_id: p.id
+    })),
     
     // Actions
     enableRemoteMode,
