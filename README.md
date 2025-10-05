@@ -15,19 +15,18 @@ This project is currently undergoing a major backend migration from Express/Sock
 
 ### Known Issues
 
-- ⚠️ **TypeScript Compilation Errors** - Multiple type mismatches with legacy code (non-blocking for runtime)
-- ⚠️ **Legacy Backend Code** - Old Express/Socket.io code in `/backend` directory should be removed
-- ⚠️ **Incomplete Migration** - Join and Watch views still reference old Socket.io implementation
-- ⚠️ **Missing Type Declarations** - Several `.js` files need `.d.ts` type declarations
+- ⚠️ **Legacy Backend Code** - Old Express/Socket.io code in `/backend` directory remains for reference
+- ⚠️ **Incomplete Migration** - Join and Watch views still use legacy Socket.io implementation
+- ⚠️ **Hybrid Architecture** - Currently runs both Supabase (for facilitator) and Express backend (for participants)
 
 ### What's Left to Do
 
-1. **Fix TypeScript Errors** - Resolve type mismatches and add missing type declarations
-2. **Complete Migration** - Update Join and Watch views to use Supabase
-3. **Remove Legacy Code** - Delete `/backend` directory and old API/Socket service files
-4. **Update Documentation** - Reflect Supabase architecture in all docs
-5. **Test Full Flow** - Verify create → join → watch flow works end-to-end
-6. **Add RLS Policies** - Review and tighten Row Level Security policies for production
+1. **Complete Migration** - Update Join and Watch views to use Supabase Realtime
+2. **Remove Legacy Code** - Delete `/backend` directory and old API/Socket service files after migration
+3. **Update Documentation** - Reflect Supabase architecture in all docs
+4. **Test Full Flow** - Verify create → join → watch flow works end-to-end with Supabase
+5. **Add RLS Policies** - Review and tighten Row Level Security policies for production
+6. **Performance Testing** - Test with multiple concurrent meetings and participants
 
 ## Features
 
