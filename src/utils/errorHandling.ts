@@ -359,11 +359,11 @@ export class AppError extends Error {
       code,
       message,
       userMessage: errorInfo.title,
-      action: errorInfo.action,
+      action: errorInfo.action || '',
       retryable: isRetryableError(code),
-      severity: errorInfo.severity,
+      severity: errorInfo.severity || 'medium',
       timestamp: new Date().toISOString(),
-      originalError
+      originalError: originalError || undefined
     };
   }
 }

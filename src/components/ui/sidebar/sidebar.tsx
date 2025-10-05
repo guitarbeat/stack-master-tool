@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useSidebar } from "./context"
 
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
+// const SIDEBAR_WIDTH = "16rem"
+// const SIDEBAR_WIDTH_MOBILE = "18rem"
+// const SIDEBAR_WIDTH_ICON = "3rem"
 
 const Sidebar = React.forwardRef<
   HTMLDivElement,
@@ -52,7 +52,7 @@ const Sidebar = React.forwardRef<
             className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
             style={
               {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+                "--sidebar-width": "18rem",
               } as React.CSSProperties
             }
             side={side}

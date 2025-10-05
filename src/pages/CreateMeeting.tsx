@@ -4,7 +4,7 @@ import {
   ArrowLeft,
   Users,
   Copy,
-  QrCode as QrCodeIcon,
+  QrCode,
   Loader2,
 } from "lucide-react";
 import QRCode from "qrcode";
@@ -103,7 +103,7 @@ function CreateMeeting(): JSX.Element {
     } catch (err) {
       const appError = err as AppError;
       const errorInfo = getErrorDisplayInfo(appError);
-      setError(errorInfo.message);
+      setError(errorInfo.description);
       notify("error", errorInfo.title, errorInfo.description);
       playBeep(220, 200);
     } finally {

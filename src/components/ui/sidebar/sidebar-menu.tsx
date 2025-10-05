@@ -2,11 +2,11 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
+  // TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useSidebar } from "./context"

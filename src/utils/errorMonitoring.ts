@@ -77,11 +77,11 @@ class ErrorMonitor {
         timestamp: error.details.timestamp,
         type,
         code,
-        context,
+        context: context || '',
         message: error.details.message,
-        severity,
-        userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,
-        url: typeof window !== 'undefined' ? window.location.href : undefined
+        severity: severity || 'medium',
+        userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
+        url: typeof window !== 'undefined' ? window.location.href : ''
       });
     } else {
       // Track unknown errors
@@ -98,11 +98,11 @@ class ErrorMonitor {
         timestamp,
         type: ErrorType.UNKNOWN,
         code: 'UNKNOWN' as ErrorCode,
-        context,
+        context: context || '',
         message: error.message,
         severity: 'medium',
-        userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,
-        url: typeof window !== 'undefined' ? window.location.href : undefined
+        userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
+        url: typeof window !== 'undefined' ? window.location.href : ''
       });
     }
 
@@ -201,7 +201,8 @@ class ErrorMonitor {
   private sendToMonitoringService(error: AppError | Error, context?: string) {
     // In production, integrate with services like Sentry, LogRocket, or DataDog
     if (process.env.NODE_ENV === 'production') {
-      const errorData = {
+      // Error data prepared for external service
+      console.log('Error would be sent to monitoring service:', {
         timestamp: new Date().toISOString(),
         context,
         userAgent: navigator.userAgent,
@@ -216,7 +217,7 @@ class ErrorMonitor {
           message: error.message,
           stack: error.stack
         }
-      };
+      });
 
       // Example: Send to Sentry
       // Sentry.captureException(error, { extra: errorData });
