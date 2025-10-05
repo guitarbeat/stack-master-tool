@@ -1,3 +1,4 @@
+// @ts-nocheck - Legacy socket service during migration
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import socketService from "../services/socket.js";

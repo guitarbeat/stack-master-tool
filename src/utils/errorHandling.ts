@@ -354,7 +354,7 @@ export class AppError extends Error {
     super(message);
     this.name = 'AppError';
     
-    this.details = {
+    const details: ErrorDetails = {
       type: getErrorTypeFromCode(code),
       code,
       message,
@@ -363,8 +363,13 @@ export class AppError extends Error {
       retryable: isRetryableError(code),
       severity: errorInfo.severity || 'medium',
       timestamp: new Date().toISOString(),
-      originalError: originalError || undefined
     };
+    
+    if (originalError) {
+      details.originalError = originalError;
+    }
+    
+    this.details = details;
   }
 }
 

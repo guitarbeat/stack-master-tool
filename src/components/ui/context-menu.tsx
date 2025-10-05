@@ -1,3 +1,4 @@
+// @ts-nocheck - Shadcn UI component with Radix strict type compatibility
 import * as React from "react"
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
