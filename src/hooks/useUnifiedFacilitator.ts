@@ -124,6 +124,7 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
     meetingTitle,
     isCreatingMeeting: isCreating || isCreatingMeeting,
     facilitatorName,
+    isConnected: isRemoteEnabled ? remoteManagement.isConnected : false,
 
     // Current data (manual or remote)
     stack: isRemoteEnabled ? remoteManagement.queue : manualStack.stack,

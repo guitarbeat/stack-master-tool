@@ -43,7 +43,6 @@ function UnifiedFacilitator() {
     addParticipant,
     manualStack,
     remoteManagement,
-    isConnected,
   } = useUnifiedFacilitator(facilitatorName);
 
   const [newParticipantName, setNewParticipantName] = useState('');
@@ -62,7 +61,7 @@ function UnifiedFacilitator() {
       remoteManagement.addIntervention(type as any, participantName);
     } else {
       // In manual mode, add as priority to queue
-      manualStack.addToStack(participantName, type as any);
+      manualStack.addToStack(participantName);
     }
   };
 
@@ -224,11 +223,8 @@ function UnifiedFacilitator() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {speakingQueue.map((entry) => {
+                {speakingQueue.map((entry) => {
                     const isSpeaking = entry.is_speaking;
-                    const isDirect = entry.queue_type === 'direct-response';
-                    const isPointInfo = entry.queue_type === 'point-of-info';
-                    const isClarify = entry.queue_type === 'clarification';
 
                     return (
                       <div
@@ -308,7 +304,7 @@ function UnifiedFacilitator() {
             participants={participants.map((p) => ({
               id: p.id,
               name: p.name,
-              isFacilitator: p.is_facilitator,
+              isFacilitator: p.is_facilitator ?? false,
               isInQueue: speakingQueue.some((q) => q.participant_id === p.id),
               joinedAt: p.joined_at,
             }))}

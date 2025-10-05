@@ -2,11 +2,24 @@ import { useState, useEffect } from "react";
 import apiService from "../services/api.js";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
 
+interface Participant {
+  id: string;
+  name: string;
+  isFacilitator?: boolean;
+}
+
+interface QueueEntry {
+  id: string;
+  participantName: string;
+  type: string;
+  timestamp: number;
+}
+
 export const usePublicWatch = (meetingCode: string) => {
   const [meetingData, setMeetingData] = useState<any>(null);
-  const [participants, setParticipants] = useState<any[]>([]);
-  const [speakingQueue, setSpeakingQueue] = useState<any[]>([]);
-  const [currentSpeaker, setCurrentSpeaker] = useState<any>(null);
+  const [participants] = useState<Participant[]>([]);
+  const [speakingQueue] = useState<QueueEntry[]>([]);
+  const [currentSpeaker] = useState<QueueEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>("");
 
@@ -35,9 +48,9 @@ export const usePublicWatch = (meetingCode: string) => {
   // In a real implementation, you'd want to add WebSocket connection for live updates
   return {
     meetingData,
-    participants: [], // Would be populated from real-time updates
-    speakingQueue: [], // Would be populated from real-time updates
-    currentSpeaker: null, // Would be populated from real-time updates
+    participants,
+    speakingQueue,
+    currentSpeaker,
     isLoading,
     error,
   };
