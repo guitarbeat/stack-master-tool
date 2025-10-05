@@ -43,15 +43,15 @@ export default function CurrentSpeakerCard({
   const timeFormatter = formatTime || defaultFormatTime
 
   return (
-    <div className="bg-accent/10 border border-accent rounded-xl p-6 mb-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="bg-accent/20 p-3 rounded-full mr-4">
-            <MessageCircle className="w-6 h-6 text-accent" />
+    <div className="bg-accent/10 border border-accent rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="bg-accent/20 p-2 sm:p-3 rounded-full shrink-0">
+            <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">Now Speaking</h3>
-            <p className="text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">Now Speaking</h3>
+            <p className="text-sm text-muted-foreground truncate">
               {currentSpeaker.participantName} - {getQueueTypeDisplay(currentSpeaker.type)}
             </p>
             {speakerTimer && (
@@ -87,7 +87,7 @@ export default function CurrentSpeakerCard({
         </div>
         <button
           onClick={finishSpeaking}
-          className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-medium hover:bg-accent-hover transition-colors"
+          className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-medium hover:bg-accent-hover transition-colors text-sm sm:text-base w-full sm:w-auto shrink-0"
         >
           Finish Speaking
         </button>

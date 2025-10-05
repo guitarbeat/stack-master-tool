@@ -71,28 +71,28 @@ export const HostView = (): JSX.Element => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Button onClick={() => navigate('/')} variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Home
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button onClick={() => navigate('/')} variant="ghost" size="sm" className="shrink-0">
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Home</span>
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold">Host Meeting</h1>
-              <p className="text-muted-foreground">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold truncate">Host Meeting</h1>
+              <p className="text-sm text-muted-foreground truncate">
                 Welcome, {facilitatorName}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant={isRemoteEnabled ? 'default' : 'secondary'}>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant={isRemoteEnabled ? 'default' : 'secondary'} className="text-xs sm:text-sm">
               {isRemoteEnabled ? 'Remote Enabled' : 'Manual Mode'}
             </Badge>
             {isRemoteEnabled && (
-              <Badge variant="outline">
+              <Badge variant="outline" className="text-xs sm:text-sm">
                 <Users className="w-3 h-3 mr-1" />
                 {participants.length} participants
               </Badge>
@@ -100,7 +100,7 @@ export const HostView = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Remote Mode Toggle */}
           <div className="lg:col-span-1">
             <RemoteModeToggle
@@ -145,31 +145,33 @@ export const HostView = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Speaking Queue */}
           <Card className="lg:col-span-2">
-            <CardHeader className="flex flex-row items-center justify-between pb-4">
-              <CardTitle>Speaking Queue</CardTitle>
-              <div className="flex items-center gap-2">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4">
+              <CardTitle className="text-lg sm:text-xl">Speaking Queue</CardTitle>
+              <div className="flex items-center gap-2 flex-wrap">
                 {isRemoteEnabled && remoteManagement.undoHistory?.length > 0 && (
                   <Button
                     onClick={remoteManagement.handleUndo}
                     variant="outline"
                     size="sm"
+                    className="text-xs sm:text-sm"
                   >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Undo ({remoteManagement.undoHistory.length})
+                    <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Undo ({remoteManagement.undoHistory.length})</span>
+                    <span className="sm:hidden">Undo</span>
                   </Button>
                 )}
                 {!isRemoteEnabled && (
                   <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add
+                      <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Add</span>
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="max-w-[90vw] sm:max-w-md">
                       <DialogHeader>
                         <DialogTitle>Add Participant</DialogTitle>
                         <DialogDescription>
@@ -199,62 +201,68 @@ export const HostView = (): JSX.Element => {
                 <Button
                   onClick={nextSpeaker}
                   disabled={speakingQueue.length === 0}
-                  className="floating-glow"
+                  className="floating-glow text-xs sm:text-sm"
+                  size="sm"
                 >
-                  <SkipForward className="w-4 h-4 mr-2" />
-                  Next Speaker
+                  <SkipForward className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Next Speaker</span>
+                  <span className="sm:hidden">Next</span>
                 </Button>
               </div>
             </CardHeader>
 
             <CardContent>
               {speakingQueue.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-muted-foreground text-lg">No one in queue</p>
-                  <p className="text-sm text-muted-foreground">
+                <div className="text-center py-8 sm:py-12">
+                  <Users className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-muted-foreground text-base sm:text-lg">No one in queue</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground px-4">
                     {isRemoteEnabled
                       ? 'Participants can raise their hand to join'
                       : 'Click "Add" to add participants manually'}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {speakingQueue.map((entry: any) => {
                     const isSpeaking = entry.is_speaking;
 
                     return (
                       <div
                         key={entry.id}
-                        className={`flex items-center justify-between p-6 rounded-xl border transition-standard ${
+                        className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-6 rounded-xl border transition-standard ${
                           isSpeaking
                             ? 'bg-primary/10 border-primary/40'
                             : 'bg-muted/20 hover:bg-muted/40'
                         }`}
                       >
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                           <div
-                            className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            className={`px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shrink-0 ${
                               isSpeaking
                                 ? 'bg-primary text-primary-foreground animate-pulse'
                                 : 'bg-muted'
                             }`}
                           >
-                            {isSpeaking ? '🎤 Speaking' : `#${entry.position}`}
+                            {isSpeaking ? '🎤' : `#${entry.position}`}
                           </div>
-                          <span className="font-semibold text-lg">
-                            {entry.participantName}
-                          </span>
-                          <Badge variant="outline">
-                            {getQueueTypeDisplay(entry.queue_type)}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {formatTimestamp(entry.joined_queue_at)}
-                          </span>
+                          <div className="min-w-0 flex-1">
+                            <span className="font-semibold text-sm sm:text-lg block truncate">
+                              {entry.participantName}
+                            </span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="outline" className="text-xs">
+                                {getQueueTypeDisplay(entry.queue_type)}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground hidden sm:inline">
+                                {formatTimestamp(entry.joined_queue_at)}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           {!isSpeaking && (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 w-full sm:w-auto">
                               <Button
                                 onClick={() =>
                                   handleAddIntervention(
@@ -264,8 +272,9 @@ export const HostView = (): JSX.Element => {
                                 }
                                 variant="outline"
                                 size="sm"
+                                className="text-xs flex-1 sm:flex-none"
                               >
-                                Direct Response
+                                Direct
                               </Button>
                               <Button
                                 onClick={() =>
@@ -276,6 +285,7 @@ export const HostView = (): JSX.Element => {
                                 }
                                 variant="outline"
                                 size="sm"
+                                className="text-xs flex-1 sm:flex-none"
                               >
                                 Clarify
                               </Button>

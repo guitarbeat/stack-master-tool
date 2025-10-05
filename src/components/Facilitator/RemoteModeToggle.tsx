@@ -59,12 +59,12 @@ export const RemoteModeToggle = ({
   if (!isRemoteEnabled) {
     return (
       <Card className="border-dashed border-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <WifiOff className="w-5 h-5 text-muted-foreground" />
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <WifiOff className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             Manual Mode
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Currently managing participants locally. Enable remote access to allow participants to join with a meeting code.
           </CardDescription>
         </CardHeader>
@@ -76,7 +76,7 @@ export const RemoteModeToggle = ({
                 Enable Remote Participants
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-[90vw] sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Enable Remote Access</DialogTitle>
                 <DialogDescription>
@@ -112,29 +112,29 @@ export const RemoteModeToggle = ({
 
   return (
     <Card className="border-primary">
-      <CardHeader>
-        <div className="flex items-center justify-between">
+      <CardHeader className="pb-3 sm:pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Wifi className="w-5 h-5 text-primary" />
-            <CardTitle>Remote Access Enabled</CardTitle>
+            <Wifi className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+            <CardTitle className="text-base sm:text-lg">Remote Access Enabled</CardTitle>
           </div>
-          <Badge variant="default" className="animate-pulse">
+          <Badge variant="default" className="animate-pulse self-start sm:self-auto">
             <Users className="w-3 h-3 mr-1" />
             Live
           </Badge>
         </div>
-        <CardDescription>{meetingTitle}</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">{meetingTitle}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="bg-muted p-4 rounded-lg space-y-3">
+        <div className="bg-muted p-3 sm:p-4 rounded-lg space-y-3">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="min-w-0 flex-1">
               <Label className="text-xs text-muted-foreground">Meeting Code</Label>
-              <div className="text-2xl font-bold tracking-wider text-primary">
+              <div className="text-xl sm:text-2xl font-bold tracking-wider text-primary truncate">
                 {meetingCode}
               </div>
             </div>
-            <Button onClick={copyCode} variant="outline" size="sm">
+            <Button onClick={copyCode} variant="outline" size="sm" className="shrink-0 ml-2">
               <Copy className="w-4 h-4" />
             </Button>
           </div>
@@ -144,23 +144,25 @@ export const RemoteModeToggle = ({
               onClick={copyJoinLink}
               variant="secondary"
               size="sm"
-              className="flex-1"
+              className="flex-1 text-xs sm:text-sm"
             >
-              <Copy className="w-3 h-3 mr-2" />
-              Copy Join Link
+              <Copy className="w-3 h-3 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Copy Join Link</span>
+              <span className="sm:hidden">Link</span>
             </Button>
             <Button
               variant="secondary"
               size="sm"
-              className="flex-1"
+              className="flex-1 text-xs sm:text-sm"
             >
-              <QrCode className="w-3 h-3 mr-2" />
-              Show QR
+              <QrCode className="w-3 h-3 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Show QR</span>
+              <span className="sm:hidden">QR</span>
             </Button>
           </div>
         </div>
 
-        <div className="text-xs text-muted-foreground text-center">
+        <div className="text-xs text-muted-foreground text-center break-all px-2">
           Participants can join at: <span className="font-mono">{window.location.origin}/join</span>
         </div>
 
@@ -168,7 +170,7 @@ export const RemoteModeToggle = ({
           onClick={onDisableRemote}
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full text-xs sm:text-sm"
         >
           <WifiOff className="w-3 h-3 mr-2" />
           Disable Remote Access
