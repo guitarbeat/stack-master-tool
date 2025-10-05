@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import {
   Users,
@@ -11,7 +11,6 @@ import {
   Settings,
   RotateCcw,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +21,7 @@ import { SpeakingDistribution } from "../components/StackKeeper/SpeakingDistribu
 import { InterventionsPanel } from "../components/StackKeeper/InterventionsPanel";
 import { useSupabaseFacilitator } from "../hooks/useSupabaseFacilitator";
 import { useFacilitatorSession } from "../hooks/useFacilitatorSession";
-import { getQueueTypeDisplay, getQueueTypeColor } from "../utils/queue";
+import { getQueueTypeDisplay } from "../utils/queue";
 
 function FacilitatorView(): JSX.Element {
   const { meetingId } = useParams();
@@ -74,7 +73,6 @@ function FacilitatorView(): JSX.Element {
     resetSpeakerTimer,
     formatTime,
     getSpeakingDistribution,
-    clearSpeakingHistory,
     interventions,
     setInterventions,
     addIntervention,
@@ -113,7 +111,6 @@ function FacilitatorView(): JSX.Element {
 
   if (error) {
     const isMeetingNotFound = error.includes("Meeting not found");
-    const isUnauthorized = error.includes("not authorized");
 
     return (
       <div className="container mx-auto px-4 py-16">
@@ -217,7 +214,7 @@ function FacilitatorView(): JSX.Element {
               </div>
             ) : (
               <div className="space-y-3">
-                {speakingQueue.map((entry, index) => {
+                {speakingQueue.map((entry) => {
                   const isSpeaking = entry.is_speaking;
                   const isDirect = entry.queue_type === "direct-response";
                   const isPointInfo = entry.queue_type === "point-of-info";
