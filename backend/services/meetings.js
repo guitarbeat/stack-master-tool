@@ -500,6 +500,79 @@ const updateParticipantQueueStatusSync = (meetingCode, participantId, isInQueue,
   return true;
 };
 
+// Update meeting title (facilitator only)
+async function updateMeetingTitle(meetingCode, newTitle, facilitatorName) {
+  try {
+    const meeting = await getOrCreateActiveSession(meetingCode);
+    if (!meeting) return null;
+    
+    // Verify facilitator authorization
+    if (meeting.facilitator !== facilitatorName) {
+      return { error: 'UNAUTHORIZED', message: 'Only the meeting facilitator can update the title' };
+    }
+    
+    // Update title in memory
+    meeting.title = newTitle;
+    
+    // Update in database if not in test mode
+    if (process.env.NODE_ENV !== 'test') {
+      const supabase = require('../config/supabase');
+      
+      const { error } = await supabase
+        .from('meetings')
+        .update({ title: newTitle })
+        .eq('meeting_code', meetingCode)
+        .eq('is_active', true);
+      
+      if (error) {
+        console.error('Error updating meeting title in Supabase:', error);
+        return { error: 'DATABASE_ERROR', message: 'Failed to update meeting title' };
+      }
+    }
+    
+    return { meeting };
+  } catch (err) {
+    console.error('Error in updateMeetingTitle:', err);
+    return { error: 'INTERNAL_ERROR', message: 'Failed to update meeting title' };
+  }
+}
+
+// Update participant name (facilitator only)
+async function updateParticipantName(meetingCode, participantId, newName, facilitatorName) {
+  try {
+    const meeting = await getOrCreateActiveSession(meetingCode);
+    if (!meeting) return null;
+    
+    // Verify facilitator authorization
+    if (meeting.facilitator !== facilitatorName) {
+      return { error: 'UNAUTHORIZED', message: 'Only the meeting facilitator can update participant names' };
+    }
+    
+    // Find participant
+    const participant = meeting.participants.find(p => p.id === participantId);
+    if (!participant) {
+      return { error: 'PARTICIPANT_NOT_FOUND', message: 'Participant not found' };
+    }
+    
+    // Update participant name in memory
+    const oldName = participant.name;
+    participant.name = newName;
+    
+    // Update name in queue if participant is in queue
+    const queueItem = meeting.queue.find(item => item.participantId === participantId);
+    if (queueItem) {
+      queueItem.participantName = newName;
+    }
+    
+    console.log(`Updated participant name from "${oldName}" to "${newName}" in meeting ${meetingCode}`);
+    
+    return { participant };
+  } catch (err) {
+    console.error('Error in updateParticipantName:', err);
+    return { error: 'INTERNAL_ERROR', message: 'Failed to update participant name' };
+  }
+}
+
 module.exports = {
   createMeeting,
   createMeetingAsync,
@@ -511,6 +584,8 @@ module.exports = {
   removeFromQueue,
   getNextSpeaker,
   updateParticipantQueueStatus,
+  updateMeetingTitle,
+  updateParticipantName,
   // Sync versions for testing
   getMeetingSync,
   getMeetingInfoSync,

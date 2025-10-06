@@ -313,6 +313,75 @@ class SocketService {
     this.socket.emit("next-speaker");
   }
 
+  // Update meeting title (facilitator only)
+  updateMeetingTitle(newTitle) {
+    if (!this.socket) {
+      throw new AppError(
+        ErrorCode.CONNECTION_FAILED,
+        undefined,
+        "Socket not connected"
+      );
+    }
+
+    if (!newTitle || typeof newTitle !== "string" || newTitle.trim().length === 0) {
+      throw new AppError(
+        ErrorCode.INVALID_TITLE,
+        undefined,
+        "Meeting title is required"
+      );
+    }
+
+    if (newTitle.trim().length > 100) {
+      throw new AppError(
+        ErrorCode.INVALID_TITLE,
+        undefined,
+        "Meeting title must be 100 characters or less"
+      );
+    }
+
+    this.socket.emit("update-meeting-title", { newTitle: newTitle.trim() });
+  }
+
+  // Update participant name (facilitator only)
+  updateParticipantName(participantId, newName) {
+    if (!this.socket) {
+      throw new AppError(
+        ErrorCode.CONNECTION_FAILED,
+        undefined,
+        "Socket not connected"
+      );
+    }
+
+    if (!participantId || typeof participantId !== "string") {
+      throw new AppError(
+        ErrorCode.INVALID_PARTICIPANT_ID,
+        undefined,
+        "Participant ID is required"
+      );
+    }
+
+    if (!newName || typeof newName !== "string" || newName.trim().length === 0) {
+      throw new AppError(
+        ErrorCode.INVALID_PARTICIPANT_NAME,
+        undefined,
+        "Participant name is required"
+      );
+    }
+
+    if (newName.trim().length > 50) {
+      throw new AppError(
+        ErrorCode.INVALID_PARTICIPANT_NAME,
+        undefined,
+        "Participant name must be 50 characters or less"
+      );
+    }
+
+    this.socket.emit("update-participant-name", { 
+      participantId, 
+      newName: newName.trim() 
+    });
+  }
+
   // Event listeners
   onQueueUpdated(callback) {
     if (!this.socket) return;
@@ -337,6 +406,16 @@ class SocketService {
   onNextSpeaker(callback) {
     if (!this.socket) return;
     this.socket.on("next-speaker", callback);
+  }
+
+  onMeetingTitleUpdated(callback) {
+    if (!this.socket) return;
+    this.socket.on("meeting-title-updated", callback);
+  }
+
+  onParticipantNameUpdated(callback) {
+    if (!this.socket) return;
+    this.socket.on("participant-name-updated", callback);
   }
 
   onError(callback) {

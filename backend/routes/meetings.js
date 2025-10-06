@@ -94,4 +94,106 @@ router.get('/meetings/:code', async (req, res) => {
   }
 });
 
+// Update meeting title (facilitator only)
+router.patch('/meetings/:code/title', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const { newTitle, facilitatorName } = req.body;
+    
+    // Validate meeting code format
+    if (!code || typeof code !== 'string' || code.length !== 6) {
+      return sendErrorResponse(res, 400, 'INVALID_MEETING_CODE', 'Meeting code must be 6 characters');
+    }
+    
+    // Validate required fields
+    if (!newTitle || typeof newTitle !== 'string' || newTitle.trim().length === 0) {
+      return sendErrorResponse(res, 400, 'INVALID_TITLE', 'Meeting title is required');
+    }
+    
+    if (!facilitatorName || typeof facilitatorName !== 'string' || facilitatorName.trim().length === 0) {
+      return sendErrorResponse(res, 400, 'FACILITATOR_REQUIRED', 'Facilitator name is required');
+    }
+    
+    // Validate length constraints
+    if (newTitle.trim().length > 100) {
+      return sendErrorResponse(res, 400, 'TITLE_TOO_LONG', 'Meeting title must be 100 characters or less');
+    }
+    
+    // Validate title characters
+    if (!/^[a-zA-Z0-9\s\-_.,!?()]+$/.test(newTitle.trim())) {
+      return sendErrorResponse(res, 400, 'INVALID_CHARACTERS', 'Meeting title contains invalid characters');
+    }
+    
+    const result = await meetingsService.updateMeetingTitle(code.toUpperCase(), newTitle.trim(), facilitatorName.trim());
+    
+    if (!result) {
+      return sendErrorResponse(res, 404, 'MEETING_NOT_FOUND', 'Meeting not found');
+    }
+    
+    if (result.error) {
+      return sendErrorResponse(res, 403, result.error, result.message);
+    }
+    
+    res.json({
+      success: true,
+      meeting: result.meeting,
+      message: 'Meeting title updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating meeting title:', error);
+    sendErrorResponse(res, 500, 'INTERNAL_SERVER_ERROR', 'Failed to update meeting title');
+  }
+});
+
+// Update participant name (facilitator only)
+router.patch('/meetings/:code/participants/:participantId/name', async (req, res) => {
+  try {
+    const { code, participantId } = req.params;
+    const { newName, facilitatorName } = req.body;
+    
+    // Validate meeting code format
+    if (!code || typeof code !== 'string' || code.length !== 6) {
+      return sendErrorResponse(res, 400, 'INVALID_MEETING_CODE', 'Meeting code must be 6 characters');
+    }
+    
+    // Validate required fields
+    if (!newName || typeof newName !== 'string' || newName.trim().length === 0) {
+      return sendErrorResponse(res, 400, 'INVALID_NAME', 'Participant name is required');
+    }
+    
+    if (!facilitatorName || typeof facilitatorName !== 'string' || facilitatorName.trim().length === 0) {
+      return sendErrorResponse(res, 400, 'FACILITATOR_REQUIRED', 'Facilitator name is required');
+    }
+    
+    // Validate length constraints
+    if (newName.trim().length > 50) {
+      return sendErrorResponse(res, 400, 'NAME_TOO_LONG', 'Participant name must be 50 characters or less');
+    }
+    
+    // Validate name characters
+    if (!/^[a-zA-Z0-9\s]+$/.test(newName.trim())) {
+      return sendErrorResponse(res, 400, 'INVALID_CHARACTERS', 'Participant name can only contain letters, numbers, and spaces');
+    }
+    
+    const result = await meetingsService.updateParticipantName(code.toUpperCase(), participantId, newName.trim(), facilitatorName.trim());
+    
+    if (!result) {
+      return sendErrorResponse(res, 404, 'MEETING_NOT_FOUND', 'Meeting not found');
+    }
+    
+    if (result.error) {
+      return sendErrorResponse(res, 403, result.error, result.message);
+    }
+    
+    res.json({
+      success: true,
+      participant: result.participant,
+      message: 'Participant name updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating participant name:', error);
+    sendErrorResponse(res, 500, 'INTERNAL_SERVER_ERROR', 'Failed to update participant name');
+  }
+});
+
 module.exports = router;

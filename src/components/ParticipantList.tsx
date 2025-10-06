@@ -1,4 +1,5 @@
 import { Users, Crown } from 'lucide-react'
+import { EditableParticipantName } from './EditableParticipantName'
 
 interface Participant {
   id: string
@@ -15,11 +16,15 @@ interface MeetingData {
 interface ParticipantListProps {
   participants: Participant[]
   meetingData: MeetingData
+  onParticipantNameUpdate?: (participantId: string, newName: string) => void
+  isHost?: boolean
 }
 
 export default function ParticipantList({
   participants,
-  meetingData
+  meetingData,
+  onParticipantNameUpdate,
+  isHost = false
 }: ParticipantListProps) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
@@ -40,8 +45,14 @@ export default function ParticipantList({
             >
               <div className="flex items-center">
                 {participant.isFacilitator && <Crown className="w-4 h-4 text-yellow-600 mr-2" />}
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-zinc-100">{participant.name}</p>
+                <div className="flex-1">
+                  <EditableParticipantName
+                    participantId={participant.id}
+                    currentName={participant.name}
+                    isFacilitator={isHost}
+                    onNameUpdate={onParticipantNameUpdate || (() => {})}
+                    disabled={!onParticipantNameUpdate}
+                  />
                   <p className="text-xs text-gray-500 dark:text-zinc-400">
                     {participant.isFacilitator ? 'Facilitator' : 'Participant'}
                   </p>
