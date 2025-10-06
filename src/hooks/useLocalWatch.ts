@@ -27,6 +27,7 @@ export const useLocalWatch = (meetingCode: string) => {
     participants,
     speakingQueue,
     currentSpeaker,
+    getSpeakingDistribution,
   } = useUnifiedFacilitator(facilitatorName);
 
   // Check if this is a local meeting (MANUAL code or matches current host)
@@ -86,5 +87,6 @@ export const useLocalWatch = (meetingCode: string) => {
     isLoading,
     error,
     isLocalMeeting,
+    getSpeakingDistribution,
   };
 };
