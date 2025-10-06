@@ -1,14 +1,33 @@
 # Production Readiness Plan - Stack Master Tool
 
-**Current Status**: In development with hybrid architecture (Express/Socket.io + Supabase)  
+**Current Status**: Hybrid architecture (Express/Socket.io + Supabase) - Supabase migration 60% complete  
 **Target**: Production-ready democratic meeting facilitation app  
-**Priority**: Security → Stability → Performance → Polish
+**Priority**: Complete Migration → Security → Testing → Performance → Polish
+
+---
+
+## 🚨 IMMEDIATE PRIORITIES (Next 2 weeks)
+
+### Critical Issues Requiring Immediate Attention
+
+- [ ] **ZERO TEST COVERAGE** - No tests exist, making production deployment risky
+- [ ] **Incomplete Migration** - JOIN and WATCH views still use legacy Socket.io
+- [ ] **Hybrid Architecture** - Running both Supabase and Express creates complexity
+- [ ] **No Error Handling** - Missing error boundaries and proper error states
+
+### Quick Wins (Can be done in 1-2 days)
+
+- [ ] Write basic component tests for core components
+- [ ] Add error boundaries to main routes
+- [ ] Complete JOIN view migration to Supabase
+- [ ] Complete WATCH view migration to Supabase
 
 ---
 
 ## 🔴 Phase 1: Critical Fixes & Security (MUST DO)
 
 ### 1.1 Critical Bug Fixes
+
 - [ ] **Fix race condition causing duplicate speakers in queue**
   - Impact: Data integrity, user experience
   - Files: `src/hooks/useStackManagement.ts`, backend socket handlers
@@ -30,6 +49,7 @@
   - Add retry logic and proper error boundaries
 
 ### 1.2 Security Hardening
+
 - [ ] **Implement rate limiting**
   - API endpoints: meeting creation, participant joining
   - Use Supabase Edge Functions with rate limiting logic
@@ -57,6 +77,12 @@
   - Configure proper error tracking
 
 ### 1.3 Complete Supabase Migration
+
+- [x] **Migrate HOST view to Supabase** ✅ COMPLETED
+  - Supabase Realtime implemented for facilitator controls
+  - `useUnifiedFacilitator.ts` hook created
+  - Meeting creation migrated to Supabase
+
 - [ ] **Migrate JOIN view to Supabase**
   - Replace Express/Socket.io with Supabase Realtime
   - Update `src/components/MeetingRoom/JoinView.tsx`
@@ -78,30 +104,32 @@
 ## 🟡 Phase 2: Testing & Quality (HIGH PRIORITY)
 
 ### 2.1 Test Coverage
-- [ ] **E2E tests for critical user flows**
+
+- [ ] **E2E tests for critical user flows** ⚠️ URGENT - 0% coverage
   - Meeting creation → joining → speaking queue → completion
   - Multiple users joining simultaneously
   - Facilitator actions (add/remove speakers, end meeting)
   - Files: `tests/e2e/meeting-workflow.spec.ts`
 
-- [ ] **Component tests for UI**
+- [ ] **Component tests for UI** ⚠️ URGENT - 0% coverage
   - `HostView.tsx`, `JoinView.tsx`, `WatchView.tsx`
   - `CurrentSpeakerCard.tsx`, queue components
   - Form validation and error states
   - Target: 80% coverage threshold
 
-- [ ] **Integration tests for hooks**
+- [ ] **Integration tests for hooks** ⚠️ URGENT - 0% coverage
   - `useUnifiedFacilitator.ts`
   - `useMeetingSocket.ts` / Supabase Realtime
   - `useStackManagement.ts`
   - Mock Supabase responses
 
-- [ ] **Set up coverage reporting**
+- [ ] **Set up coverage reporting** ⚠️ URGENT - 0% coverage
   - Configure thresholds (80% minimum)
   - Add coverage badge to README
   - Fail CI if coverage drops
 
 ### 2.2 Error Handling
+
 - [ ] **Implement proper error boundaries**
   - Wrap each major route
   - Add fallback UI with retry options
@@ -122,6 +150,7 @@
 ## 🟢 Phase 3: Performance & Optimization
 
 ### 3.1 Frontend Optimization
+
 - [ ] **Optimize bundle size**
   - Analyze with `npm run build` and bundle analyzer
   - Lazy load routes and heavy components
@@ -138,6 +167,7 @@
   - Migration required
 
 ### 3.2 Real-time Performance
+
 - [ ] **Optimize Supabase Realtime subscriptions**
   - Subscribe only to necessary changes
   - Unsubscribe properly on unmount
@@ -153,6 +183,7 @@
 ## 🔵 Phase 4: UI/UX Polish
 
 ### 4.1 Mobile Responsiveness
+
 - [x] Basic mobile UI for HOST view (completed)
 - [ ] Refine JOIN view mobile experience
 - [ ] Refine WATCH view mobile experience
@@ -160,6 +191,7 @@
 - [ ] Landscape orientation handling
 
 ### 4.2 Accessibility
+
 - [ ] **Add ARIA labels and roles**
   - All interactive elements
   - Screen reader testing
@@ -176,6 +208,7 @@
   - Visible focus indicators
 
 ### 4.3 User Experience
+
 - [ ] **Add onboarding/help**
   - First-time user guide
   - Tooltips for facilitator actions
@@ -196,6 +229,7 @@
 ## 📚 Phase 5: Documentation
 
 ### 5.1 Code Documentation
+
 - [ ] **Document all custom hooks**
   - JSDoc comments with examples
   - Parameter descriptions
@@ -207,6 +241,7 @@
   - Storybook (optional)
 
 ### 5.2 User Documentation
+
 - [ ] **Update README.md**
   - Remove migration notes after completion
   - Add production deployment guide
@@ -224,6 +259,7 @@
   - Integration guide
 
 ### 5.3 Developer Documentation
+
 - [ ] **Update DEVELOPMENT.md**
   - Local setup instructions
   - Testing guide
@@ -239,6 +275,7 @@
 ## 🚀 Phase 6: Deployment & Infrastructure
 
 ### 6.1 CI/CD Pipeline
+
 - [ ] **Fix failing GitHub Actions**
   - Ensure all tests pass
   - Add deployment workflow
@@ -250,6 +287,7 @@
   - Database migrations testing
 
 ### 6.2 Production Deployment
+
 - [ ] **Configure production Supabase**
   - Enable backups
   - Set up monitoring
@@ -266,6 +304,7 @@
   - Configure cache headers
 
 ### 6.3 Monitoring & Analytics
+
 - [ ] **Add error tracking**
   - Sentry or similar service
   - Alert on critical errors
@@ -282,6 +321,7 @@
   - Uptime monitoring
 
 ### 6.4 Backup & Recovery
+
 - [ ] **Database backup strategy**
   - Automated daily backups
   - Point-in-time recovery
@@ -297,6 +337,7 @@
 ## 🎯 Phase 7: Nice-to-Have Features
 
 ### 7.1 Feature Enhancements
+
 - [ ] **Meeting history and analytics**
   - Dashboard for past meetings
   - Speaking time statistics
@@ -313,6 +354,7 @@
   - CSV export
 
 ### 7.2 Advanced Features
+
 - [ ] **Speaking time limits**
   - Configurable per meeting
   - Visual countdown timer
@@ -355,6 +397,7 @@ Before going to production, verify:
 
 ## 📊 Timeline Estimate
 
+**IMMEDIATE PRIORITIES**: 1-2 weeks (Critical - Zero tests, incomplete migration)  
 **Phase 1**: 2-3 weeks (Critical)  
 **Phase 2**: 2 weeks (High Priority)  
 **Phase 3**: 1 week (Performance)  
@@ -363,10 +406,40 @@ Before going to production, verify:
 **Phase 6**: 1 week (Deployment)  
 **Phase 7**: Future releases
 
-**Total to Production Ready**: ~8-10 weeks
+**Total to Production Ready**: ~8-10 weeks (but IMMEDIATE priorities must be addressed first)
 
 ---
 
-*Created: 2025-01-27*  
-*Status: Planning*  
-*Next Review: After Phase 1 completion*
+_Created: 2025-01-27_  
+_Status: Active Development - Migration in Progress_  
+_Last Updated: 2025-01-27_  
+_Next Review: Weekly during immediate priorities phase_
+
+## 📈 Progress Tracking
+
+### Completed ✅
+
+- Supabase database schema and tables created
+- Meeting creation migrated to Supabase
+- HOST view fully migrated to Supabase Realtime
+- Unified facilitator hook implemented
+- Basic error handling components created
+
+### In Progress 🔄
+
+- JOIN view migration (0% complete)
+- WATCH view migration (0% complete)
+- Test coverage implementation (0% complete)
+
+### Blocked ⚠️
+
+- Legacy backend removal (waiting for complete migration)
+- Production deployment (waiting for tests and complete migration)
+
+### Next Actions 🎯
+
+1. Write basic component tests (start with HostView, JoinView, WatchView)
+2. Complete JOIN view Supabase migration
+3. Complete WATCH view Supabase migration
+4. Add error boundaries to all major routes
+5. Remove legacy backend code
