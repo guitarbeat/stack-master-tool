@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -12,21 +12,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { ArrowLeft, SkipForward, Users, RotateCcw, Plus } from 'lucide-react';
-import { useUnifiedFacilitator } from '../../hooks/useUnifiedFacilitator';
-import { RemoteModeToggle } from '../Facilitator/RemoteModeToggle';
-import CurrentSpeakerCard from '../CurrentSpeakerCard';
-import ParticipantList from '../ParticipantList';
-import { SpeakingDistribution } from '../StackKeeper/SpeakingDistribution';
-import { InterventionsPanel } from '../StackKeeper/InterventionsPanel';
-import { getQueueTypeDisplay } from '../../utils/queue';
+} from "@/components/ui/dialog";
+import {
+  ArrowLeft,
+  SkipForward,
+  Users,
+  RotateCcw,
+  Plus,
+  Eye,
+} from "lucide-react";
+import { useUnifiedFacilitator } from "../../hooks/useUnifiedFacilitator";
+import { RemoteModeToggle } from "../Facilitator/RemoteModeToggle";
+import CurrentSpeakerCard from "../CurrentSpeakerCard";
+import ParticipantList from "../ParticipantList";
+import { SpeakingDistribution } from "../StackKeeper/SpeakingDistribution";
+import { InterventionsPanel } from "../StackKeeper/InterventionsPanel";
+import { getQueueTypeDisplay } from "../../utils/queue";
 
 export const HostView = (): JSX.Element => {
   const navigate = useNavigate();
   const [facilitatorName] = useState(() => {
-    const stored = localStorage.getItem('facilitatorName');
-    return stored || 'Facilitator';
+    const stored = localStorage.getItem("facilitatorName");
+    return stored || "Facilitator";
   });
 
   const {
@@ -45,18 +52,21 @@ export const HostView = (): JSX.Element => {
     remoteManagement,
   } = useUnifiedFacilitator(facilitatorName);
 
-  const [newParticipantName, setNewParticipantName] = useState('');
+  const [newParticipantName, setNewParticipantName] = useState("");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const handleAddParticipant = () => {
     if (newParticipantName.trim()) {
       addParticipant(newParticipantName.trim());
-      setNewParticipantName('');
+      setNewParticipantName("");
       setAddDialogOpen(false);
     }
   };
 
-  const handleAddIntervention = (type: 'direct-response' | 'clarifying-question', participantName: string) => {
+  const handleAddIntervention = (
+    type: "direct-response" | "clarifying-question",
+    participantName: string
+  ) => {
     if (isRemoteEnabled && remoteManagement.addIntervention) {
       remoteManagement.addIntervention(type, participantName);
     } else {
@@ -66,7 +76,7 @@ export const HostView = (): JSX.Element => {
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -75,12 +85,19 @@ export const HostView = (): JSX.Element => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
           <div className="flex items-center gap-2 sm:gap-4">
-            <Button onClick={() => navigate('/')} variant="ghost" size="sm" className="shrink-0">
+            <Button
+              onClick={() => navigate("/")}
+              variant="ghost"
+              size="sm"
+              className="shrink-0"
+            >
               <ArrowLeft className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">Home</span>
             </Button>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold truncate">Host Meeting</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold truncate">
+                Host Meeting
+              </h1>
               <p className="text-sm text-muted-foreground truncate">
                 Welcome, {facilitatorName}
               </p>
@@ -88,8 +105,25 @@ export const HostView = (): JSX.Element => {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant={isRemoteEnabled ? 'default' : 'secondary'} className="text-xs sm:text-sm">
-              {isRemoteEnabled ? 'Remote Enabled' : 'Manual Mode'}
+            <Button
+              onClick={() => {
+                // Open watch view in a new tab
+                const watchUrl = `/meeting?mode=watch&code=${meetingCode || "MANUAL"}`;
+                window.open(watchUrl, "_blank");
+              }}
+              variant="outline"
+              size="sm"
+              className="text-xs sm:text-sm"
+            >
+              <Eye className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Watch View</span>
+              <span className="sm:hidden">Watch</span>
+            </Button>
+            <Badge
+              variant={isRemoteEnabled ? "default" : "secondary"}
+              className="text-xs sm:text-sm"
+            >
+              {isRemoteEnabled ? "Remote Enabled" : "Manual Mode"}
             </Badge>
             {isRemoteEnabled && (
               <Badge variant="outline" className="text-xs sm:text-sm">
@@ -120,7 +154,8 @@ export const HostView = (): JSX.Element => {
               currentSpeaker={
                 currentSpeaker
                   ? {
-                      participantName: currentSpeaker.participantName || 'Unknown',
+                      participantName:
+                        currentSpeaker.participantName || "Unknown",
                       type: currentSpeaker.queue_type,
                     }
                   : null
@@ -129,11 +164,11 @@ export const HostView = (): JSX.Element => {
               speakerTimer={
                 isRemoteEnabled ? remoteManagement.speakerTimer : null
               }
-              elapsedTime={
-                isRemoteEnabled ? remoteManagement.elapsedTime : 0
-              }
+              elapsedTime={isRemoteEnabled ? remoteManagement.elapsedTime : 0}
               onToggleTimer={
-                isRemoteEnabled ? remoteManagement.toggleSpeakerTimer : undefined
+                isRemoteEnabled
+                  ? remoteManagement.toggleSpeakerTimer
+                  : undefined
               }
               onResetTimer={
                 isRemoteEnabled ? remoteManagement.resetSpeakerTimer : undefined
@@ -149,24 +184,33 @@ export const HostView = (): JSX.Element => {
           {/* Speaking Queue */}
           <Card className="lg:col-span-2">
             <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4">
-              <CardTitle className="text-lg sm:text-xl">Speaking Queue</CardTitle>
+              <CardTitle className="text-lg sm:text-xl">
+                Speaking Queue
+              </CardTitle>
               <div className="flex items-center gap-2 flex-wrap">
-                {isRemoteEnabled && remoteManagement.undoHistory?.length > 0 && (
-                  <Button
-                    onClick={remoteManagement.handleUndo}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs sm:text-sm"
-                  >
-                    <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Undo ({remoteManagement.undoHistory.length})</span>
-                    <span className="sm:hidden">Undo</span>
-                  </Button>
-                )}
+                {isRemoteEnabled &&
+                  remoteManagement.undoHistory?.length > 0 && (
+                    <Button
+                      onClick={remoteManagement.handleUndo}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs sm:text-sm"
+                    >
+                      <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">
+                        Undo ({remoteManagement.undoHistory.length})
+                      </span>
+                      <span className="sm:hidden">Undo</span>
+                    </Button>
+                  )}
                 {!isRemoteEnabled && (
                   <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs sm:text-sm"
+                      >
                         <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
                         <span className="hidden sm:inline">Add</span>
                       </Button>
@@ -185,13 +229,18 @@ export const HostView = (): JSX.Element => {
                             id="participant-name"
                             placeholder="Participant name"
                             value={newParticipantName}
-                            onChange={(e) => setNewParticipantName(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleAddParticipant();
+                            onChange={e =>
+                              setNewParticipantName(e.target.value)
+                            }
+                            onKeyDown={e => {
+                              if (e.key === "Enter") handleAddParticipant();
                             }}
                           />
                         </div>
-                        <Button onClick={handleAddParticipant} className="w-full">
+                        <Button
+                          onClick={handleAddParticipant}
+                          className="w-full"
+                        >
                           Add to Queue
                         </Button>
                       </div>
@@ -215,10 +264,12 @@ export const HostView = (): JSX.Element => {
               {speakingQueue.length === 0 ? (
                 <div className="text-center py-8 sm:py-12">
                   <Users className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-muted-foreground text-base sm:text-lg">No one in queue</p>
+                  <p className="text-muted-foreground text-base sm:text-lg">
+                    No one in queue
+                  </p>
                   <p className="text-xs sm:text-sm text-muted-foreground px-4">
                     {isRemoteEnabled
-                      ? 'Participants can raise their hand to join'
+                      ? "Participants can raise their hand to join"
                       : 'Click "Add" to add participants manually'}
                   </p>
                 </div>
@@ -232,19 +283,19 @@ export const HostView = (): JSX.Element => {
                         key={entry.id}
                         className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 sm:p-6 rounded-xl border transition-standard ${
                           isSpeaking
-                            ? 'bg-primary/10 border-primary/40'
-                            : 'bg-muted/20 hover:bg-muted/40'
+                            ? "bg-primary/10 border-primary/40"
+                            : "bg-muted/20 hover:bg-muted/40"
                         }`}
                       >
                         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                           <div
                             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shrink-0 ${
                               isSpeaking
-                                ? 'bg-primary text-primary-foreground animate-pulse'
-                                : 'bg-muted'
+                                ? "bg-primary text-primary-foreground animate-pulse"
+                                : "bg-muted"
                             }`}
                           >
-                            {isSpeaking ? '🎤' : `#${entry.position}`}
+                            {isSpeaking ? "🎤" : `#${entry.position}`}
                           </div>
                           <div className="min-w-0 flex-1">
                             <span className="font-semibold text-sm sm:text-lg block truncate">
@@ -266,8 +317,8 @@ export const HostView = (): JSX.Element => {
                               <Button
                                 onClick={() =>
                                   handleAddIntervention(
-                                    'direct-response',
-                                    entry.participantName || 'Unknown'
+                                    "direct-response",
+                                    entry.participantName || "Unknown"
                                   )
                                 }
                                 variant="outline"
@@ -279,8 +330,8 @@ export const HostView = (): JSX.Element => {
                               <Button
                                 onClick={() =>
                                   handleAddIntervention(
-                                    'clarifying-question',
-                                    entry.participantName || 'Unknown'
+                                    "clarifying-question",
+                                    entry.participantName || "Unknown"
                                   )
                                 }
                                 variant="outline"
@@ -302,15 +353,17 @@ export const HostView = (): JSX.Element => {
 
           {/* Participants */}
           <ParticipantList
-            participants={participants.map((p) => ({
+            participants={participants.map(p => ({
               id: p.id,
               name: p.name,
               isFacilitator: p.is_facilitator ?? false,
-              isInQueue: speakingQueue.some((q: any) => q.participant_id === p.id),
+              isInQueue: speakingQueue.some(
+                (q: any) => q.participant_id === p.id
+              ),
               joinedAt: p.joined_at,
             }))}
             meetingData={{
-              code: meetingCode || 'MANUAL',
+              code: meetingCode || "MANUAL",
               facilitator: facilitatorName,
             }}
           />
@@ -320,7 +373,9 @@ export const HostView = (): JSX.Element => {
         {isRemoteEnabled && (
           <>
             <SpeakingDistribution
-              speakingData={remoteManagement.getSpeakingDistribution?.(true) || []}
+              speakingData={
+                remoteManagement.getSpeakingDistribution?.(true) || []
+              }
               includeDirectResponses={true}
               onToggleIncludeDirectResponses={() => {}}
             />
