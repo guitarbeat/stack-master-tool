@@ -131,9 +131,9 @@ io.on('connection', (socket) => {
 });
 
 // Serve static files for QR code joining
-app.get('/join/:code', (req, res) => {
+app.get('/join/:code', async (req, res) => {
   const { code } = req.params;
-  const meeting = meetingsService.getMeeting(code);
+  const meeting = await meetingsService.getMeeting(code);
   
   if (!meeting) {
     return res.status(404).send(`

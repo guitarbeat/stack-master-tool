@@ -33,16 +33,17 @@ router.post('/meetings', async (req, res) => {
       return sendErrorResponse(res, 400, 'INVALID_PARTICIPANT_NAME', 'Facilitator name is required');
     }
     
-    if (!meetingTitle || typeof meetingTitle !== 'string' || meetingTitle.trim().length === 0) {
-      return sendErrorResponse(res, 400, 'MISSING_REQUIRED_FIELD', 'Meeting title is required');
-    }
+    // Meeting title is optional - use default if not provided
+    const finalMeetingTitle = meetingTitle && typeof meetingTitle === 'string' && meetingTitle.trim().length > 0 
+      ? meetingTitle.trim() 
+      : `${facilitatorName.trim()}'s Meeting`
     
     // Validate length constraints
     if (facilitatorName.trim().length > 50) {
       return sendErrorResponse(res, 400, 'NAME_TOO_LONG', 'Facilitator name must be 50 characters or less');
     }
     
-    if (meetingTitle.trim().length > 100) {
+    if (finalMeetingTitle.length > 100) {
       return sendErrorResponse(res, 400, 'INVALID_MEETING_TITLE', 'Meeting title must be 100 characters or less');
     }
     
@@ -52,8 +53,8 @@ router.post('/meetings', async (req, res) => {
     }
     
     const meeting = process.env.NODE_ENV === 'test' 
-      ? meetingsService.createMeeting(facilitatorName.trim(), meetingTitle.trim())
-      : await meetingsService.createMeetingAsync(facilitatorName.trim(), meetingTitle.trim());
+      ? meetingsService.createMeeting(facilitatorName.trim(), finalMeetingTitle)
+      : await meetingsService.createMeetingAsync(facilitatorName.trim(), finalMeetingTitle);
     
     res.json({
       meetingCode: meeting.code,

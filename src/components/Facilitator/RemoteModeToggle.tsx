@@ -1,9 +1,15 @@
-import { useState } from 'react';
-import { Wifi, WifiOff, Copy, QrCode, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { Wifi, WifiOff, Copy, QrCode, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface RemoteModeToggleProps {
   isRemoteEnabled: boolean;
@@ -33,14 +39,14 @@ export const RemoteModeToggle = ({
   onDisableRemote,
   facilitatorName,
 }: RemoteModeToggleProps) => {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleEnableRemote = async () => {
     const meetingTitle = title.trim() || `${facilitatorName}'s Meeting`;
     await onEnableRemote(meetingTitle);
     setDialogOpen(false);
-    setTitle('');
+    setTitle("");
   };
 
   const copyCode = () => {
@@ -65,7 +71,8 @@ export const RemoteModeToggle = ({
             Manual Mode
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">
-            Currently managing participants locally. Enable remote access to allow participants to join with a meeting code.
+            Currently managing participants locally. Enable remote access to
+            allow participants to join with a meeting code.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -85,12 +92,14 @@ export const RemoteModeToggle = ({
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="meeting-title">Meeting Title (Optional)</Label>
+                  <Label htmlFor="meeting-title">
+                    Meeting Title (Optional)
+                  </Label>
                   <Input
                     id="meeting-title"
-                    placeholder="e.g., Weekly Team Meeting"
+                    placeholder="Meeting Title (Optional)"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={e => setTitle(e.target.value)}
                     disabled={isCreatingMeeting}
                   />
                 </div>
@@ -100,7 +109,9 @@ export const RemoteModeToggle = ({
                   className="w-full"
                   size="lg"
                 >
-                  {isCreatingMeeting ? 'Creating Meeting...' : 'Create Meeting Code'}
+                  {isCreatingMeeting
+                    ? "Creating Meeting..."
+                    : "Create Meeting Code"}
                 </Button>
               </div>
             </DialogContent>
@@ -116,29 +127,43 @@ export const RemoteModeToggle = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="flex items-center gap-2">
             <Wifi className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-            <CardTitle className="text-base sm:text-lg">Remote Access Enabled</CardTitle>
+            <CardTitle className="text-base sm:text-lg">
+              Remote Access Enabled
+            </CardTitle>
           </div>
-          <Badge variant="default" className="animate-pulse self-start sm:self-auto">
+          <Badge
+            variant="default"
+            className="animate-pulse self-start sm:self-auto"
+          >
             <Users className="w-3 h-3 mr-1" />
             Live
           </Badge>
         </div>
-        <CardDescription className="text-xs sm:text-sm">{meetingTitle}</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          {meetingTitle}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-muted p-3 sm:p-4 rounded-lg space-y-3">
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
-              <Label className="text-xs text-muted-foreground">Meeting Code</Label>
+              <Label className="text-xs text-muted-foreground">
+                Meeting Code
+              </Label>
               <div className="text-xl sm:text-2xl font-bold tracking-wider text-primary truncate">
                 {meetingCode}
               </div>
             </div>
-            <Button onClick={copyCode} variant="outline" size="sm" className="shrink-0 ml-2">
+            <Button
+              onClick={copyCode}
+              variant="outline"
+              size="sm"
+              className="shrink-0 ml-2"
+            >
               <Copy className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="flex gap-2">
             <Button
               onClick={copyJoinLink}
@@ -163,7 +188,8 @@ export const RemoteModeToggle = ({
         </div>
 
         <div className="text-xs text-muted-foreground text-center break-all px-2">
-          Participants can join at: <span className="font-mono">{window.location.origin}/join</span>
+          Participants can join at:{" "}
+          <span className="font-mono">{window.location.origin}/join</span>
         </div>
 
         <Button

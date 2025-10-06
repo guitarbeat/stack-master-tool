@@ -15,9 +15,12 @@ function generateMeetingCode() {
 
 // Create a new meeting (synchronous version for testing)
 function createMeeting(facilitatorName, meetingTitle) {
-  if (!facilitatorName || !meetingTitle || facilitatorName.trim() === '' || meetingTitle.trim() === '') {
-    throw new Error('Facilitator name and meeting title are required');
+  if (!facilitatorName || facilitatorName.trim() === '') {
+    throw new Error('Facilitator name is required');
   }
+  
+  // Use provided title or default
+  const finalTitle = meetingTitle && meetingTitle.trim() !== '' ? meetingTitle.trim() : `${facilitatorName.trim()}'s Meeting`;
 
   const meetingCode = generateMeetingCode();
   const meetingId = uuidv4();
@@ -25,7 +28,7 @@ function createMeeting(facilitatorName, meetingTitle) {
   const meeting = {
     id: meetingId,
     code: meetingCode,
-    title: meetingTitle.trim(),
+    title: finalTitle,
     facilitator: facilitatorName.trim(),
     participants: [],
     queue: [],
@@ -39,9 +42,12 @@ function createMeeting(facilitatorName, meetingTitle) {
 
 // Create a new meeting (async version for production with Supabase)
 async function createMeetingAsync(facilitatorName, meetingTitle) {
-  if (!facilitatorName || !meetingTitle) {
-    throw new Error('Facilitator name and meeting title are required');
+  if (!facilitatorName) {
+    throw new Error('Facilitator name is required');
   }
+  
+  // Use provided title or default
+  const finalTitle = meetingTitle && meetingTitle.trim() !== '' ? meetingTitle.trim() : `${facilitatorName.trim()}'s Meeting`;
 
   const meetingCode = generateMeetingCode();
   const meetingId = uuidv4();
@@ -61,7 +67,7 @@ async function createMeetingAsync(facilitatorName, meetingTitle) {
         {
           id: meetingId,
           meeting_code: meetingCode,
-          title: meetingTitle.trim(),
+          title: finalTitle,
           facilitator_name: facilitatorName.trim(),
           is_active: true,
           created_at: new Date().toISOString()
