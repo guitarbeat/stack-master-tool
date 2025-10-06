@@ -1,0 +1,361 @@
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { JoinView } from '../JoinView';
+
+// Mock the useMeetingSocket hook
+const mockUseMeetingSocket = {
+  meetingData: {
+    code: 'ABC123',
+    title: 'Test Meeting',
+    facilitator: 'Test Facilitator',
+  },
+  participants: [
+    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1 },
+    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0 },
+  ],
+  speakingQueue: [
+    { id: '1', name: 'John Doe', position: 1 },
+  ],
+  isInQueue: false,
+  isConnected: true,
+  error: null,
+  currentSpeaker: { id: '2', name: 'Jane Smith', position: 0 },
+  joinQueue: vi.fn(),
+  leaveQueue: vi.fn(),
+  leaveMeeting: vi.fn(),
+  connectionQuality: 'good',
+  lastConnected: new Date(),
+  reconnectAttempts: 0,
+  onReconnect: vi.fn(),
+};
+
+vi.mock('../../hooks/useMeetingSocket', () => ({
+  useMeetingSocket: () => mockUseMeetingSocket,
+}));
+
+// Mock other dependencies
+vi.mock('../MeetingHeader', () => ({
+  MeetingHeader: ({ meetingData }: { meetingData: any }) => (
+    <div data-testid="meeting-header">
+      {meetingData?.title} - {meetingData?.facilitator}
+    </div>
+  ),
+}));
+
+vi.mock('../CurrentSpeakerAlert', () => ({
+  CurrentSpeakerAlert: ({ currentSpeaker }: { currentSpeaker: any }) => (
+    <div data-testid="current-speaker-alert">
+      Current Speaker: {currentSpeaker?.name || 'None'}
+    </div>
+  ),
+}));
+
+vi.mock('../SpeakingQueue', () => ({
+  SpeakingQueue: ({ queue, isInQueue }: { queue: any[]; isInQueue: boolean }) => (
+    <div data-testid="speaking-queue">
+      Queue: {queue.length} participants, In Queue: {isInQueue ? 'Yes' : 'No'}
+    </div>
+  ),
+}));
+
+vi.mock('../ActionsPanel', () => ({
+  ActionsPanel: ({ onJoinQueue, onLeaveQueue, isInQueue }: { 
+    onJoinQueue: () => void; 
+    onLeaveQueue: () => void; 
+    isInQueue: boolean;
+  }) => (
+    <div data-testid="actions-panel">
+      <button onClick={onJoinQueue} data-testid="join-queue-btn">
+        Join Queue
+      </button>
+      <button onClick={onLeaveQueue} data-testid="leave-queue-btn">
+        Leave Queue
+      </button>
+      <span data-testid="queue-status">{isInQueue ? 'In Queue' : 'Not In Queue'}</span>
+    </div>
+  ),
+}));
+
+vi.mock('../LoadingState', () => ({
+  LoadingState: () => <div data-testid="loading-state">Loading...</div>,
+}));
+
+vi.mock('../ErrorState', () => ({
+  ErrorState: ({ error }: { error: string }) => (
+    <div data-testid="error-state">Error: {error}</div>
+  ),
+}));
+
+vi.mock('../ConnectionStatus', () => ({
+  ConnectionStatus: ({ isConnected, quality }: { isConnected: boolean; quality: string }) => (
+    <div data-testid="connection-status">
+      {isConnected ? 'Connected' : 'Disconnected'} - {quality}
+    </div>
+  ),
+}));
+
+vi.mock('../QueuePositionFeedback', () => ({
+  QueuePositionFeedback: ({ position }: { position: number }) => (
+    <div data-testid="queue-position-feedback">
+      Position: {position}
+    </div>
+  ),
+}));
+
+vi.mock('../MeetingContext', () => ({
+  MeetingContext: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="meeting-context">{children}</div>
+  ),
+}));
+
+vi.mock('../EnhancedErrorState', () => ({
+  EnhancedErrorState: ({ error, onRetry }: { error: string; onRetry: () => void }) => (
+    <div data-testid="enhanced-error-state">
+      <div>Error: {error}</div>
+      <button onClick={onRetry} data-testid="retry-btn">Retry</button>
+    </div>
+  ),
+}));
+
+describe('JoinView', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderJoinView = () => {
+    return render(
+      <BrowserRouter>
+        <JoinView />
+      </BrowserRouter>
+    );
+  };
+
+  it('renders join form initially', () => {
+    renderJoinView();
+    
+    expect(screen.getByText('Join Meeting')).toBeInTheDocument();
+    expect(screen.getByLabelText('Meeting Code')).toBeInTheDocument();
+    expect(screen.getByLabelText('Your Name')).toBeInTheDocument();
+    expect(screen.getByText('Join')).toBeInTheDocument();
+  });
+
+  it('validates form inputs before joining', () => {
+    renderJoinView();
+    
+    const joinBtn = screen.getByText('Join');
+    fireEvent.click(joinBtn);
+    
+    // Should not join with empty inputs
+    expect(mockUseMeetingSocket.joinQueue).not.toHaveBeenCalled();
+  });
+
+  it('joins meeting with valid inputs', () => {
+    renderJoinView();
+    
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    expect(screen.getByTestId('meeting-header')).toBeInTheDocument();
+  });
+
+  it('displays meeting information after joining', () => {
+    // Mock the hook to return joined state
+    const joinedMock = {
+      ...mockUseMeetingSocket,
+      meetingData: {
+        code: 'ABC123',
+        title: 'Test Meeting',
+        facilitator: 'Test Facilitator',
+      },
+    };
+    
+    vi.mocked(require('../../hooks/useMeetingSocket').useMeetingSocket).mockReturnValue(joinedMock);
+    
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    expect(screen.getByText('Test Meeting - Test Facilitator')).toBeInTheDocument();
+  });
+
+  it('shows current speaker information', () => {
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    expect(screen.getByTestId('current-speaker-alert')).toBeInTheDocument();
+    expect(screen.getByText('Current Speaker: Jane Smith')).toBeInTheDocument();
+  });
+
+  it('displays speaking queue', () => {
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    expect(screen.getByTestId('speaking-queue')).toBeInTheDocument();
+    expect(screen.getByText('Queue: 1 participants, In Queue: No')).toBeInTheDocument();
+  });
+
+  it('handles join queue action', () => {
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    const joinQueueBtn = screen.getByTestId('join-queue-btn');
+    fireEvent.click(joinQueueBtn);
+    
+    expect(mockUseMeetingSocket.joinQueue).toHaveBeenCalled();
+  });
+
+  it('handles leave queue action', () => {
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    const leaveQueueBtn = screen.getByTestId('leave-queue-btn');
+    fireEvent.click(leaveQueueBtn);
+    
+    expect(mockUseMeetingSocket.leaveQueue).toHaveBeenCalled();
+  });
+
+  it('shows connection status', () => {
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    expect(screen.getByTestId('connection-status')).toBeInTheDocument();
+    expect(screen.getByText('Connected - good')).toBeInTheDocument();
+  });
+
+  it('shows error state when there is an error', () => {
+    const errorMock = {
+      ...mockUseMeetingSocket,
+      error: 'Connection failed',
+    };
+    
+    vi.mocked(require('../../hooks/useMeetingSocket').useMeetingSocket).mockReturnValue(errorMock);
+    
+    renderJoinView();
+    
+    expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    expect(screen.getByText('Error: Connection failed')).toBeInTheDocument();
+  });
+
+  it('handles retry action in error state', () => {
+    const errorMock = {
+      ...mockUseMeetingSocket,
+      error: 'Connection failed',
+    };
+    
+    vi.mocked(require('../../hooks/useMeetingSocket').useMeetingSocket).mockReturnValue(errorMock);
+    
+    renderJoinView();
+    
+    const retryBtn = screen.getByTestId('retry-btn');
+    fireEvent.click(retryBtn);
+    
+    expect(mockUseMeetingSocket.onReconnect).toHaveBeenCalled();
+  });
+
+  it('shows loading state when connecting', () => {
+    const loadingMock = {
+      ...mockUseMeetingSocket,
+      isConnected: false,
+      error: null,
+    };
+    
+    vi.mocked(require('../../hooks/useMeetingSocket').useMeetingSocket).mockReturnValue(loadingMock);
+    
+    renderJoinView();
+    
+    expect(screen.getByTestId('loading-state')).toBeInTheDocument();
+  });
+
+  it('handles leave meeting action', () => {
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    const leaveMeetingBtn = screen.getByText('Leave Meeting');
+    fireEvent.click(leaveMeetingBtn);
+    
+    expect(mockUseMeetingSocket.leaveMeeting).toHaveBeenCalled();
+  });
+
+  it('updates queue status correctly', () => {
+    const inQueueMock = {
+      ...mockUseMeetingSocket,
+      isInQueue: true,
+    };
+    
+    vi.mocked(require('../../hooks/useMeetingSocket').useMeetingSocket).mockReturnValue(inQueueMock);
+    
+    renderJoinView();
+    
+    // Simulate joining
+    const meetingCodeInput = screen.getByLabelText('Meeting Code');
+    const participantNameInput = screen.getByLabelText('Your Name');
+    const joinBtn = screen.getByText('Join');
+    
+    fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
+    fireEvent.change(participantNameInput, { target: { value: 'John Doe' } });
+    fireEvent.click(joinBtn);
+    
+    expect(screen.getByText('In Queue')).toBeInTheDocument();
+  });
+});
