@@ -138,14 +138,14 @@ describe('WatchView', () => {
     
     expect(screen.getByText('Watch Meeting')).toBeInTheDocument();
     expect(screen.getByLabelText('Meeting Code')).toBeInTheDocument();
-    expect(screen.getByText('Watch')).toBeInTheDocument();
+    expect(screen.getByText('Watch Meeting')).toBeInTheDocument();
   });
 
   it('validates form input before watching', () => {
     mockUseMeetingCode.mockReturnValue('');
     renderWatchView();
     
-    const watchBtn = screen.getByText('Watch');
+    const watchBtn = screen.getByText('Watch Meeting');
     fireEvent.click(watchBtn);
     
     // Should not watch with empty input
@@ -157,7 +157,7 @@ describe('WatchView', () => {
     renderWatchView();
     
     const meetingCodeInput = screen.getByLabelText('Meeting Code');
-    const watchBtn = screen.getByText('Watch');
+    const watchBtn = screen.getByText('Watch Meeting');
     
     fireEvent.change(meetingCodeInput, { target: { value: 'ABC123' } });
     fireEvent.click(watchBtn);

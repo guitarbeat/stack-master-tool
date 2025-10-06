@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { expect, afterEach } from 'vitest';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
@@ -55,6 +55,7 @@ Object.defineProperty(window, 'location', {
     pathname: '/',
     search: '',
     hash: '',
+    reload: vi.fn(),
   },
   writable: true,
 });
