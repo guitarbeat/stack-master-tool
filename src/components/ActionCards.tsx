@@ -14,7 +14,7 @@ export const ActionCards = () => {
 
   const actions = [
     {
-      to: "/meeting?mode=host",
+      to: "/create",
       icon: <Users className="w-8 h-8 text-primary" />,
       title: "Host a Meeting",
       description:
@@ -30,7 +30,7 @@ export const ActionCards = () => {
       ],
     },
     {
-      to: "/meeting?mode=join",
+      to: "/join",
       icon: <QrCode className="w-8 h-8 text-accent" />,
       title: "Join a Meeting",
       description:
@@ -46,7 +46,7 @@ export const ActionCards = () => {
       ],
     },
     {
-      to: "/meeting?mode=watch",
+      to: "/watch",
       icon: <Eye className="w-8 h-8 text-primary" />,
       title: "Watch a Meeting",
       description:
