@@ -51,9 +51,9 @@ function AppLayout({ children }: AppLayoutProps) {
               aria-label="Main navigation"
             >
               <Link
-                to="/watch"
+                to="/meeting?mode=watch"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/watch")
+                  isActive("/meeting") && location.search.includes("mode=watch")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
@@ -62,9 +62,9 @@ function AppLayout({ children }: AppLayoutProps) {
                 Watch
               </Link>
               <Link
-                to="/create"
+                to="/meeting?mode=host"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/create")
+                  isActive("/meeting") && location.search.includes("mode=host")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
@@ -73,9 +73,9 @@ function AppLayout({ children }: AppLayoutProps) {
                 Host
               </Link>
               <Link
-                to="/join"
+                to="/meeting?mode=join"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/join")
+                  isActive("/meeting") && location.search.includes("mode=join")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
@@ -104,10 +104,10 @@ function AppLayout({ children }: AppLayoutProps) {
           <div className="md:hidden border-t border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
             <nav className="container mx-auto px-4 py-4 space-y-2">
               <Link
-                to="/watch"
+                to="/meeting?mode=watch"
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/watch")
+                  isActive("/meeting") && location.search.includes("mode=watch")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
@@ -116,10 +116,10 @@ function AppLayout({ children }: AppLayoutProps) {
                 Watch Meeting
               </Link>
               <Link
-                to="/create"
+                to="/meeting?mode=host"
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/create")
+                  isActive("/meeting") && location.search.includes("mode=host")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
@@ -128,10 +128,10 @@ function AppLayout({ children }: AppLayoutProps) {
                 Host Meeting
               </Link>
               <Link
-                to="/join"
+                to="/meeting?mode=join"
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/join")
+                  isActive("/meeting") && location.search.includes("mode=join")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
