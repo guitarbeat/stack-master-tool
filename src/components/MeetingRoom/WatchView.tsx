@@ -18,6 +18,9 @@ import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
 import { SpeakingQueue } from "./SpeakingQueue";
 import { LoadingState } from "./LoadingState";
 import { ErrorState } from "./ErrorState";
+import { ConnectionStatus } from "./ConnectionStatus";
+import { MeetingContext } from "./MeetingContext";
+import { EnhancedErrorState } from "./EnhancedErrorState";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 
@@ -47,6 +50,9 @@ export const WatchView = (): JSX.Element => {
     currentSpeaker,
     isLoading,
     error,
+    isConnected,
+    connectionQuality,
+    lastConnected,
   } = isLocalMeeting ? localWatchData : publicWatchData;
 
   const handleWatch = () => {
@@ -108,7 +114,15 @@ export const WatchView = (): JSX.Element => {
   }
 
   if (error) {
-    return <ErrorState error={error} />;
+    return (
+      <EnhancedErrorState
+        error={error}
+        onRetry={() => window.location.reload()}
+        onGoHome={() => navigate('/')}
+        meetingCode={effectiveMeetingCode}
+        isRetrying={isLoading}
+      />
+    );
   }
 
   return (
@@ -129,6 +143,24 @@ export const WatchView = (): JSX.Element => {
             {isLocalMeeting ? "Local Watch" : "Watching"}
           </Badge>
         }
+      />
+
+      {/* Enhanced Connection Status for watchers */}
+      <ConnectionStatus
+        isConnected={isConnected}
+        isConnecting={isLoading}
+        connectionQuality={connectionQuality}
+        participantCount={participants?.length || 0}
+        meetingDuration={meetingData ? Math.floor((Date.now() - new Date(meetingData.createdAt || Date.now()).getTime()) / 1000) : 0}
+      />
+
+      {/* Meeting Context for watchers */}
+      <MeetingContext
+        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
+        participants={participants || []}
+        speakingQueue={speakingQueue || []}
+        currentSpeaker={currentSpeaker}
+        isWatching={true}
       />
 
       <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />
