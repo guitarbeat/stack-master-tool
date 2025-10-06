@@ -11,6 +11,10 @@ import { SpeakingQueue } from "./SpeakingQueue";
 import { ActionsPanel } from "./ActionsPanel";
 import { LoadingState } from "./LoadingState";
 import { ErrorState } from "./ErrorState";
+import { ConnectionStatus } from "./ConnectionStatus";
+import { QueuePositionFeedback } from "./QueuePositionFeedback";
+import { MeetingContext } from "./MeetingContext";
+import { EnhancedErrorState } from "./EnhancedErrorState";
 
 export const JoinView = (): JSX.Element => {
   const navigate = useNavigate();
@@ -29,6 +33,10 @@ export const JoinView = (): JSX.Element => {
     joinQueue,
     leaveQueue,
     leaveMeeting,
+    connectionQuality,
+    lastConnected,
+    reconnectAttempts,
+    onReconnect,
   } = useMeetingSocket(
     hasJoined ? participantName : '',
     hasJoined ? {
@@ -97,8 +105,23 @@ export const JoinView = (): JSX.Element => {
   }
 
   if (error) {
-    return <ErrorState error={error} />;
+    return (
+      <EnhancedErrorState
+        error={error}
+        onRetry={() => window.location.reload()}
+        onGoHome={() => navigate('/')}
+        meetingCode={meetingCode}
+        participantName={participantName}
+        retryCount={reconnectAttempts}
+        lastConnected={lastConnected}
+      />
+    );
   }
+
+  // Find participant's position in queue
+  const participantQueuePosition = speakingQueue.findIndex(
+    item => item.participantName === participantName
+  ) + 1;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -108,7 +131,40 @@ export const JoinView = (): JSX.Element => {
         onLeaveMeeting={leaveMeeting}
       />
 
+      {/* Enhanced Connection Status */}
+      <ConnectionStatus
+        isConnected={isConnected}
+        isConnecting={!isConnected && !error}
+        error={error}
+        lastConnected={lastConnected}
+        reconnectAttempts={reconnectAttempts}
+        onReconnect={onReconnect}
+        connectionQuality={connectionQuality}
+        participantCount={participants.length}
+        meetingDuration={meetingData ? Math.floor((Date.now() - new Date(meetingData.createdAt || Date.now()).getTime()) / 1000) : 0}
+      />
+
+      {/* Meeting Context */}
+      <MeetingContext
+        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
+        participants={participants}
+        speakingQueue={speakingQueue}
+        currentSpeaker={currentSpeaker}
+        isWatching={false}
+      />
+
       <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />
+
+      {/* Queue Position Feedback for participants in queue */}
+      {isInQueue && participantQueuePosition > 0 && (
+        <QueuePositionFeedback
+          participantName={participantName}
+          queuePosition={participantQueuePosition}
+          totalInQueue={speakingQueue.length}
+          joinedAt={new Date(speakingQueue.find(item => item.participantName === participantName)?.timestamp || Date.now())}
+          currentSpeaker={currentSpeaker}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <SpeakingQueue

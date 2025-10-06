@@ -39,6 +39,12 @@ export const useMeetingSocket = (
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [currentSpeaker, setCurrentSpeaker] = useState<QueueItem | null>(null);
+  
+  // Enhanced connection tracking
+  const [connectionQuality, setConnectionQuality] = useState<'excellent' | 'good' | 'fair' | 'poor' | 'disconnected'>('disconnected');
+  const [lastConnected, setLastConnected] = useState<Date | undefined>();
+  const [reconnectAttempts, setReconnectAttempts] = useState<number>(0);
+  const [isReconnecting, setIsReconnecting] = useState<boolean>(false);
 
   const notify = useCallback(
     (
@@ -126,6 +132,9 @@ export const useMeetingSocket = (
         )
       );
       setError(errorInfo.description);
+      setConnectionQuality('disconnected');
+      setIsConnected(false);
+      setReconnectAttempts(prev => prev + 1);
       notify("error", errorInfo.title, errorInfo.description);
     };
 
@@ -152,14 +161,21 @@ export const useMeetingSocket = (
         socketService.connect();
         setupSocketListeners();
         setIsConnected(true);
+        setLastConnected(new Date());
+        setConnectionQuality('excellent');
+        setReconnectAttempts(0);
       } catch (err: unknown) {
         console.error("Connection error:", err);
         const errorInfo = getErrorDisplayInfo(err as AppError);
         setError(errorInfo.description);
+        setConnectionQuality('disconnected');
+        setReconnectAttempts(prev => prev + 1);
       }
     } else {
       setupSocketListeners();
       setIsConnected(true);
+      setLastConnected(new Date());
+      setConnectionQuality('excellent');
     }
 
     // Join the meeting as a participant
@@ -235,6 +251,44 @@ export const useMeetingSocket = (
     navigate("/");
   }, [navigate]);
 
+  const onReconnect = useCallback(async () => {
+    if (isReconnecting) return;
+    
+    setIsReconnecting(true);
+    setError("");
+    
+    try {
+      if (socketService.isConnected) {
+        socketService.disconnect();
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+      
+      socketService.connect();
+      setupSocketListeners();
+      setIsConnected(true);
+      setLastConnected(new Date());
+      setConnectionQuality('excellent');
+      setReconnectAttempts(0);
+      
+      // Rejoin the meeting
+      if (participantName && meetingInfo) {
+        socketService.joinMeeting(meetingInfo.code, participantName, false);
+      }
+      
+      notify("success", "Reconnected", "Successfully reconnected to the meeting");
+    } catch (err: unknown) {
+      console.error("Reconnection error:", err);
+      const errorInfo = getErrorDisplayInfo(err as AppError);
+      setError(errorInfo.description);
+      setConnectionQuality('disconnected');
+      setReconnectAttempts(prev => prev + 1);
+      notify("error", "Reconnection failed", errorInfo.description);
+    } finally {
+      setIsReconnecting(false);
+    }
+  }, [isReconnecting, participantName, meetingInfo, notify]);
+
   return {
     meetingData,
     participants,
@@ -246,5 +300,10 @@ export const useMeetingSocket = (
     joinQueue,
     leaveQueue,
     leaveMeeting,
+    // Enhanced connection tracking
+    connectionQuality,
+    lastConnected,
+    reconnectAttempts,
+    onReconnect,
   };
 };
