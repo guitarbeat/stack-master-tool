@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import { 
-  Wifi, 
-  WifiOff, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+import {
+  Wifi,
+  WifiOff,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   RefreshCw,
   Signal,
-  SignalZero,
-  SignalOne,
-  SignalTwo,
-  SignalThree
+  Activity,
+  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +22,7 @@ interface ConnectionStatusProps {
   lastConnected?: Date;
   reconnectAttempts?: number;
   onReconnect?: () => void;
-  connectionQuality?: 'excellent' | 'good' | 'fair' | 'poor' | 'disconnected';
+  connectionQuality?: "excellent" | "good" | "fair" | "poor" | "disconnected";
   participantCount?: number;
   meetingDuration?: number;
 }
@@ -36,12 +34,13 @@ export const ConnectionStatus = ({
   lastConnected,
   reconnectAttempts = 0,
   onReconnect,
-  connectionQuality = 'disconnected',
+  connectionQuality = "disconnected",
   participantCount = 0,
-  meetingDuration = 0
+  meetingDuration = 0,
 }: ConnectionStatusProps) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [timeSinceLastConnected, setTimeSinceLastConnected] = useState<string>('');
+  const [timeSinceLastConnected, setTimeSinceLastConnected] =
+    useState<string>("");
 
   // Update time since last connected
   useEffect(() => {
@@ -52,7 +51,7 @@ export const ConnectionStatus = ({
       const diff = now.getTime() - lastConnected.getTime();
       const minutes = Math.floor(diff / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
-      
+
       if (minutes > 0) {
         setTimeSinceLastConnected(`${minutes}m ${seconds}s ago`);
       } else {
@@ -68,39 +67,54 @@ export const ConnectionStatus = ({
   const getConnectionIcon = () => {
     if (isConnecting) return <RefreshCw className="w-4 h-4 animate-spin" />;
     if (!isConnected) return <WifiOff className="w-4 h-4" />;
-    
+
     switch (connectionQuality) {
-      case 'excellent': return <SignalThree className="w-4 h-4 text-green-500" />;
-      case 'good': return <SignalTwo className="w-4 h-4 text-yellow-500" />;
-      case 'fair': return <SignalOne className="w-4 h-4 text-orange-500" />;
-      case 'poor': return <SignalZero className="w-4 h-4 text-red-500" />;
-      default: return <Wifi className="w-4 h-4" />;
+      case "excellent":
+        return <Zap className="w-4 h-4 text-green-500" />;
+      case "good":
+        return <Activity className="w-4 h-4 text-yellow-500" />;
+      case "fair":
+        return <Signal className="w-4 h-4 text-orange-500" />;
+      case "poor":
+        return <Wifi className="w-4 h-4 text-red-500" />;
+      default:
+        return <Wifi className="w-4 h-4" />;
     }
   };
 
   const getConnectionColor = () => {
-    if (isConnecting) return 'text-blue-500';
-    if (!isConnected) return 'text-red-500';
-    
+    if (isConnecting) return "text-blue-500";
+    if (!isConnected) return "text-red-500";
+
     switch (connectionQuality) {
-      case 'excellent': return 'text-green-500';
-      case 'good': return 'text-yellow-500';
-      case 'fair': return 'text-orange-500';
-      case 'poor': return 'text-red-500';
-      default: return 'text-gray-500';
+      case "excellent":
+        return "text-green-500";
+      case "good":
+        return "text-yellow-500";
+      case "fair":
+        return "text-orange-500";
+      case "poor":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
     }
   };
 
   const getConnectionText = () => {
-    if (isConnecting) return 'Connecting...';
-    if (!isConnected) return 'Disconnected';
-    
+    if (isConnecting) return "Connecting...";
+    if (!isConnected) return "Disconnected";
+
     switch (connectionQuality) {
-      case 'excellent': return 'Excellent connection';
-      case 'good': return 'Good connection';
-      case 'fair': return 'Fair connection';
-      case 'poor': return 'Poor connection';
-      default: return 'Connected';
+      case "excellent":
+        return "Excellent connection";
+      case "good":
+        return "Good connection";
+      case "fair":
+        return "Fair connection";
+      case "poor":
+        return "Poor connection";
+      default:
+        return "Connected";
     }
   };
 
@@ -108,7 +122,7 @@ export const ConnectionStatus = ({
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {
@@ -145,7 +159,7 @@ export const ConnectionStatus = ({
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {!isConnected && onReconnect && (
               <Button
@@ -168,14 +182,14 @@ export const ConnectionStatus = ({
                 )}
               </Button>
             )}
-            
+
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setShowDetails(!showDetails)}
               className="text-xs"
             >
-              {showDetails ? 'Hide' : 'Details'}
+              {showDetails ? "Hide" : "Details"}
             </Button>
           </div>
         </div>
@@ -208,7 +222,7 @@ export const ConnectionStatus = ({
               </div>
             )}
 
-            {isConnected && connectionQuality !== 'excellent' && (
+            {isConnected && connectionQuality !== "excellent" && (
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">
                   Connection quality: {connectionQuality}
@@ -218,13 +232,18 @@ export const ConnectionStatus = ({
                     <span>Signal strength</span>
                     <span>{connectionQuality}</span>
                   </div>
-                  <Progress 
+                  <Progress
                     value={
-                      connectionQuality === 'excellent' ? 100 :
-                      connectionQuality === 'good' ? 75 :
-                      connectionQuality === 'fair' ? 50 :
-                      connectionQuality === 'poor' ? 25 : 0
-                    } 
+                      connectionQuality === "excellent"
+                        ? 100
+                        : connectionQuality === "good"
+                          ? 75
+                          : connectionQuality === "fair"
+                            ? 50
+                            : connectionQuality === "poor"
+                              ? 25
+                              : 0
+                    }
                     className="h-1"
                   />
                 </div>
