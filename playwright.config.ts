@@ -79,12 +79,6 @@ export default defineConfig({
       url: 'http://localhost:8080',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
-    },
-    {
-      command: 'cd backend && npm start',
-      url: 'http://localhost:3000/api/health',
-      reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
     }
   ],
 });

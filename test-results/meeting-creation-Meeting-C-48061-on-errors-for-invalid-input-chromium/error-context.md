@@ -1,0 +1,50 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "ICC Austin logo" [ref=e7] [cursor=pointer]
+          - generic [ref=e8] [cursor=pointer]: ICC Austin Stack
+        - generic [ref=e9]:
+          - navigation "Main navigation" [ref=e10]:
+            - link "Watch" [ref=e11] [cursor=pointer]:
+              - /url: /meeting?mode=watch
+              - img [ref=e12] [cursor=pointer]
+              - text: Watch
+            - link "Host" [ref=e17] [cursor=pointer]:
+              - /url: /meeting?mode=host
+              - img [ref=e18] [cursor=pointer]
+              - text: Host
+            - link "Join" [ref=e19] [cursor=pointer]:
+              - /url: /meeting?mode=join
+              - img [ref=e20] [cursor=pointer]
+              - text: Join
+          - button "Switch to dark mode" [ref=e23] [cursor=pointer]:
+            - img [ref=e24] [cursor=pointer]
+    - main [ref=e26]:
+      - generic [ref=e28]:
+        - generic [ref=e30] [cursor=pointer]: (no image)
+        - heading "404" [level=1] [ref=e31]
+        - heading "Oops! We're a bit lost too! 🗺️" [level=2] [ref=e32]
+        - paragraph [ref=e33]: Looks like this page went on an adventure without us! Don't worry, even the best explorers get lost sometimes.
+        - generic [ref=e34]:
+          - link "Take Me Home" [ref=e35] [cursor=pointer]:
+            - /url: /
+            - img
+            - text: Take Me Home
+          - button "Try Again" [ref=e36] [cursor=pointer]:
+            - img
+            - text: Try Again
+        - paragraph [ref=e37]: "💡 Tip: Click on our friend above for a surprise!"
+    - contentinfo [ref=e38]:
+      - generic [ref=e39]:
+        - img "ICC2 Logo" [ref=e40]
+        - paragraph [ref=e41]: Powered by ICC Austin Stack
+```
