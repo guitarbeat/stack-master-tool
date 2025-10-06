@@ -21,6 +21,9 @@ import ParticipantList from '@/components/ParticipantList';
 import { SpeakingDistribution } from '@/components/StackKeeper/SpeakingDistribution';
 import { InterventionsPanel } from '@/components/StackKeeper/InterventionsPanel';
 import { getQueueTypeDisplay } from '@/utils/queue';
+import { toast } from '@/hooks/use-toast';
+import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
+import { KeyboardShortcutsHelp } from '@/components/KeyboardShortcutsHelp';
 
 function UnifiedFacilitator() {
   const navigate = useNavigate();
@@ -45,14 +48,22 @@ function UnifiedFacilitator() {
     remoteManagement,
   } = useUnifiedFacilitator(facilitatorName);
 
-  const [newParticipantName, setNewParticipantName] = useState('');
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const handleAddParticipant = (name: string) => {
+    addParticipant(name);
+  };
 
-  const handleAddParticipant = () => {
-    if (newParticipantName.trim()) {
-      addParticipant(newParticipantName.trim());
-      setNewParticipantName('');
-      setAddDialogOpen(false);
+  const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
+    if (isRemoteEnabled && remoteManagement.updateParticipantName) {
+      // In remote mode, update the participant name in the database
+      await remoteManagement.updateParticipantName(participantId, newName);
+    } else {
+      // In manual mode, we could update the local state
+      // This would require extending the manual stack management
+      toast({
+        title: 'Name editing not implemented',
+        description: 'This feature will be available soon in manual mode',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -72,6 +83,19 @@ function UnifiedFacilitator() {
 
   return (
     <div className="min-h-screen bg-background">
+      <KeyboardShortcuts
+        onQuickAdd={() => {
+          // Focus the quick add input if available
+          const quickAddButton = document.querySelector('[data-quick-add-trigger]') as HTMLButtonElement;
+          if (quickAddButton) {
+            quickAddButton.click();
+          }
+        }}
+        onNextSpeaker={nextSpeaker}
+        onUndo={isRemoteEnabled ? remoteManagement.handleUndo : manualStack.handleUndo}
+        disabled={isCreatingMeeting}
+      />
+      
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -100,6 +124,7 @@ function UnifiedFacilitator() {
                 {participants.length} participants
               </Badge>
             )}
+            <KeyboardShortcutsHelp />
           </div>
         </div>
 
@@ -163,41 +188,6 @@ function UnifiedFacilitator() {
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Undo ({remoteManagement.undoHistory.length})
                   </Button>
-                )}
-                {!isRemoteEnabled && (
-                  <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add Participant</DialogTitle>
-                        <DialogDescription>
-                          Add a participant to the speaking queue
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="participant-name">Name</Label>
-                          <Input
-                            id="participant-name"
-                            placeholder="Participant name"
-                            value={newParticipantName}
-                            onChange={(e) => setNewParticipantName(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleAddParticipant();
-                            }}
-                          />
-                        </div>
-                        <Button onClick={handleAddParticipant} className="w-full">
-                          Add to Queue
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
                 )}
                 <Button
                   onClick={nextSpeaker}
@@ -312,6 +302,10 @@ function UnifiedFacilitator() {
               code: meetingCode || 'MANUAL',
               facilitator: facilitatorName,
             }}
+            onAddParticipant={!isRemoteEnabled ? handleAddParticipant : undefined}
+            onParticipantNameUpdate={handleParticipantNameUpdate}
+            isHost={true}
+            showQuickAdd={!isRemoteEnabled}
           />
         </div>
 
