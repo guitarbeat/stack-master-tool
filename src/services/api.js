@@ -12,7 +12,10 @@ class ApiService {
 
   getBaseUrl() {
     // Return the backend API URL based on environment
-    if (window.location.hostname === "localhost") {
+    if (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+    ) {
       return "http://localhost:3001/api";
     }
     // For production, use the current origin (assuming backend is served from same domain)
