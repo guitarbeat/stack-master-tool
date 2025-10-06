@@ -28,6 +28,7 @@ import ParticipantList from "../ParticipantList";
 import { SpeakingDistribution } from "../StackKeeper/SpeakingDistribution";
 import { InterventionsPanel } from "../StackKeeper/InterventionsPanel";
 import { getQueueTypeDisplay } from "../../utils/queue";
+import { EditableMeetingTitle } from "../EditableMeetingTitle";
 
 export const HostView = (): JSX.Element => {
   const navigate = useNavigate();
@@ -60,6 +61,18 @@ export const HostView = (): JSX.Element => {
       addParticipant(newParticipantName.trim());
       setNewParticipantName("");
       setAddDialogOpen(false);
+    }
+  };
+
+  const handleMeetingTitleUpdate = async (newTitle: string) => {
+    if (isRemoteEnabled && remoteManagement.updateMeetingTitle) {
+      await remoteManagement.updateMeetingTitle(newTitle);
+    }
+  };
+
+  const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
+    if (isRemoteEnabled && remoteManagement.updateParticipantName) {
+      await remoteManagement.updateParticipantName(participantId, newName);
     }
   };
 
@@ -98,9 +111,20 @@ export const HostView = (): JSX.Element => {
               <h1 className="text-2xl sm:text-3xl font-bold truncate">
                 Host Meeting
               </h1>
-              <p className="text-sm text-muted-foreground truncate">
-                Welcome, {facilitatorName}
-              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Welcome, {facilitatorName}</span>
+                {meetingTitle && (
+                  <>
+                    <span className="text-sm text-muted-foreground">•</span>
+                    <EditableMeetingTitle
+                      currentTitle={meetingTitle}
+                      isFacilitator={true}
+                      onTitleUpdate={handleMeetingTitleUpdate}
+                      className="text-sm text-muted-foreground truncate"
+                    />
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -366,6 +390,8 @@ export const HostView = (): JSX.Element => {
               code: meetingCode || "MANUAL",
               facilitator: facilitatorName,
             }}
+            onParticipantNameUpdate={handleParticipantNameUpdate}
+            isHost={true}
           />
         </div>
 

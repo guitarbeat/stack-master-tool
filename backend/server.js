@@ -8,6 +8,7 @@ const path = require('path');
 const meetingsRoutes = require('./routes/meetings');
 const socketHandlers = require('./handlers/socketHandlers');
 const meetingsService = require('./services/meetings');
+const participantsService = require('./services/participants');
 
 const app = express();
 const server = http.createServer(app);
@@ -108,6 +109,51 @@ io.on('connection', (socket) => {
         currentQueue: meeting.queue,
         queueLength: meeting.queue.length
       });
+    }
+  });
+
+  // Facilitator: Update meeting title
+  socket.on('update-meeting-title', async (data) => {
+    const result = await socketHandlers.handleUpdateMeetingTitle(socket, data);
+    if (result) {
+      const { meeting, newTitle } = result;
+      
+      // Notify all participants about title change
+      io.to(meeting.code).emit('meeting-title-updated', {
+        newTitle,
+        meeting: {
+          code: meeting.code,
+          title: meeting.title,
+          facilitator: meeting.facilitator
+        }
+      });
+    }
+  });
+
+  // Facilitator: Update participant name
+  socket.on('update-participant-name', async (data) => {
+    const result = await socketHandlers.handleUpdateParticipantName(socket, data);
+    if (result) {
+      const { participant, participantId, newName } = result;
+      const participantData = participantsService.getParticipant(socket.id);
+      
+      if (participantData) {
+        const { meetingCode } = participantData;
+        
+        // Notify all participants about name change
+        io.to(meetingCode).emit('participant-name-updated', {
+          participantId,
+          newName,
+          participant
+        });
+        
+        // Send updated participant list
+        const meeting = await meetingsService.getOrCreateActiveSession(meetingCode);
+        if (meeting) {
+          io.to(meetingCode).emit('participants-updated', meeting.participants);
+          io.to(meetingCode).emit('queue-updated', meeting.queue);
+        }
+      }
     }
   });
 

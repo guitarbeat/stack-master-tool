@@ -252,6 +252,74 @@ function handleNextSpeaker(socket) {
   return { meeting, nextSpeaker };
 }
 
+// Update meeting title (facilitator only)
+async function handleUpdateMeetingTitle(socket, data) {
+  const { newTitle } = data;
+  const participantData = participantsService.getParticipant(socket.id);
+  
+  if (!participantData) {
+    sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
+    return;
+  }
+  
+  const { meetingCode, participant } = participantData;
+  
+  if (!participant.isFacilitator) {
+    sendSocketError(socket, 'FACILITATOR_REQUIRED', 'Not authorized - facilitator access required');
+    return;
+  }
+  
+  const result = await meetingsService.updateMeetingTitle(meetingCode, newTitle, participant.name);
+  
+  if (!result) {
+    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
+    return;
+  }
+  
+  if (result.error) {
+    sendSocketError(socket, result.error, result.message);
+    return;
+  }
+  
+  console.log(`Meeting title updated to "${newTitle}" by ${participant.name} in meeting ${meetingCode}`);
+  
+  return { meeting: result.meeting, newTitle };
+}
+
+// Update participant name (facilitator only)
+async function handleUpdateParticipantName(socket, data) {
+  const { participantId, newName } = data;
+  const participantData = participantsService.getParticipant(socket.id);
+  
+  if (!participantData) {
+    sendSocketError(socket, 'NOT_IN_MEETING', 'Not in a meeting');
+    return;
+  }
+  
+  const { meetingCode, participant } = participantData;
+  
+  if (!participant.isFacilitator) {
+    sendSocketError(socket, 'FACILITATOR_REQUIRED', 'Not authorized - facilitator access required');
+    return;
+  }
+  
+  const result = await meetingsService.updateParticipantName(meetingCode, participantId, newName, participant.name);
+  
+  if (!result) {
+    sendSocketError(socket, 'MEETING_NOT_FOUND', 'Meeting not found');
+    return;
+  }
+  
+  if (result.error) {
+    sendSocketError(socket, result.error, result.message);
+    return;
+  }
+  
+  console.log(`Participant name updated to "${newName}" by ${participant.name} in meeting ${meetingCode}`);
+  
+  return { participant: result.participant, participantId, newName };
+}
+
 // Handle disconnection
 function handleDisconnect(socket) {
   console.log('User disconnected:', socket.id);
@@ -284,5 +352,7 @@ module.exports = {
   handleJoinQueue,
   handleLeaveQueue,
   handleNextSpeaker,
+  handleUpdateMeetingTitle,
+  handleUpdateParticipantName,
   handleDisconnect
 };
