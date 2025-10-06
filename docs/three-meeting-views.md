@@ -155,9 +155,10 @@ const MeetingRoomWithModes = () => {
 - Participant list with controls
 - Current speaker management
 - Meeting settings and controls
-- Speaking distribution analytics
+- Speaking distribution analytics (local and remote meetings)
 - Interventions tracking
 - Real-time participant updates
+- Speaking time tracking with timer controls
 
 #### JOIN View Features ✅
 
@@ -175,6 +176,7 @@ const MeetingRoomWithModes = () => {
 - Current speaker indicator
 - Participant list (names only)
 - Meeting information display
+- Speaking distribution analytics (for local meetings)
 - "Join Meeting" call-to-action
 - Real-time updates (when available)
 - Public access (no authentication)

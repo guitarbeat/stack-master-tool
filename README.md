@@ -4,6 +4,9 @@ Stack Facilitation App is an open-source application for democratic meeting faci
 
 ## ✨ Recent Features
 
+- ✅ **Speaking Distribution for Local Meetings** - Pie chart showing who has talked the most in local meetings
+- ✅ **Real-time Speaking Analytics** - Track speaking time and generate distribution charts for both local and remote meetings
+- ✅ **Enhanced Watch View** - Local meeting watch views now display speaking distribution data
 - ✅ **Name Editing** - Hosts/facilitators can now change participant names and meeting titles in real-time
 - ✅ **Real-time Updates** - All participants see name changes instantly via WebSocket events
 - ✅ **Editable UI Components** - Inline editing with validation and error handling
@@ -26,11 +29,13 @@ This project uses a hybrid architecture with both Supabase (for data persistence
 ### Three Meeting Views
 
 - **HOST** - Full facilitator controls with both manual and remote meeting management
-- **JOIN** - Participant view with queue interaction capabilities  
+- **JOIN** - Participant view with queue interaction capabilities
 - **WATCH** - Public read-only observer view (no authentication required)
 
 ### Core Functionality
 
+- **Speaking Distribution Analytics** - Pie charts showing speaking time distribution for both local and remote meetings
+- **Real-time Speaking Tracking** - Automatic tracking of speaking time with timer controls
 - **Real-time Name Editing** - Facilitators can edit participant names and meeting titles
 - **Unified Facilitator Interface** - Seamlessly switches between manual and remote modes
 - **Speaking Queue Management** - Real-time queue with position tracking and interventions
@@ -38,6 +43,15 @@ This project uses a hybrid architecture with both Supabase (for data persistence
 - **Role-based Access Control** - Secure facilitator-only editing capabilities
 - **Comprehensive Testing** - Unit, integration, and E2E test coverage
 - **Error Handling** - Robust error boundaries and user feedback
+
+### Speaking Distribution Features
+
+- **Pie Chart Visualization** - Interactive pie chart showing speaking time distribution
+- **Real-time Updates** - Chart updates automatically as participants speak
+- **Local Meeting Support** - Works for both local (manual) and remote meetings
+- **Watch View Integration** - Speaking distribution visible in watch views for local meetings
+- **Direct Response Tracking** - Option to include or exclude direct responses in analytics
+- **Timer Integration** - Automatic speaking time tracking with pause/resume functionality
 
 ### Name Editing Features
 
@@ -58,7 +72,7 @@ This project uses a hybrid architecture with both Supabase (for data persistence
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account (for database)
 
@@ -123,6 +137,7 @@ You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm
 ## Technology Stack
 
 ### Frontend
+
 - **Vite** - Fast build tool and dev server
 - **React 18** - UI framework with hooks and context
 - **TypeScript** - Type-safe JavaScript
@@ -132,23 +147,27 @@ You only need Node.js and npm—[install with nvm](https://github.com/nvm-sh/nvm
 - **Socket.io Client** - Real-time communication
 
 ### Backend
+
 - **Express.js** - Web server framework
 - **Socket.io** - Real-time WebSocket communication
 - **Node.js** - JavaScript runtime
 - **CORS** - Cross-origin resource sharing
 
 ### Database
+
 - **Supabase** - PostgreSQL database with real-time subscriptions
 - **Row Level Security (RLS)** - Database-level access control
 - **PostgreSQL** - Relational database
 
 ### Testing
+
 - **Vitest** - Unit testing framework
 - **Playwright** - End-to-end testing
 - **Testing Library** - React component testing
 - **Jest** - Backend testing
 
 ### Development Tools
+
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Husky** - Git hooks
@@ -162,12 +181,15 @@ stack-facilitation-app/
 │   ├── components/               # React components
 │   │   ├── MeetingRoom/         # Meeting room views (Host, Join, Watch)
 │   │   ├── StackKeeper/         # Speaking queue management
+│   │   │   └── SpeakingDistribution.tsx # Speaking analytics pie chart
 │   │   ├── Facilitator/         # Facilitator-specific components
 │   │   ├── ui/                  # shadcn/ui components
 │   │   ├── EditableParticipantName.tsx  # Name editing component
 │   │   └── EditableMeetingTitle.tsx     # Title editing component
 │   ├── hooks/                   # Custom React hooks
 │   │   ├── useUnifiedFacilitator.ts     # Main facilitator hook
+│   │   ├── useSpeakingHistory.ts        # Speaking time tracking
+│   │   ├── useSpeakerTimer.ts           # Speaker timer functionality
 │   │   ├── useFacilitatorSocket.ts     # Socket.io integration
 │   │   └── useSupabaseFacilitator.ts   # Supabase integration
 │   ├── services/                # API and socket services
@@ -202,11 +224,13 @@ stack-facilitation-app/
 The application uses Supabase for data persistence:
 
 **Tables:**
+
 - `meetings` - Meeting metadata and codes
-- `participants` - Users who have joined meetings  
+- `participants` - Users who have joined meetings
 - `speaking_queue` - Real-time speaking queue with position tracking
 
 **Features:**
+
 - Row Level Security (RLS) policies
 - Real-time subscriptions
 - Automatic meeting code generation
@@ -214,17 +238,20 @@ The application uses Supabase for data persistence:
 ### Backend Server (Express.js)
 
 The Express.js server handles:
+
 - REST API endpoints for meeting management
 - Socket.io WebSocket connections for real-time updates
 - Name editing functionality via API and socket events
 
 **Key Endpoints:**
+
 - `POST /api/meetings` - Create meeting
 - `GET /api/meetings/:code` - Get meeting info
 - `PATCH /api/meetings/:code/title` - Update meeting title
 - `PATCH /api/meetings/:code/participants/:id/name` - Update participant name
 
 **Socket Events:**
+
 - `update-meeting-title` - Real-time title updates
 - `update-participant-name` - Real-time name updates
 - `meeting-title-updated` - Broadcast title changes
@@ -242,6 +269,7 @@ The Express.js server handles:
 ### User Guides
 
 - **[Facilitation Guide](docs/FACILITATION_GUIDE.md)** - How to facilitate meetings
+- **[Speaking Distribution Guide](docs/SPEAKING_DISTRIBUTION.md)** - Using speaking analytics and distribution charts
 - **[Moderation Guide](docs/MODERATION_GUIDE.md)** - Meeting moderation best practices
 
 ### Technical Documentation
@@ -265,6 +293,7 @@ The frontend is deployed via Lovable:
 The backend server is deployed on Render:
 
 **Configuration:**
+
 - **Service name:** `stack-app-backend`
 - **Region:** Oregon (US West)
 - **Instance type:** Free (0.1 CPU, 512 MB)
@@ -278,6 +307,7 @@ The backend server is deployed on Render:
 ### Environment Variables
 
 **Frontend (.env.local):**
+
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -285,6 +315,7 @@ VITE_API_URL=your_backend_url
 ```
 
 **Backend (.env):**
+
 ```env
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -325,7 +356,7 @@ PATCH /api/meetings/:code/title
   "facilitatorName": "Facilitator Name"
 }
 
-# Update participant name  
+# Update participant name
 PATCH /api/meetings/:code/participants/:participantId/name
 {
   "newName": "Updated Name",
@@ -337,12 +368,19 @@ PATCH /api/meetings/:code/participants/:participantId/name
 
 ```javascript
 // Emit events
-socket.emit('update-meeting-title', { newTitle: 'New Title' });
-socket.emit('update-participant-name', { participantId: 'id', newName: 'New Name' });
+socket.emit("update-meeting-title", { newTitle: "New Title" });
+socket.emit("update-participant-name", {
+  participantId: "id",
+  newName: "New Name",
+});
 
 // Listen for updates
-socket.on('meeting-title-updated', (data) => { /* handle update */ });
-socket.on('participant-name-updated', (data) => { /* handle update */ });
+socket.on("meeting-title-updated", data => {
+  /* handle update */
+});
+socket.on("participant-name-updated", data => {
+  /* handle update */
+});
 ```
 
 ## Unused Files & Cleanup
