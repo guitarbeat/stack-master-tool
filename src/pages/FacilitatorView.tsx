@@ -67,6 +67,7 @@ function FacilitatorView(): JSX.Element {
     nextSpeaker,
     finishSpeaking,
     disconnect,
+    updateParticipantName,
     speakerTimer,
     elapsedTime,
     toggleSpeakerTimer,
@@ -341,6 +342,8 @@ function FacilitatorView(): JSX.Element {
             code: meetingData?.meeting_code || finalMeetingCode || "",
             facilitator: meetingData?.facilitator_name || "Facilitator",
           }}
+          onParticipantNameUpdate={updateParticipantName}
+          isHost={true}
         />
       </div>
 

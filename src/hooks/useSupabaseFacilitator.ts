@@ -370,6 +370,35 @@ export function useSupabaseFacilitator(
     }
   }, [meetingData]);
 
+  const updateParticipantName = useCallback(async (participantId: string, newName: string) => {
+    if (!meetingData) return;
+    
+    try {
+      const { error } = await supabase
+        .from("participants")
+        .update({ name: newName })
+        .eq("id", participantId)
+        .eq("meeting_id", meetingData.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Name updated",
+        description: `Participant name changed to ${newName}`,
+      });
+    } catch (err) {
+      console.error("Error updating participant name:", err);
+      toast({
+        title: "Error",
+        description: "Failed to update participant name",
+        variant: "destructive",
+      });
+      throw err;
+    }
+  }, [meetingData]);
+
   return {
     participants,
     speakingQueue,
@@ -383,6 +412,7 @@ export function useSupabaseFacilitator(
     removeFromQueue,
     clearQueue,
     disconnect,
+    updateParticipantName,
     // Timer functionality
     speakerTimer,
     elapsedTime,
