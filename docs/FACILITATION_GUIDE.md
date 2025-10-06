@@ -43,6 +43,7 @@ Stack facilitation is a democratic meeting process that ensures all voices are h
 ### When to Use Stack Facilitation
 
 Stack facilitation works well for:
+
 - **Large Group Discussions** (10+ people)
 - **Contentious Topics** where emotions may run high
 - **Decision-Making Meetings** requiring input from all stakeholders
@@ -118,6 +119,7 @@ Stack facilitation works well for:
    - **Time Limits**: Set speaking time per person (typically 2-3 minutes)
    - **Queue Limits**: Maximum number of people in queue at once
    - **Direct Response Settings**: Time window and limits for responses
+   - **Speaking Analytics**: Enable speaking time tracking and distribution charts
 
 4. **Privacy and Safety Settings**:
    - **Allow Anonymous Participants**: Decide if people can join without identifying themselves
@@ -192,45 +194,94 @@ Stack facilitation works well for:
 ### Example Facilitator Phrases
 
 **Starting Discussion**:
+
 - "Let's open this topic for discussion. Who would like to share their thoughts?"
 - "I see several hands up. Let me add you to the speaking queue."
 - "We have about 20 minutes for this topic. Please keep comments to 2-3 minutes."
 
 **Managing the Queue**:
+
 - "Sarah, you're next in the queue, followed by Marcus and then Jennifer."
 - "I see you have a direct response, Tom. You'll go next after the current speaker."
 
 **Keeping Discussion Focused**:
+
 - "That's an interesting point. How does it relate to the current proposal?"
 - "I want to make sure we hear from everyone in the queue before moving on."
 - "Let's try to focus on solutions rather than restating the problem."
 
 **Encouraging Participation**:
+
 - "We haven't heard from some folks yet. Anyone else want to share?"
 - "I notice the queue is mostly people who've already spoken. New voices?"
 - "Remember, you can also use the chat for shorter comments or questions."
+
+## Using Speaking Distribution Analytics
+
+### Understanding Speaking Distribution
+
+The Stack Facilitation App now includes speaking distribution analytics that show how speaking time is distributed among participants. This feature helps facilitators ensure balanced participation and identify patterns in who is speaking.
+
+### Features of Speaking Distribution
+
+**Pie Chart Visualization**: An interactive pie chart shows the percentage of speaking time for each participant.
+
+**Real-time Updates**: The chart updates automatically as participants speak and finish their turns.
+
+**Local Meeting Support**: Works for both local (manual) and remote meetings, providing consistent analytics across meeting types.
+
+**Watch View Integration**: Local meeting watch views display speaking distribution data, allowing observers to see participation patterns.
+
+**Direct Response Tracking**: Option to include or exclude direct responses in the analytics to get different perspectives on participation.
+
+### Using Speaking Distribution for Facilitation
+
+**Monitor Participation Balance**: Watch for patterns where certain participants dominate or others are quiet.
+
+**Identify Speaking Patterns**: Notice if some people consistently speak longer or more frequently than others.
+
+**Encourage Balanced Participation**: Use the data to gently encourage quieter participants or ask dominant speakers to step back.
+
+**Share with the Group**: Consider showing the distribution chart to the group to raise awareness about participation patterns.
+
+**Track Progress Over Time**: Use the analytics to see if facilitation efforts are improving participation balance.
+
+### Best Practices for Speaking Analytics
+
+**Use as a Tool, Not a Rule**: The data should inform your facilitation, not dictate it rigidly.
+
+**Consider Context**: Some people may need to speak more due to their role or expertise on a topic.
+
+**Respect Individual Differences**: Some people communicate more through listening than speaking.
+
+**Focus on Inclusion**: Use the data to ensure everyone has opportunities to participate, not to enforce equal time.
+
+**Maintain Privacy**: Be thoughtful about when and how to share participation data with the group.
 
 ## Managing the Speaking Queue
 
 ### Understanding Queue Types
 
 **Raise Hand**: General comments, questions, or new points
+
 - Most common type of queue entry
 - Follows standard FIFO (first in, first out) order
 - Subject to progressive stack prioritization if enabled
 
 **Direct Response**: Immediate response to current speaker
+
 - Time-limited (usually 30-60 seconds)
 - Goes to front of queue
 - Limited number per person to prevent dominance
 
-
 **Point of Information**: Factual information relevant to discussion
+
 - High priority, goes near front of queue
 - Should be objective facts, not opinions
 - Helps inform the discussion with missing information
 
 **Point of Clarification**: Request for speaker to clarify their statement
+
 - Moderate priority
 - Used when something wasn't clear or audible
 - Should be specific about what needs clarification
@@ -249,22 +300,26 @@ Stack facilitation works well for:
 
 ### Dealing with Queue Issues
 
-**Long Queue**: 
+**Long Queue**:
+
 - Pause adding new speakers
 - Ask for brief comments only
 - Consider breaking into small groups
 
 **Empty Queue**:
+
 - Ask specific questions to generate discussion
 - Call on quiet participants directly (with permission)
 - Move to next agenda item if discussion is complete
 
 **Inappropriate Queue Use**:
+
 - Gently correct misuse of direct response or points
 - Remind people of the purpose of different queue types
 - Move items to appropriate queue position if needed
 
 **Technical Problems**:
+
 - Help people join the queue manually if needed
 - Use backup methods (chat, verbal) if the app fails
 - Keep a written backup of the speaking order
@@ -326,15 +381,19 @@ Within each tier, the order is first-come, first-served (FIFO).
 ### Common Concerns and Responses
 
 **"This isn't fair - it should be first come, first served"**
+
 - Response: "Progressive stack helps balance out advantages that some people have in speaking up. The goal is to make sure everyone gets heard, not just the people who are quickest to raise their hands."
 
 **"I don't want to identify myself with tags"**
+
 - Response: "That's completely fine. The tags are voluntary, and you can participate without using any. The system will still work fairly."
 
 **"How do we know people are being honest about their identities?"**
+
 - Response: "We trust people to self-identify honestly. The system is based on good faith participation, just like the rest of our meeting process."
 
 **"This feels divisive or like it's creating categories"**
+
 - Response: "The categories already exist in society - we're just acknowledging them to make sure everyone gets heard. The goal is inclusion, not division."
 
 ### Best Practices for Progressive Stack
@@ -448,18 +507,22 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 ### Example Facilitation Language for Proposals
 
 **Introducing a Proposal**:
+
 - "We have a proposal from Maria about changing our meeting schedule. Maria, would you like to present it?"
 - "Let's take some time to discuss this proposal. I'll open the speaking queue for questions and comments."
 
 **Checking for Consent**:
+
 - "Let's see where everyone stands on this proposal. Please indicate your consent level in the app."
 - "I see we have mostly agrees and stand-asides, but Jennifer has indicated a concern. Jennifer, can you share what's worrying you?"
 
 **Working with Concerns**:
+
 - "Thank you for sharing that concern. Does anyone have ideas for how we might address it?"
 - "Maria, as the proposer, how do you feel about modifying the proposal to address Jennifer's concern?"
 
 **Handling Blocks**:
+
 - "David has indicated a block. David, can you help us understand your objection?"
 - "This seems like a fundamental disagreement about our values. Should we table this proposal and have a broader discussion about our principles?"
 
@@ -484,6 +547,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 **Symptoms**: Interrupting others, making personal attacks, going off-topic repeatedly, dominating discussion.
 
 **Strategies**:
+
 - **Address Privately First**: Use private chat or breakout to speak with them directly
 - **Restate Norms**: Remind the group of agreed-upon meeting guidelines
 - **Use Structure**: Enforce speaking queue and time limits more strictly
@@ -491,6 +555,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 - **Remove if Necessary**: As a last resort, use the app's removal features
 
 **Example Language**:
+
 - "Let's remember our agreement to let each person finish their thoughts before responding."
 - "I need to interrupt here. We agreed to keep comments to 3 minutes, and we need to move to the next speaker."
 - "I'm going to ask everyone to take a deep breath and remember our community guidelines."
@@ -500,6 +565,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 **Symptoms**: Crying, anger, personal attacks, shutting down.
 
 **Strategies**:
+
 - **Stay Calm**: Model the behavior you want to see
 - **Acknowledge Feelings**: "I can see this is really important to you"
 - **Offer Support**: "Would you like to take a short break?"
@@ -507,6 +573,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 - **Follow Up Privately**: Check in with the person after the meeting
 
 **Example Language**:
+
 - "I can see there are strong feelings about this topic. Let's take a moment to breathe."
 - "Thank you for sharing how this affects you. Let's make sure we hear from others too."
 - "Would it be helpful to take a 5-minute break?"
@@ -516,6 +583,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 **Symptoms**: App crashes, internet problems, audio issues.
 
 **Strategies**:
+
 - **Have Backup Plans**: Keep a written list of speakers, use phone conference
 - **Stay Flexible**: Be willing to adapt the process to work with available technology
 - **Help Participants**: Assist people with technical problems
@@ -527,6 +595,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 **Symptoms**: Empty speaking queue, minimal responses, people seeming disengaged.
 
 **Strategies**:
+
 - **Change Format**: Try small group discussions or written input
 - **Ask Direct Questions**: "What questions do people have about this?"
 - **Check Energy**: "How is everyone feeling about this discussion?"
@@ -538,6 +607,7 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 **Symptoms**: People presenting different "facts," confusion about what's true.
 
 **Strategies**:
+
 - **Acknowledge Uncertainty**: "It sounds like we have different information about this"
 - **Assign Research**: "Can someone look into this and report back?"
 - **Focus on Values**: "What principles should guide our decision even if we don't have all the facts?"
@@ -551,7 +621,8 @@ The Stack Facilitation App uses consent-based decision making, which is differen
 
 **How it Works**: Participants can report incidents anonymously through the app.
 
-**Facilitator Response**: 
+**Facilitator Response**:
+
 - Take all reports seriously
 - Follow up privately with involved parties
 - Consider whether immediate action is needed
@@ -624,6 +695,7 @@ Sometimes the most responsible thing is to end a meeting before completing the a
 **Time Constraints**: If it's clear you won't accomplish your goals in the available time.
 
 **How to End Early**:
+
 1. Acknowledge what's happening
 2. Explain why you're ending the meeting
 3. Schedule follow-up if needed
@@ -639,6 +711,7 @@ Sometimes the most responsible thing is to end a meeting before completing the a
 **Generate Meeting Minutes**: Use the app's export function to create a comprehensive record.
 
 **Include Key Information**:
+
 - Decisions made and consent levels
 - Action items and responsible parties
 - Major discussion points and concerns
@@ -735,24 +808,28 @@ Sometimes the most responsible thing is to end a meeting before completing the a
 Consider asking participants these questions to improve future meetings:
 
 **Process Questions**:
+
 - How well did the speaking queue work for you?
 - Did you feel like you had adequate opportunity to participate?
 - Was the progressive stack (if used) helpful or problematic?
 - How was the pace of the meeting?
 
 **Content Questions**:
+
 - Did we accomplish our stated goals?
 - Were the decisions we made good ones?
 - What important topics did we miss?
 - How well did we handle disagreements?
 
 **Inclusion Questions**:
+
 - Did you feel safe and welcome in the meeting?
 - Were all voices heard and respected?
 - How could we be more inclusive in future meetings?
 - Did the technology help or hinder participation?
 
 **Overall Questions**:
+
 - What worked best about this meeting?
 - What was most frustrating or challenging?
 - What would you change about how we run meetings?
@@ -861,4 +938,3 @@ Consider asking participants these questions to improve future meetings:
 This guide is a living document that should be updated based on experience and feedback. The most important thing to remember is that facilitation is both an art and a skill that improves with practice. Be patient with yourself and your group as you learn to use these tools effectively.
 
 **Remember**: The goal is not perfect meetings, but meetings that serve your community's needs for democratic participation and collective decision-making.
-
