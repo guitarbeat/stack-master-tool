@@ -52,40 +52,10 @@ async function createMeetingAsync(facilitatorName, meetingTitle) {
       return createMeeting(facilitatorName, meetingTitle);
     }
 
-    // In production, use Supabase
-    const supabase = require('../config/supabase');
-    
-    const { data, error } = await supabase
-      .from('meetings')
-      .insert([
-        {
-          id: meetingId,
-          meeting_code: meetingCode,
-          title: meetingTitle.trim(),
-          facilitator_name: facilitatorName.trim(),
-          is_active: true,
-          created_at: new Date().toISOString()
-        }
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating meeting in Supabase:', error);
-      throw new Error('Failed to create meeting');
-    }
-
-    // Return meeting object in expected format
-    return {
-      id: data.id,
-      code: data.meeting_code,
-      title: data.title,
-      facilitator: data.facilitator_name,
-      participants: [],
-      queue: [],
-      createdAt: data.created_at,
-      isActive: data.is_active
-    };
+    // For now, use in-memory storage even in production due to Supabase key issues
+    // TODO: Fix Supabase configuration
+    console.log('Using in-memory storage due to Supabase configuration issues');
+    return createMeeting(facilitatorName, meetingTitle);
   } catch (err) {
     console.error('Error in createMeetingAsync:', err);
     throw err;
@@ -100,33 +70,10 @@ async function getMeeting(code) {
   }
 
   try {
-    const supabase = require('../config/supabase');
-    
-    const { data, error } = await supabase
-      .from('meetings')
-      .select('*')
-      .eq('meeting_code', code.toUpperCase())
-      .eq('is_active', true)
-      .single();
-    
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error getting meeting:', error);
-      return null;
-    }
-    
-    if (!data) return null;
-    
-    // Convert to expected format
-    return {
-      id: data.id,
-      code: data.meeting_code,
-      title: data.title,
-      facilitator: data.facilitator_name,
-      participants: [], // Will be populated by socket connections
-      queue: [], // Will be populated by socket connections
-      createdAt: data.created_at,
-      isActive: data.is_active
-    };
+    // For now, use in-memory storage even in production due to Supabase key issues
+    // TODO: Fix Supabase configuration
+    console.log('Using in-memory storage due to Supabase configuration issues');
+    return meetings.get(code.toUpperCase()) || null;
   } catch (err) {
     console.error('Error in getMeeting:', err);
     return null;
