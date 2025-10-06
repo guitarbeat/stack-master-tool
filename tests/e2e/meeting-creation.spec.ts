@@ -2,22 +2,22 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Meeting Creation', () => {
   test('should create a meeting successfully and show success page', async ({ page }) => {
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Fill in the form
-    await page.fill('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]', 'Test Meeting');
-    await page.fill('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]', 'Test Facilitator');
+    await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
     
     // Submit the form
-    const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();
+    const submitButton = page.locator('button[type="submit"]:has-text("Host Meeting")');
     await expect(submitButton).toBeVisible();
     await submitButton.click();
     
     // Wait for loading to complete
-    await expect(page.locator('text=Creating Meeting...')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=Hosting Meeting...')).not.toBeVisible({ timeout: 10000 });
     
     // Should show success page with meeting code
-    await expect(page.locator('text=Your meeting is ready!')).toBeVisible();
+    await expect(page.locator('text=Meeting Created!')).toBeVisible();
     await expect(page.locator('text=Meeting Code')).toBeVisible();
     
     // Should show a 6-character meeting code
@@ -35,33 +35,33 @@ test.describe('Meeting Creation', () => {
   });
 
   test('should show validation errors for empty fields', async ({ page }) => {
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Try to submit without filling fields
-    const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();
+    const submitButton = page.locator('button[type="submit"], button:has-text("Host Meeting")').first();
     await submitButton.click();
     
     // Should show validation errors (browser native validation)
-    const facilitatorInput = page.locator('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]');
-    const titleInput = page.locator('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]');
+    const facilitatorInput = page.locator('input[placeholder="Enter your name"]');
+    const titleInput = page.locator('input[placeholder="Enter meeting name"]');
     
     await expect(facilitatorInput).toHaveAttribute('required');
     await expect(titleInput).toHaveAttribute('required');
   });
 
   test('should show validation errors for invalid input', async ({ page }) => {
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Fill with invalid data
-    await page.fill('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]', '');
-    await page.fill('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]', 'A'.repeat(101));
+    await page.fill('input[placeholder="Enter your name"]', '');
+    await page.fill('input[placeholder="Enter meeting name"]', 'A'.repeat(101));
     
-    const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();
+    const submitButton = page.locator('button[type="submit"], button:has-text("Host Meeting")').first();
     await submitButton.click();
     
     // Should show validation errors (browser native validation)
-    const facilitatorInput = page.locator('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]');
-    const titleInput = page.locator('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]');
+    const facilitatorInput = page.locator('input[placeholder="Enter your name"]');
+    const titleInput = page.locator('input[placeholder="Enter meeting name"]');
     
     await expect(facilitatorInput).toHaveAttribute('required');
     await expect(titleInput).toHaveAttribute('required');
@@ -80,11 +80,11 @@ test.describe('Meeting Creation', () => {
       });
     });
 
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Fill in the form
-    await page.fill('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]', 'Test Meeting');
-    await page.fill('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]', 'Test Facilitator');
+    await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
     
     // Submit the form
     const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();
@@ -95,11 +95,11 @@ test.describe('Meeting Creation', () => {
   });
 
   test('should copy meeting code to clipboard', async ({ page }) => {
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Fill in the form
-    await page.fill('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]', 'Test Meeting');
-    await page.fill('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]', 'Test Facilitator');
+    await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
     
     // Submit the form
     const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();
@@ -117,11 +117,11 @@ test.describe('Meeting Creation', () => {
   });
 
   test('should copy shareable link to clipboard', async ({ page }) => {
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Fill in the form
-    await page.fill('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]', 'Test Meeting');
-    await page.fill('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]', 'Test Facilitator');
+    await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
     
     // Submit the form
     const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();
@@ -139,11 +139,11 @@ test.describe('Meeting Creation', () => {
   });
 
   test('should navigate to facilitator view when start meeting is clicked', async ({ page }) => {
-    await page.goto('/create');
+    await page.goto('/meeting?mode=host');
     
     // Fill in the form
-    await page.fill('input[placeholder*="Meeting Name" i], input[placeholder*="title" i]', 'Test Meeting');
-    await page.fill('input[placeholder*="Your Name" i], input[placeholder*="facilitator" i]', 'Test Facilitator');
+    await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
     
     // Submit the form
     const submitButton = page.locator('button[type="submit"], button:has-text("Create Meeting")').first();

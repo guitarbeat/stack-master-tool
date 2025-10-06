@@ -2,22 +2,22 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Meeting Joining', () => {
   test('should show join form with proper elements', async ({ page }) => {
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Check for join form elements
-    await expect(page.locator('input[placeholder*="code" i], input[name="meetingCode"]')).toBeVisible();
-    await expect(page.locator('input[placeholder*="name" i], input[name="participantName"]')).toBeVisible();
-    await expect(page.locator('button[type="submit"], button:has-text("Join")')).toBeVisible();
+    await expect(page.locator('input[placeholder="ABC123"]')).toBeVisible();
+    await expect(page.locator('input[placeholder="Enter your name"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"]:has-text("Join Meeting")')).toBeVisible();
   });
 
   test('should show validation error for invalid meeting code format', async ({ page }) => {
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Enter invalid meeting code (too short)
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'ABC');
-    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    await page.fill('input[placeholder="ABC123"]', 'ABC');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
     
-    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
     await joinButton.click();
     
     // Should show validation error
@@ -37,31 +37,31 @@ test.describe('Meeting Joining', () => {
       });
     });
 
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Enter valid format but non-existent meeting code
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'NONEXISTENT');
-    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    await page.fill('input[placeholder="ABC123"]', 'NONEXISTENT');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
     
-    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    const joinButton = page.locator('button[type="submit"]:has-text("Join Meeting")');
     await joinButton.click();
     
     // Should show error for non-existent meeting
-    await expect(page.locator('text=not found, text=error')).toBeVisible();
+    await expect(page.locator('text=Meeting not found')).toBeVisible();
   });
 
   test('should show validation error for empty participant name', async ({ page }) => {
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Enter valid meeting code but empty name
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'ABCDEF');
-    await page.fill('input[placeholder*="name" i], input[name="participantName"]', '');
+    await page.fill('input[placeholder="ABC123"]', 'ABCDEF');
+    await page.fill('input[placeholder="Enter your name"]', '');
     
-    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    const joinButton = page.locator('button[type="submit"]:has-text("Join Meeting")');
     await joinButton.click();
     
     // Should show validation error
-    await expect(page.locator('input[placeholder*="name" i], input[name="participantName"]')).toHaveAttribute('required');
+    await expect(page.locator('input[placeholder="Enter your name"]')).toHaveAttribute('required');
   });
 
   test('should handle server errors gracefully', async ({ page }) => {
@@ -77,13 +77,13 @@ test.describe('Meeting Joining', () => {
       });
     });
 
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Enter valid data
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'ABCDEF');
-    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    await page.fill('input[placeholder="ABC123"]', 'ABCDEF');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
     
-    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
     await joinButton.click();
     
     // Should show error message
@@ -119,13 +119,13 @@ test.describe('Meeting Joining', () => {
       });
     });
 
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Enter valid data
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'TEST12');
-    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    await page.fill('input[placeholder="ABC123"]', 'TEST12');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
     
-    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
     await joinButton.click();
     
     // Should navigate to meeting room
@@ -134,10 +134,10 @@ test.describe('Meeting Joining', () => {
 
   test('should auto-fill meeting code from URL parameter', async ({ page }) => {
     // Navigate with meeting code in URL
-    await page.goto('/join?code=TEST12');
+    await page.goto('/meeting?mode=join&code=TEST12');
     
     // Should auto-fill the meeting code
-    const codeInput = page.locator('input[placeholder*="code" i], input[name="meetingCode"]');
+    const codeInput = page.locator('input[placeholder="ABC123"]');
     await expect(codeInput).toHaveValue('TEST12');
   });
 
@@ -160,13 +160,13 @@ test.describe('Meeting Joining', () => {
       }, 1000);
     });
 
-    await page.goto('/join');
+    await page.goto('/meeting?mode=join');
     
     // Enter valid data
-    await page.fill('input[placeholder*="code" i], input[name="meetingCode"]', 'TEST12');
-    await page.fill('input[placeholder*="name" i], input[name="participantName"]', 'Test Participant');
+    await page.fill('input[placeholder="ABC123"]', 'TEST12');
+    await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
     
-    const joinButton = page.locator('button[type="submit"], button:has-text("Join")').first();
+    const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
     await joinButton.click();
     
     // Should show loading state

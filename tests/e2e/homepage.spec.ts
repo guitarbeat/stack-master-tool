@@ -15,22 +15,22 @@ test.describe('Homepage', () => {
     await page.goto('/');
     
     // Look for host meeting button/link
-    const createButton = page.locator('a[href="/create"], button:has-text("Host")').first();
+    const createButton = page.locator('a[href="/meeting?mode=host"], button:has-text("Start Hosting")').first();
     await expect(createButton).toBeVisible();
     
     await createButton.click();
-    await expect(page).toHaveURL(/.*\/create/);
+    await expect(page).toHaveURL(/.*\/meeting\?mode=host/);
   });
 
   test('should navigate to join meeting page', async ({ page }) => {
     await page.goto('/');
     
     // Look for join meeting button/link
-    const joinButton = page.locator('a[href="/join"], button:has-text("Join")').first();
+    const joinButton = page.locator('a[href="/meeting?mode=join"], button:has-text("Join Meeting")').first();
     await expect(joinButton).toBeVisible();
     
     await joinButton.click();
-    await expect(page).toHaveURL(/.*\/join/);
+    await expect(page).toHaveURL(/.*\/meeting\?mode=join/);
   });
 
   test('should be responsive on mobile', async ({ page }) => {
