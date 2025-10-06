@@ -345,6 +345,63 @@ socket.on('meeting-title-updated', (data) => { /* handle update */ });
 socket.on('participant-name-updated', (data) => { /* handle update */ });
 ```
 
+## Unused Files & Cleanup
+
+This project contains several files that are currently unused or marked for cleanup:
+
+### 📁 Legacy Documentation Files
+- `plan.md` - Development roadmap (superseded by current architecture)
+- `todo.md` - Task tracking (superseded by current development status)
+- `WATCH_VIEW_IMPLEMENTATION.md` - Implementation notes (completed feature)
+- `CHANGELOG.md` - Legacy changelog (outdated)
+
+### 🧪 Test Configuration Files (Unused)
+- `test.config.js` - Jest configuration (not used, project uses Vitest)
+- `coverage.config.js` - Coverage configuration (not used)
+- `scripts/coverage-report.js` - Coverage reporting script (not used)
+- `scripts/test-runner.js` - Test runner script (not used)
+
+### 🐳 Docker Files (Legacy)
+- `docker/` directory - Docker configuration files
+  - `healthcheck.sh` - Health check script
+  - `init-db.sql` - Database initialization
+  - `nginx.conf` - Nginx configuration
+  - `start.sh` - Container startup script
+
+### 🚀 Deployment Files (Legacy)
+- `deploy/deploy.sh` - Deployment script (references old structure)
+- `backend/render.yaml` - Render deployment config (legacy)
+
+### 📊 Coverage & Test Results (Generated)
+- `coverage/` directory - Generated test coverage reports
+- `test-results/` directory - Generated test results
+- `playwright-report/` directory - Generated E2E test reports
+
+### 📚 Documentation Consolidation
+- `docs/COMBINED.md` - Consolidated documentation (redundant)
+- `docs/CONSOLIDATION.md` - Consolidation plan (completed)
+- `docs/REBUILD_PLAN.md` - Architecture overview (superseded)
+
+### 🧹 Cleanup Recommendations
+
+**Safe to Remove:**
+- Legacy documentation files (`plan.md`, `todo.md`, `WATCH_VIEW_IMPLEMENTATION.md`)
+- Unused test configuration files
+- Generated coverage and test result directories
+- Docker files (if not using Docker deployment)
+- Legacy deployment scripts
+
+**Review Before Removing:**
+- `CHANGELOG.md` - May contain historical information
+- `docs/COMBINED.md` - May be referenced elsewhere
+- `deploy/deploy.sh` - May be used for specific deployment scenarios
+
+**Keep:**
+- All files in `src/` directory (active codebase)
+- All files in `backend/` directory (active backend)
+- All files in `docs/` except those marked for removal
+- Configuration files (`package.json`, `tsconfig.json`, etc.)
+
 ## Contributing
 
 1. Fork the repository
