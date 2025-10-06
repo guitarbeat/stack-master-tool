@@ -1,11 +1,18 @@
-import { useState } from 'react';
-import { ArrowLeft, SkipForward, RotateCcw, Play, Users, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import {
+  ArrowLeft,
+  SkipForward,
+  RotateCcw,
+  Play,
+  Users,
+  Plus,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -13,23 +20,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { RemoteModeToggle } from '@/components/Facilitator/RemoteModeToggle';
-import { useUnifiedFacilitator } from '@/hooks/useUnifiedFacilitator';
-import CurrentSpeakerCard from '@/components/CurrentSpeakerCard';
-import ParticipantList from '@/components/ParticipantList';
-import { SpeakingDistribution } from '@/components/StackKeeper/SpeakingDistribution';
-import { InterventionsPanel } from '@/components/StackKeeper/InterventionsPanel';
-import { getQueueTypeDisplay } from '@/utils/queue';
-import { toast } from '@/hooks/use-toast';
-import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
-import { KeyboardShortcutsHelp } from '@/components/KeyboardShortcutsHelp';
+} from "@/components/ui/dialog";
+import { RemoteModeToggle } from "@/components/Facilitator/RemoteModeToggle";
+import { useUnifiedFacilitator } from "@/hooks/useUnifiedFacilitator";
+import CurrentSpeakerCard from "@/components/CurrentSpeakerCard";
+import ParticipantList from "@/components/ParticipantList";
+import { SpeakingDistribution } from "@/components/StackKeeper/SpeakingDistribution";
+import { InterventionsPanel } from "@/components/StackKeeper/InterventionsPanel";
+import { getQueueTypeDisplay } from "@/utils/queue";
+import { toast } from "@/hooks/use-toast";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
+import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
 
 function UnifiedFacilitator() {
   const navigate = useNavigate();
   const [facilitatorName] = useState(() => {
-    const stored = localStorage.getItem('facilitatorName');
-    return stored || 'Facilitator';
+    const stored = localStorage.getItem("facilitatorName");
+    return stored || "Facilitator";
   });
 
   const {
@@ -44,6 +51,7 @@ function UnifiedFacilitator() {
     currentSpeaker,
     nextSpeaker,
     addParticipant,
+    getSpeakingDistribution,
     manualStack,
     remoteManagement,
   } = useUnifiedFacilitator(facilitatorName);
@@ -52,7 +60,10 @@ function UnifiedFacilitator() {
     addParticipant(name);
   };
 
-  const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
+  const handleParticipantNameUpdate = async (
+    participantId: string,
+    newName: string
+  ) => {
     if (isRemoteEnabled && remoteManagement.updateParticipantName) {
       // In remote mode, update the participant name in the database
       await remoteManagement.updateParticipantName(participantId, newName);
@@ -60,9 +71,9 @@ function UnifiedFacilitator() {
       // In manual mode, we could update the local state
       // This would require extending the manual stack management
       toast({
-        title: 'Name editing not implemented',
-        description: 'This feature will be available soon in manual mode',
-        variant: 'destructive',
+        title: "Name editing not implemented",
+        description: "This feature will be available soon in manual mode",
+        variant: "destructive",
       });
     }
   };
@@ -78,7 +89,7 @@ function UnifiedFacilitator() {
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -86,37 +97,39 @@ function UnifiedFacilitator() {
       <KeyboardShortcuts
         onQuickAdd={() => {
           // Focus the quick add input if available
-          const quickAddButton = document.querySelector('[data-quick-add-trigger]') as HTMLButtonElement;
+          const quickAddButton = document.querySelector(
+            "[data-quick-add-trigger]"
+          ) as HTMLButtonElement;
           if (quickAddButton) {
             quickAddButton.click();
           }
         }}
         onNextSpeaker={nextSpeaker}
-        onUndo={isRemoteEnabled ? remoteManagement.handleUndo : manualStack.handleUndo}
+        onUndo={
+          isRemoteEnabled ? remoteManagement.handleUndo : manualStack.handleUndo
+        }
         disabled={isCreatingMeeting}
       />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Button
-              onClick={() => navigate('/')}
-              variant="ghost"
-              size="sm"
-            >
+            <Button onClick={() => navigate("/")} variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Home
             </Button>
             <div>
               <h1 className="text-3xl font-bold">Stack Facilitator</h1>
-              <p className="text-muted-foreground">Welcome, {facilitatorName}</p>
+              <p className="text-muted-foreground">
+                Welcome, {facilitatorName}
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <Badge variant={isRemoteEnabled ? 'default' : 'secondary'}>
-              {isRemoteEnabled ? 'Remote Enabled' : 'Manual Mode'}
+            <Badge variant={isRemoteEnabled ? "default" : "secondary"}>
+              {isRemoteEnabled ? "Remote Enabled" : "Manual Mode"}
             </Badge>
             {isRemoteEnabled && (
               <Badge variant="outline">
@@ -148,7 +161,8 @@ function UnifiedFacilitator() {
               currentSpeaker={
                 currentSpeaker
                   ? {
-                      participantName: currentSpeaker.participantName || 'Unknown',
+                      participantName:
+                        currentSpeaker.participantName || "Unknown",
                       type: currentSpeaker.queue_type,
                     }
                   : null
@@ -157,11 +171,11 @@ function UnifiedFacilitator() {
               speakerTimer={
                 isRemoteEnabled ? remoteManagement.speakerTimer : null
               }
-              elapsedTime={
-                isRemoteEnabled ? remoteManagement.elapsedTime : 0
-              }
+              elapsedTime={isRemoteEnabled ? remoteManagement.elapsedTime : 0}
               onToggleTimer={
-                isRemoteEnabled ? remoteManagement.toggleSpeakerTimer : undefined
+                isRemoteEnabled
+                  ? remoteManagement.toggleSpeakerTimer
+                  : undefined
               }
               onResetTimer={
                 isRemoteEnabled ? remoteManagement.resetSpeakerTimer : undefined
@@ -179,16 +193,17 @@ function UnifiedFacilitator() {
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <CardTitle>Speaking Queue</CardTitle>
               <div className="flex items-center gap-2">
-                {isRemoteEnabled && remoteManagement.undoHistory?.length > 0 && (
-                  <Button
-                    onClick={remoteManagement.handleUndo}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Undo ({remoteManagement.undoHistory.length})
-                  </Button>
-                )}
+                {isRemoteEnabled &&
+                  remoteManagement.undoHistory?.length > 0 && (
+                    <Button
+                      onClick={remoteManagement.handleUndo}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Undo ({remoteManagement.undoHistory.length})
+                    </Button>
+                  )}
                 <Button
                   onClick={nextSpeaker}
                   disabled={speakingQueue.length === 0}
@@ -204,16 +219,18 @@ function UnifiedFacilitator() {
               {speakingQueue.length === 0 ? (
                 <div className="text-center py-12">
                   <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-muted-foreground text-lg">No one in queue</p>
+                  <p className="text-muted-foreground text-lg">
+                    No one in queue
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     {isRemoteEnabled
-                      ? 'Participants can raise their hand to join'
+                      ? "Participants can raise their hand to join"
                       : 'Click "Add" to add participants manually'}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                {speakingQueue.map((entry) => {
+                  {speakingQueue.map(entry => {
                     const isSpeaking = entry.is_speaking;
 
                     return (
@@ -221,19 +238,19 @@ function UnifiedFacilitator() {
                         key={entry.id}
                         className={`flex items-center justify-between p-6 rounded-xl border transition-standard ${
                           isSpeaking
-                            ? 'bg-primary/10 border-primary/40'
-                            : 'bg-muted/20 hover:bg-muted/40'
+                            ? "bg-primary/10 border-primary/40"
+                            : "bg-muted/20 hover:bg-muted/40"
                         }`}
                       >
                         <div className="flex items-center gap-4">
                           <div
                             className={`px-4 py-2 rounded-full text-sm font-semibold ${
                               isSpeaking
-                                ? 'bg-primary text-primary-foreground animate-pulse'
-                                : 'bg-muted'
+                                ? "bg-primary text-primary-foreground animate-pulse"
+                                : "bg-muted"
                             }`}
                           >
-                            {isSpeaking ? '🎤 Speaking' : `#${entry.position}`}
+                            {isSpeaking ? "🎤 Speaking" : `#${entry.position}`}
                           </div>
                           <span className="font-semibold text-lg">
                             {entry.participantName}
@@ -251,8 +268,8 @@ function UnifiedFacilitator() {
                               <Button
                                 onClick={() =>
                                   handleAddIntervention(
-                                    'direct-response',
-                                    entry.participantName || 'Unknown'
+                                    "direct-response",
+                                    entry.participantName || "Unknown"
                                   )
                                 }
                                 variant="outline"
@@ -263,8 +280,8 @@ function UnifiedFacilitator() {
                               <Button
                                 onClick={() =>
                                   handleAddIntervention(
-                                    'clarifying-question',
-                                    entry.participantName || 'Unknown'
+                                    "clarifying-question",
+                                    entry.participantName || "Unknown"
                                   )
                                 }
                                 variant="outline"
@@ -277,7 +294,9 @@ function UnifiedFacilitator() {
                           {isSpeaking && (
                             <div className="flex items-center text-primary">
                               <Play className="w-4 h-4 mr-1" />
-                              <span className="text-sm font-medium">Speaking</span>
+                              <span className="text-sm font-medium">
+                                Speaking
+                              </span>
                             </div>
                           )}
                         </div>
@@ -291,41 +310,40 @@ function UnifiedFacilitator() {
 
           {/* Participants */}
           <ParticipantList
-            participants={participants.map((p) => ({
+            participants={participants.map(p => ({
               id: p.id,
               name: p.name,
               isFacilitator: p.is_facilitator ?? false,
-              isInQueue: speakingQueue.some((q) => q.participant_id === p.id),
+              isInQueue: speakingQueue.some(q => q.participant_id === p.id),
               joinedAt: p.joined_at,
             }))}
             meetingData={{
-              code: meetingCode || 'MANUAL',
+              code: meetingCode || "MANUAL",
               facilitator: facilitatorName,
             }}
-            onAddParticipant={!isRemoteEnabled ? handleAddParticipant : undefined}
+            onAddParticipant={
+              !isRemoteEnabled ? handleAddParticipant : undefined
+            }
             onParticipantNameUpdate={handleParticipantNameUpdate}
             isHost={true}
             showQuickAdd={!isRemoteEnabled}
           />
         </div>
 
-        {/* Analytics - Only show in remote mode */}
-        {isRemoteEnabled && (
-          <>
-            <SpeakingDistribution
-              speakingData={remoteManagement.getSpeakingDistribution?.(true) || []}
-              includeDirectResponses={true}
-              onToggleIncludeDirectResponses={() => {}}
-            />
+        {/* Analytics - Show for both local and remote meetings */}
+        <SpeakingDistribution
+          speakingData={getSpeakingDistribution?.(true) || []}
+          includeDirectResponses={true}
+          onToggleIncludeDirectResponses={() => {}}
+        />
 
-            <InterventionsPanel
-              interventions={remoteManagement.interventions || []}
-              onClearInterventions={() =>
-                remoteManagement.setInterventions?.([])
-              }
-              showInterventionsPanel={true}
-            />
-          </>
+        {/* Interventions - Only show in remote mode */}
+        {isRemoteEnabled && (
+          <InterventionsPanel
+            interventions={remoteManagement.interventions || []}
+            onClearInterventions={() => remoteManagement.setInterventions?.([])}
+            showInterventionsPanel={true}
+          />
         )}
       </div>
     </div>

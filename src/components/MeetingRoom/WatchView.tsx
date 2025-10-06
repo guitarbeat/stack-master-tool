@@ -21,6 +21,7 @@ import { ErrorState } from "./ErrorState";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { MeetingContext } from "./MeetingContext";
 import { EnhancedErrorState } from "./EnhancedErrorState";
+import { SpeakingDistribution } from "../StackKeeper/SpeakingDistribution";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 
@@ -53,6 +54,7 @@ export const WatchView = (): JSX.Element => {
     isConnected,
     connectionQuality,
     lastConnected,
+    getSpeakingDistribution,
   } = isLocalMeeting ? localWatchData : publicWatchData;
 
   const handleWatch = () => {
@@ -118,7 +120,7 @@ export const WatchView = (): JSX.Element => {
       <EnhancedErrorState
         error={error}
         onRetry={() => window.location.reload()}
-        onGoHome={() => navigate('/')}
+        onGoHome={() => navigate("/")}
         meetingCode={effectiveMeetingCode}
         isRetrying={isLoading}
       />
@@ -151,12 +153,26 @@ export const WatchView = (): JSX.Element => {
         isConnecting={isLoading}
         connectionQuality={connectionQuality}
         participantCount={participants?.length || 0}
-        meetingDuration={meetingData ? Math.floor((Date.now() - new Date(meetingData.createdAt || Date.now()).getTime()) / 1000) : 0}
+        meetingDuration={
+          meetingData
+            ? Math.floor(
+                (Date.now() -
+                  new Date(meetingData.createdAt || Date.now()).getTime()) /
+                  1000
+              )
+            : 0
+        }
       />
 
       {/* Meeting Context for watchers */}
       <MeetingContext
-        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
+        meetingData={
+          meetingData || {
+            code: "",
+            title: "Loading...",
+            facilitator: "Loading...",
+          }
+        }
         participants={participants || []}
         speakingQueue={speakingQueue || []}
         currentSpeaker={currentSpeaker}
@@ -172,6 +188,15 @@ export const WatchView = (): JSX.Element => {
           onLeaveQueue={() => {}}
         />
       </div>
+
+      {/* Speaking Distribution - Only show for local meetings */}
+      {isLocalMeeting && getSpeakingDistribution && (
+        <SpeakingDistribution
+          speakingData={getSpeakingDistribution(true)}
+          includeDirectResponses={true}
+          onToggleIncludeDirectResponses={() => {}}
+        />
+      )}
 
       {/* Read-only notice */}
       <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
