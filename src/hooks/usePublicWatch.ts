@@ -1,4 +1,3 @@
-// @ts-nocheck - Legacy API service during migration
 import { useState, useEffect } from "react";
 import apiService from "../services/api.js";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";

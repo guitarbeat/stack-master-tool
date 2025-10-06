@@ -1,8 +1,8 @@
 # Production Readiness Plan - Stack Master Tool
 
-**Current Status**: Hybrid architecture (Express/Socket.io + Supabase) - Supabase migration 60% complete  
+**Current Status**: Hybrid architecture (Express/Socket.io + Supabase) - Supabase migration 40% complete  
 **Target**: Production-ready democratic meeting facilitation app  
-**Priority**: Complete Migration → Security → Testing → Performance → Polish
+**Priority**: Complete Migration → Testing → Security → Performance → Polish
 
 ---
 
@@ -17,10 +17,10 @@
 
 ### Quick Wins (Can be done in 1-2 days)
 
-- [ ] Write basic component tests for core components
+- [ ] Write basic component tests for core components (HostView, JoinView, WatchView)
 - [ ] Add error boundaries to main routes
-- [ ] Complete JOIN view migration to Supabase
-- [ ] Complete WATCH view migration to Supabase
+- [ ] Complete JOIN view migration to Supabase (replace useMeetingSocket with Supabase Realtime)
+- [ ] Complete WATCH view migration to Supabase (replace usePublicWatch with Supabase Realtime)
 
 ---
 
@@ -84,14 +84,16 @@
   - Meeting creation migrated to Supabase
 
 - [ ] **Migrate JOIN view to Supabase**
-  - Replace Express/Socket.io with Supabase Realtime
+  - Replace `useMeetingSocket` with Supabase Realtime hooks
   - Update `src/components/MeetingRoom/JoinView.tsx`
-  - Update `src/hooks/useParticipantManagement.ts`
+  - Create new `useSupabaseParticipant` hook
+  - Remove dependency on legacy socket service
 
 - [ ] **Migrate WATCH view to Supabase**
-  - Replace Express/Socket.io with Supabase Realtime
+  - Replace `usePublicWatch` with Supabase Realtime hooks
   - Update `src/components/MeetingRoom/WatchView.tsx`
-  - Update `src/hooks/usePublicWatch.ts`
+  - Create new `useSupabaseWatch` hook
+  - Remove dependency on legacy API service
 
 - [ ] **Remove legacy backend**
   - Delete `backend/` directory
@@ -427,9 +429,9 @@ _Next Review: Weekly during immediate priorities phase_
 
 ### In Progress 🔄
 
-- JOIN view migration (0% complete)
-- WATCH view migration (0% complete)
-- Test coverage implementation (0% complete)
+- JOIN view migration (0% complete) - useMeetingSocket needs Supabase replacement
+- WATCH view migration (0% complete) - usePublicWatch needs Supabase replacement
+- Test coverage implementation (0% complete) - No test files exist
 
 ### Blocked ⚠️
 
@@ -438,8 +440,16 @@ _Next Review: Weekly during immediate priorities phase_
 
 ### Next Actions 🎯
 
-1. Write basic component tests (start with HostView, JoinView, WatchView)
-2. Complete JOIN view Supabase migration
-3. Complete WATCH view Supabase migration
-4. Add error boundaries to all major routes
-5. Remove legacy backend code
+1. **Write basic component tests** (start with HostView, JoinView, WatchView) - URGENT
+2. **Complete JOIN view Supabase migration** (replace useMeetingSocket with Supabase Realtime)
+3. **Complete WATCH view Supabase migration** (replace usePublicWatch with Supabase Realtime)
+4. **Add error boundaries to all major routes**
+5. **Remove legacy backend code** (after migration completion)
+
+### Current Migration Status Summary
+
+- ✅ **HOST View**: Fully migrated to Supabase Realtime
+- ❌ **JOIN View**: Still uses legacy useMeetingSocket hook
+- ❌ **WATCH View**: Still uses legacy usePublicWatch hook
+- ❌ **Test Coverage**: 0% - No test files exist
+- ❌ **Legacy Backend**: Still present but deprecated

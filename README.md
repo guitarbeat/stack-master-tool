@@ -10,23 +10,26 @@ This project is currently undergoing a major backend migration from Express/Sock
 
 - ✅ **Supabase Database Schema Created** - Tables for meetings, participants, and speaking queues
 - ✅ **Meeting Creation Migrated** - Now uses Supabase instead of Express API
-- ✅ **Real-time Subscriptions** - Supabase Realtime replaces Socket.io for live updates
+- ✅ **HOST View Migrated** - Facilitator controls now use Supabase Realtime
 - ✅ **Unified Facilitator Hook** - Seamlessly switches between manual and remote modes
+- ✅ **Error Handling Components** - Basic error boundaries and recovery components added
 
 ### Known Issues
 
 - ⚠️ **Legacy Backend Code** - Old Express/Socket.io code in `/backend` directory remains for reference
 - ⚠️ **Incomplete Migration** - Join and Watch views still use legacy Socket.io implementation
+- ⚠️ **Zero Test Coverage** - No tests exist, making production deployment risky
 - ⚠️ **Hybrid Architecture** - Currently runs both Supabase (for facilitator) and Express backend (for participants)
 
 ### What's Left to Do
 
 1. **Complete Migration** - Update Join and Watch views to use Supabase Realtime
-2. **Remove Legacy Code** - Delete `/backend` directory and old API/Socket service files after migration
-3. **Update Documentation** - Reflect Supabase architecture in all docs
-4. **Test Full Flow** - Verify create → join → watch flow works end-to-end with Supabase
-5. **Add RLS Policies** - Review and tighten Row Level Security policies for production
-6. **Performance Testing** - Test with multiple concurrent meetings and participants
+2. **Add Test Coverage** - Write tests for core components and hooks (currently 0% coverage)
+3. **Remove Legacy Code** - Delete `/backend` directory and old API/Socket service files after migration
+4. **Update Documentation** - Reflect Supabase architecture in all docs
+5. **Test Full Flow** - Verify create → join → watch flow works end-to-end with Supabase
+6. **Add RLS Policies** - Review and tighten Row Level Security policies for production
+7. **Performance Testing** - Test with multiple concurrent meetings and participants
 
 ## Features
 
@@ -40,7 +43,7 @@ This project is currently undergoing a major backend migration from Express/Sock
 
 - Unified facilitator interface supporting manual and remote modes
 - Create meetings with shareable codes for remote participation
-- Real-time speaking queue powered by Socket.io
+- Real-time speaking queue powered by Supabase Realtime (HOST view) and Socket.io (JOIN/WATCH views)
 - Public watch URLs for easy sharing
 - Role-based access control
 - React + TypeScript + Tailwind CSS frontend
@@ -99,6 +102,7 @@ This project provides a unified facilitation interface that supports both manual
 The project is built with:
 
 **Frontend:**
+
 - Vite
 - TypeScript
 - React
@@ -106,11 +110,13 @@ The project is built with:
 - Tailwind CSS
 
 **Backend (New):**
+
 - Supabase (PostgreSQL database)
 - Supabase Realtime (WebSocket subscriptions)
 - Row Level Security (RLS) for data access control
 
 **Backend (Legacy - To Be Removed):**
+
 - Express.js
 - Socket.io
 - In-memory data storage
@@ -122,17 +128,20 @@ The project is built with:
 The application now uses Supabase as its backend. The database schema includes:
 
 **Tables:**
+
 - `meetings` - Meeting metadata and codes
 - `participants` - Users who have joined meetings
 - `speaking_queue` - Real-time speaking queue with position tracking
 
 **Features:**
+
 - Real-time subscriptions for live updates
 - Row Level Security (RLS) policies for data access
 - Automatic meeting code generation
 - PostgreSQL triggers and functions
 
 **Configuration:**
+
 - Supabase URL: `https://jectngcrpikxwnjdwana.supabase.co`
 - Client configuration: `src/integrations/supabase/client.ts`
 - Type definitions: `src/integrations/supabase/types.ts`
