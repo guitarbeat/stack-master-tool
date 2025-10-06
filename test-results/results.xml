@@ -1,0 +1,789 @@
+<testsuites id="" name="" tests="23" failures="19" skipped="0" errors="0" time="289.744722">
+<testsuite name="homepage.spec.ts" timestamp="2025-10-06T22:08:25.243Z" hostname="chromium" tests="4" failures="0" skipped="0" time="2.876" errors="0">
+<testcase name="Homepage › should load the homepage successfully" classname="homepage.spec.ts" time="0.864">
+</testcase>
+<testcase name="Homepage › should navigate to host meeting page" classname="homepage.spec.ts" time="0.722">
+</testcase>
+<testcase name="Homepage › should navigate to join meeting page" classname="homepage.spec.ts" time="0.725">
+</testcase>
+<testcase name="Homepage › should be responsive on mobile" classname="homepage.spec.ts" time="0.565">
+</testcase>
+</testsuite>
+<testsuite name="meeting-creation.spec.ts" timestamp="2025-10-06T22:08:25.243Z" hostname="chromium" tests="7" failures="7" skipped="0" time="217.57" errors="0">
+<testcase name="Meeting Creation › should create a meeting successfully and show success page" classname="meeting-creation.spec.ts" time="31.203">
+<failure message="meeting-creation.spec.ts:4:3 should create a meeting successfully and show success page" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:4:3 › Meeting Creation › should create a meeting successfully and show success page 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Enter meeting name"]')
+
+
+       6 |     
+       7 |     // Fill in the form
+    >  8 |     await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+         |                ^
+       9 |     await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
+      10 |     
+      11 |     // Submit the form
+        at /workspace/tests/e2e/meeting-creation.spec.ts:8:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Creation › should show validation errors for empty fields" classname="meeting-creation.spec.ts" time="31.078">
+<failure message="meeting-creation.spec.ts:37:3 should show validation errors for empty fields" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:37:3 › Meeting Creation › should show validation errors for empty fields 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('button[type="submit"], button:has-text("Host Meeting")').first()
+
+
+      40 |     // Try to submit without filling fields
+      41 |     const submitButton = page.locator('button[type="submit"], button:has-text("Host Meeting")').first();
+    > 42 |     await submitButton.click();
+         |                        ^
+      43 |     
+      44 |     // Should show validation errors (browser native validation)
+      45 |     const facilitatorInput = page.locator('input[placeholder="Enter your name"]');
+        at /workspace/tests/e2e/meeting-creation.spec.ts:42:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Creation › should show validation errors for invalid input" classname="meeting-creation.spec.ts" time="30.998">
+<failure message="meeting-creation.spec.ts:52:3 should show validation errors for invalid input" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:52:3 › Meeting Creation › should show validation errors for invalid input 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Enter your name"]')
+
+
+      54 |     
+      55 |     // Fill with invalid data
+    > 56 |     await page.fill('input[placeholder="Enter your name"]', '');
+         |                ^
+      57 |     await page.fill('input[placeholder="Enter meeting name"]', 'A'.repeat(101));
+      58 |     
+      59 |     const submitButton = page.locator('button[type="submit"], button:has-text("Host Meeting")').first();
+        at /workspace/tests/e2e/meeting-creation.spec.ts:56:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Creation › should handle server errors gracefully" classname="meeting-creation.spec.ts" time="31.173">
+<failure message="meeting-creation.spec.ts:70:3 should handle server errors gracefully" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:70:3 › Meeting Creation › should handle server errors gracefully 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Enter meeting name"]')
+
+
+      84 |     
+      85 |     // Fill in the form
+    > 86 |     await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+         |                ^
+      87 |     await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
+      88 |     
+      89 |     // Submit the form
+        at /workspace/tests/e2e/meeting-creation.spec.ts:86:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Creation › should copy meeting code to clipboard" classname="meeting-creation.spec.ts" time="30.997">
+<failure message="meeting-creation.spec.ts:97:3 should copy meeting code to clipboard" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:97:3 › Meeting Creation › should copy meeting code to clipboard 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Enter meeting name"]')
+
+
+       99 |     
+      100 |     // Fill in the form
+    > 101 |     await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+          |                ^
+      102 |     await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
+      103 |     
+      104 |     // Submit the form
+        at /workspace/tests/e2e/meeting-creation.spec.ts:101:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Creation › should copy shareable link to clipboard" classname="meeting-creation.spec.ts" time="31.141">
+<failure message="meeting-creation.spec.ts:119:3 should copy shareable link to clipboard" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:119:3 › Meeting Creation › should copy shareable link to clipboard 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Enter meeting name"]')
+
+
+      121 |     
+      122 |     // Fill in the form
+    > 123 |     await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+          |                ^
+      124 |     await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
+      125 |     
+      126 |     // Submit the form
+        at /workspace/tests/e2e/meeting-creation.spec.ts:123:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Creation › should navigate to facilitator view when start meeting is clicked" classname="meeting-creation.spec.ts" time="30.98">
+<failure message="meeting-creation.spec.ts:141:3 should navigate to facilitator view when start meeting is clicked" type="FAILURE">
+<![CDATA[  [chromium] › meeting-creation.spec.ts:141:3 › Meeting Creation › should navigate to facilitator view when start meeting is clicked 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="Enter meeting name"]')
+
+
+      143 |     
+      144 |     // Fill in the form
+    > 145 |     await page.fill('input[placeholder="Enter meeting name"]', 'Test Meeting');
+          |                ^
+      146 |     await page.fill('input[placeholder="Enter your name"]', 'Test Facilitator');
+      147 |     
+      148 |     // Submit the form
+        at /workspace/tests/e2e/meeting-creation.spec.ts:145:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="meeting-joining.spec.ts" timestamp="2025-10-06T22:08:25.243Z" hostname="chromium" tests="8" failures="8" skipped="0" time="198.44" errors="0">
+<testcase name="Meeting Joining › should show join form with proper elements" classname="meeting-joining.spec.ts" time="5.557">
+<failure message="meeting-joining.spec.ts:4:3 should show join form with proper elements" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:4:3 › Meeting Joining › should show join form with proper elements 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('input[placeholder="ABC123"]')
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+       6 |     
+       7 |     // Check for join form elements
+    >  8 |     await expect(page.locator('input[placeholder="ABC123"]')).toBeVisible();
+         |                                                               ^
+       9 |     await expect(page.locator('input[placeholder="Enter your name"]')).toBeVisible();
+      10 |     await expect(page.locator('button[type="submit"]:has-text("Join Meeting")')).toBeVisible();
+      11 |   });
+        at /workspace/tests/e2e/meeting-joining.spec.ts:8:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-9c5e0-n-form-with-proper-elements-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-9c5e0-n-form-with-proper-elements-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-joining-Meeting-Jo-9c5e0-n-form-with-proper-elements-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-9c5e0-n-form-with-proper-elements-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-9c5e0-n-form-with-proper-elements-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-9c5e0-n-form-with-proper-elements-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should show validation error for invalid meeting code format" classname="meeting-joining.spec.ts" time="31.017">
+<failure message="meeting-joining.spec.ts:13:3 should show validation error for invalid meeting code format" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:13:3 › Meeting Joining › should show validation error for invalid meeting code format 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      15 |     
+      16 |     // Enter invalid meeting code (too short)
+    > 17 |     await page.fill('input[placeholder="ABC123"]', 'ABC');
+         |                ^
+      18 |     await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
+      19 |     
+      20 |     const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
+        at /workspace/tests/e2e/meeting-joining.spec.ts:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-de99e-invalid-meeting-code-format-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-de99e-invalid-meeting-code-format-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-joining-Meeting-Jo-de99e-invalid-meeting-code-format-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-de99e-invalid-meeting-code-format-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-de99e-invalid-meeting-code-format-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-de99e-invalid-meeting-code-format-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should show error for non-existent meeting" classname="meeting-joining.spec.ts" time="31.037">
+<failure message="meeting-joining.spec.ts:27:3 should show error for non-existent meeting" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:27:3 › Meeting Joining › should show error for non-existent meeting 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      41 |     
+      42 |     // Enter valid format but non-existent meeting code
+    > 43 |     await page.fill('input[placeholder="ABC123"]', 'NONEXISTENT');
+         |                ^
+      44 |     await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
+      45 |     
+      46 |     const joinButton = page.locator('button[type="submit"]:has-text("Join Meeting")');
+        at /workspace/tests/e2e/meeting-joining.spec.ts:43:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-af500-or-for-non-existent-meeting-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-af500-or-for-non-existent-meeting-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-joining-Meeting-Jo-af500-or-for-non-existent-meeting-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-af500-or-for-non-existent-meeting-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-af500-or-for-non-existent-meeting-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-af500-or-for-non-existent-meeting-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should show validation error for empty participant name" classname="meeting-joining.spec.ts" time="31.039">
+<failure message="meeting-joining.spec.ts:53:3 should show validation error for empty participant name" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:53:3 › Meeting Joining › should show validation error for empty participant name 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      55 |     
+      56 |     // Enter valid meeting code but empty name
+    > 57 |     await page.fill('input[placeholder="ABC123"]', 'ABCDEF');
+         |                ^
+      58 |     await page.fill('input[placeholder="Enter your name"]', '');
+      59 |     
+      60 |     const joinButton = page.locator('button[type="submit"]:has-text("Join Meeting")');
+        at /workspace/tests/e2e/meeting-joining.spec.ts:57:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-9aed5--for-empty-participant-name-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-9aed5--for-empty-participant-name-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/meeting-joining-Meeting-Jo-9aed5--for-empty-participant-name-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-9aed5--for-empty-participant-name-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-9aed5--for-empty-participant-name-chromium/video.webm]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-9aed5--for-empty-participant-name-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should handle server errors gracefully" classname="meeting-joining.spec.ts" time="31.424">
+<failure message="meeting-joining.spec.ts:67:3 should handle server errors gracefully" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:67:3 › Meeting Joining › should handle server errors gracefully 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      81 |     
+      82 |     // Enter valid data
+    > 83 |     await page.fill('input[placeholder="ABC123"]', 'ABCDEF');
+         |                ^
+      84 |     await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
+      85 |     
+      86 |     const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
+        at /workspace/tests/e2e/meeting-joining.spec.ts:83:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-f46eb-le-server-errors-gracefully-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-f46eb-le-server-errors-gracefully-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-f46eb-le-server-errors-gracefully-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-f46eb-le-server-errors-gracefully-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should join meeting successfully with valid data" classname="meeting-joining.spec.ts" time="31.428">
+<failure message="meeting-joining.spec.ts:93:3 should join meeting successfully with valid data" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:93:3 › Meeting Joining › should join meeting successfully with valid data 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      123 |     
+      124 |     // Enter valid data
+    > 125 |     await page.fill('input[placeholder="ABC123"]', 'TEST12');
+          |                ^
+      126 |     await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
+      127 |     
+      128 |     const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
+        at /workspace/tests/e2e/meeting-joining.spec.ts:125:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-eef0b-uccessfully-with-valid-data-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-eef0b-uccessfully-with-valid-data-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-eef0b-uccessfully-with-valid-data-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-eef0b-uccessfully-with-valid-data-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should auto-fill meeting code from URL parameter" classname="meeting-joining.spec.ts" time="5.495">
+<failure message="meeting-joining.spec.ts:135:3 should auto-fill meeting code from URL parameter" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:135:3 › Meeting Joining › should auto-fill meeting code from URL parameter 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: locator('input[placeholder="ABC123"]')
+    Expected string: "TEST12"
+    Received: <element(s) not found>
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveValue" with timeout 5000ms
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      139 |     // Should auto-fill the meeting code
+      140 |     const codeInput = page.locator('input[placeholder="ABC123"]');
+    > 141 |     await expect(codeInput).toHaveValue('TEST12');
+          |                             ^
+      142 |   });
+      143 |
+      144 |   test('should show loading state during join process', async ({ page }) => {
+        at /workspace/tests/e2e/meeting-joining.spec.ts:141:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-7ea7b-ing-code-from-URL-parameter-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-7ea7b-ing-code-from-URL-parameter-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-7ea7b-ing-code-from-URL-parameter-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-7ea7b-ing-code-from-URL-parameter-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Meeting Joining › should show loading state during join process" classname="meeting-joining.spec.ts" time="31.443">
+<failure message="meeting-joining.spec.ts:144:3 should show loading state during join process" type="FAILURE">
+<![CDATA[  [chromium] › meeting-joining.spec.ts:144:3 › Meeting Joining › should show loading state during join process 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('input[placeholder="ABC123"]')
+
+
+      164 |     
+      165 |     // Enter valid data
+    > 166 |     await page.fill('input[placeholder="ABC123"]', 'TEST12');
+          |                ^
+      167 |     await page.fill('input[placeholder="Enter your name"]', 'Test Participant');
+      168 |     
+      169 |     const joinButton = page.locator('button[type="submit"], button:has-text("Join Meeting")').first();
+        at /workspace/tests/e2e/meeting-joining.spec.ts:166:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-4280c-g-state-during-join-process-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/meeting-joining-Meeting-Jo-4280c-g-state-during-join-process-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-joining-Meeting-Jo-4280c-g-state-during-join-process-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-joining-Meeting-Jo-4280c-g-state-during-join-process-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="meeting-workflow.spec.ts" timestamp="2025-10-06T22:08:25.243Z" hostname="chromium" tests="4" failures="4" skipped="0" time="120.213" errors="0">
+<testcase name="Complete Meeting Workflow › should complete full meeting creation and joining workflow" classname="meeting-workflow.spec.ts" time="30.051">
+<failure message="meeting-workflow.spec.ts:4:3 should complete full meeting creation and joining workflow" type="FAILURE">
+<![CDATA[  [chromium] › meeting-workflow.spec.ts:4:3 › Complete Meeting Workflow › should complete full meeting creation and joining workflow 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: browserContext.close: Target page, context or browser has been closed
+
+      60 |     } finally {
+      61 |       // Clean up
+    > 62 |       await facilitatorContext.close();
+         |       ^
+      63 |       await participantContext.close();
+      64 |     }
+      65 |   });
+        at /workspace/tests/e2e/meeting-workflow.spec.ts:62:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--b69ac-eation-and-joining-workflow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--b69ac-eation-and-joining-workflow-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-workflow-Complete--b69ac-eation-and-joining-workflow-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-workflow-Complete--b69ac-eation-and-joining-workflow-chromium/test-failed-2.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Complete Meeting Workflow › should handle multiple participants joining the same meeting" classname="meeting-workflow.spec.ts" time="30.058">
+<failure message="meeting-workflow.spec.ts:67:3 should handle multiple participants joining the same meeting" type="FAILURE">
+<![CDATA[  [chromium] › meeting-workflow.spec.ts:67:3 › Complete Meeting Workflow › should handle multiple participants joining the same meeting 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: browserContext.close: Test ended.
+    Browser logs:
+
+    <launching> /home/ubuntu/.cache/ms-playwright/chromium_headless_shell-1187/chrome-linux/headless_shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-iqNJgo --remote-debugging-pipe --no-startup-window
+    <launched> pid=6222
+    [pid=6222][err] [1006/221214.082018:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+    [pid=6222][err] [1006/221214.083598:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+    [pid=6222][err] [1006/221214.083647:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+    [pid=6222][err] [1006/221214.093840:WARNING:device/bluetooth/dbus/bluez_dbus_manager.cc:228] Floss manager service not available, cannot set Floss enable/disable.
+    [pid=6222][err] [1006/221214.124518:WARNING:sandbox/policy/linux/sandbox_linux.cc:414] InitializeSandbox() called with multiple threads in process gpu-process.
+    [pid=6222] <gracefully close start>
+
+      110 |       
+      111 |     } finally {
+    > 112 |       await facilitatorContext.close();
+          |       ^
+      113 |       await participant1Context.close();
+      114 |       await participant2Context.close();
+      115 |     }
+        at /workspace/tests/e2e/meeting-workflow.spec.ts:112:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--ac093-ts-joining-the-same-meeting-chromium/test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--ac093-ts-joining-the-same-meeting-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--ac093-ts-joining-the-same-meeting-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-workflow-Complete--ac093-ts-joining-the-same-meeting-chromium/test-failed-3.png]]
+
+[[ATTACHMENT|meeting-workflow-Complete--ac093-ts-joining-the-same-meeting-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-workflow-Complete--ac093-ts-joining-the-same-meeting-chromium/test-failed-2.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Complete Meeting Workflow › should handle participant leaving and rejoining" classname="meeting-workflow.spec.ts" time="30.05">
+<failure message="meeting-workflow.spec.ts:118:3 should handle participant leaving and rejoining" type="FAILURE">
+<![CDATA[  [chromium] › meeting-workflow.spec.ts:118:3 › Complete Meeting Workflow › should handle participant leaving and rejoining 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: browserContext.close: Target page, context or browser has been closed
+
+      167 |       
+      168 |     } finally {
+    > 169 |       await facilitatorContext.close();
+          |       ^
+      170 |     }
+      171 |   });
+      172 |
+        at /workspace/tests/e2e/meeting-workflow.spec.ts:169:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--8e88c-ipant-leaving-and-rejoining-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--8e88c-ipant-leaving-and-rejoining-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-workflow-Complete--8e88c-ipant-leaving-and-rejoining-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|meeting-workflow-Complete--8e88c-ipant-leaving-and-rejoining-chromium/test-failed-2.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Complete Meeting Workflow › should handle network interruptions gracefully" classname="meeting-workflow.spec.ts" time="30.054">
+<failure message="meeting-workflow.spec.ts:173:3 should handle network interruptions gracefully" type="FAILURE">
+<![CDATA[  [chromium] › meeting-workflow.spec.ts:173:3 › Complete Meeting Workflow › should handle network interruptions gracefully 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: browserContext.close: Test ended.
+    Browser logs:
+
+    <launching> /home/ubuntu/.cache/ms-playwright/chromium_headless_shell-1187/chrome-linux/headless_shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-lnY3r2 --remote-debugging-pipe --no-startup-window
+    <launched> pid=6397
+    [pid=6397][err] [1006/221244.629032:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+    [pid=6397][err] [1006/221244.629870:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+    [pid=6397][err] [1006/221244.630278:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+    [pid=6397][err] [1006/221244.636636:WARNING:device/bluetooth/dbus/bluez_dbus_manager.cc:228] Floss manager service not available, cannot set Floss enable/disable.
+    [pid=6397][err] [1006/221244.671019:WARNING:sandbox/policy/linux/sandbox_linux.cc:414] InitializeSandbox() called with multiple threads in process gpu-process.
+    [pid=6397] <gracefully close start>
+
+      210 |       
+      211 |     } finally {
+    > 212 |       await facilitatorContext.close();
+          |       ^
+      213 |       await participantContext.close();
+      214 |     }
+      215 |   });
+        at /workspace/tests/e2e/meeting-workflow.spec.ts:212:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--de9cd-rk-interruptions-gracefully-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/meeting-workflow-Complete--de9cd-rk-interruptions-gracefully-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|meeting-workflow-Complete--de9cd-rk-interruptions-gracefully-chromium/test-failed-2.png]]
+
+[[ATTACHMENT|meeting-workflow-Complete--de9cd-rk-interruptions-gracefully-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

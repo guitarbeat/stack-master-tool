@@ -1,0 +1,50 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+    - region "Notifications (F8)":
+        - list
+    - region "Notifications alt+T"
+    - generic [ref=e3]:
+        - banner [ref=e4]:
+            - generic [ref=e5]:
+                - link "Home" [ref=e6] [cursor=pointer]:
+                    - /url: /
+                    - img "ICC Austin logo" [ref=e7] [cursor=pointer]
+                    - generic [ref=e8] [cursor=pointer]: ICC Austin Stack
+                - generic [ref=e9]:
+                    - navigation "Main navigation" [ref=e10]:
+                        - link "Watch" [ref=e11] [cursor=pointer]:
+                            - /url: /meeting?mode=watch
+                            - img [ref=e12] [cursor=pointer]
+                            - text: Watch
+                        - link "Host" [ref=e17] [cursor=pointer]:
+                            - /url: /meeting?mode=host
+                            - img [ref=e18] [cursor=pointer]
+                            - text: Host
+                        - link "Join" [ref=e19] [cursor=pointer]:
+                            - /url: /meeting?mode=join
+                            - img [ref=e20] [cursor=pointer]
+                            - text: Join
+                    - button "Switch to dark mode" [ref=e23] [cursor=pointer]:
+                        - img [ref=e24] [cursor=pointer]
+        - main [ref=e26]:
+            - generic [ref=e28]:
+                - generic [ref=e29]:
+                    - heading "Join a Meeting" [level=3] [ref=e30]
+                    - paragraph [ref=e31]: Enter the meeting code and your name to join
+                - generic [ref=e32]:
+                    - generic [ref=e33]:
+                        - generic [ref=e34]: Meeting Code
+                        - textbox "Meeting Code" [ref=e35]
+                    - generic [ref=e36]:
+                        - generic [ref=e37]: Your Name
+                        - textbox "Your Name" [ref=e38]
+                    - generic [ref=e39]:
+                        - button "Cancel" [ref=e40] [cursor=pointer]
+                        - button "Join Meeting" [disabled]
+        - contentinfo [ref=e41]:
+            - generic [ref=e42]:
+                - img "ICC2 Logo" [ref=e43]
+                - paragraph [ref=e44]: Powered by ICC Austin Stack
+```

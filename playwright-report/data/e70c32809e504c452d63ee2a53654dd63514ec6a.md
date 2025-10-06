@@ -1,0 +1,86 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+    - region "Notifications (F8)":
+        - list
+    - region "Notifications alt+T"
+    - generic [ref=e3]:
+        - banner [ref=e4]:
+            - generic [ref=e5]:
+                - link "Home" [ref=e6] [cursor=pointer]:
+                    - /url: /
+                    - img "ICC Austin logo" [ref=e7] [cursor=pointer]
+                    - generic [ref=e8] [cursor=pointer]: ICC Austin Stack
+                - generic [ref=e9]:
+                    - navigation "Main navigation" [ref=e10]:
+                        - link "Watch" [ref=e11] [cursor=pointer]:
+                            - /url: /meeting?mode=watch
+                            - img [ref=e12] [cursor=pointer]
+                            - text: Watch
+                        - link "Host" [ref=e17] [cursor=pointer]:
+                            - /url: /meeting?mode=host
+                            - img [ref=e18] [cursor=pointer]
+                            - text: Host
+                        - link "Join" [ref=e19] [cursor=pointer]:
+                            - /url: /meeting?mode=join
+                            - img [ref=e20] [cursor=pointer]
+                            - text: Join
+                    - button "Switch to dark mode" [ref=e23] [cursor=pointer]:
+                        - img [ref=e24] [cursor=pointer]
+        - main [ref=e26]:
+            - generic [ref=e28]:
+                - generic [ref=e29]:
+                    - generic [ref=e30]:
+                        - button "Home" [ref=e31] [cursor=pointer]:
+                            - img
+                            - generic [ref=e32] [cursor=pointer]: Home
+                        - generic [ref=e33]:
+                            - heading "Host Meeting" [level=1] [ref=e34]
+                            - paragraph [ref=e35]: Welcome, Facilitator
+                    - generic [ref=e37]: Manual Mode
+                - generic [ref=e40]:
+                    - generic [ref=e41]:
+                        - heading "Manual Mode" [level=3] [ref=e42]:
+                            - img [ref=e43]
+                            - text: Manual Mode
+                        - paragraph [ref=e50]: Currently managing participants locally. Enable remote access to allow participants to join with a meeting code.
+                    - button "Enable Remote Participants" [ref=e52] [cursor=pointer]:
+                        - img
+                        - text: Enable Remote Participants
+                - generic [ref=e54]:
+                    - generic [ref=e55]:
+                        - generic [ref=e56]:
+                            - heading "Speaking Queue" [level=3] [ref=e57]
+                            - generic [ref=e58]:
+                                - button "Add" [ref=e59] [cursor=pointer]:
+                                    - img
+                                    - generic [ref=e60] [cursor=pointer]: Add
+                                - button "Next Speaker" [disabled]:
+                                    - img
+                                    - generic: Next Speaker
+                        - generic [ref=e62]:
+                            - img [ref=e63]
+                            - paragraph [ref=e68]: No one in queue
+                            - paragraph [ref=e69]: Click "Add" to add participants manually
+                    - generic [ref=e70]:
+                        - heading "Participants" [level=2] [ref=e71]
+                        - generic [ref=e72]:
+                            - img [ref=e73]
+                            - paragraph [ref=e78]: No participants yet
+                            - paragraph [ref=e79]: Share the meeting code to invite people
+                        - generic [ref=e81]:
+                            - paragraph [ref=e82]:
+                                - strong [ref=e83]: "Meeting Code:"
+                                - text: MANUAL
+                            - paragraph [ref=e84]:
+                                - strong [ref=e85]: "Facilitator:"
+                                - text: Facilitator
+                            - paragraph [ref=e86]:
+                                - strong [ref=e87]: "Status:"
+                                - text: Active
+        - contentinfo [ref=e88]:
+            - generic [ref=e89]:
+                - img "ICC2 Logo" [ref=e90]
+                - paragraph [ref=e91]: Powered by ICC Austin Stack
+```
