@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -17,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
@@ -40,17 +38,13 @@ export const RemoteModeToggle = ({
   onDisableRemote,
   facilitatorName,
 }: RemoteModeToggleProps) => {
-  const [title, setTitle] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [qrLoading, setQrLoading] = useState(false);
 
-  const handleEnableRemote = async () => {
-    const meetingTitle = title.trim() || `${facilitatorName}'s Meeting`;
-    await onEnableRemote(meetingTitle);
-    setDialogOpen(false);
-    setTitle("");
+  const handleEnableRemote = () => {
+    const meetingTitle = `${facilitatorName}'s Meeting`;
+    void onEnableRemote(meetingTitle);
   };
 
   const copyCode = () => {
@@ -104,46 +98,17 @@ export const RemoteModeToggle = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full" size="lg">
-                <Wifi className="w-4 h-4 mr-2" />
-                Enable Remote Participants
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[90vw] sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Enable Remote Access</DialogTitle>
-                <DialogDescription>
-                  Create a meeting code that remote participants can use to join
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="meeting-title">
-                    Meeting Title (Optional)
-                  </Label>
-                  <Input
-                    id="meeting-title"
-                    placeholder="Meeting Title (Optional)"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
-                    disabled={isCreatingMeeting}
-                  />
-                </div>
-                <Button
-                  onClick={handleEnableRemote}
-                  disabled={isCreatingMeeting}
-                  className="w-full"
-                  size="lg"
-                >
-                  {isCreatingMeeting
-                    ? "Creating Meeting..."
-                    : "Create Meeting Code"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button
+            className="w-full"
+            size="lg"
+            onClick={handleEnableRemote}
+            disabled={isCreatingMeeting}
+          >
+            <Wifi className="w-4 h-4 mr-2" />
+            {isCreatingMeeting
+              ? "Creating Meeting..."
+              : "Enable Remote Participants"}
+          </Button>
         </CardContent>
       </Card>
     );
