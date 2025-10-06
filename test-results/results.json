@@ -15,10 +15,7 @@
     },
     "preserveOutput": "always",
     "reporter": [
-      [
-        "html",
-        null
-      ],
+      ["html", null],
       [
         "json",
         {
@@ -49,9 +46,7 @@
         "name": "chromium",
         "testDir": "/workspace/tests/e2e",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -65,9 +60,7 @@
         "name": "firefox",
         "testDir": "/workspace/tests/e2e",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -81,9 +74,7 @@
         "name": "webkit",
         "testDir": "/workspace/tests/e2e",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -97,9 +88,7 @@
         "name": "Mobile Chrome",
         "testDir": "/workspace/tests/e2e",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -113,9 +102,7 @@
         "name": "Mobile Safari",
         "testDir": "/workspace/tests/e2e",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       }
     ],
@@ -128,21 +115,21 @@
   },
   "suites": [
     {
-      "title": "meeting-creation.spec.ts",
-      "file": "meeting-creation.spec.ts",
+      "title": "homepage.spec.ts",
+      "file": "homepage.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Meeting Creation",
-          "file": "meeting-creation.spec.ts",
+          "title": "Homepage",
+          "file": "homepage.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "should create a meeting successfully and show success page",
-              "ok": false,
+              "title": "should load the homepage successfully",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -155,60 +142,28 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 31276,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 16,
-                            "line": 8
-                          },
-                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter meeting name\"]')\u001b[22m\n\n\n   6 |     \n   7 |     // Fill in the form\n>  8 |     await page.fill('input[placeholder=\"Enter meeting name\"]', 'Test Meeting');\n     |                ^\n   9 |     await page.fill('input[placeholder=\"Enter your name\"]', 'Test Facilitator');\n  10 |     \n  11 |     // Submit the form\n    at /workspace/tests/e2e/meeting-creation.spec.ts:8:16"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 902,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-06T20:16:47.059Z",
+                      "startTime": "2025-10-06T20:25:09.909Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-59ecb-fully-and-show-success-page-chromium/error-context.md"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "1b827d331f4a6b057bc1-b0940d199596726d1d1e",
-              "file": "meeting-creation.spec.ts",
+              "id": "84e7eb052e8cbae1c9f0-9fed3458574e5d2041f0",
+              "file": "homepage.spec.ts",
               "line": 4,
               "column": 3
             },
             {
-              "title": "should show validation errors for empty fields",
-              "ok": false,
+              "title": "should navigate to host meeting page",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -221,60 +176,28 @@
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 31422,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 24,
-                            "line": 42
-                          },
-                          "message": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button[type=\"submit\"], button:has-text(\"Host Meeting\")').first()\u001b[22m\n\n\n  40 |     // Try to submit without filling fields\n  41 |     const submitButton = page.locator('button[type=\"submit\"], button:has-text(\"Host Meeting\")').first();\n> 42 |     await submitButton.click();\n     |                        ^\n  43 |     \n  44 |     // Should show validation errors (browser native validation)\n  45 |     const facilitatorInput = page.locator('input[placeholder=\"Enter your name\"]');\n    at /workspace/tests/e2e/meeting-creation.spec.ts:42:24"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 760,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-06T20:16:47.078Z",
+                      "startTime": "2025-10-06T20:25:09.904Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-cf020-ion-errors-for-empty-fields-chromium/error-context.md"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "1b827d331f4a6b057bc1-54f474223f11cb57ed6a",
-              "file": "meeting-creation.spec.ts",
-              "line": 37,
+              "id": "84e7eb052e8cbae1c9f0-08c29754999cc44883a3",
+              "file": "homepage.spec.ts",
+              "line": 14,
               "column": 3
             },
             {
-              "title": "should show validation errors for invalid input",
-              "ok": false,
+              "title": "should navigate to join meeting page",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -285,128 +208,30 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 31293,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 16,
-                            "line": 56
-                          },
-                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter your name\"]')\u001b[22m\n\n\n  54 |     \n  55 |     // Fill with invalid data\n> 56 |     await page.fill('input[placeholder=\"Enter your name\"]', '');\n     |                ^\n  57 |     await page.fill('input[placeholder=\"Enter meeting name\"]', 'A'.repeat(101));\n  58 |     \n  59 |     const submitButton = page.locator('button[type=\"submit\"], button:has-text(\"Host Meeting\")').first();\n    at /workspace/tests/e2e/meeting-creation.spec.ts:56:16"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-06T20:17:18.945Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-48061-on-errors-for-invalid-input-chromium/error-context.md"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "1b827d331f4a6b057bc1-1a2b5ae43f7cd02ae7f3",
-              "file": "meeting-creation.spec.ts",
-              "line": 52,
-              "column": 3
-            },
-            {
-              "title": "should handle server errors gracefully",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 3,
+                      "workerIndex": 1,
                       "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 31278,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 16,
-                            "line": 86
-                          },
-                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter meeting name\"]')\u001b[22m\n\n\n  84 |     \n  85 |     // Fill in the form\n> 86 |     await page.fill('input[placeholder=\"Enter meeting name\"]', 'Test Meeting');\n     |                ^\n  87 |     await page.fill('input[placeholder=\"Enter your name\"]', 'Test Facilitator');\n  88 |     \n  89 |     // Submit the form\n    at /workspace/tests/e2e/meeting-creation.spec.ts:86:16"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 755,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-06T20:17:19.126Z",
+                      "startTime": "2025-10-06T20:25:10.763Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-84f39-le-server-errors-gracefully-chromium/error-context.md"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "1b827d331f4a6b057bc1-153e9151bf9e3364a973",
-              "file": "meeting-creation.spec.ts",
-              "line": 70,
+              "id": "84e7eb052e8cbae1c9f0-14e00b5601ffb6425196",
+              "file": "homepage.spec.ts",
+              "line": 25,
               "column": 3
             },
             {
-              "title": "should copy meeting code to clipboard",
-              "ok": false,
+              "title": "should be responsive on mobile",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -417,189 +242,25 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 4,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 31265,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 16,
-                            "line": 101
-                          },
-                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter meeting name\"]')\u001b[22m\n\n\n   99 |     \n  100 |     // Fill in the form\n> 101 |     await page.fill('input[placeholder=\"Enter meeting name\"]', 'Test Meeting');\n      |                ^\n  102 |     await page.fill('input[placeholder=\"Enter your name\"]', 'Test Facilitator');\n  103 |     \n  104 |     // Submit the form\n    at /workspace/tests/e2e/meeting-creation.spec.ts:101:16"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 604,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-06T20:17:50.822Z",
+                      "startTime": "2025-10-06T20:25:10.898Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-39bbe-y-meeting-code-to-clipboard-chromium/error-context.md"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "1b827d331f4a6b057bc1-0e5dcf1ae063b7759ee2",
-              "file": "meeting-creation.spec.ts",
-              "line": 97,
-              "column": 3
-            },
-            {
-              "title": "should copy shareable link to clipboard",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 31272,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 16,
-                            "line": 123
-                          },
-                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter meeting name\"]')\u001b[22m\n\n\n  121 |     \n  122 |     // Fill in the form\n> 123 |     await page.fill('input[placeholder=\"Enter meeting name\"]', 'Test Meeting');\n      |                ^\n  124 |     await page.fill('input[placeholder=\"Enter your name\"]', 'Test Facilitator');\n  125 |     \n  126 |     // Submit the form\n    at /workspace/tests/e2e/meeting-creation.spec.ts:123:16"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-06T20:17:51.021Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-d6c7a-shareable-link-to-clipboard-chromium/error-context.md"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "1b827d331f4a6b057bc1-76b3b0b34182781a8e76",
-              "file": "meeting-creation.spec.ts",
-              "line": 119,
-              "column": 3
-            },
-            {
-              "title": "should navigate to facilitator view when start meeting is clicked",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 0,
-                      "status": "timedOut",
-                      "duration": 31211,
-                      "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                      },
-                      "errors": [
-                        {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
-                          "location": {
-                            "file": "/workspace/tests/e2e/meeting-creation.spec.ts",
-                            "column": 16,
-                            "line": 145
-                          },
-                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter meeting name\"]')\u001b[22m\n\n\n  143 |     \n  144 |     // Fill in the form\n> 145 |     await page.fill('input[placeholder=\"Enter meeting name\"]', 'Test Meeting');\n      |                ^\n  146 |     await page.fill('input[placeholder=\"Enter your name\"]', 'Test Facilitator');\n  147 |     \n  148 |     // Submit the form\n    at /workspace/tests/e2e/meeting-creation.spec.ts:145:16"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-06T20:18:22.644Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/workspace/test-results/meeting-creation-Meeting-C-4efa5-en-start-meeting-is-clicked-chromium/error-context.md"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "1b827d331f4a6b057bc1-8bad53c3533c387fbfbc",
-              "file": "meeting-creation.spec.ts",
-              "line": 141,
+              "id": "84e7eb052e8cbae1c9f0-4be05f5cc70b6ba15efc",
+              "file": "homepage.spec.ts",
+              "line": 36,
               "column": 3
             }
           ]
@@ -609,11 +270,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-06T20:16:46.544Z",
-    "duration": 127417.562,
-    "expected": 0,
+    "startTime": "2025-10-06T20:25:09.214Z",
+    "duration": 2355.882,
+    "expected": 4,
     "skipped": 0,
-    "unexpected": 7,
+    "unexpected": 0,
     "flaky": 0
   }
 }

@@ -1,118 +1,131 @@
-// @ts-nocheck - Legacy API/socket service during migration
-import React, { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, LogIn, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
-import apiService from '../services/api'
-import socketService from '../services/socket'
-import { toast } from '@/hooks/use-toast'
-import { playBeep } from '../utils/sound.js'
-import { AppError, getErrorDisplayInfo } from '../utils/errorHandling'
-import { useValidation, validationRules } from '../utils/validation'
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  LogIn,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+} from "lucide-react";
+import apiService from "../services/api";
+import socketService from "../services/socket";
+import { toast } from "@/hooks/use-toast";
+import { playBeep } from "../utils/sound.js";
+import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
+import { useValidation, validationRules } from "../utils/validation";
 
 interface FormData {
-  meetingCode: string
-  participantName: string
+  meetingCode: string;
+  participantName: string;
 }
 
-
 function JoinMeeting(): JSX.Element {
-  const navigate = useNavigate()
-  const notify = (type: 'success' | 'error' | 'info', title: string, description?: string) => {
-    toast({ title, description })
-  }
-  const [searchParams] = useSearchParams()
+  const navigate = useNavigate();
+  const notify = (
+    type: "success" | "error" | "info",
+    title: string,
+    description?: string
+  ) => {
+    toast({ title, description });
+  };
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState<FormData>({
-    meetingCode: searchParams.get('code') || '',
-    participantName: ''
-  })
-  const [isJoining, setIsJoining] = useState<boolean>(false)
-  const [error, setError] = useState<string>('')
-  const [meetingInfo, setMeetingInfo] = useState<{ title: string; code: string; facilitator: string } | null>(null)
-  
+    meetingCode: searchParams.get("code") || "",
+    participantName: "",
+  });
+  const [isJoining, setIsJoining] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [meetingInfo, setMeetingInfo] = useState<{
+    title: string;
+    code: string;
+    facilitator: string;
+  } | null>(null);
+
   // Real-time validation
   const meetingCodeValidation = useValidation(
     formData.meetingCode,
     [validationRules.meetingCode()],
     500
-  )
-  
+  );
+
   const participantNameValidation = useValidation(
     formData.participantName,
     [validationRules.participantName()],
     300
-  )
+  );
 
   // Real-time validation for meeting code
   useEffect(() => {
     const validateMeetingCode = async () => {
       if (formData.meetingCode.length === 6 && meetingCodeValidation.isValid) {
         try {
-          const meeting = await apiService.getMeeting(formData.meetingCode)
-          setMeetingInfo(meeting)
-          setError('')
+          const meeting = await apiService.getMeeting(formData.meetingCode);
+          setMeetingInfo(meeting);
+          setError("");
         } catch (err) {
-          setError('Meeting not found. Please check the code and try again.')
+          setError("Meeting not found. Please check the code and try again.");
         }
       } else if (formData.meetingCode.length > 0) {
-        setError('')
+        setError("");
       } else {
-        setError('')
+        setError("");
       }
-    }
+    };
 
-    const timeoutId = setTimeout(validateMeetingCode, 500)
-    return () => clearTimeout(timeoutId)
-  }, [formData.meetingCode, meetingCodeValidation.isValid])
+    const timeoutId = setTimeout(validateMeetingCode, 500);
+    return () => clearTimeout(timeoutId);
+  }, [formData.meetingCode, meetingCodeValidation.isValid]);
 
   const handleJoinMeeting = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsJoining(true)
-    setError('')
+    e.preventDefault();
+    setIsJoining(true);
+    setError("");
 
     // Validate form before submission
     if (!meetingCodeValidation.isValid || !participantNameValidation.isValid) {
-      setError('Please fix the validation errors before joining.')
-      setIsJoining(false)
-      return
+      setError("Please fix the validation errors before joining.");
+      setIsJoining(false);
+      return;
     }
 
     try {
-      const meetingInfo = await apiService.getMeeting(formData.meetingCode)
-      socketService.connect()
+      const meetingInfo = await apiService.getMeeting(formData.meetingCode);
+      socketService.connect();
       const joinResult = await socketService.joinMeeting(
         formData.meetingCode,
         formData.participantName,
         false
-      )
+      );
 
-      notify('success', 'Joined meeting', meetingInfo.title)
-      playBeep(1000, 120)
+      notify("success", "Joined meeting", meetingInfo.title);
+      playBeep(1000, 120);
 
       navigate(`/meeting/${formData.meetingCode}`, {
-        state: { 
+        state: {
           participantName: formData.participantName,
           meetingInfo: joinResult.meeting,
-          isParticipant: true 
-        }
-      })
+          isParticipant: true,
+        },
+      });
     } catch (err) {
-      console.error('Error joining meeting:', err)
-      
-      const errorInfo = getErrorDisplayInfo(err as AppError)
-      setError(errorInfo.description)
-      notify('error', errorInfo.title, errorInfo.description)
-      playBeep(220, 200)
+      console.error("Error joining meeting:", err);
+
+      const errorInfo = getErrorDisplayInfo(err as AppError);
+      setError(errorInfo.description);
+      notify("error", errorInfo.title, errorInfo.description);
+      playBeep(220, 200);
     } finally {
-      setIsJoining(false)
+      setIsJoining(false);
     }
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button 
-          onClick={() => navigate('/')}
+        <button
+          onClick={() => navigate("/")}
           className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           aria-label="Go back to home page"
         >
@@ -127,14 +140,20 @@ function JoinMeeting(): JSX.Element {
             <div className="bg-sage-green/20 p-4 rounded-full w-16 h-16 mx-auto mb-4">
               <LogIn className="w-8 h-8 text-moss-green mx-auto" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">Join Meeting</h1>
-            <p className="text-gray-600 dark:text-zinc-400">Enter the meeting code and your name</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2">
+              Join Meeting
+            </h1>
+            <p className="text-gray-600 dark:text-zinc-400">
+              Enter the meeting code and your name
+            </p>
           </div>
 
           <form onSubmit={handleJoinMeeting} className="space-y-6">
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-900/40">
-                <p className="text-red-600 dark:text-red-300 text-sm">{error}</p>
+                <p className="text-red-600 dark:text-red-300 text-sm">
+                  {error}
+                </p>
               </div>
             )}
 
@@ -148,16 +167,20 @@ function JoinMeeting(): JSX.Element {
                   required
                   disabled={isJoining}
                   value={formData.meetingCode}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    meetingCode: e.target.value.toUpperCase() 
-                  }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      meetingCode: e.target.value.toUpperCase(),
+                    }))
+                  }
                   className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-moss-green focus:border-transparent text-center text-2xl font-bold tracking-wider disabled:bg-gray-100 dark:bg-zinc-950 dark:text-zinc-100 form-input ${
-                    meetingCodeValidation.isValid && formData.meetingCode.length === 6
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
-                      : !meetingCodeValidation.isValid && formData.meetingCode.length > 0
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
-                      : 'border-gray-300 dark:border-zinc-800'
+                    meetingCodeValidation.isValid &&
+                    formData.meetingCode.length === 6
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                      : !meetingCodeValidation.isValid &&
+                          formData.meetingCode.length > 0
+                        ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+                        : "border-gray-300 dark:border-zinc-800"
                   }`}
                   placeholder="ABC123"
                   maxLength={6}
@@ -167,24 +190,35 @@ function JoinMeeting(): JSX.Element {
                   {meetingCodeValidation.isValidating && (
                     <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
                   )}
-                  {meetingCodeValidation.isValid && formData.meetingCode.length === 6 && (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  )}
-                  {!meetingCodeValidation.isValid && formData.meetingCode.length > 0 && (
-                    <XCircle className="w-5 h-5 text-red-500" />
-                  )}
+                  {meetingCodeValidation.isValid &&
+                    formData.meetingCode.length === 6 && (
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    )}
+                  {!meetingCodeValidation.isValid &&
+                    formData.meetingCode.length > 0 && (
+                      <XCircle className="w-5 h-5 text-red-500" />
+                    )}
                 </div>
               </div>
-              {meetingCodeValidation.isValid && formData.meetingCode.length === 6 && meetingInfo && (
-                <p id="meeting-code-status" className="mt-2 text-sm text-green-600 dark:text-green-400 break-words">
-                  ✓ Meeting found: {meetingInfo.title}
-                </p>
-              )}
-              {!meetingCodeValidation.isValid && formData.meetingCode.length > 0 && (
-                <p id="meeting-code-status" className="mt-2 text-sm text-red-600 dark:text-red-400">
-                  ✗ {meetingCodeValidation.message}
-                </p>
-              )}
+              {meetingCodeValidation.isValid &&
+                formData.meetingCode.length === 6 &&
+                meetingInfo && (
+                  <p
+                    id="meeting-code-status"
+                    className="mt-2 text-sm text-green-600 dark:text-green-400 break-words"
+                  >
+                    ✓ Meeting found: {meetingInfo.title}
+                  </p>
+                )}
+              {!meetingCodeValidation.isValid &&
+                formData.meetingCode.length > 0 && (
+                  <p
+                    id="meeting-code-status"
+                    className="mt-2 text-sm text-red-600 dark:text-red-400"
+                  >
+                    ✗ {meetingCodeValidation.message}
+                  </p>
+                )}
             </div>
 
             <div>
@@ -197,44 +231,62 @@ function JoinMeeting(): JSX.Element {
                   required
                   disabled={isJoining}
                   value={formData.participantName}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    participantName: e.target.value 
-                  }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      participantName: e.target.value,
+                    }))
+                  }
                   className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-moss-green focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:text-zinc-100 form-input ${
-                    participantNameValidation.isValid && formData.participantName.length > 0
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
-                      : !participantNameValidation.isValid && formData.participantName.length > 0
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
-                      : 'border-gray-300 dark:border-zinc-800'
+                    participantNameValidation.isValid &&
+                    formData.participantName.length > 0
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                      : !participantNameValidation.isValid &&
+                          formData.participantName.length > 0
+                        ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+                        : "border-gray-300 dark:border-zinc-800"
                   }`}
                   placeholder="Enter your name"
                   aria-describedby="participant-name-status"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  {participantNameValidation.isValid && formData.participantName.length > 0 && (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  )}
-                  {!participantNameValidation.isValid && formData.participantName.length > 0 && (
-                    <XCircle className="w-5 h-5 text-red-500" />
-                  )}
+                  {participantNameValidation.isValid &&
+                    formData.participantName.length > 0 && (
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    )}
+                  {!participantNameValidation.isValid &&
+                    formData.participantName.length > 0 && (
+                      <XCircle className="w-5 h-5 text-red-500" />
+                    )}
                 </div>
               </div>
-              {participantNameValidation.isValid && formData.participantName.length > 0 && (
-                <p id="participant-name-status" className="mt-2 text-sm text-green-600 dark:text-green-400">
-                  ✓ Name entered
-                </p>
-              )}
-              {!participantNameValidation.isValid && formData.participantName.length > 0 && (
-                <p id="participant-name-status" className="mt-2 text-sm text-red-600 dark:text-red-400">
-                  ✗ {participantNameValidation.message}
-                </p>
-              )}
+              {participantNameValidation.isValid &&
+                formData.participantName.length > 0 && (
+                  <p
+                    id="participant-name-status"
+                    className="mt-2 text-sm text-green-600 dark:text-green-400"
+                  >
+                    ✓ Name entered
+                  </p>
+                )}
+              {!participantNameValidation.isValid &&
+                formData.participantName.length > 0 && (
+                  <p
+                    id="participant-name-status"
+                    className="mt-2 text-sm text-red-600 dark:text-red-400"
+                  >
+                    ✗ {participantNameValidation.message}
+                  </p>
+                )}
             </div>
 
             <button
               type="submit"
-              disabled={isJoining || !meetingCodeValidation.isValid || !participantNameValidation.isValid}
+              disabled={
+                isJoining ||
+                !meetingCodeValidation.isValid ||
+                !participantNameValidation.isValid
+              }
               className="w-full bg-moss-green text-white py-3 px-6 rounded-lg font-semibold hover:bg-moss-green/90 transition-colors disabled:bg-moss-green/40 disabled:cursor-not-allowed flex items-center justify-center touch-target"
             >
               {isJoining ? (
@@ -243,33 +295,35 @@ function JoinMeeting(): JSX.Element {
                   Joining Meeting...
                 </>
               ) : (
-                'Join Meeting'
+                "Join Meeting"
               )}
             </button>
-            
+
             {/* Validation status message */}
-            {!isJoining && (!meetingCodeValidation.isValid || !participantNameValidation.isValid) && (
-              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-900/20 dark:border-amber-900/40">
-                <div className="flex items-start sm:items-center">
-                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mr-2 mt-0.5 sm:mt-0 flex-shrink-0" />
-                  <p className="text-sm text-amber-600 dark:text-amber-400 break-words">
-                    {!meetingCodeValidation.isValid && !participantNameValidation.isValid 
-                      ? 'Please enter a valid meeting code and your name to continue'
-                      : !meetingCodeValidation.isValid 
-                      ? 'Please enter a valid meeting code to continue'
-                      : 'Please enter your name to continue'
-                    }
-                  </p>
+            {!isJoining &&
+              (!meetingCodeValidation.isValid ||
+                !participantNameValidation.isValid) && (
+                <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-900/20 dark:border-amber-900/40">
+                  <div className="flex items-start sm:items-center">
+                    <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mr-2 mt-0.5 sm:mt-0 flex-shrink-0" />
+                    <p className="text-sm text-amber-600 dark:text-amber-400 break-words">
+                      {!meetingCodeValidation.isValid &&
+                      !participantNameValidation.isValid
+                        ? "Please enter a valid meeting code and your name to continue"
+                        : !meetingCodeValidation.isValid
+                          ? "Please enter a valid meeting code to continue"
+                          : "Please enter your name to continue"}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500 dark:text-zinc-400">
-              Don't have a meeting code?{' '}
-              <button 
-                onClick={() => navigate('/create')}
+              Don't have a meeting code?{" "}
+              <button
+                onClick={() => navigate("/create")}
                 className="text-moss-green hover:text-moss-green/90 font-medium"
               >
                 Host a meeting
@@ -279,8 +333,7 @@ function JoinMeeting(): JSX.Element {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default JoinMeeting
-
+export default JoinMeeting;

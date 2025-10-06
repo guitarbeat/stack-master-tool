@@ -1,4 +1,3 @@
-// @ts-nocheck - Legacy socket service during migration
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import socketService from "../services/socket.js";
@@ -31,7 +30,9 @@ export const useMeetingSocket = (
   meetingInfo: MeetingData | null
 ) => {
   const navigate = useNavigate();
-  const [meetingData, setMeetingData] = useState<MeetingData | null>(meetingInfo);
+  const [meetingData, setMeetingData] = useState<MeetingData | null>(
+    meetingInfo
+  );
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [speakingQueue, setSpeakingQueue] = useState<QueueItem[]>([]);
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
