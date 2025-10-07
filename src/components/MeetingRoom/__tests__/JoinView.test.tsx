@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { JoinView } from "../JoinView";
 import { useSupabaseParticipant } from "../../../hooks/useSupabaseParticipant";
-=======
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { JoinView } from '../JoinView';
-import { useMeetingSocket } from '../../../hooks/useMeetingSocket';
->>>>>>> origin/main
 
 // Mock the useSupabaseParticipant hook
 const mockUseSupabaseParticipant = {
