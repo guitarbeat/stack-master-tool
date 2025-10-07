@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { 
-  AlertTriangle, 
-  RefreshCw, 
-  WifiOff, 
-  Clock, 
+import {
+  AlertTriangle,
+  RefreshCw,
+  WifiOff,
+  Clock,
   HelpCircle,
   ExternalLink,
   Copy,
   CheckCircle,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +36,7 @@ export const EnhancedErrorState = ({
   participantName,
   isRetrying = false,
   retryCount = 0,
-  lastConnected
+  lastConnected,
 }: EnhancedErrorStateProps) => {
   const [showTroubleshooting, setShowTroubleshooting] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
@@ -48,100 +48,122 @@ export const EnhancedErrorState = ({
         setCopiedCode(true);
         setTimeout(() => setCopiedCode(false), 2000);
       } catch (err) {
-        console.error('Failed to copy meeting code:', err);
+        console.error("Failed to copy meeting code:", err);
       }
     }
   };
 
   const getErrorType = () => {
-    const errorMessage = typeof error === 'string' ? error : error.message;
+    const errorMessage = typeof error === "string" ? error : error.message;
     const errorLower = errorMessage.toLowerCase();
 
-    if (errorLower.includes('network') || errorLower.includes('connection')) {
-      return 'network';
+    if (errorLower.includes("network") || errorLower.includes("connection")) {
+      return "network";
     }
-    if (errorLower.includes('timeout')) {
-      return 'timeout';
+    if (errorLower.includes("timeout")) {
+      return "timeout";
     }
-    if (errorLower.includes('not found') || errorLower.includes('invalid')) {
-      return 'meeting';
+    if (
+      errorLower.includes("not found") ||
+      errorLower.includes("invalid") ||
+      errorLower.includes("failed to get meeting")
+    ) {
+      return "meeting";
     }
-    if (errorLower.includes('unauthorized') || errorLower.includes('permission')) {
-      return 'permission';
+    if (
+      errorLower.includes("unauthorized") ||
+      errorLower.includes("permission")
+    ) {
+      return "permission";
     }
-    return 'unknown';
+    return "unknown";
   };
 
   const getErrorIcon = () => {
     const errorType = getErrorType();
     switch (errorType) {
-      case 'network': return <WifiOff className="w-8 h-8 text-red-500" />;
-      case 'timeout': return <Clock className="w-8 h-8 text-orange-500" />;
-      case 'meeting': return <XCircle className="w-8 h-8 text-red-500" />;
-      case 'permission': return <AlertTriangle className="w-8 h-8 text-yellow-500" />;
-      default: return <AlertTriangle className="w-8 h-8 text-red-500" />;
+      case "network":
+        return <WifiOff className="w-8 h-8 text-red-500" />;
+      case "timeout":
+        return <Clock className="w-8 h-8 text-orange-500" />;
+      case "meeting":
+        return <XCircle className="w-8 h-8 text-red-500" />;
+      case "permission":
+        return <AlertTriangle className="w-8 h-8 text-yellow-500" />;
+      default:
+        return <AlertTriangle className="w-8 h-8 text-red-500" />;
     }
   };
 
   const getErrorTitle = () => {
     const errorType = getErrorType();
     switch (errorType) {
-      case 'network': return 'Connection Lost';
-      case 'timeout': return 'Request Timeout';
-      case 'meeting': return 'Meeting Not Found';
-      case 'permission': return 'Access Denied';
-      default: return 'Connection Error';
+      case "network":
+        return "Connection Lost";
+      case "timeout":
+        return "Request Timeout";
+      case "meeting":
+        return "Meeting Not Found";
+      case "permission":
+        return "Access Denied";
+      default:
+        return "Connection Error";
     }
   };
 
   const getErrorDescription = () => {
     const errorType = getErrorType();
     switch (errorType) {
-      case 'network': return 'Your internet connection was interrupted. Please check your network and try again.';
-      case 'timeout': return 'The request took too long to complete. The server might be busy or your connection is slow.';
-      case 'meeting': return 'The meeting code you entered doesn\'t exist or the meeting has ended.';
-      case 'permission': return 'You don\'t have permission to join this meeting. Please check with the facilitator.';
-      default: return 'An unexpected error occurred. Please try again.';
+      case "network":
+        return "Your internet connection was interrupted. Please check your network and try again.";
+      case "timeout":
+        return "The request took too long to complete. The server might be busy or your connection is slow.";
+      case "meeting":
+        return "The meeting code you entered doesn't exist or the meeting has ended. Please verify the code with the facilitator.";
+      case "permission":
+        return "You don't have permission to join this meeting. Please check with the facilitator.";
+      default:
+        return "An unexpected error occurred. Please try again.";
     }
   };
 
   const getTroubleshootingSteps = () => {
     const errorType = getErrorType();
     switch (errorType) {
-      case 'network':
+      case "network":
         return [
-          'Check your internet connection',
-          'Try refreshing the page',
-          'Disable VPN if you\'re using one',
-          'Check if your firewall is blocking the connection'
+          "Check your internet connection",
+          "Try refreshing the page",
+          "Disable VPN if you're using one",
+          "Check if your firewall is blocking the connection",
         ];
-      case 'timeout':
+      case "timeout":
         return [
-          'Check your internet speed',
-          'Try again in a few moments',
-          'Close other tabs/applications using bandwidth',
-          'Check if the meeting is still active'
+          "Check your internet speed",
+          "Try again in a few moments",
+          "Close other tabs/applications using bandwidth",
+          "Check if the meeting is still active",
         ];
-      case 'meeting':
+      case "meeting":
         return [
-          'Verify the meeting code is correct',
-          'Ask the facilitator to confirm the meeting is active',
-          'Check if the meeting has ended',
-          'Try joining from a different device'
+          "Verify the meeting code is correct",
+          "Ask the facilitator to confirm the meeting is active",
+          "Check if the meeting has ended",
+          "Try joining from a different device",
         ];
-      case 'permission':
+      case "permission":
         return [
-          'Contact the meeting facilitator',
-          'Verify you\'re using the correct meeting code',
-          'Check if the meeting allows new participants',
-          'Try joining with a different name'
+          "Contact the meeting facilitator",
+          "Verify you're using the correct meeting code",
+          "Check if the meeting allows new participants",
+          "Try joining with a different name",
         ];
       default:
         return [
-          'Refresh the page and try again',
-          'Clear your browser cache',
-          'Try a different browser',
-          'Contact support if the problem persists'
+          "Refresh the page and try again",
+          "Clear your browser cache",
+          "Try a different browser",
+          "Contact support if the problem persists",
         ];
     }
   };
@@ -173,7 +195,7 @@ export const EnhancedErrorState = ({
                 <div className="space-y-1">
                   <div className="font-medium">Error Details:</div>
                   <div className="text-sm font-mono bg-muted p-2 rounded">
-                    {typeof error === 'string' ? error : error.message}
+                    {typeof error === "string" ? error : error.message}
                   </div>
                   {errorCode && (
                     <div className="text-xs text-muted-foreground">
@@ -243,12 +265,14 @@ export const EnhancedErrorState = ({
                 className="w-full"
               >
                 <HelpCircle className="w-4 h-4 mr-2" />
-                {showTroubleshooting ? 'Hide' : 'Show'} Troubleshooting Steps
+                {showTroubleshooting ? "Hide" : "Show"} Troubleshooting Steps
               </Button>
 
               {showTroubleshooting && (
                 <div className="bg-muted/50 rounded-lg p-4">
-                  <div className="text-sm font-medium mb-3">Try these steps:</div>
+                  <div className="text-sm font-medium mb-3">
+                    Try these steps:
+                  </div>
                   <ol className="space-y-2 text-sm">
                     {troubleshootingSteps.map((step, index) => (
                       <li key={index} className="flex items-start gap-2">
@@ -302,7 +326,9 @@ export const EnhancedErrorState = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => window.open('mailto:support@example.com', '_blank')}
+                  onClick={() =>
+                    window.open("mailto:support@example.com", "_blank")
+                  }
                 >
                   <ExternalLink className="w-3 h-3 mr-1" />
                   Contact Support
@@ -310,7 +336,7 @@ export const EnhancedErrorState = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => window.open('/help', '_blank')}
+                  onClick={() => window.open("/help", "_blank")}
                 >
                   <ExternalLink className="w-3 h-3 mr-1" />
                   Help Center

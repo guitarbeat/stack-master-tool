@@ -123,6 +123,15 @@ class ApiService {
         );
       }
 
+      // Additional validation for meeting code format
+      if (!/^[A-Z0-9]{6}$/.test(meetingCode.toUpperCase())) {
+        throw new AppError(
+          ErrorCode.INVALID_MEETING_CODE,
+          undefined,
+          "Meeting code can only contain letters and numbers"
+        );
+      }
+
       const response = await fetch(
         `${this.baseUrl}/meetings/${meetingCode.toUpperCase()}`
       );
@@ -132,20 +141,25 @@ class ApiService {
 
         // Map server error codes to client error codes
         let errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+        let errorMessage = "Failed to get meeting";
+
         if (errorData.code) {
           errorCode = errorData.code;
         } else if (response.status === 400) {
           errorCode = ErrorCode.INVALID_MEETING_CODE;
+          errorMessage = "Invalid meeting code format";
         } else if (response.status === 404) {
           errorCode = ErrorCode.MEETING_NOT_FOUND;
+          errorMessage = `Meeting code "${meetingCode}" not found. The meeting may have ended or the code may be incorrect.`;
         } else if (response.status === 500) {
           errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+          errorMessage = "Server error occurred while retrieving meeting";
         }
 
         throw new AppError(
           errorCode,
           errorData,
-          errorData.error || "Failed to get meeting"
+          errorData.error || errorMessage
         );
       }
 
