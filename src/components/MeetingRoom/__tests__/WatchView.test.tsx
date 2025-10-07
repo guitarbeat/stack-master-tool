@@ -30,7 +30,7 @@ const mockUseLocalWatch = {
     facilitator: 'Local Facilitator',
   },
   participants: [
-    { id: '1', name: 'Local User', isSpeaking: false, queuePosition: 1 },
+    { id: '1', name: 'Local User', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
   ],
   speakingQueue: [
     { id: '1', name: 'Local User', position: 1 },

@@ -10,8 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePublicWatch } from "../../hooks/usePublicWatch";
-import { useLocalWatch } from "../../hooks/useLocalWatch";
+import { useSupabaseWatch } from "../../hooks/useSupabaseWatch";
 import { useMeetingCode } from "../../hooks/useMeetingMode";
 import { validateMeetingCode } from "../../utils/meetingValidation";
 import { MeetingHeader } from "./MeetingHeader";
@@ -35,20 +34,15 @@ export const WatchView = (): JSX.Element => {
   const isLocalMeeting =
     effectiveMeetingCode === "MANUAL" || effectiveMeetingCode === "";
 
-  // Use local watch for local meetings, public watch for remote meetings
-  const localWatchData = useLocalWatch(effectiveMeetingCode);
-  const publicWatchData = usePublicWatch(
-    isLocalMeeting ? "" : effectiveMeetingCode
-  );
-
+  // Use Supabase watch for all meetings
   const {
     meetingData,
     participants,
     speakingQueue,
-    currentSpeaker,
-    isLoading,
+    isConnected,
     error,
-  } = isLocalMeeting ? localWatchData : publicWatchData;
+    isLoading,
+  } = useSupabaseWatch(effectiveMeetingCode);
 
   const handleWatch = () => {
     if (meetingCode.trim()) {
@@ -135,7 +129,7 @@ export const WatchView = (): JSX.Element => {
           meetingData || {
             code: "",
             title: "Loading...",
-            facilitator: "Loading...",
+            facilitatorName: "Loading...",
           }
         }
         participantCount={participants?.length || 0}
