@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 import apiService from "../services/api";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../utils/sound.js";
-import Confetti from "../components/ui/Confetti.jsx";
+import Confetti from "../components/ui/Confetti";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
 import { useFacilitatorSession } from "@/hooks/useFacilitatorSession";
 

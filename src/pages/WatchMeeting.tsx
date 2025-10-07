@@ -22,7 +22,7 @@ interface FormData {
 function WatchMeeting(): JSX.Element {
   const navigate = useNavigate();
   const notify = (
-    type: "success" | "error" | "info",
+    _type: "success" | "error" | "info",
     title: string,
     description?: string
   ) => {

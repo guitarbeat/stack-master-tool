@@ -200,7 +200,7 @@ describe('Error Messages', () => {
   });
 
   it('should have appropriate severity levels', () => {
-    Object.entries(ERROR_MESSAGES).forEach(([code, message]) => {
+    Object.entries(ERROR_MESSAGES).forEach(([_code, message]) => {
       if (message.severity) {
         expect(['low', 'medium', 'high']).toContain(message.severity);
       }

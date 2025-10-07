@@ -23,7 +23,8 @@ vi.mock('react-router-dom', async () => {
 
 describe('useMeetingMode', () => {
   beforeEach(() => {
-    mockSearchParams.clear();
+    // Clear all params manually
+    Array.from(mockSearchParams.keys()).forEach(key => mockSearchParams.delete(key));
     vi.clearAllMocks();
   });
 
@@ -112,7 +113,8 @@ describe('useMeetingMode', () => {
 
 describe('useMeetingCode', () => {
   beforeEach(() => {
-    mockSearchParams.clear();
+    // Clear all params manually
+    Array.from(mockSearchParams.keys()).forEach(key => mockSearchParams.delete(key));
     vi.clearAllMocks();
   });
 

@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { JoinView } from "../JoinView";
 import { useSupabaseParticipant } from "../../../hooks/useSupabaseParticipant";
+=======
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { JoinView } from '../JoinView';
+import { useMeetingSocket } from '../../../hooks/useMeetingSocket';
+>>>>>>> origin/main
 
 // Mock the useSupabaseParticipant hook
 const mockUseSupabaseParticipant = {
@@ -12,18 +20,35 @@ const mockUseSupabaseParticipant = {
     facilitator: "Test Facilitator",
   },
   participants: [
+<<<<<<< HEAD
     { id: "1", name: "John Doe", isSpeaking: false, queuePosition: 1 },
     { id: "2", name: "Jane Smith", isSpeaking: true, queuePosition: 0 },
+=======
+    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
+    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0, isFacilitator: false, hasRaisedHand: false },
+  ],
+  speakingQueue: [
+    { id: '1', participantName: 'John Doe', type: 'speak', timestamp: Date.now() },
+>>>>>>> origin/main
   ],
   speakingQueue: [{ id: "1", name: "John Doe", position: 1 }],
   isInQueue: false,
   isConnected: true,
+<<<<<<< HEAD
   error: null,
   currentSpeaker: { id: "2", name: "Jane Smith", position: 0 },
   joinQueue: vi.fn(),
   leaveQueue: vi.fn(),
   leaveMeeting: vi.fn(),
   connectionQuality: "good",
+=======
+  error: '',
+  currentSpeaker: { id: '2', participantName: 'Jane Smith', type: 'speak', timestamp: Date.now() },
+  joinQueue: vi.fn(),
+  leaveQueue: vi.fn(),
+  leaveMeeting: vi.fn(),
+  connectionQuality: 'good' as const,
+>>>>>>> origin/main
   lastConnected: new Date(),
   reconnectAttempts: 0,
   onReconnect: vi.fn(),
@@ -50,6 +75,7 @@ vi.mock("../CurrentSpeakerAlert", () => ({
   ),
 }));
 
+<<<<<<< HEAD
 vi.mock("../SpeakingQueue", () => ({
   SpeakingQueue: ({
     speakingQueue,
@@ -58,6 +84,10 @@ vi.mock("../SpeakingQueue", () => ({
     speakingQueue: any[];
     participantName: string;
   }) => (
+=======
+vi.mock('../SpeakingQueue', () => ({
+  SpeakingQueue: ({ speakingQueue }: { speakingQueue: any[] }) => (
+>>>>>>> origin/main
     <div data-testid="speaking-queue">
       Queue: {speakingQueue.length} participants
     </div>
@@ -302,8 +332,14 @@ describe("JoinView", () => {
 
   it("shows error state when there is an error", () => {
     const errorMock = {
+<<<<<<< HEAD
       ...mockUseSupabaseParticipant,
       error: "Connection failed",
+=======
+      ...mockUseMeetingSocket,
+      error: 'Connection failed',
+      currentSpeaker: { id: '2', participantName: 'Jane Smith', type: 'speak', timestamp: Date.now() },
+>>>>>>> origin/main
     };
 
     vi.mocked(useSupabaseParticipant).mockReturnValue(errorMock);
@@ -324,8 +360,14 @@ describe("JoinView", () => {
 
   it("handles retry action in error state", () => {
     const errorMock = {
+<<<<<<< HEAD
       ...mockUseSupabaseParticipant,
       error: "Connection failed",
+=======
+      ...mockUseMeetingSocket,
+      error: 'Connection failed',
+      currentSpeaker: { id: '2', participantName: 'Jane Smith', type: 'speak', timestamp: Date.now() },
+>>>>>>> origin/main
     };
 
     vi.mocked(useSupabaseParticipant).mockReturnValue(errorMock);
@@ -351,7 +393,7 @@ describe("JoinView", () => {
     const loadingMock = {
       ...mockUseSupabaseParticipant,
       isConnected: false,
-      error: null,
+      error: '',
     };
 
     vi.mocked(useSupabaseParticipant).mockReturnValue(loadingMock);
