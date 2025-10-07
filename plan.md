@@ -10,6 +10,11 @@
 
 ### Critical Issues Requiring Immediate Attention
 
+- [ ] **REMOTE MEETINGS NOT WORKING** - 404/Not Found errors when connecting
+  - **Root Cause**: Backend Express server not running or not accessible
+  - **Current Issue**: Backend uses in-memory storage, meetings lost on restart
+  - **Temporary Fix**: Ensure backend is running with `cd backend && npm run dev`
+  - **Permanent Solution**: Migrate to Supabase Edge Functions for persistence
 - [ ] **ZERO TEST COVERAGE** - No tests exist, making production deployment risky
 - [ ] **Incomplete Migration** - JOIN and WATCH views still use legacy Socket.io
 - [ ] **Hybrid Architecture** - Running both Supabase and Express creates complexity

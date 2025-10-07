@@ -15,6 +15,11 @@ A democratic meeting facilitation application built with React, TypeScript, and 
 
 ## 🔥 Critical Issues (Fix First)
 
+- [ ] **REMOTE MEETING CONNECTION FAILURES** - Backend server required for remote meetings
+  - Backend uses in-memory storage - meetings lost on restart
+  - Ensure backend server is running: `cd backend && npm run dev`
+  - Backend should be accessible at `http://localhost:3001`
+  - Supabase Edge Functions not yet implemented for remote meetings
 - [ ] **ZERO TEST COVERAGE** - No tests exist, making production deployment risky
 - [ ] Complete JOIN view migration to Supabase (replace useMeetingSocket)
 - [ ] Complete WATCH view migration to Supabase (replace usePublicWatch)
