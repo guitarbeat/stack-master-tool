@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, Copy, Loader2 } from "lucide-react";
 import QRCode from "qrcode";
-import apiService from "../services/api";
+import { SupabaseMeetingService } from "../services/supabase";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../utils/sound.js";
 import Confetti from "../components/ui/Confetti";
@@ -46,18 +46,18 @@ function CreateMeeting(): JSX.Element {
     setError("");
 
     try {
-      const response = await apiService.createMeeting(
-        meetingData.facilitatorName,
-        meetingData.name
+      const response = await SupabaseMeetingService.createMeeting(
+        meetingData.name,
+        meetingData.facilitatorName
       );
 
-      const shareableLink = `${window.location.origin}/join?code=${response.meetingCode}`;
+      const shareableLink = `${window.location.origin}/join?code=${response.code}`;
 
       // Set state and advance UI before generating QR to avoid perceived slowness
       setMeetingData((prev: MeetingData) => ({
         ...prev,
-        meetingCode: response.meetingCode,
-        meetingId: response.meetingId,
+        meetingCode: response.code,
+        meetingId: response.id,
         shareableLink,
       }));
 
@@ -67,8 +67,8 @@ function CreateMeeting(): JSX.Element {
       localStorage.setItem(
         "currentMeeting",
         JSON.stringify({
-          meetingCode: response.meetingCode,
-          meetingId: response.meetingId,
+          meetingCode: response.code,
+          meetingId: response.id,
           facilitatorName: meetingData.facilitatorName,
           meetingName: meetingData.name,
         })
@@ -76,7 +76,7 @@ function CreateMeeting(): JSX.Element {
 
       // Save facilitator session for persistence
       saveSession({
-        meetingCode: response.meetingCode,
+        meetingCode: response.code,
         facilitatorName: meetingData.facilitatorName,
         meetingTitle: meetingData.name,
       });

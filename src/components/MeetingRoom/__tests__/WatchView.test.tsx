@@ -3,6 +3,18 @@ import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { WatchView } from '../WatchView';
 
+// Mock Supabase service
+vi.mock('../../../services/supabase', () => ({
+  SupabaseMeetingService: {
+    createMeeting: vi.fn(),
+    getMeeting: vi.fn(),
+    joinMeeting: vi.fn(),
+  },
+  SupabaseRealtimeService: {
+    subscribeToMeeting: vi.fn(),
+  },
+}));
+
 // Mock the hooks
 const mockUseSupabaseWatch = {
   meetingData: {
