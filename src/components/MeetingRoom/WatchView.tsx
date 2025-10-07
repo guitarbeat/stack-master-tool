@@ -13,6 +13,7 @@ import {
 import { usePublicWatch } from "../../hooks/usePublicWatch";
 import { useLocalWatch } from "../../hooks/useLocalWatch";
 import { useMeetingCode } from "../../hooks/useMeetingMode";
+import { validateMeetingCode } from "../../utils/meetingValidation";
 import { MeetingHeader } from "./MeetingHeader";
 import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
 import { SpeakingQueue } from "./SpeakingQueue";
@@ -59,6 +60,14 @@ export const WatchView = (): JSX.Element => {
 
   const handleWatch = () => {
     if (meetingCode.trim()) {
+      // Validate meeting code before attempting to join
+      const validation = validateMeetingCode(meetingCode);
+      if (!validation.isValid) {
+        // Show validation error - you might want to add a toast or error state here
+        console.error("Invalid meeting code:", validation.error);
+        return;
+      }
+
       setHasJoined(true);
     }
   };

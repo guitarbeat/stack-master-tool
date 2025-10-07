@@ -3,6 +3,19 @@ const { v4: uuidv4 } = require('uuid');
 // In-memory storage for testing
 const meetings = new Map();
 
+// Create a test meeting for development (0CGW1M)
+const testMeeting = {
+  id: 'test-meeting-0cgw1m',
+  code: '0CGW1M',
+  title: 'Debug Meeting - 0CGW1M',
+  facilitator: 'Debug Facilitator',
+  participants: [],
+  queue: [],
+  createdAt: new Date().toISOString(),
+  isActive: true
+};
+meetings.set('0CGW1M', testMeeting);
+
 // Generate a random 6-character meeting code
 function generateMeetingCode() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
