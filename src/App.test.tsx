@@ -14,6 +14,18 @@ vi.mock("@tanstack/react-query", () => ({
     children,
 }));
 
+// Mock Supabase service
+vi.mock("./services/supabase", () => ({
+  SupabaseMeetingService: {
+    createMeeting: vi.fn(),
+    getMeeting: vi.fn(),
+    joinMeeting: vi.fn(),
+  },
+  SupabaseRealtimeService: {
+    subscribeToMeeting: vi.fn(),
+  },
+}));
+
 // Mock the toast components
 vi.mock("@/components/ui/toaster", () => ({
   Toaster: () => <div data-testid="toaster" />,

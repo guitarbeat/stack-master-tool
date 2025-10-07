@@ -8,7 +8,7 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-import apiService from "../services/api";
+import { SupabaseMeetingService } from "../services/supabase";
 import socketService from "../services/socket";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../utils/sound.js";
@@ -60,7 +60,7 @@ function JoinMeeting(): JSX.Element {
     const validateMeetingCode = async () => {
       if (formData.meetingCode.length === 6 && meetingCodeValidation.isValid) {
         try {
-          const meeting = await apiService.getMeeting(formData.meetingCode);
+          const meeting = await SupabaseMeetingService.getMeeting(formData.meetingCode);
           setMeetingInfo(meeting);
           setError("");
         } catch (err) {
@@ -90,7 +90,7 @@ function JoinMeeting(): JSX.Element {
     }
 
     try {
-      const meetingInfo = await apiService.getMeeting(formData.meetingCode);
+      const meetingInfo = await SupabaseMeetingService.getMeeting(formData.meetingCode);
       socketService.connect();
       const joinResult = await socketService.joinMeeting(
         formData.meetingCode,

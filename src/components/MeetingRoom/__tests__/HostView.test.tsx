@@ -3,6 +3,18 @@ import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { HostView } from '../HostView';
 
+// Mock Supabase service
+vi.mock('../../../services/supabase', () => ({
+  SupabaseMeetingService: {
+    createMeeting: vi.fn(),
+    getMeeting: vi.fn(),
+    joinMeeting: vi.fn(),
+  },
+  SupabaseRealtimeService: {
+    subscribeToMeeting: vi.fn(),
+  },
+}));
+
 // Mock the useUnifiedFacilitator hook
 const mockUseUnifiedFacilitator = {
   isRemoteEnabled: false,
@@ -118,13 +130,13 @@ describe('HostView', () => {
 
   it('renders without crashing', () => {
     renderHostView();
-    expect(screen.getByText('Test Meeting')).toBeInTheDocument();
+    expect(screen.getByText('Host Meeting')).toBeInTheDocument();
   });
 
   it('displays meeting information correctly', () => {
     renderHostView();
     
-    expect(screen.getByText('Test Meeting')).toBeInTheDocument();
+    expect(screen.getByText('Host Meeting')).toBeInTheDocument();
     expect(screen.getByText('ABC123')).toBeInTheDocument();
     expect(screen.getByText('Test Facilitator')).toBeInTheDocument();
   });

@@ -8,7 +8,7 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-import apiService from "../services/api";
+import { SupabaseMeetingService } from "../services/supabase";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../utils/sound.js";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
@@ -67,7 +67,7 @@ function WatchMeeting(): JSX.Element {
 
     const validateMeetingCode = async () => {
       try {
-        const meeting = await apiService.getMeeting(formData.meetingCode);
+        const meeting = await SupabaseMeetingService.getMeeting(formData.meetingCode);
         setMeetingInfo(meeting);
         setError("");
       } catch (err) {
@@ -93,7 +93,7 @@ function WatchMeeting(): JSX.Element {
     }
 
     try {
-      const meetingInfo = await apiService.getMeeting(formData.meetingCode);
+      const meetingInfo = await SupabaseMeetingService.getMeeting(formData.meetingCode);
 
       notify("success", "Joining meeting as watcher", meetingInfo.title);
       playBeep(1000, 120);
