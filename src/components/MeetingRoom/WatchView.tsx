@@ -17,11 +17,8 @@ import { validateMeetingCode } from "../../utils/meetingValidation";
 import { MeetingHeader } from "./MeetingHeader";
 import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
 import { SpeakingQueue } from "./SpeakingQueue";
-import { ConnectionStatus } from "./ConnectionStatus";
-import { QueuePositionFeedback } from "./QueuePositionFeedback";
-import { MeetingContext } from "./MeetingContext";
+import { LoadingState } from "./LoadingState";
 import { EnhancedErrorState } from "./EnhancedErrorState";
-import { SpeakingDistribution } from "../StackKeeper/SpeakingDistribution";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 
@@ -51,10 +48,6 @@ export const WatchView = (): JSX.Element => {
     currentSpeaker,
     isLoading,
     error,
-    isConnected,
-    connectionQuality,
-    lastConnected,
-    getSpeakingDistribution,
   } = isLocalMeeting ? localWatchData : publicWatchData;
 
   const handleWatch = () => {
@@ -155,39 +148,7 @@ export const WatchView = (): JSX.Element => {
         }
       />
 
-      {/* Enhanced Connection Status for watchers */}
-      <ConnectionStatus
-        isConnected={isConnected}
-        isConnecting={isLoading}
-        connectionQuality={connectionQuality}
-        participantCount={participants?.length || 0}
-        meetingDuration={
-          meetingData
-            ? Math.floor(
-                (Date.now() -
-                  new Date(meetingData.createdAt || Date.now()).getTime()) /
-                  1000
-              )
-            : 0
-        }
-      />
-
-      {/* Meeting Context for watchers */}
-      <MeetingContext
-        meetingData={
-          meetingData || {
-            code: "",
-            title: "Loading...",
-            facilitator: "Loading...",
-          }
-        }
-        participants={participants || []}
-        speakingQueue={speakingQueue || []}
-        currentSpeaker={currentSpeaker}
-        isWatching={true}
-      />
-
-      <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />
+      {currentSpeaker && <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />}
 
       <div className="grid grid-cols-1 gap-8">
         <SpeakingQueue
@@ -196,15 +157,6 @@ export const WatchView = (): JSX.Element => {
           onLeaveQueue={() => {}}
         />
       </div>
-
-      {/* Speaking Distribution - Only show for local meetings */}
-      {isLocalMeeting && getSpeakingDistribution && (
-        <SpeakingDistribution
-          speakingData={getSpeakingDistribution(true)}
-          includeDirectResponses={true}
-          onToggleIncludeDirectResponses={() => {}}
-        />
-      )}
 
       {/* Read-only notice */}
       <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">

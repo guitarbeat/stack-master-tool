@@ -18,7 +18,7 @@ interface ConnectionStatusProps {
   isConnected: boolean;
   isConnecting: boolean;
   error?: string;
-  lastConnected?: Date;
+  lastConnected?: Date | undefined;
   reconnectAttempts?: number;
   onReconnect?: () => void;
   connectionQuality?: "excellent" | "good" | "fair" | "poor" | "disconnected";

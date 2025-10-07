@@ -23,7 +23,7 @@ interface EnhancedErrorStateProps {
   participantName?: string;
   isRetrying?: boolean;
   retryCount?: number;
-  lastConnected?: Date;
+  lastConnected?: Date | undefined;
 }
 
 export const EnhancedErrorState = ({
