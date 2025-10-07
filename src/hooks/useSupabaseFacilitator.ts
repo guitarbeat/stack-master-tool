@@ -33,7 +33,7 @@ export const useSupabaseFacilitator = (
       setIsLoading(true);
       setError("");
 
-      // Join the meeting as facilitator
+      // Join the meeting as facilitator (requires authentication)
       const participant = await SupabaseMeetingService.joinMeeting(
         meetingCode,
         facilitatorName,

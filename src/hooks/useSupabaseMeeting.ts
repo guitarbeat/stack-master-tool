@@ -47,7 +47,7 @@ export const useSupabaseMeeting = (
       setError("");
       setReconnectAttempts(0);
 
-      // Join the meeting
+      // Join the meeting (requires authentication for facilitators only)
       const participant = await SupabaseMeetingService.joinMeeting(
         meetingInfo.code,
         participantName,
