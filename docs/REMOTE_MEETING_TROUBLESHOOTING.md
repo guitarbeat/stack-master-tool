@@ -1,171 +1,192 @@
-# Remote Meeting Connection Troubleshooting
+# Remote Meeting Troubleshooting Guide
 
-## Problem: "Not Found" and 404 Errors
+## Common Issues & Solutions
 
-If you're experiencing "not found" or 404 errors when trying to connect to remote meetings, this guide will help you diagnose and resolve the issue.
-
-## Root Cause
-
-The application currently uses a **hybrid architecture**:
-- **Frontend**: React app running on Vite dev server (port 5173)
-- **Backend**: Express.js + Socket.io server (port 3001)
-- **Database**: Supabase (remote)
-
-Remote meetings require the **backend server** to be running because:
-1. Meeting creation and joining use the Express API (`/api/meetings`)
-2. Real-time updates use Socket.io WebSocket connections
-3. Meetings are stored **in-memory** on the backend server
-
-## Common Issues
-
-### Issue 1: Backend Server Not Running
+### Issue: "Meeting Not Found" Error
 
 **Symptoms:**
-- "Failed to get meeting" errors
-- 404 errors when joining meetings
-- "Unable to connect to server" messages
 
-**Solution:**
-```bash
-# Terminal 1: Start the backend server
-cd backend
-npm install
-npm run dev
-
-# You should see:
-# > Server listening on port 3001
-```
-
-**Verification:**
-- Backend should be accessible at `http://localhost:3001`
-- Test with: `curl http://localhost:3001/api/meetings` (should return 404, not connection error)
-
-### Issue 2: Backend Server Restarted
-
-**Symptoms:**
-- Meeting code worked before, but now shows "not found"
-- Meeting was created, but can't be joined
+- Participants get "Meeting Not Found" when trying to join
+- Meeting code appears valid but connection fails
+- Error occurs even with correct meeting code
 
 **Root Cause:**
-The backend uses **in-memory storage**, so all meetings are lost when the server restarts.
+The Express backend uses in-memory storage. When Render restarts the backend server (which happens periodically), all meeting data is lost.
 
-**Solution:**
-1. Create a new meeting after restarting the backend
-2. Use the new meeting code
+**Immediate Solutions:**
 
-**Temporary Workaround:**
-```bash
-# Create test meetings for development
-npm run setup-dev
-# This creates meeting code "0CGW1M" and others
-```
+1. **Recreate the meeting** - Have the facilitator create a new meeting
+2. **Check meeting status** - Verify the meeting is still active in the facilitator view
+3. **Try a different meeting code** - Create a fresh meeting
 
-### Issue 3: Port Conflicts
+**Permanent Solutions:**
 
-**Symptoms:**
-- Backend won't start
-- "EADDRINUSE" error
+- Complete Supabase migration (recommended)
+- Add PostgreSQL to Express backend
 
-**Solution:**
-```bash
-# Check what's using port 3001
-lsof -i :3001  # macOS/Linux
-netstat -ano | findstr :3001  # Windows
-
-# Kill the process or change the port in backend/.env
-PORT=3002  # backend/.env
-```
-
-### Issue 4: CORS Errors
+### Issue: Connection Timeouts
 
 **Symptoms:**
-- "CORS policy" errors in browser console
-- Frontend can't connect to backend
 
-**Solution:**
-The backend is configured for `http://localhost:5173`. If you're using a different port, update:
+- Long loading times when joining meetings
+- "Connection timeout" errors
+- Participants stuck on loading screen
 
-```javascript
-// backend/server.js
-const corsOptions = {
-  origin: 'http://localhost:5173',  // Update this if needed
-  // ...
-};
-```
+**Root Cause:**
+Socket.io connections to the Express backend are unstable or the backend is overloaded.
 
-## Checking Backend Status
+**Immediate Solutions:**
 
-### 1. Verify Backend is Running
-```bash
-# Should show backend process
-ps aux | grep "node.*backend"
-```
+1. **Refresh the page** - Often resolves temporary connection issues
+2. **Check internet connection** - Ensure stable network connectivity
+3. **Try a different browser** - Some browsers handle WebSocket connections better
+4. **Disable VPN** - VPNs can interfere with WebSocket connections
 
-### 2. Test API Endpoint
-```bash
-# Should return JSON (not connection error)
-curl http://localhost:3001/api/meetings/TEST12
-```
+**Permanent Solutions:**
 
-### 3. Check Network Requests in Browser
-1. Open DevTools (F12)
-2. Go to Network tab
-3. Try joining a meeting
-4. Look for failed requests to `localhost:3001`
+- Migrate to Supabase (more reliable real-time connections)
+- Optimize Express backend performance
 
-## Long-term Solution: Supabase Migration
+### Issue: "Failed to Get Meeting" Error
 
-The application is migrating to **Supabase Edge Functions** to eliminate the need for a separate backend server. This will:
+**Symptoms:**
 
-✅ Provide persistent storage (meetings won't be lost on restart)
-✅ Simplify deployment (single deployment target)
-✅ Improve reliability (no separate server to manage)
+- Error message: "Failed to get meeting data"
+- Participants can't see meeting details
+- Meeting appears to exist but data is missing
 
-**Migration Status:**
-- ✅ HOST view: Migrated to Supabase
-- ❌ JOIN view: Still uses Express/Socket.io
-- ❌ WATCH view: Still uses Express/Socket.io
+**Root Cause:**
+The meeting exists in the database but the backend can't retrieve it due to:
 
-Until migration is complete, you must run the backend server for remote meetings.
+- Database connection issues
+- Corrupted meeting data
+- Backend server problems
 
-## Quick Start Checklist
+**Immediate Solutions:**
 
-When starting development:
+1. **Recreate the meeting** - Start fresh with a new meeting
+2. **Check facilitator view** - Ensure the meeting is properly created
+3. **Wait and retry** - Sometimes temporary backend issues resolve themselves
 
-- [ ] Start backend server: `cd backend && npm run dev`
-- [ ] Start frontend: `npm run dev`
-- [ ] Verify backend accessible: `curl http://localhost:3001`
-- [ ] Create a new meeting for testing
-- [ ] Keep backend running while testing remote meetings
+**Permanent Solutions:**
 
-## Production Deployment
+- Complete Supabase migration (better error handling)
+- Add proper error logging and monitoring
 
-For production, you need to:
+### Issue: Real-time Updates Not Working
 
-1. Deploy backend to a hosting service (Render, Heroku, etc.)
-2. Update frontend API URL in `src/services/api.js`
-3. Configure environment variables
-4. Ensure backend is always running
+**Symptoms:**
 
-**Recommended**: Complete Supabase migration before production deployment.
+- Participants don't see queue updates in real-time
+- Speaking order changes aren't reflected immediately
+- Need to refresh to see changes
 
-## Getting Help
+**Root Cause:**
+Socket.io connections are dropping or not properly established.
 
-If issues persist:
+**Immediate Solutions:**
 
-1. Check console logs in both frontend and backend
-2. Verify meeting codes are valid (6 alphanumeric characters)
-3. Test with a fresh meeting code
-4. Clear browser cache and cookies
-5. Restart both frontend and backend servers
+1. **Refresh the page** - Re-establishes the connection
+2. **Check browser console** - Look for WebSocket errors
+3. **Disable browser extensions** - Some extensions block WebSocket connections
 
-## Related Documentation
+**Permanent Solutions:**
 
-- [Meeting Connection Error Fix](./MEETING_CONNECTION_ERROR_FIX.md)
-- [Development Guide](./DEVELOPMENT.md)
-- [Deployment Guide](./DEPLOYMENT.md)
-- [TODO List](../todo.md) - Migration status
+- Migrate to Supabase (more reliable real-time subscriptions)
+- Implement connection retry logic
 
----
+## Diagnostic Steps
 
-_Last Updated: 2025-01-28_
+### For Facilitators
+
+1. **Check Meeting Status**
+   - Go to your facilitator view
+   - Verify the meeting is still active
+   - Check if participants are showing up
+
+2. **Test Local vs Remote**
+   - Try creating a local meeting (code: "MANUAL")
+   - If local works but remote doesn't, it's a backend issue
+
+3. **Check Browser Console**
+   - Open Developer Tools (F12)
+   - Look for error messages in the Console tab
+   - Check the Network tab for failed requests
+
+### For Participants
+
+1. **Verify Meeting Code**
+   - Double-check the 6-digit code
+   - Ensure no extra spaces or characters
+   - Try typing it manually instead of copy-paste
+
+2. **Test Connection**
+   - Try joining from a different device
+   - Test with a different internet connection
+   - Try a different browser
+
+3. **Check Error Messages**
+   - Note the exact error message
+   - Check if it's a network, timeout, or meeting-specific error
+
+## Quick Fixes
+
+### Temporary Workarounds
+
+1. **Use Local Meetings**
+   - For small groups, use meeting code "MANUAL"
+   - This bypasses the backend entirely
+   - Works reliably but only for local participants
+
+2. **Frequent Meeting Recreation**
+   - Create new meetings every 30-60 minutes
+   - This reduces the chance of hitting restart issues
+   - Not ideal but works as a temporary solution
+
+3. **Refresh Strategy**
+   - Refresh the page if you notice issues
+   - This re-establishes connections
+   - Quick fix for temporary connection problems
+
+## Long-term Solutions
+
+### Option 1: Complete Supabase Migration (Recommended)
+
+- **Timeline:** 2-3 development sessions
+- **Benefits:** Eliminates backend issues entirely
+- **Cost:** Reduces hosting costs
+
+### Option 2: Add Database to Express Backend
+
+- **Timeline:** 1 development session
+- **Benefits:** Quick fix, keeps existing architecture
+- **Cost:** Adds database hosting costs
+
+### Option 3: Switch to Different Backend Service
+
+- **Timeline:** 2-4 development sessions
+- **Benefits:** More reliable than current setup
+- **Cost:** Depends on chosen service
+
+## Support Information
+
+### When to Contact Support
+
+- Multiple participants experiencing the same issue
+- Error persists after trying all troubleshooting steps
+- Meeting data appears corrupted or lost
+
+### Information to Provide
+
+- Meeting code (if applicable)
+- Error messages (exact text)
+- Browser and version
+- Steps to reproduce the issue
+- Screenshots of error screens
+
+### Emergency Workarounds
+
+- Use local meetings for critical sessions
+- Have participants refresh their browsers
+- Recreate meetings if data is lost
+- Use alternative communication methods as backup
