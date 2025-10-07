@@ -3,7 +3,6 @@ import {
   Wifi,
   WifiOff,
   AlertTriangle,
-  CheckCircle,
   Clock,
   RefreshCw,
   Signal,
@@ -234,15 +233,13 @@ export const ConnectionStatus = ({
                   </div>
                   <Progress
                     value={
-                      connectionQuality === "excellent"
-                        ? 100
-                        : connectionQuality === "good"
-                          ? 75
-                          : connectionQuality === "fair"
-                            ? 50
-                            : connectionQuality === "poor"
-                              ? 25
-                              : 0
+                      connectionQuality === "good"
+                        ? 75
+                        : connectionQuality === "fair"
+                          ? 50
+                          : connectionQuality === "poor"
+                            ? 25
+                            : 0
                     }
                     className="h-1"
                   />

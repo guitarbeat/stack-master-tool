@@ -6,7 +6,6 @@ import {
   Activity,
   TrendingUp,
   Calendar,
-  MapPin,
   Eye,
   Mic,
   MicOff
@@ -48,7 +47,6 @@ export const MeetingContext = ({
   participants,
   speakingQueue,
   currentSpeaker,
-  totalSpeakingTime = 0,
   isWatching = false
 }: MeetingContextProps) => {
   const [meetingDuration, setMeetingDuration] = useState<string>('');

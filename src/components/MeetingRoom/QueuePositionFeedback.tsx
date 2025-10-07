@@ -30,7 +30,6 @@ interface QueuePositionFeedbackProps {
 }
 
 export const QueuePositionFeedback = ({
-  participantName,
   queuePosition,
   totalInQueue,
   joinedAt,

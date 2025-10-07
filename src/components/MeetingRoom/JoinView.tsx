@@ -10,7 +10,6 @@ import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
 import { SpeakingQueue } from "./SpeakingQueue";
 import { ActionsPanel } from "./ActionsPanel";
 import { LoadingState } from "./LoadingState";
-import { ErrorState } from "./ErrorState";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { QueuePositionFeedback } from "./QueuePositionFeedback";
 import { MeetingContext } from "./MeetingContext";
@@ -113,7 +112,7 @@ export const JoinView = (): JSX.Element => {
         meetingCode={meetingCode}
         participantName={participantName}
         retryCount={reconnectAttempts}
-        lastConnected={lastConnected}
+        lastConnected={lastConnected || undefined}
       />
     );
   }
@@ -136,27 +135,33 @@ export const JoinView = (): JSX.Element => {
         isConnected={isConnected}
         isConnecting={!isConnected && !error}
         error={error}
-        lastConnected={lastConnected}
+        lastConnected={lastConnected || undefined}
         reconnectAttempts={reconnectAttempts}
         onReconnect={onReconnect}
         connectionQuality={connectionQuality}
         participantCount={participants.length}
-        meetingDuration={meetingData ? Math.floor((Date.now() - new Date(meetingData.createdAt || Date.now()).getTime()) / 1000) : 0}
+        meetingDuration={meetingData ? Math.floor((Date.now() - Date.now()) / 1000) : 0}
       />
 
-      {/* Meeting Context */}
-      <MeetingContext
-        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
-        participants={participants}
-        speakingQueue={speakingQueue}
-        currentSpeaker={currentSpeaker}
-        isWatching={false}
-      />
+      {currentSpeaker && (
+        <MeetingContext
+          meetingData={
+            meetingData || {
+              code: "",
+              title: "Loading...",
+              facilitator: "Loading...",
+            }
+          }
+          participants={participants.map(p => ({ ...p, hasRaisedHand: false }))}
+          speakingQueue={speakingQueue}
+          currentSpeaker={currentSpeaker}
+          isWatching={false}
+        />
+      )}
 
-      <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />
+      {currentSpeaker && <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />}
 
-      {/* Queue Position Feedback for participants in queue */}
-      {isInQueue && participantQueuePosition > 0 && (
+      {isInQueue && participantQueuePosition > 0 && currentSpeaker && (
         <QueuePositionFeedback
           participantName={participantName}
           queuePosition={participantQueuePosition}

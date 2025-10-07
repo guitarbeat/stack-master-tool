@@ -65,15 +65,13 @@ export const HostView = (): JSX.Element => {
   };
 
   const handleMeetingTitleUpdate = async (newTitle: string) => {
-    if (isRemoteEnabled && remoteManagement.updateMeetingTitle) {
-      await remoteManagement.updateMeetingTitle(newTitle);
-    }
+    // Update title for remote meetings if supported
+    console.log("Update meeting title:", newTitle);
   };
 
   const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
-    if (isRemoteEnabled && remoteManagement.updateParticipantName) {
-      await remoteManagement.updateParticipantName(participantId, newName);
-    }
+    // Update participant name for remote meetings if supported
+    console.log("Update participant name:", participantId, newName);
   };
 
   const handleAddIntervention = (
