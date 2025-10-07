@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QRCode from "qrcode";
-import apiService from "../services/api";
+import { SupabaseMeetingService } from "../services/supabase";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../utils/sound.js";
 import { AppError, getErrorDisplayInfo } from "../utils/errorHandling";
@@ -64,17 +64,17 @@ export function useMeetingCreation(): UseMeetingCreationReturn {
     setError("");
 
     try {
-      const response = await apiService.createMeeting(
-        meetingData.facilitatorName,
-        meetingData.name
+      const meeting = await SupabaseMeetingService.createMeeting(
+        meetingData.name,
+        meetingData.facilitatorName
       );
 
-      const shareableLink = `${window.location.origin}/join?code=${response.meetingCode}`;
+      const shareableLink = `${window.location.origin}/join?code=${meeting.code}`;
 
       // Set state and advance UI before generating QR to avoid perceived slowness
       setMeetingData({
-        meetingCode: response.meetingCode,
-        meetingId: response.meetingId,
+        meetingCode: meeting.code,
+        meetingId: meeting.id,
         shareableLink,
       });
 
@@ -82,8 +82,8 @@ export function useMeetingCreation(): UseMeetingCreationReturn {
       localStorage.setItem(
         "currentMeeting",
         JSON.stringify({
-          meetingCode: response.meetingCode,
-          meetingId: response.meetingId,
+          meetingCode: meeting.code,
+          meetingId: meeting.id,
           facilitatorName: meetingData.facilitatorName,
           meetingName: meetingData.name,
         })
@@ -93,7 +93,7 @@ export function useMeetingCreation(): UseMeetingCreationReturn {
 
       // Save facilitator session for persistence
       saveSession({
-        meetingCode: response.meetingCode,
+        meetingCode: meeting.code,
         facilitatorName: meetingData.facilitatorName,
         meetingTitle: meetingData.name,
       });
@@ -108,7 +108,7 @@ export function useMeetingCreation(): UseMeetingCreationReturn {
         }
       })();
 
-      notify("success", "Meeting created", `Code: ${response.meetingCode}`);
+      notify("success", "Meeting created", `Code: ${meeting.code}`);
       playBeep(880, 140);
       setConfettiKey(k => k + 1);
     } catch (err) {

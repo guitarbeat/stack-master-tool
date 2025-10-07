@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Users, Loader2 } from "lucide-react";
-import apiService from "../../services/api";
+import { SupabaseMeetingService } from "../../services/supabase";
 import { toast } from "@/hooks/use-toast";
 import { playBeep } from "../../utils/sound";
 import { AppError, getErrorDisplayInfo } from "../../utils/errorHandling";
@@ -36,14 +36,19 @@ function CreateMeetingForm({ onSuccess }: CreateMeetingFormProps): JSX.Element {
     setError("");
 
     try {
-      const response = await apiService.createMeeting(
-        meetingData.facilitatorName.trim(),
-        meetingData.name.trim()
+      const meeting = await SupabaseMeetingService.createMeeting(
+        meetingData.name.trim(),
+        meetingData.facilitatorName.trim()
       );
 
-      notify("success", "Meeting created", `Code: ${response.meetingCode}`);
+      notify("success", "Meeting created", `Code: ${meeting.code}`);
       playBeep(880, 140);
-      onSuccess(response);
+      onSuccess({
+        meetingCode: meeting.code,
+        meetingId: meeting.id,
+        title: meeting.title,
+        facilitatorName: meeting.facilitatorName,
+      });
     } catch (err) {
       console.error("Error creating meeting:", err);
       const errorInfo = getErrorDisplayInfo(err as AppError);

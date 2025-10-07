@@ -4,15 +4,18 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { WatchView } from '../WatchView';
 
 // Mock the hooks
-const mockUsePublicWatch = {
+const mockUseSupabaseWatch = {
   meetingData: {
+    id: 'meeting-123',
     code: 'ABC123',
     title: 'Test Meeting',
-    facilitator: 'Test Facilitator',
+    facilitatorName: 'Test Facilitator',
+    createdAt: new Date().toISOString(),
+    isActive: true,
   },
   participants: [
-    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1 },
-    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0 },
+    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
+    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0, isFacilitator: false, hasRaisedHand: false },
   ],
   speakingQueue: [
     { id: '1', name: 'John Doe', position: 1 },
@@ -23,14 +26,17 @@ const mockUsePublicWatch = {
   isLoading: false,
 };
 
-const mockUseLocalWatch = {
+const mockUseSupabaseWatchLocal = {
   meetingData: {
+    id: 'meeting-local-123',
     code: 'MANUAL',
     title: 'Local Meeting',
-    facilitator: 'Local Facilitator',
+    facilitatorName: 'Local Facilitator',
+    createdAt: new Date().toISOString(),
+    isActive: true,
   },
   participants: [
-    { id: '1', name: 'Local User', isSpeaking: false, queuePosition: 1 },
+    { id: '1', name: 'Local User', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
   ],
   speakingQueue: [
     { id: '1', name: 'Local User', position: 1 },
@@ -43,12 +49,8 @@ const mockUseLocalWatch = {
 
 const mockUseMeetingCode = vi.fn(() => 'ABC123');
 
-vi.mock('../../hooks/usePublicWatch', () => ({
-  usePublicWatch: () => mockUsePublicWatch,
-}));
-
-vi.mock('../../hooks/useLocalWatch', () => ({
-  useLocalWatch: () => mockUseLocalWatch,
+vi.mock('../../hooks/useSupabaseWatch', () => ({
+  useSupabaseWatch: vi.fn(() => mockUseSupabaseWatch),
 }));
 
 vi.mock('../../hooks/useMeetingMode', () => ({
@@ -226,7 +228,7 @@ describe('WatchView', () => {
       error: 'Connection failed',
     };
     
-    vi.mocked(require('../../hooks/usePublicWatch').usePublicWatch).mockReturnValue(errorMock);
+    vi.mocked(require('../../hooks/useSupabaseWatch').useSupabaseWatch).mockReturnValue(errorMock);
     mockUseMeetingCode.mockReturnValue('ABC123');
     
     renderWatchView();
@@ -241,7 +243,7 @@ describe('WatchView', () => {
       error: 'Connection failed',
     };
     
-    vi.mocked(require('../../hooks/usePublicWatch').usePublicWatch).mockReturnValue(errorMock);
+    vi.mocked(require('../../hooks/useSupabaseWatch').useSupabaseWatch).mockReturnValue(errorMock);
     mockUseMeetingCode.mockReturnValue('ABC123');
     
     renderWatchView();
@@ -261,7 +263,7 @@ describe('WatchView', () => {
       isLoading: true,
     };
     
-    vi.mocked(require('../../hooks/usePublicWatch').usePublicWatch).mockReturnValue(loadingMock);
+    vi.mocked(require('../../hooks/useSupabaseWatch').useSupabaseWatch).mockReturnValue(loadingMock);
     mockUseMeetingCode.mockReturnValue('ABC123');
     
     renderWatchView();

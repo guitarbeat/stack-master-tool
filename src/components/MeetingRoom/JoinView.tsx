@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMeetingSocket } from "../../hooks/useMeetingSocket";
+import { useSupabaseMeeting } from "../../hooks/useSupabaseMeeting";
 import { MeetingHeader } from "./MeetingHeader";
 import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
 import { SpeakingQueue } from "./SpeakingQueue";
@@ -36,12 +36,15 @@ export const JoinView = (): JSX.Element => {
     lastConnected,
     reconnectAttempts,
     onReconnect,
-  } = useMeetingSocket(
+  } = useSupabaseMeeting(
     hasJoined ? participantName : '',
     hasJoined ? {
+      id: '',
       code: meetingCode,
       title: "Loading...",
-      facilitator: "Loading...",
+      facilitatorName: "Loading...",
+      createdAt: new Date().toISOString(),
+      isActive: true,
     } : null
   );
 

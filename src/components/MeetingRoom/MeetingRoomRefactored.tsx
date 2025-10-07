@@ -1,18 +1,17 @@
-
-import { useParams, useLocation } from 'react-router-dom';
-import { useMeetingSocket } from '../../hooks/useMeetingSocket';
-import { MeetingHeader } from './MeetingHeader';
-import { CurrentSpeakerAlert } from './CurrentSpeakerAlert';
-import { SpeakingQueue } from './SpeakingQueue';
-import { ActionsPanel } from './ActionsPanel';
-import { LoadingState } from './LoadingState';
-import { ErrorState } from './ErrorState';
+import { useParams, useLocation } from "react-router-dom";
+import { useSupabaseParticipant } from "../../hooks/useSupabaseParticipant";
+import { MeetingHeader } from "./MeetingHeader";
+import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
+import { SpeakingQueue } from "./SpeakingQueue";
+import { ActionsPanel } from "./ActionsPanel";
+import { LoadingState } from "./LoadingState";
+import { ErrorState } from "./ErrorState";
 
 export const MeetingRoomRefactored = (): JSX.Element => {
   const { meetingId } = useParams();
   const location = useLocation();
   const { participantName, meetingInfo } = location.state || {};
-  
+
   const {
     meetingData,
     participants,
@@ -23,12 +22,8 @@ export const MeetingRoomRefactored = (): JSX.Element => {
     currentSpeaker,
     joinQueue,
     leaveQueue,
-    leaveMeeting
-  } = useMeetingSocket(participantName, meetingInfo || {
-    code: meetingId || '',
-    title: 'Loading...',
-    facilitator: 'Loading...'
-  });
+    leaveMeeting,
+  } = useSupabaseParticipant(participantName || "", meetingId || "");
 
   if (!isConnected && !error) {
     return <LoadingState />;
@@ -41,7 +36,13 @@ export const MeetingRoomRefactored = (): JSX.Element => {
   return (
     <div className="container mx-auto px-4 py-8">
       <MeetingHeader
-        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
+        meetingData={
+          meetingData || {
+            code: "",
+            title: "Loading...",
+            facilitator: "Loading...",
+          }
+        }
         participantCount={participants.length}
         onLeaveMeeting={leaveMeeting}
       />
