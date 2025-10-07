@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useSupabaseMeeting } from "../../hooks/useSupabaseMeeting";
 import { MeetingHeader } from "./MeetingHeader";
 import { CurrentSpeakerAlert } from "./CurrentSpeakerAlert";
@@ -17,8 +23,8 @@ import { EnhancedErrorState } from "./EnhancedErrorState";
 
 export const JoinView = (): JSX.Element => {
   const navigate = useNavigate();
-  const [meetingCode, setMeetingCode] = useState('');
-  const [participantName, setParticipantName] = useState('');
+  const [meetingCode, setMeetingCode] = useState("");
+  const [participantName, setParticipantName] = useState("");
   const [hasJoined, setHasJoined] = useState(false);
 
   const {
@@ -37,15 +43,17 @@ export const JoinView = (): JSX.Element => {
     reconnectAttempts,
     onReconnect,
   } = useSupabaseMeeting(
-    hasJoined ? participantName : '',
-    hasJoined ? {
-      id: '',
-      code: meetingCode,
-      title: "Loading...",
-      facilitatorName: "Loading...",
-      createdAt: new Date().toISOString(),
-      isActive: true,
-    } : null
+    hasJoined ? participantName : "",
+    hasJoined
+      ? {
+          id: "",
+          code: meetingCode,
+          title: "Loading...",
+          facilitator: "Loading...",
+          createdAt: new Date().toISOString(),
+          isActive: true,
+        }
+      : null
   );
 
   const handleJoin = () => {
@@ -71,7 +79,7 @@ export const JoinView = (): JSX.Element => {
                 id="meeting-code"
                 placeholder="Enter 6-digit code"
                 value={meetingCode}
-                onChange={(e) => setMeetingCode(e.target.value.toUpperCase())}
+                onChange={e => setMeetingCode(e.target.value.toUpperCase())}
                 maxLength={6}
               />
             </div>
@@ -81,15 +89,19 @@ export const JoinView = (): JSX.Element => {
                 id="participant-name"
                 placeholder="Enter your name"
                 value={participantName}
-                onChange={(e) => setParticipantName(e.target.value)}
+                onChange={e => setParticipantName(e.target.value)}
               />
             </div>
             <div className="flex gap-2">
-              <Button onClick={() => navigate('/')} variant="outline" className="flex-1">
+              <Button
+                onClick={() => navigate("/")}
+                variant="outline"
+                className="flex-1"
+              >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleJoin} 
+              <Button
+                onClick={handleJoin}
                 className="flex-1"
                 disabled={!meetingCode.trim() || !participantName.trim()}
               >
@@ -111,24 +123,30 @@ export const JoinView = (): JSX.Element => {
       <EnhancedErrorState
         error={error}
         onRetry={() => window.location.reload()}
-        onGoHome={() => navigate('/')}
+        onGoHome={() => navigate("/")}
         meetingCode={meetingCode}
         participantName={participantName}
         retryCount={reconnectAttempts}
-        lastConnected={lastConnected || undefined}
+        lastConnected={lastConnected}
       />
     );
   }
 
   // Find participant's position in queue
-  const participantQueuePosition = speakingQueue.findIndex(
-    item => item.participantName === participantName
-  ) + 1;
+  const participantQueuePosition =
+    speakingQueue.findIndex(item => item.participantName === participantName) +
+    1;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <MeetingHeader
-        meetingData={meetingData || { code: '', title: 'Loading...', facilitator: 'Loading...' }}
+        meetingData={
+          meetingData || {
+            code: "",
+            title: "Loading...",
+            facilitator: "Loading...",
+          }
+        }
         participantCount={participants.length}
         onLeaveMeeting={leaveMeeting}
       />
@@ -143,7 +161,9 @@ export const JoinView = (): JSX.Element => {
         onReconnect={onReconnect}
         connectionQuality={connectionQuality}
         participantCount={participants.length}
-        meetingDuration={meetingData ? Math.floor((Date.now() - Date.now()) / 1000) : 0}
+        meetingDuration={
+          meetingData ? Math.floor((Date.now() - Date.now()) / 1000) : 0
+        }
       />
 
       {currentSpeaker && (
@@ -155,21 +175,38 @@ export const JoinView = (): JSX.Element => {
               facilitator: "Loading...",
             }
           }
-          participants={participants.map(p => ({ ...p, hasRaisedHand: false }))}
-          speakingQueue={speakingQueue}
+          participants={participants.map(p => ({
+            ...p,
+            hasRaisedHand: false,
+            joinedAt: new Date(p.joinedAt),
+          }))}
+          speakingQueue={speakingQueue.map(q => ({
+            id: q.id,
+            participantName: q.participantName,
+            type: q.queueType,
+            timestamp: new Date(q.joinedQueueAt).getTime(),
+          }))}
           currentSpeaker={currentSpeaker}
           isWatching={false}
         />
       )}
 
-      {currentSpeaker && <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />}
+      {currentSpeaker && (
+        <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />
+      )}
 
       {isInQueue && participantQueuePosition > 0 && currentSpeaker && (
         <QueuePositionFeedback
           participantName={participantName}
           queuePosition={participantQueuePosition}
           totalInQueue={speakingQueue.length}
-          joinedAt={new Date(speakingQueue.find(item => item.participantName === participantName)?.timestamp || Date.now())}
+          joinedAt={
+            new Date(
+              speakingQueue.find(
+                item => item.participantName === participantName
+              )?.joinedQueueAt || Date.now()
+            )
+          }
           currentSpeaker={currentSpeaker}
         />
       )}

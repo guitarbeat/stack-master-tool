@@ -35,14 +35,11 @@ export const WatchView = (): JSX.Element => {
     effectiveMeetingCode === "MANUAL" || effectiveMeetingCode === "";
 
   // Use Supabase watch for all meetings
-  const {
-    meetingData,
-    participants,
-    speakingQueue,
-    isConnected,
-    error,
-    isLoading,
-  } = useSupabaseWatch(effectiveMeetingCode);
+  const { meetingData, participants, speakingQueue, error, isLoading } =
+    useSupabaseWatch(effectiveMeetingCode);
+
+  // Get current speaker from the queue
+  const currentSpeaker = speakingQueue.find(item => item.isSpeaking) || null;
 
   const handleWatch = () => {
     if (meetingCode.trim()) {
@@ -129,7 +126,7 @@ export const WatchView = (): JSX.Element => {
           meetingData || {
             code: "",
             title: "Loading...",
-            facilitatorName: "Loading...",
+            facilitator: "Loading...",
           }
         }
         participantCount={participants?.length || 0}
@@ -142,11 +139,18 @@ export const WatchView = (): JSX.Element => {
         }
       />
 
-      {currentSpeaker && <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />}
+      {currentSpeaker && (
+        <CurrentSpeakerAlert currentSpeaker={currentSpeaker} />
+      )}
 
       <div className="grid grid-cols-1 gap-8">
         <SpeakingQueue
-          speakingQueue={speakingQueue}
+          speakingQueue={speakingQueue.map(q => ({
+            id: q.id,
+            participantName: q.participantName,
+            type: q.queueType,
+            timestamp: new Date(q.joinedQueueAt).getTime(),
+          }))}
           participantName=""
           onLeaveQueue={() => {}}
         />
