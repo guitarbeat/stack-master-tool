@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { JoinView } from '../JoinView';
@@ -25,20 +25,25 @@ const mockUseMeetingSocket = {
     isActive: true,
   },
   participants: [
+<<<<<<< HEAD
     createParticipant('1', 'John Doe', false, 1),
     createParticipant('2', 'Jane Smith', true, 0),
+=======
+    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
+    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0, isFacilitator: false, hasRaisedHand: false },
+>>>>>>> origin/main
   ],
   speakingQueue: [
-    { id: '1', name: 'John Doe', position: 1 },
+    { id: '1', participantName: 'John Doe', type: 'speak', timestamp: Date.now() },
   ],
   isInQueue: false,
   isConnected: true,
-  error: null,
-  currentSpeaker: { id: '2', name: 'Jane Smith', position: 0 },
+  error: '',
+  currentSpeaker: { id: '2', participantName: 'Jane Smith', type: 'speak', timestamp: Date.now() },
   joinQueue: vi.fn(),
   leaveQueue: vi.fn(),
   leaveMeeting: vi.fn(),
-  connectionQuality: 'good',
+  connectionQuality: 'good' as const,
   lastConnected: new Date(),
   reconnectAttempts: 0,
   onReconnect: vi.fn(),
@@ -296,6 +301,7 @@ describe('JoinView', () => {
     const errorMock = {
       ...mockUseMeetingSocket,
       error: 'Connection failed',
+      currentSpeaker: { id: '2', participantName: 'Jane Smith', type: 'speak', timestamp: Date.now() },
     };
     
     vi.mocked(useSupabaseMeeting).mockReturnValue(errorMock);
@@ -318,6 +324,7 @@ describe('JoinView', () => {
     const errorMock = {
       ...mockUseMeetingSocket,
       error: 'Connection failed',
+      currentSpeaker: { id: '2', participantName: 'Jane Smith', type: 'speak', timestamp: Date.now() },
     };
     
     vi.mocked(useSupabaseMeeting).mockReturnValue(errorMock);
@@ -343,7 +350,7 @@ describe('JoinView', () => {
     const loadingMock = {
       ...mockUseMeetingSocket,
       isConnected: false,
-      error: null,
+      error: '',
     };
     
     vi.mocked(useSupabaseMeeting).mockReturnValue(loadingMock);
