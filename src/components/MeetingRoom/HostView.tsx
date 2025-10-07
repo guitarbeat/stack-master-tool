@@ -69,7 +69,10 @@ export const HostView = (): JSX.Element => {
     console.log("Update meeting title:", newTitle);
   };
 
-  const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
+  const handleParticipantNameUpdate = async (
+    participantId: string,
+    newName: string
+  ) => {
     // Update participant name for remote meetings if supported
     console.log("Update participant name:", participantId, newName);
   };
@@ -110,7 +113,9 @@ export const HostView = (): JSX.Element => {
                 Host Meeting
               </h1>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Welcome, {facilitatorName}</span>
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {facilitatorName}
+                </span>
                 {meetingTitle && (
                   <>
                     <span className="text-sm text-muted-foreground">•</span>
@@ -378,11 +383,11 @@ export const HostView = (): JSX.Element => {
             participants={participants.map(p => ({
               id: p.id,
               name: p.name,
-              isFacilitator: p.is_facilitator ?? false,
+              isFacilitator: p.isFacilitator ?? false,
               isInQueue: speakingQueue.some(
                 (q: any) => q.participant_id === p.id
               ),
-              joinedAt: p.joined_at,
+              joinedAt: new Date(p.joinedAt),
             }))}
             meetingData={{
               code: meetingCode || "MANUAL",

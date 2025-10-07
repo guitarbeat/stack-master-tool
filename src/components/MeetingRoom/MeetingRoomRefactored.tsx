@@ -10,7 +10,7 @@ import { ErrorState } from "./ErrorState";
 export const MeetingRoomRefactored = (): JSX.Element => {
   const { meetingId } = useParams();
   const location = useLocation();
-  const { participantName, meetingInfo } = location.state || {};
+  const { participantName } = location.state || {};
 
   const {
     meetingData,

@@ -266,7 +266,9 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
 
     // Current data (manual or remote)
     stack: isRemoteEnabled ? remoteManagement.queue : manualStack.stack,
-    interventions: manualStack.interventions,
+    interventions: isRemoteEnabled
+      ? remoteManagement.interventions || []
+      : manualStack.interventions,
     participants: isRemoteEnabled ? remoteManagement.participants : [],
     currentSpeaker: isRemoteEnabled
       ? remoteManagement.currentSpeaker
@@ -324,5 +326,11 @@ export const useUnifiedFacilitator = (facilitatorName: string) => {
     resetSpeakerTimer: isRemoteEnabled
       ? remoteManagement.resetSpeakerTimer
       : resetSpeakerTimer,
+
+    // Additional properties for HostView compatibility
+    undoHistory: isRemoteEnabled ? remoteManagement.undoHistory || [] : [],
+    setInterventions: isRemoteEnabled
+      ? remoteManagement.setInterventions
+      : undefined,
   };
 };

@@ -17,6 +17,8 @@ const createParticipant = (
   queuePosition,
   isFacilitator: false,
   hasRaisedHand: false,
+  joinedAt: new Date().toISOString(),
+  isActive: true,
 });
 
 // Mock the useSupabaseMeeting hook
@@ -36,9 +38,12 @@ const mockUseMeetingSocket = {
   speakingQueue: [
     {
       id: "1",
+      participantId: "1",
       participantName: "John Doe",
-      type: "speak",
-      timestamp: Date.now(),
+      queueType: "speak",
+      position: 1,
+      joinedQueueAt: new Date().toISOString(),
+      isSpeaking: false,
     },
   ],
   isInQueue: false,
@@ -46,9 +51,12 @@ const mockUseMeetingSocket = {
   error: "",
   currentSpeaker: {
     id: "2",
+    participantId: "2",
     participantName: "Jane Smith",
-    type: "speak",
-    timestamp: Date.now(),
+    queueType: "speak",
+    position: 0,
+    joinedQueueAt: new Date().toISOString(),
+    isSpeaking: true,
   },
   joinQueue: vi.fn(),
   leaveQueue: vi.fn(),
