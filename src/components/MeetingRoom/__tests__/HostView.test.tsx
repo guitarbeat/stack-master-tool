@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { HostView } from '../HostView';
@@ -12,8 +12,8 @@ const mockUseUnifiedFacilitator = {
   enableRemoteMode: vi.fn(),
   disableRemoteMode: vi.fn(),
   participants: [
-    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1 },
-    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0 },
+    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
+    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0, isFacilitator: false, hasRaisedHand: false },
   ],
   speakingQueue: [
     { id: '1', name: 'John Doe', position: 1 },

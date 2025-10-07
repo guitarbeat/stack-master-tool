@@ -4,7 +4,7 @@ interface MeetingHeaderProps {
   meetingData: {
     code: string;
     title: string;
-    facilitator: string;
+    facilitatorName: string;
   };
   participantCount: number;
   onLeaveMeeting: () => void;
@@ -22,7 +22,7 @@ export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, a
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">{meetingData.title}</h1>
           <p className="text-gray-600 dark:text-zinc-400">
-            Facilitated by {meetingData.facilitator} • Code: {meetingData.code}
+            Facilitated by {meetingData.facilitatorName} • Code: {meetingData.code}
           </p>
         </div>
         <div className="flex items-center space-x-4">

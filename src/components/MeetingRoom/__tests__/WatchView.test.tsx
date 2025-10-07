@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { WatchView } from '../WatchView';
@@ -11,8 +11,8 @@ const mockUsePublicWatch = {
     facilitator: 'Test Facilitator',
   },
   participants: [
-    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1 },
-    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0 },
+    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
+    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0, isFacilitator: false, hasRaisedHand: false },
   ],
   speakingQueue: [
     { id: '1', name: 'John Doe', position: 1 },
@@ -30,7 +30,7 @@ const mockUseLocalWatch = {
     facilitator: 'Local Facilitator',
   },
   participants: [
-    { id: '1', name: 'Local User', isSpeaking: false, queuePosition: 1 },
+    { id: '1', name: 'Local User', isSpeaking: false, queuePosition: 1, isFacilitator: false, hasRaisedHand: false },
   ],
   speakingQueue: [
     { id: '1', name: 'Local User', position: 1 },

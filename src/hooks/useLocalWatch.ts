@@ -21,7 +21,6 @@ export const useLocalWatch = (meetingCode: string) => {
   });
 
   const {
-    isRemoteEnabled,
     meetingCode: hostMeetingCode,
     meetingTitle,
     participants,
@@ -34,7 +33,7 @@ export const useLocalWatch = (meetingCode: string) => {
   const isLocalMeeting =
     meetingCode === "MANUAL" || meetingCode === hostMeetingCode;
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -62,7 +61,7 @@ export const useLocalWatch = (meetingCode: string) => {
   }));
 
   const transformedSpeakingQueue: QueueEntry[] = speakingQueue.map(
-    (entry: any, index: number) => ({
+    (entry: any) => ({
       id: entry.id,
       participantName: entry.participantName || "Unknown",
       type: entry.queue_type || "regular",

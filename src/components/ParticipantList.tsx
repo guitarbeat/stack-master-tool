@@ -1,4 +1,4 @@
-import { Users, Crown, UserPlus } from 'lucide-react'
+import { Users, Crown } from 'lucide-react'
 import { EnhancedEditableParticipantName } from './EnhancedEditableParticipantName'
 import { QuickAddParticipant } from './QuickAddParticipant'
 
