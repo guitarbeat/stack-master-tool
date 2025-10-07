@@ -5,4 +5,4 @@
 export function playNotificationSound(): void;
 export function playSuccessSound(): void;
 export function playErrorSound(): void;
-export function playBeep(): void;
+export function playBeep(frequency?: number, duration?: number): void;

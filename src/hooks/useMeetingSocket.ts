@@ -30,9 +30,7 @@ export const useMeetingSocket = (
   meetingInfo: MeetingData | null
 ) => {
   const navigate = useNavigate();
-  const [meetingData, setMeetingData] = useState<MeetingData | null>(
-    meetingInfo
-  );
+  const [meetingData] = useState<MeetingData | null>(meetingInfo);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [speakingQueue, setSpeakingQueue] = useState<QueueItem[]>([]);
   const [isInQueue, setIsInQueue] = useState<boolean>(false);
@@ -265,7 +263,12 @@ export const useMeetingSocket = (
       await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
       
       socketService.connect();
-      setupSocketListeners();
+      // setupSocketListeners is defined in the useEffect above
+      const listeners = () => {
+        socketService.onQueueUpdated(queueUpdatedCallback);
+        socketService.onParticipantsUpdated(participantsUpdatedCallback);
+      };
+      listeners();
       setIsConnected(true);
       setLastConnected(new Date());
       setConnectionQuality('excellent');

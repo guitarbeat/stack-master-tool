@@ -111,9 +111,7 @@ export function useFacilitatorSocket(
 
     const connectAsFacilitator = async () => {
       try {
-        if (!socketService.isConnected) {
-          socketService.connect();
-        }
+        socketService.connect();
         setupSocketListeners();
         await socketService.joinMeeting(meetingCode, facilitatorName, true);
         setIsConnected(true);
@@ -138,9 +136,7 @@ export function useFacilitatorSocket(
 
     return () => {
       // Clean up listeners to prevent memory leaks
-      if (socketService.socket) {
-        socketService.removeAllListeners();
-      }
+      socketService.removeAllListeners();
     };
   }, [meetingCode, facilitatorName, showToast]);
 

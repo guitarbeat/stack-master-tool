@@ -33,9 +33,6 @@ export const PublicWatch = (): JSX.Element => {
     currentSpeaker,
     isLoading,
     error,
-    isConnected,
-    connectionQuality,
-    lastConnected,
   } = usePublicWatch(code || "");
 
   const formatTimestamp = (timestamp: number) => {
