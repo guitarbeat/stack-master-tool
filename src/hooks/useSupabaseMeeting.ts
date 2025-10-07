@@ -67,7 +67,7 @@ export const useSupabaseMeeting = (
           id: meeting.id,
           code: meeting.code,
           title: meeting.title,
-          facilitatorName: meeting.facilitatorName,
+          facilitator: meeting.facilitatorName,
           createdAt: meeting.createdAt,
           isActive: meeting.isActive,
         });

@@ -31,7 +31,7 @@ export interface MeetingData {
   id: string;
   code: string;
   title: string;
-  facilitatorName: string;
+  facilitator: string;
   createdAt: string;
   isActive: boolean;
 }
@@ -165,7 +165,7 @@ export class SupabaseMeetingService {
       }
 
       // Check if facilitator authorization is required
-      if (isFacilitator && meeting.facilitatorName !== participantName) {
+      if (isFacilitator && meeting.facilitator !== participantName) {
         throw new AppError(ErrorCode.UNAUTHORIZED_FACILITATOR, undefined, 'Only the meeting creator can join as facilitator');
       }
 
