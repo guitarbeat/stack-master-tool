@@ -1,8 +1,18 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { JoinView } from '../JoinView';
 import { useMeetingSocket } from '../../../hooks/useMeetingSocket';
+
+// Helper function to create proper participant objects
+const createParticipant = (id: string, name: string, isSpeaking: boolean, queuePosition: number) => ({
+  id,
+  name,
+  isSpeaking,
+  queuePosition,
+  isFacilitator: false,
+  hasRaisedHand: false,
+});
 
 // Mock the useMeetingSocket hook
 const mockUseMeetingSocket = {
@@ -12,8 +22,8 @@ const mockUseMeetingSocket = {
     facilitator: 'Test Facilitator',
   },
   participants: [
-    { id: '1', name: 'John Doe', isSpeaking: false, queuePosition: 1 },
-    { id: '2', name: 'Jane Smith', isSpeaking: true, queuePosition: 0 },
+    createParticipant('1', 'John Doe', false, 1),
+    createParticipant('2', 'Jane Smith', true, 0),
   ],
   speakingQueue: [
     { id: '1', name: 'John Doe', position: 1 },
@@ -53,7 +63,7 @@ vi.mock('../CurrentSpeakerAlert', () => ({
 }));
 
 vi.mock('../SpeakingQueue', () => ({
-  SpeakingQueue: ({ speakingQueue, participantName }: { speakingQueue: any[]; participantName: string }) => (
+  SpeakingQueue: ({ speakingQueue }: { speakingQueue: any[] }) => (
     <div data-testid="speaking-queue">
       Queue: {speakingQueue.length} participants
     </div>
