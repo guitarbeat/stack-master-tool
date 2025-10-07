@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { JoinView } from '../JoinView';
-import { useMeetingSocket } from '../../../hooks/useMeetingSocket';
+import { useSupabaseMeeting } from '../../../hooks/useSupabaseMeeting';
 
 // Helper function to create proper participant objects
 const createParticipant = (id: string, name: string, isSpeaking: boolean, queuePosition: number) => ({
@@ -14,12 +14,15 @@ const createParticipant = (id: string, name: string, isSpeaking: boolean, queueP
   hasRaisedHand: false,
 });
 
-// Mock the useMeetingSocket hook
+// Mock the useSupabaseMeeting hook
 const mockUseMeetingSocket = {
   meetingData: {
+    id: 'meeting-123',
     code: 'ABC123',
     title: 'Test Meeting',
-    facilitator: 'Test Facilitator',
+    facilitatorName: 'Test Facilitator',
+    createdAt: new Date().toISOString(),
+    isActive: true,
   },
   participants: [
     createParticipant('1', 'John Doe', false, 1),
@@ -41,8 +44,8 @@ const mockUseMeetingSocket = {
   onReconnect: vi.fn(),
 };
 
-vi.mock('../../../hooks/useMeetingSocket', () => ({
-  useMeetingSocket: vi.fn(() => mockUseMeetingSocket),
+vi.mock('../../../hooks/useSupabaseMeeting', () => ({
+  useSupabaseMeeting: vi.fn(() => mockUseMeetingSocket),
 }));
 
 // Mock other dependencies
@@ -180,13 +183,16 @@ describe('JoinView', () => {
     const joinedMock = {
       ...mockUseMeetingSocket,
       meetingData: {
+        id: 'meeting-123',
         code: 'ABC123',
         title: 'Test Meeting',
-        facilitator: 'Test Facilitator',
+        facilitatorName: 'Test Facilitator',
+        createdAt: new Date().toISOString(),
+        isActive: true,
       },
     };
     
-    vi.mocked(useMeetingSocket).mockReturnValue(joinedMock);
+    vi.mocked(useSupabaseMeeting).mockReturnValue(joinedMock);
     
     renderJoinView();
     
@@ -292,7 +298,7 @@ describe('JoinView', () => {
       error: 'Connection failed',
     };
     
-    vi.mocked(useMeetingSocket).mockReturnValue(errorMock);
+    vi.mocked(useSupabaseMeeting).mockReturnValue(errorMock);
     
     // First join the meeting to trigger the hook
     renderJoinView();
@@ -314,7 +320,7 @@ describe('JoinView', () => {
       error: 'Connection failed',
     };
     
-    vi.mocked(useMeetingSocket).mockReturnValue(errorMock);
+    vi.mocked(useSupabaseMeeting).mockReturnValue(errorMock);
     
     // First join the meeting to trigger the hook
     renderJoinView();
@@ -340,7 +346,7 @@ describe('JoinView', () => {
       error: null,
     };
     
-    vi.mocked(useMeetingSocket).mockReturnValue(loadingMock);
+    vi.mocked(useSupabaseMeeting).mockReturnValue(loadingMock);
     
     // First join the meeting to trigger the hook
     renderJoinView();
@@ -360,13 +366,16 @@ describe('JoinView', () => {
     const joinedMock = {
       ...mockUseMeetingSocket,
       meetingData: {
+        id: 'meeting-123',
         code: 'ABC123',
         title: 'Test Meeting',
-        facilitator: 'Test Facilitator',
+        facilitatorName: 'Test Facilitator',
+        createdAt: new Date().toISOString(),
+        isActive: true,
       },
     };
     
-    vi.mocked(useMeetingSocket).mockReturnValue(joinedMock);
+    vi.mocked(useSupabaseMeeting).mockReturnValue(joinedMock);
     
     renderJoinView();
     
@@ -389,7 +398,7 @@ describe('JoinView', () => {
       isInQueue: true,
     };
     
-    vi.mocked(useMeetingSocket).mockReturnValue(inQueueMock);
+    vi.mocked(useSupabaseMeeting).mockReturnValue(inQueueMock);
     
     renderJoinView();
     
