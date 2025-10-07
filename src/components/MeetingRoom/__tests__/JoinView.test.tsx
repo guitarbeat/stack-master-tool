@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { JoinView } from '../JoinView';
@@ -20,7 +20,7 @@ const mockUseMeetingSocket = {
     id: 'meeting-123',
     code: 'ABC123',
     title: 'Test Meeting',
-    facilitatorName: 'Test Facilitator',
+    facilitator: 'Test Facilitator',
     createdAt: new Date().toISOString(),
     isActive: true,
   },
@@ -186,7 +186,7 @@ describe('JoinView', () => {
         id: 'meeting-123',
         code: 'ABC123',
         title: 'Test Meeting',
-        facilitatorName: 'Test Facilitator',
+        facilitator: 'Test Facilitator',
         createdAt: new Date().toISOString(),
         isActive: true,
       },
@@ -369,7 +369,7 @@ describe('JoinView', () => {
         id: 'meeting-123',
         code: 'ABC123',
         title: 'Test Meeting',
-        facilitatorName: 'Test Facilitator',
+        facilitator: 'Test Facilitator',
         createdAt: new Date().toISOString(),
         isActive: true,
       },
