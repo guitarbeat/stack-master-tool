@@ -15,17 +15,9 @@ Welcome to the Stack Master Tool documentation! This directory contains all proj
 
 ### [deployment/](deployment/) - Deployment Configurations
 
-- `render.yaml` - Render static site deployment
-- `vercel.json` - Vercel deployment configuration
+- `render.yaml` - Render static site deployment (current)
 - `netlify.toml` - Netlify deployment configuration
-- `deploy/deploy.sh` - Generic deployment script
-
-### [build/](build/) - Build Infrastructure
-
-- `_headers` - Security headers for static hosting
-- `nginx.conf` - Nginx configuration template
-- `docker/` - Docker configurations
-- `scripts/` - Build and deployment scripts
+- `vercel.json` - Vercel deployment configuration
 
 ## 📋 Project Management
 
@@ -51,8 +43,7 @@ docs/
 ├── 📄 ENVIRONMENT_SETUP.md # Environment configuration
 ├── 📄 CHANGELOG.md          # Release notes
 ├── 📄 LICENSE               # License information
-├── 📁 deployment/           # All deployment configurations
-└── 📁 build/               # Build and infrastructure configs
+└── 📁 deployment/           # Deployment configurations
 ```
 
 ## 🎯 Three-Mode Architecture
