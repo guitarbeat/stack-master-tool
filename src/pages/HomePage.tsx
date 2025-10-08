@@ -1,5 +1,8 @@
 import { Hero } from '@/components/Hero'
 import { ActionCards } from '@/components/ActionCards'
+import { Features } from '@/components/Features'
+import { HowItWorks } from '@/components/HowItWorks'
+import { Testimonials } from '@/components/Testimonials'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { LogOut } from 'lucide-react'
@@ -42,6 +45,18 @@ function HomePage() {
         <section aria-labelledby="action-cards-heading" className="mb-8 sm:mb-12">
           <h2 id="action-cards-heading" className="sr-only">Main Actions</h2>
           <ActionCards />
+        </section>
+        <section aria-labelledby="features-heading" className="mb-8 sm:mb-12">
+          <h2 id="features-heading" className="sr-only">Platform Features</h2>
+          <Features />
+        </section>
+        <section aria-labelledby="how-it-works-heading" className="mb-8 sm:mb-12">
+          <h2 id="how-it-works-heading" className="sr-only">How It Works</h2>
+          <HowItWorks />
+        </section>
+        <section aria-labelledby="testimonials-heading" className="mb-8 sm:mb-12">
+          <h2 id="testimonials-heading" className="sr-only">Testimonials</h2>
+          <Testimonials />
         </section>
       </div>
     </main>

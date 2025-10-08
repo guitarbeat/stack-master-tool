@@ -47,11 +47,11 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist node_modules/.vite coverage test-results playwright-report *.log",
+    "clean": "rm -rf .build/dist node_modules/.vite coverage .reports/test-results .reports/playwright-report *.log",
     "cap:sync": "cap sync",
     "cap:build:android": "cap build android",
     "cap:build:ios": "cap build ios",
-    "deploy:netlify": "npm run build:prod && netlify deploy --prod --dir dist",
+    "deploy:netlify": "npm run build:prod && netlify deploy --prod --dir .build/dist",
     "deploy:vercel": "npm run build:prod && vercel --prod",
     "security:audit": "npm audit --audit-level moderate",
     "bundle:analyze": "npm run build:analyze"

@@ -15,16 +15,16 @@ vi.mock("@tanstack/react-query", () => ({
 }));
 
 // Mock the toast components
-vi.mock("@/components/ui/toaster", () => ({
+vi.mock("./components/ui/toaster", () => ({
   Toaster: () => <div data-testid="toaster" />,
 }));
 
-vi.mock("@/components/ui/sonner", () => ({
+vi.mock("./components/ui/sonner", () => ({
   Toaster: () => <div data-testid="sonner" />,
 }));
 
 // Mock the AppLayout component
-vi.mock("@/components/layout/AppLayout", () => ({
+vi.mock("./components/layout/AppLayout", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="app-layout">{children}</div>
   ),

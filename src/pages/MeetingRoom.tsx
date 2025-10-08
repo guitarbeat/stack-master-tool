@@ -8,6 +8,10 @@ import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { useAuth } from "@/hooks/useAuth";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
+import { useSpeakingHistory } from "@/hooks/useSpeakingHistory";
+import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import {
   SupabaseMeetingService,
   SupabaseRealtimeService,
@@ -15,6 +19,7 @@ import {
   type Participant as SbParticipant,
   type QueueItem as SbQueueItem,
 } from "@/services/supabase";
+import { validateMeetingCode, validateParticipantName } from "@/utils/meetingValidation";
 import QRCode from "qrcode";
 import {
   Dialog,
@@ -47,6 +52,25 @@ export default function MeetingRoom() {
   const [serverQueue, setServerQueue] = useState<SbQueueItem[]>([]);
   const [qrOpen, setQrOpen] = useState(false);
   const [qrUrl, setQrUrl] = useState<string>("");
+
+  // Advanced features hooks
+  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts({
+    onNextSpeaker: () => {
+      // TODO: Implement queue advancement
+      console.log('Next speaker shortcut triggered');
+    },
+    onUndo: () => {
+      // TODO: Implement undo functionality
+      console.log('Undo shortcut triggered');
+    },
+    onToggleShortcuts: () => {
+      console.log('Toggle shortcuts triggered');
+    }
+  });
+
+  const { speakerTimer, elapsedTime, startTimer, stopTimer, formatTime } = useSpeakerTimer();
+  const { speakingHistory, addSpeakingSegment, getTotalSpeakingTime, getSpeakingDistribution } = useSpeakingHistory();
+  const { dragIndex, handleDragStart, handleDrop, isDragOver } = useDragAndDrop();
 
   useEffect(() => {
     // Handle /watch/:code route

@@ -32,6 +32,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     // Target modern browsers for better performance
     target: 'es2020',
+    // Output directory
+    outDir: '../.build/dist',
     // Optimize CSS
     cssCodeSplit: true,
     // Ensure proper SPA routing in production

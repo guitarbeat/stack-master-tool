@@ -549,6 +549,16 @@ export const logError = (error: AppError | Error, context?: string) => {
     import("./errorMonitoring").then(({ trackAndLogError }) => {
       trackAndLogError(error, context);
     });
+    
+    // Add production logging
+    import("./productionLogger").then(({ logProduction }) => {
+      logProduction('error', {
+        error: error.message,
+        context,
+        timestamp: new Date().toISOString(),
+        stack: error.stack
+      });
+    });
   }
 };
 

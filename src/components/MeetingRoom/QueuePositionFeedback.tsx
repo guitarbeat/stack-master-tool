@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { playBeep } from "@/utils/sound";
 
 interface QueuePositionFeedbackProps {
   participantName: string;
@@ -85,6 +86,13 @@ export const QueuePositionFeedback = ({
     const interval = setInterval(updateSpeakerTime, 1000);
     return () => clearInterval(interval);
   }, [currentSpeaker?.startedSpeakingAt]);
+
+  // Play sound notification when user reaches front of queue
+  useEffect(() => {
+    if (queuePosition === 1) {
+      playBeep(880, 200, 0.1); // Play notification sound
+    }
+  }, [queuePosition]);
 
   // Calculate estimated wait time
   useEffect(() => {
