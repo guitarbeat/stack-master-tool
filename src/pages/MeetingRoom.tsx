@@ -6,6 +6,22 @@ import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  SupabaseMeetingService,
+  SupabaseRealtimeService,
+  type MeetingWithParticipants,
+  type Participant as SbParticipant,
+  type QueueItem as SbQueueItem,
+} from "@/services/supabase";
+import QRCode from "qrcode";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 type MeetingMode = "host" | "join" | "watch";
 
@@ -13,11 +29,22 @@ export default function MeetingRoom() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [meetingCode, setMeetingCode] = useState<string>("");
+  const [meetingId, setMeetingId] = useState<string>("");
   const [mode, setMode] = useState<MeetingMode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [codeInput, setCodeInput] = useState<string>("");
   const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
+  const { user } = useAuth();
+
+  const [serverMeeting, setServerMeeting] =
+    useState<MeetingWithParticipants | null>(null);
+  const [serverParticipants, setServerParticipants] = useState<SbParticipant[]>(
+    [],
+  );
+  const [serverQueue, setServerQueue] = useState<SbQueueItem[]>([]);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string>("");
 
   useEffect(() => {
     const modeParam = searchParams.get("mode") as MeetingMode;
@@ -38,19 +65,62 @@ export default function MeetingRoom() {
       return;
     }
 
-    // Generate a meeting code for host mode
-    if (modeParam === "host") {
-      const generatedCode = Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase();
-      setMeetingCode(generatedCode);
-    } else if (codeParam) {
-      setMeetingCode(codeParam.toUpperCase());
-    }
+    // Host: create meeting on Supabase, else: fetch by code
+    const bootstrap = async () => {
+      try {
+        if (modeParam === "host") {
+          const facilitatorName = user?.email ?? "Facilitator";
+          const created = await SupabaseMeetingService.createMeeting(
+            "New Meeting",
+            facilitatorName,
+          );
+          setMeetingId(created.id);
+          setMeetingCode(created.code);
+          const full = await SupabaseMeetingService.getMeeting(created.code);
+          if (full) {
+            setServerMeeting(full);
+            setServerParticipants(full.participants);
+            setServerQueue(full.speakingQueue);
+          }
+        } else if (codeParam) {
+          const full = await SupabaseMeetingService.getMeeting(codeParam);
+          if (!full) {
+            setError("Meeting not found or inactive.");
+            return;
+          }
+          setMeetingId(full.id);
+          setMeetingCode(full.code);
+          setServerMeeting(full);
+          setServerParticipants(full.participants);
+          setServerQueue(full.speakingQueue);
+        }
+      } catch (e) {
+        setError("Failed to connect to meeting.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    setIsLoading(false);
+    bootstrap();
   }, [searchParams]);
+
+  // Realtime subscriptions
+  useEffect(() => {
+    if (!meetingId) return;
+    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, {
+      onParticipantsUpdated: setServerParticipants,
+      onQueueUpdated: setServerQueue,
+      onMeetingTitleUpdated: (title) =>
+        setServerMeeting((m) =>
+          m ? ({ ...m, title } as MeetingWithParticipants) : m,
+        ),
+      onParticipantJoined: () => void 0,
+      onParticipantLeft: () => void 0,
+      onNextSpeaker: () => void 0,
+      onError: () => void 0,
+    });
+    return () => unsubscribe?.();
+  }, [meetingId]);
 
   if (isLoading) {
     return (
@@ -113,30 +183,36 @@ export default function MeetingRoom() {
     );
   }
 
-  // Mock data for now - in a real app this would come from Supabase
   const mockMeetingData = {
-    title: mode === "host" ? "New Meeting" : `Meeting ${meetingCode}`,
+    title:
+      serverMeeting?.title ??
+      (mode === "host"
+        ? "New Meeting"
+        : meetingCode
+          ? `Meeting ${meetingCode}`
+          : "Meeting"),
     code: meetingCode,
-    facilitator: "Meeting Facilitator",
-    createdAt: new Date(),
+    facilitator: serverMeeting?.facilitator ?? "Meeting Facilitator",
+    createdAt: serverMeeting ? new Date(serverMeeting.createdAt) : new Date(),
   };
 
-  const mockParticipants = [
-    {
-      id: "1",
-      name: "John Doe",
-      isFacilitator: mode === "host",
-      hasRaisedHand: false,
-      joinedAt: new Date(),
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      isFacilitator: false,
-      hasRaisedHand: true,
-      joinedAt: new Date(Date.now() - 300000), // 5 minutes ago
-    },
-  ];
+  const mockParticipants = serverParticipants.length
+    ? serverParticipants.map((p) => ({
+        id: p.id,
+        name: p.name,
+        isFacilitator: p.isFacilitator,
+        hasRaisedHand: false,
+        joinedAt: new Date(p.joinedAt),
+      }))
+    : [
+        {
+          id: "1",
+          name: "John Doe",
+          isFacilitator: mode === "host",
+          hasRaisedHand: false,
+          joinedAt: new Date(),
+        },
+      ];
 
   const mockCurrentSpeaker = {
     id: "2",
@@ -207,6 +283,24 @@ export default function MeetingRoom() {
                 </button>
               </div>
               <code className="block break-all p-2 rounded bg-muted/30">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
+              <div className="pt-3">
+                <button
+                  className="w-full py-2 rounded-lg bg-primary text-white font-semibold hover:opacity-90 disabled:opacity-50"
+                  disabled={!meetingCode}
+                  onClick={async () => {
+                    if (!meetingCode) return;
+                    const link = `${window.location.origin}/meeting?mode=join&code=${meetingCode}`;
+                    const dataUrl = await QRCode.toDataURL(link, {
+                      width: 256,
+                      margin: 2,
+                    });
+                    setQrUrl(dataUrl);
+                    setQrOpen(true);
+                  }}
+                >
+                  Show QR for Join Link
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -244,6 +338,19 @@ export default function MeetingRoom() {
           </div>
         </div>
       </div>
+      <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Join via QR code</DialogTitle>
+            <DialogDescription>
+              Scan to open the join link on a phone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-center py-4">
+            {qrUrl && <img src={qrUrl} alt="Join QR" className="w-64 h-64" />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </MeetingContext>
   );
 }

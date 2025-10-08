@@ -18,6 +18,7 @@ export default defineConfig({
       '**/dist/**',
       '**/backend/**', // Exclude backend tests (they use Jest)
       '**/tests/e2e/**', // Exclude E2E tests (they use Playwright)
+      '**/.dev/**', // Exclude .dev directory
       '**/*.{config,spec}.js'
     ],
     coverage: {
@@ -45,8 +46,15 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@frontend': path.resolve(__dirname, './src/frontend'),
+      '@': path.resolve(__dirname, '../src'),
+      '@lib': path.resolve(__dirname, '../src/lib'),
+      '@components': path.resolve(__dirname, '../src/components'),
+      '@hooks': path.resolve(__dirname, '../src/hooks'),
+      '@utils': path.resolve(__dirname, '../src/utils'),
+      '@services': path.resolve(__dirname, '../src/services'),
+      '@pages': path.resolve(__dirname, '../src/pages'),
+      '@types': path.resolve(__dirname, '../src/types'),
+      '@integrations': path.resolve(__dirname, '../src/integrations'),
     },
   },
 });
