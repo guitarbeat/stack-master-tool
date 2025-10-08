@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">stack-master-tool</string>
-    <string name="title_activity_main">stack-master-tool</string>
-    <string name="package_name">com.example.stackmastertool</string>
-    <string name="custom_url_scheme">com.example.stackmastertool</string>
-</resources>

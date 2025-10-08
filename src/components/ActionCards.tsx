@@ -7,11 +7,7 @@ import {
   CheckCircle,
   Eye,
 } from "lucide-react";
-import useTiltEffect from "@/hooks/use-tilt";
-
 export const ActionCards = () => {
-  const cardsRef = useTiltEffect();
-
   const actions = [
     {
       to: "/meeting?mode=host",
@@ -82,11 +78,7 @@ export const ActionCards = () => {
 
       <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
         {actions.map((action, index) => (
-          <div
-            key={index}
-            ref={el => (cardsRef.current[index] = el)}
-            className="tilt-card group"
-          >
+          <div key={index} className="group">
             <Link to={action.to} className="block h-full">
               <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden group-hover:shadow-glow">
                 {/* Background Elements */}

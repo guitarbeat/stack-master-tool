@@ -1,129 +1,9 @@
 {
   "statistics": {
-    "detectionDate": "2025-10-08T03:49:01.312Z",
+    "detectionDate": "2025-10-08T07:00:51.366Z",
     "formats": {
       "javascript": {
         "sources": {
-          "src/components/ui/sidebar/sidebar.tsx": {
-            "lines": 63,
-            "tokens": 312,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-trigger.tsx": {
-            "lines": 8,
-            "tokens": 56,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-submenu.tsx": {
-            "lines": 41,
-            "tokens": 288,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-rail.tsx": {
-            "lines": 14,
-            "tokens": 61,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-menu.tsx": {
-            "lines": 185,
-            "tokens": 1121,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-inset.tsx": {
-            "lines": 5,
-            "tokens": 18,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-input.tsx": {
-            "lines": 20,
-            "tokens": 128,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-group.tsx": {
-            "lines": 60,
-            "tokens": 396,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-content.tsx": {
-            "lines": 35,
-            "tokens": 217,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/context.tsx": {
-            "lines": 9,
-            "tokens": 44,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/__tests__/button.test.tsx": {
             "lines": 217,
             "tokens": 2059,
@@ -160,18 +40,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/toggle-group.tsx": {
-            "lines": 28,
-            "tokens": 203,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/toaster.tsx": {
             "lines": 0,
             "tokens": 3,
@@ -196,57 +64,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/textarea.tsx": {
-            "lines": 4,
-            "tokens": 15,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/tabs.tsx": {
             "lines": 34,
             "tokens": 211,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/table.tsx": {
-            "lines": 91,
-            "tokens": 610,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/switch.tsx": {
-            "lines": 10,
-            "tokens": 37,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/slider.tsx": {
-            "lines": 4,
-            "tokens": 15,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -292,54 +112,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/select.tsx": {
-            "lines": 123,
-            "tokens": 816,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/scroll-area.tsx": {
-            "lines": 27,
-            "tokens": 181,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/resizable.tsx": {
-            "lines": 21,
-            "tokens": 97,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/radio-group.tsx": {
-            "lines": 18,
-            "tokens": 120,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/progress.tsx": {
             "lines": 4,
             "tokens": 15,
@@ -349,54 +121,6 @@
             "duplicatedTokens": 0,
             "percentage": 0,
             "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/popover.tsx": {
-            "lines": 6,
-            "tokens": 27,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/pagination.tsx": {
-            "lines": 89,
-            "tokens": 594,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/navigation-menu.tsx": {
-            "lines": 96,
-            "tokens": 616,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/menubar.tsx": {
-            "lines": 190,
-            "tokens": 1283,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 82,
-            "duplicatedTokens": 582,
-            "percentage": 43.16,
-            "percentageTokens": 45.36,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -424,42 +148,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/input-otp.tsx": {
-            "lines": 51,
-            "tokens": 396,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/hover-card.tsx": {
-            "lines": 6,
-            "tokens": 27,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/form.tsx": {
-            "lines": 122,
-            "tokens": 913,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/expandable-card.tsx": {
             "lines": 16,
             "tokens": 124,
@@ -472,21 +160,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/dropdown-menu.tsx": {
-            "lines": 151,
-            "tokens": 1028,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/drawer.tsx": {
-            "lines": 88,
-            "tokens": 588,
+          "src/components/ui/editable-field.tsx": {
+            "lines": 49,
+            "tokens": 320,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -499,66 +175,6 @@
           "src/components/ui/dialog.tsx": {
             "lines": 83,
             "tokens": 512,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/context-menu.tsx": {
-            "lines": 151,
-            "tokens": 1014,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 82,
-            "duplicatedTokens": 582,
-            "percentage": 54.3,
-            "percentageTokens": 57.4,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/command.tsx": {
-            "lines": 122,
-            "tokens": 796,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/checkbox.tsx": {
-            "lines": 8,
-            "tokens": 35,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/chart.tsx": {
-            "lines": 256,
-            "tokens": 1696,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/carousel.tsx": {
-            "lines": 120,
-            "tokens": 755,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -592,18 +208,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/breadcrumb.tsx": {
-            "lines": 86,
-            "tokens": 582,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/badge.tsx": {
             "lines": 0,
             "tokens": 13,
@@ -616,45 +220,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/avatar.tsx": {
-            "lines": 31,
-            "tokens": 210,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/alert.tsx": {
             "lines": 26,
             "tokens": 193,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/alert-dialog.tsx": {
-            "lines": 103,
-            "tokens": 665,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/accordion.tsx": {
-            "lines": 36,
-            "tokens": 266,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -700,57 +268,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/meeting/MeetingSuccessStep.tsx": {
-            "lines": 47,
-            "tokens": 279,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/meeting/MeetingCreationForm.tsx": {
-            "lines": 41,
-            "tokens": 264,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/meeting/JoinMeetingForm.tsx": {
             "lines": 58,
             "tokens": 380,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/meeting/CreateSuccess.tsx": {
-            "lines": 45,
-            "tokens": 253,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/meeting/CreateMeetingForm.tsx": {
-            "lines": 39,
-            "tokens": 260,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -871,6 +391,30 @@
           "src/components/Facilitator/RemoteModeToggle.tsx": {
             "lines": 121,
             "tokens": 882,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/sound.js": {
+            "lines": 25,
+            "tokens": 210,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/meetingValidation.js": {
+            "lines": 68,
+            "tokens": 340,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1048,18 +592,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ErrorBoundaryWrapper.tsx": {
-            "lines": 81,
-            "tokens": 716,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ErrorBoundary.tsx": {
             "lines": 4,
             "tokens": 46,
@@ -1088,29 +620,29 @@
             "lines": 58,
             "tokens": 353,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 36,
-            "duplicatedTokens": 233,
-            "percentage": 62.07,
-            "percentageTokens": 66.01,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/components/EditableParticipantName.tsx": {
-            "lines": 36,
-            "tokens": 234,
+            "lines": 5,
+            "tokens": 33,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 36,
-            "duplicatedTokens": 233,
-            "percentage": 100,
-            "percentageTokens": 99.57,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/components/EditableMeetingTitle.tsx": {
-            "lines": 43,
-            "tokens": 285,
+            "lines": 6,
+            "tokens": 43,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1133,8 +665,8 @@
             "newClones": 0
           },
           "src/components/ActionCards.tsx": {
-            "lines": 50,
-            "tokens": 377,
+            "lines": 49,
+            "tokens": 358,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1158,140 +690,20 @@
           }
         },
         "total": {
-          "lines": 5040,
-          "tokens": 35535,
-          "sources": 96,
-          "clones": 2,
-          "duplicatedLines": 118,
-          "duplicatedTokens": 815,
-          "percentage": 2.34,
-          "percentageTokens": 2.29,
+          "lines": 2382,
+          "tokens": 17945,
+          "sources": 57,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       },
       "tsx": {
         "sources": {
-          "src/components/ui/sidebar/sidebar.tsx": {
-            "lines": 112,
-            "tokens": 620,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-trigger.tsx": {
-            "lines": 32,
-            "tokens": 257,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-submenu.tsx": {
-            "lines": 57,
-            "tokens": 410,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-rail.tsx": {
-            "lines": 33,
-            "tokens": 198,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-menu.tsx": {
-            "lines": 217,
-            "tokens": 1313,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-inset.tsx": {
-            "lines": 21,
-            "tokens": 127,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-input.tsx": {
-            "lines": 38,
-            "tokens": 273,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-group.tsx": {
-            "lines": 76,
-            "tokens": 523,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/sidebar-content.tsx": {
-            "lines": 51,
-            "tokens": 332,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/sidebar/context.tsx": {
-            "lines": 135,
-            "tokens": 968,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/__tests__/button.test.tsx": {
             "lines": 275,
             "tokens": 2717,
@@ -1328,18 +740,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/toggle-group.tsx": {
-            "lines": 58,
-            "tokens": 433,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/toaster.tsx": {
             "lines": 32,
             "tokens": 239,
@@ -1364,18 +764,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/textarea.tsx": {
-            "lines": 22,
-            "tokens": 136,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/tabs.tsx": {
             "lines": 52,
             "tokens": 358,
@@ -1388,45 +776,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/table.tsx": {
-            "lines": 116,
-            "tokens": 753,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/switch.tsx": {
-            "lines": 26,
-            "tokens": 164,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/sonner.tsx": {
             "lines": 29,
             "tokens": 201,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/slider.tsx": {
-            "lines": 25,
-            "tokens": 187,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1472,105 +824,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/select.tsx": {
-            "lines": 157,
-            "tokens": 1035,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/scroll-area.tsx": {
-            "lines": 45,
-            "tokens": 331,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/resizable.tsx": {
-            "lines": 42,
-            "tokens": 243,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/radio-group.tsx": {
-            "lines": 41,
-            "tokens": 303,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/progress.tsx": {
             "lines": 25,
             "tokens": 192,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/popover.tsx": {
-            "lines": 28,
-            "tokens": 206,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/pagination.tsx": {
-            "lines": 116,
-            "tokens": 786,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/navigation-menu.tsx": {
-            "lines": 128,
-            "tokens": 824,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/menubar.tsx": {
-            "lines": 236,
-            "tokens": 1558,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1604,42 +860,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/input-otp.tsx": {
-            "lines": 68,
-            "tokens": 562,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/hover-card.tsx": {
-            "lines": 26,
-            "tokens": 196,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/form.tsx": {
-            "lines": 176,
-            "tokens": 1235,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/expandable-card.tsx": {
             "lines": 78,
             "tokens": 419,
@@ -1652,21 +872,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/dropdown-menu.tsx": {
-            "lines": 200,
-            "tokens": 1332,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/drawer.tsx": {
-            "lines": 115,
-            "tokens": 742,
+          "src/components/ui/editable-field.tsx": {
+            "lines": 127,
+            "tokens": 979,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1688,93 +896,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/context-menu.tsx": {
-            "lines": 200,
-            "tokens": 1318,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/command.tsx": {
-            "lines": 152,
-            "tokens": 1000,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/collapsible.tsx": {
-            "lines": 8,
-            "tokens": 58,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/checkbox.tsx": {
-            "lines": 27,
-            "tokens": 191,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/chart.tsx": {
-            "lines": 362,
-            "tokens": 2473,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/carousel.tsx": {
-            "lines": 259,
-            "tokens": 1745,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/card.tsx": {
             "lines": 84,
             "tokens": 597,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/calendar.tsx": {
-            "lines": 63,
-            "tokens": 445,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1796,18 +920,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/breadcrumb.tsx": {
-            "lines": 114,
-            "tokens": 778,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/badge.tsx": {
             "lines": 36,
             "tokens": 234,
@@ -1820,45 +932,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ui/avatar.tsx": {
-            "lines": 47,
-            "tokens": 343,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ui/alert.tsx": {
             "lines": 58,
             "tokens": 404,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/alert-dialog.tsx": {
-            "lines": 138,
-            "tokens": 879,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/ui/accordion.tsx": {
-            "lines": 55,
-            "tokens": 431,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1892,63 +968,15 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/meeting/MeetingSuccessStep.tsx": {
-            "lines": 99,
-            "tokens": 639,
-            "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 78,
-            "duplicatedTokens": 497,
-            "percentage": 78.79,
-            "percentageTokens": 77.78,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/meeting/MeetingCreationForm.tsx": {
-            "lines": 95,
-            "tokens": 624,
-            "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 79,
-            "duplicatedTokens": 547,
-            "percentage": 83.16,
-            "percentageTokens": 87.66,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/meeting/JoinMeetingForm.tsx": {
             "lines": 97,
             "tokens": 694,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 12,
-            "duplicatedTokens": 92,
-            "percentage": 12.37,
-            "percentageTokens": 13.26,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/meeting/CreateSuccess.tsx": {
-            "lines": 87,
-            "tokens": 599,
-            "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 78,
-            "duplicatedTokens": 497,
-            "percentage": 89.66,
-            "percentageTokens": 82.97,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/meeting/CreateMeetingForm.tsx": {
-            "lines": 137,
-            "tokens": 1085,
-            "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 67,
-            "duplicatedTokens": 455,
-            "percentage": 48.91,
-            "percentageTokens": 41.94,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2312,27 +1340,15 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/components/ErrorBoundaryWrapper.tsx": {
-            "lines": 223,
-            "tokens": 1901,
-            "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 17,
-            "duplicatedTokens": 151,
-            "percentage": 7.62,
-            "percentageTokens": 7.94,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/components/ErrorBoundary.tsx": {
             "lines": 87,
             "tokens": 768,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 17,
-            "duplicatedTokens": 151,
-            "percentage": 19.54,
-            "percentageTokens": 19.66,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2352,35 +1368,35 @@
             "lines": 149,
             "tokens": 1084,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 33,
-            "duplicatedTokens": 256,
-            "percentage": 22.15,
-            "percentageTokens": 23.62,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/components/EditableParticipantName.tsx": {
-            "lines": 112,
-            "tokens": 841,
+            "lines": 31,
+            "tokens": 202,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 77,
-            "duplicatedTokens": 551,
-            "percentage": 68.75,
-            "percentageTokens": 65.52,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "src/components/EditableMeetingTitle.tsx": {
-            "lines": 112,
-            "tokens": 841,
+            "lines": 28,
+            "tokens": 174,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 44,
-            "duplicatedTokens": 295,
-            "percentage": 39.29,
-            "percentageTokens": 35.08,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2397,8 +1413,8 @@
             "newClones": 0
           },
           "src/components/ActionCards.tsx": {
-            "lines": 154,
-            "tokens": 1053,
+            "lines": 150,
+            "tokens": 1012,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2446,32 +1462,20 @@
           }
         },
         "total": {
-          "lines": 10663,
-          "tokens": 79516,
-          "sources": 106,
-          "clones": 14,
-          "duplicatedLines": 291,
-          "duplicatedTokens": 2094,
-          "percentage": 2.73,
-          "percentageTokens": 2.63,
+          "lines": 6158,
+          "tokens": 48592,
+          "sources": 63,
+          "clones": 2,
+          "duplicatedLines": 40,
+          "duplicatedTokens": 348,
+          "percentage": 0.65,
+          "percentageTokens": 0.72,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       },
       "typescript": {
         "sources": {
-          "src/components/ui/sidebar/index.ts": {
-            "lines": 16,
-            "tokens": 167,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/utils/__tests__/errorHandling.test.ts": {
             "lines": 358,
             "tokens": 3059,
@@ -2497,8 +1501,8 @@
             "newClones": 0
           },
           "src/integrations/supabase/client.ts": {
-            "lines": 16,
-            "tokens": 108,
+            "lines": 38,
+            "tokens": 216,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2511,18 +1515,6 @@
           "src/components/__tests__/setup.ts": {
             "lines": 31,
             "tokens": 275,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/components/MeetingRoom/index.ts": {
-            "lines": 9,
-            "tokens": 128,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2571,6 +1563,18 @@
           "src/utils/queue.ts": {
             "lines": 31,
             "tokens": 207,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/productionLogger.ts": {
+            "lines": 169,
+            "tokens": 1492,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2772,30 +1776,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "src/hooks/use-tilt.ts": {
-            "lines": 42,
-            "tokens": 424,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "src/hooks/use-mouse-follow.ts": {
-            "lines": 57,
-            "tokens": 548,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "src/vitest-globals.d.ts": {
             "lines": 19,
             "tokens": 153,
@@ -2810,13 +1790,13 @@
           }
         },
         "total": {
-          "lines": 3514,
-          "tokens": 29249,
-          "sources": 29,
+          "lines": 3581,
+          "tokens": 29582,
+          "sources": 26,
           "clones": 2,
           "duplicatedLines": 27,
           "duplicatedTokens": 253,
-          "percentage": 0.77,
+          "percentage": 0.75,
           "percentageTokens": 0.86,
           "newDuplicatedLines": 0,
           "newClones": 0
@@ -2835,10 +1815,26 @@
             "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
-          },
-          "src/components/ui/Confetti.jsx": {
-            "lines": 69,
-            "tokens": 803,
+          }
+        },
+        "total": {
+          "lines": 36,
+          "tokens": 390,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "css": {
+        "sources": {
+          "src/index.css": {
+            "lines": 710,
+            "tokens": 5042,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2850,9 +1846,9 @@
           }
         },
         "total": {
-          "lines": 105,
-          "tokens": 1193,
-          "sources": 2,
+          "lines": 710,
+          "tokens": 5042,
+          "sources": 1,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -2864,14 +1860,14 @@
       }
     },
     "total": {
-      "lines": 19322,
-      "tokens": 145493,
-      "sources": 233,
-      "clones": 18,
-      "duplicatedLines": 436,
-      "duplicatedTokens": 3162,
-      "percentage": 2.26,
-      "percentageTokens": 2.17,
+      "lines": 12867,
+      "tokens": 101551,
+      "sources": 148,
+      "clones": 4,
+      "duplicatedLines": 67,
+      "duplicatedTokens": 601,
+      "percentage": 0.52,
+      "percentageTokens": 0.59,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -2910,330 +1906,6 @@
           "line": 198,
           "column": 7,
           "position": 1394
-        }
-      }
-    },
-    {
-      "format": "javascript",
-      "lines": 83,
-      "fragment": ")}\n      {...props}\n    />\n  </ContextMenuPrimitive.Portal>\n));\nContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName;\n\nconst ContextMenuItem = React.forwardRef<\n  React.ElementRef<typeof ContextMenuPrimitive.Item>,\n  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Item> & {\n    inset?: boolean;\n  }\n>(({ className, inset, ...props }, ref) => (\n  <ContextMenuPrimitive.Item\n    ref={ref}\n    className={cn(\n      \"relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50\",\n      inset && \"pl-8\",\n      className\n    )}\n    {...props}\n  />\n));\nContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName;\n\nconst ContextMenuCheckboxItem = React.forwardRef<\n  React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem>,\n  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.CheckboxItem> & {\n    checked?: boolean | \"indeterminate\" | undefined;\n  }\n>(({ className, children, checked, ...props }, ref) => (\n  <ContextMenuPrimitive.CheckboxItem\n    ref={ref}\n    className={cn(\n      \"relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50\",\n      className\n    )}\n    checked={checked ?? false}\n    {...props}\n  >\n    <span className=\"absolute left-2 flex h-3.5 w-3.5 items-center justify-center\">\n      <ContextMenuPrimitive.ItemIndicator>\n        <Check className=\"h-4 w-4\" />\n      </ContextMenuPrimitive.ItemIndicator>\n    </span>\n    {children}\n  </ContextMenuPrimitive.CheckboxItem>\n));\nContextMenuCheckboxItem.displayName =\n  ContextMenuPrimitive.CheckboxItem.displayName;\n\nconst ContextMenuRadioItem = React.forwardRef<\n  React.ElementRef<typeof ContextMenuPrimitive.RadioItem>,\n  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.RadioItem>\n>(({ className, children, ...props }, ref) => (\n  <ContextMenuPrimitive.RadioItem\n    ref={ref}\n    className={cn(\n      \"relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50\",\n      className\n    )}\n    {...props}\n  >\n    <span className=\"absolute left-2 flex h-3.5 w-3.5 items-center justify-center\">\n      <ContextMenuPrimitive.ItemIndicator>\n        <Circle className=\"h-2 w-2 fill-current\" />\n      </ContextMenuPrimitive.ItemIndicator>\n    </span>\n    {children}\n  </ContextMenuPrimitive.RadioItem>\n));\nContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName;\n\nconst ContextMenuLabel = React.forwardRef<\n  React.ElementRef<typeof ContextMenuPrimitive.Label>,\n  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Label> & {\n    inset?: boolean;\n  }\n>(({ className, inset, ...props }, ref) => (\n  <ContextMenuPrimitive.Label\n    ref={ref}\n    className={cn(\n      \"px-2 py-1.5 text-sm font-semibold text-foreground\"",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/ui/context-menu.tsx",
-        "start": 66,
-        "end": 148,
-        "startLoc": {
-          "line": 66,
-          "column": 7,
-          "position": 459
-        },
-        "endLoc": {
-          "line": 148,
-          "column": 52,
-          "position": 1041
-        }
-      },
-      "secondFile": {
-        "name": "src/components/ui/menubar.tsx",
-        "start": 101,
-        "end": 183,
-        "startLoc": {
-          "line": 101,
-          "column": 9,
-          "position": 694
-        },
-        "endLoc": {
-          "line": 183,
-          "column": 36,
-          "position": 1277
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 13,
-      "fragment": "</p>\n      </div>\n\n      <form onSubmit={onSubmit} className=\"space-y-6\">\n        {error && (\n          <div className=\"bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-900/40\">\n            <p className=\"text-red-600 dark:text-red-300 text-sm\">{error}</p>\n          </div>\n        )}\n\n        <div>\n          <label className=\"block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2\">\n            Meeting Code",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/JoinMeetingForm.tsx",
-        "start": 26,
-        "end": 38,
-        "startLoc": {
-          "line": 26,
-          "column": 5,
-          "position": 252
-        },
-        "endLoc": {
-          "line": 38,
-          "column": 5,
-          "position": 344
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingCreationForm.tsx",
-        "start": 35,
-        "end": 49,
-        "startLoc": {
-          "line": 35,
-          "column": 9,
-          "position": 261
-        },
-        "endLoc": {
-          "line": 49,
-          "column": 5,
-          "position": 357
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 13,
-      "fragment": "): JSX.Element {\n  return (\n    <div className=\"bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800\">\n      <div className=\"text-center mb-8\">\n        <div className=\"bg-accent/20 p-4 rounded-full w-16 h-16 mx-auto mb-4\">\n          <QrCodeIcon className=\"w-8 h-8 text-accent mx-auto\" />\n        </div>\n        <h1 className=\"text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2\">Your meeting is ready!</h1>\n        <p className=\"text-gray-600 dark:text-zinc-400\">Share this code or link with participants</p>\n      </div>\n\n      <div className=\"space-y-6\">\n        <",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateSuccess.tsx",
-        "start": 12,
-        "end": 24,
-        "startLoc": {
-          "line": 12,
-          "column": 19,
-          "position": 107
-        },
-        "endLoc": {
-          "line": 24,
-          "column": 2,
-          "position": 238
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingSuccessStep.tsx",
-        "start": 17,
-        "end": 33,
-        "startLoc": {
-          "line": 17,
-          "column": 24,
-          "position": 108
-        },
-        "endLoc": {
-          "line": 33,
-          "column": 2,
-          "position": 247
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 19,
-      "fragment": "<div className=\"text-center\">\n          <label className=\"block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2\">\n            Meeting Code\n          </label>\n          <div className=\"bg-gray-50 dark:bg-zinc-950 border-2 border-dashed border-gray-300 dark:border-zinc-800 rounded-lg p-6\">\n            <div className=\"text-4xl font-bold text-primary mb-2\">\n              {meetingCode}\n            </div>\n            <button\n              onClick={onCopyCode}\n              className=\"flex items-center justify-center mx-auto text-sm text-gray-600 hover:text-gray-900 dark:text-zinc-300 dark:hover:text-zinc-100\"\n            >\n              <Copy className=\"w-4 h-4 mr-1\" />\n              Copy Code\n            </button>\n          </div>\n        </div>\n\n        {qrCodeUrl",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateSuccess.tsx",
-        "start": 24,
-        "end": 42,
-        "startLoc": {
-          "line": 24,
-          "column": 9,
-          "position": 238
-        },
-        "endLoc": {
-          "line": 42,
-          "column": 10,
-          "position": 354
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingSuccessStep.tsx",
-        "start": 34,
-        "end": 52,
-        "startLoc": {
-          "line": 34,
-          "column": 9,
-          "position": 252
-        },
-        "endLoc": {
-          "line": 52,
-          "column": 14,
-          "position": 376
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 16,
-      "fragment": "{qrCodeUrl && (\n          <div className=\"text-center\">\n            <label className=\"block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2\">\n              QR Code\n            </label>\n            <div className=\"flex justify-center\">\n              <img\n                src={qrCodeUrl}\n                alt=\"QR code to join meeting\"\n                className=\"w-48 h-48 border border-gray-200 dark:border-zinc-800 rounded bg-white\"\n              />\n            </div>\n          </div>\n        )}\n\n        <",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateSuccess.tsx",
-        "start": 42,
-        "end": 57,
-        "startLoc": {
-          "line": 42,
-          "column": 9,
-          "position": 353
-        },
-        "endLoc": {
-          "line": 57,
-          "column": 2,
-          "position": 443
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingSuccessStep.tsx",
-        "start": 53,
-        "end": 68,
-        "startLoc": {
-          "line": 53,
-          "column": 9,
-          "position": 380
-        },
-        "endLoc": {
-          "line": 68,
-          "column": 2,
-          "position": 470
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 34,
-      "fragment": "}\n\n        <div>\n          <label className=\"block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2\">\n            Shareable Link\n          </label>\n          <div className=\"flex\">\n            <input\n              type=\"text\"\n              readOnly\n              value={shareableLink}\n              className=\"flex-1 px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100\"\n            />\n            <button\n              onClick={onCopyLink}\n              className=\"px-4 py-3 bg-gray-200 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-300 transition-colors dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700\"\n            >\n              <Copy className=\"w-5 h-5\" />\n            </button>\n          </div>\n        </div>\n\n        <button\n          onClick={onStartMeeting}\n          className=\"w-full bg-accent text-white py-3 px-6 rounded-lg font-semibold hover:bg-accent-hover transition-colors\"\n        >\n          Start meeting\n        </button>\n      </div>\n    </div>\n  )\n}\n\nexport default CreateSuccess",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateSuccess.tsx",
-        "start": 55,
-        "end": 88,
-        "startLoc": {
-          "line": 55,
-          "column": 2,
-          "position": 439
-        },
-        "endLoc": {
-          "line": 88,
-          "column": 14,
-          "position": 599
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingSuccessStep.tsx",
-        "start": 68,
-        "end": 100,
-        "startLoc": {
-          "line": 68,
-          "column": 21,
-          "position": 472
-        },
-        "endLoc": {
-          "line": 100,
-          "column": 19,
-          "position": 639
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 32,
-      "fragment": "return (\n    <div className=\"bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800\">\n      <div className=\"text-center mb-8\">\n        <div className=\"bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4\">\n          <Users className=\"w-8 h-8 text-primary mx-auto\" />\n        </div>\n        <h1 className=\"text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2\">\n          Host Meeting\n        </h1>\n        <p className=\"text-gray-600 dark:text-zinc-400\">\n          Set up your meeting and share the invitation link\n        </p>\n      </div>\n\n      <form onSubmit={handleSubmit} className=\"space-y-6\">\n        {error && (\n          <div className=\"bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-900/40\">\n            <p className=\"text-red-600 dark:text-red-300 text-sm\">{error}</p>\n          </div>\n        )}\n\n        <div>\n          <label className=\"block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2\">\n            Meeting Name\n          </label>\n          <input\n            type=\"text\"\n            required\n            disabled={loading}\n            value={meetingData.name}\n            onChange={e => handleChange({ name: e.target.value })}\n            className=\"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateMeetingForm.tsx",
-        "start": 67,
-        "end": 98,
-        "startLoc": {
-          "line": 67,
-          "column": 3,
-          "position": 609
-        },
-        "endLoc": {
-          "line": 98,
-          "column": 186,
-          "position": 863
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingCreationForm.tsx",
-        "start": 24,
-        "end": 57,
-        "startLoc": {
-          "line": 24,
-          "column": 3,
-          "position": 155
-        },
-        "endLoc": {
-          "line": 57,
-          "column": 208,
-          "position": 413
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 16,
-      "fragment": "\"\n            placeholder=\"e.g., Weekly Team Meeting\"\n          />\n        </div>\n\n        <div>\n          <label className=\"block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2\">\n            Your Name (Facilitator)\n          </label>\n          <input\n            type=\"text\"\n            required\n            disabled={loading}\n            value={meetingData.facilitatorName}\n            onChange={e => handleChange({ facilitatorName: e.target.value })}\n            className=\"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateMeetingForm.tsx",
-        "start": 98,
-        "end": 113,
-        "startLoc": {
-          "line": 98,
-          "column": 186,
-          "position": 864
-        },
-        "endLoc": {
-          "line": 113,
-          "column": 186,
-          "position": 959
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingCreationForm.tsx",
-        "start": 57,
-        "end": 72,
-        "startLoc": {
-          "line": 57,
-          "column": 208,
-          "position": 414
-        },
-        "endLoc": {
-          "line": 72,
-          "column": 208,
-          "position": 509
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 22,
-      "fragment": "\"\n            placeholder=\"Your name\"\n          />\n        </div>\n\n        <button\n          type=\"submit\"\n          disabled={loading}\n          className=\"w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-hover transition-colors disabled:bg-primary/60 disabled:cursor-not-allowed flex items-center justify-center\"\n        >\n          {loading ? (\n            <>\n              <Loader2 className=\"w-5 h-5 mr-2 animate-spin\" />\n              Hosting Meeting...\n            </>\n          ) : (\n            \"Host Meeting\"\n          )}\n        </button>\n      </form>\n    </div>\n  );",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/meeting/CreateMeetingForm.tsx",
-        "start": 113,
-        "end": 134,
-        "startLoc": {
-          "line": 113,
-          "column": 186,
-          "position": 960
-        },
-        "endLoc": {
-          "line": 134,
-          "column": 2,
-          "position": 1066
-        }
-      },
-      "secondFile": {
-        "name": "src/components/meeting/MeetingCreationForm.tsx",
-        "start": 72,
-        "end": 94,
-        "startLoc": {
-          "line": 72,
-          "column": 208,
-          "position": 510
-        },
-        "endLoc": {
-          "line": 94,
-          "column": 2,
-          "position": 617
         }
       }
     },
@@ -3342,186 +2014,6 @@
           "line": 51,
           "column": 7,
           "position": 593
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 18,
-      "fragment": ">\n          <Card className=\"w-full max-w-md\">\n            <CardHeader className=\"text-center\">\n              <div className=\"mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10\">\n                <AlertTriangle className=\"h-6 w-6 text-destructive\" />\n              </div>\n              <CardTitle className=\"text-xl\">{errorInfo.title}</CardTitle>\n            </CardHeader>\n            <CardContent className=\"space-y-4\">\n              <p className=\"text-center text-muted-foreground\">\n                {errorInfo.description}\n              </p>\n              {errorInfo.action && (\n                <p className=\"text-center text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg\">\n                  💡 {errorInfo.action}\n                </p>\n              )}\n              {this",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/ErrorBoundary.tsx",
-        "start": 43,
-        "end": 60,
-        "startLoc": {
-          "line": 43,
-          "column": 2,
-          "position": 382
-        },
-        "endLoc": {
-          "line": 60,
-          "column": 5,
-          "position": 533
-        }
-      },
-      "secondFile": {
-        "name": "src/components/ErrorBoundaryWrapper.tsx",
-        "start": 128,
-        "end": 147,
-        "startLoc": {
-          "line": 128,
-          "column": 2,
-          "position": 1114
-        },
-        "endLoc": {
-          "line": 147,
-          "column": 20,
-          "position": 1268
-        }
-      }
-    },
-    {
-      "format": "javascript",
-      "lines": 37,
-      "fragment": "={editName}\n          onChange={(e) => setEditName(e.target.value)}\n          onKeyDown={handleKeyDown}\n          className=\"h-8 text-sm\"\n          maxLength={50}\n          autoFocus\n          disabled={isUpdating}\n        />\n        <Button\n          size=\"sm\"\n          variant=\"ghost\"\n          onClick={handleSaveEdit}\n          disabled={isUpdating || editName.trim() === ''}\n          className=\"h-8 w-8 p-0\"\n        >\n          <Check className=\"h-4 w-4 text-green-600\" />\n        </Button>\n        <Button\n          size=\"sm\"\n          variant=\"ghost\"\n          onClick={handleCancelEdit}\n          disabled={isUpdating}\n          className=\"h-8 w-8 p-0\"\n        >\n          <X className=\"h-4 w-4 text-red-600\" />\n        </Button>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"flex items-center gap-2 group\">\n      <span className=\"font-medium\">{currentName}</span>\n      <Button\n        size=\"sm\"\n        variant=\"ghost\"\n        onClick={handleStartEdit",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/EditableParticipantName.tsx",
-        "start": 70,
-        "end": 106,
-        "startLoc": {
-          "line": 70,
-          "column": 6,
-          "position": 571
-        },
-        "endLoc": {
-          "line": 106,
-          "column": 16,
-          "position": 804
-        }
-      },
-      "secondFile": {
-        "name": "src/components/EnhancedEditableParticipantName.tsx",
-        "start": 97,
-        "end": 132,
-        "startLoc": {
-          "line": 97,
-          "column": 6,
-          "position": 766
-        },
-        "endLoc": {
-          "line": 132,
-          "column": 3,
-          "position": 988
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 34,
-      "fragment": ");\n\n  const handleStartEdit = () => {\n    setEditName(currentName);\n    setIsEditing(true);\n  };\n\n  const handleCancelEdit = () => {\n    setEditName(currentName);\n    setIsEditing(false);\n  };\n\n  const handleSaveEdit = async () => {\n    if (editName.trim() === currentName || editName.trim() === '') {\n      setIsEditing(false);\n      return;\n    }\n\n    setIsUpdating(true);\n    try {\n      await onNameUpdate(participantId, editName.trim());\n      setIsEditing(false);\n    } catch (error) {\n      console.error('Failed to update participant name:', error);\n      // Reset to original name on error\n      setEditName(currentName);\n    } finally {\n      setIsUpdating(false);\n    }\n  };\n\n  const handleKeyDown = (e: React.KeyboardEvent) => {\n    if (e.key === 'Enter') {\n      handleSaveEdit",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/EditableParticipantName.tsx",
-        "start": 23,
-        "end": 56,
-        "startLoc": {
-          "line": 23,
-          "column": 6,
-          "position": 209
-        },
-        "endLoc": {
-          "line": 56,
-          "column": 15,
-          "position": 465
-        }
-      },
-      "secondFile": {
-        "name": "src/components/EnhancedEditableParticipantName.tsx",
-        "start": 35,
-        "end": 68,
-        "startLoc": {
-          "line": 35,
-          "column": 2,
-          "position": 321
-        },
-        "endLoc": {
-          "line": 68,
-          "column": 2,
-          "position": 577
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 16,
-      "fragment": ");\n    } finally {\n      setIsUpdating(false);\n    }\n  };\n\n  const handleKeyDown = (e: React.KeyboardEvent) => {\n    if (e.key === 'Enter') {\n      handleSaveEdit();\n    } else if (e.key === 'Escape') {\n      handleCancelEdit();\n    }\n  };\n\n  if (!isFacilitator || disabled) {\n    return <span className={className}>",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/EditableMeetingTitle.tsx",
-        "start": 48,
-        "end": 63,
-        "startLoc": {
-          "line": 48,
-          "column": 13,
-          "position": 400
-        },
-        "endLoc": {
-          "line": 63,
-          "column": 2,
-          "position": 524
-        }
-      },
-      "secondFile": {
-        "name": "src/components/EditableParticipantName.tsx",
-        "start": 48,
-        "end": 63,
-        "startLoc": {
-          "line": 48,
-          "column": 12,
-          "position": 404
-        },
-        "endLoc": {
-          "line": 63,
-          "column": 2,
-          "position": 524
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 30,
-      "fragment": "\n          maxLength={100}\n          autoFocus\n          disabled={isUpdating}\n        />\n        <Button\n          size=\"sm\"\n          variant=\"ghost\"\n          onClick={handleSaveEdit}\n          disabled={isUpdating || editTitle.trim() === ''}\n          className=\"h-8 w-8 p-0\"\n        >\n          <Check className=\"h-4 w-4 text-green-600\" />\n        </Button>\n        <Button\n          size=\"sm\"\n          variant=\"ghost\"\n          onClick={handleCancelEdit}\n          disabled={isUpdating}\n          className=\"h-8 w-8 p-0\"\n        >\n          <X className=\"h-4 w-4 text-red-600\" />\n        </Button>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"flex items-center gap-2 group\">\n      <span className={className}>",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/EditableMeetingTitle.tsx",
-        "start": 73,
-        "end": 102,
-        "startLoc": {
-          "line": 73,
-          "column": 2,
-          "position": 606
-        },
-        "endLoc": {
-          "line": 102,
-          "column": 2,
-          "position": 777
-        }
-      },
-      "secondFile": {
-        "name": "src/components/EditableParticipantName.tsx",
-        "start": 73,
-        "end": 102,
-        "startLoc": {
-          "line": 73,
-          "column": 2,
-          "position": 606
-        },
-        "endLoc": {
-          "line": 102,
-          "column": 2,
-          "position": 773
         }
       }
     }
