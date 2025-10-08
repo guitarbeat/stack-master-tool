@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Edit2, Check, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// TODO: Integrate this component into MeetingRoom for inline participant name editing
+
 interface EnhancedEditableParticipantNameProps {
   participantId: string;
   currentName: string;

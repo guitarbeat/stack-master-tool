@@ -470,6 +470,92 @@ export class SupabaseMeetingService {
     }
   }
 
+  // Reorder queue item to new position
+  static async reorderQueueItem(
+    meetingId: string,
+    participantId: string,
+    newPosition: number,
+  ): Promise<void> {
+    try {
+      // Get current queue to determine how to shift positions
+      const { data: currentQueue, error: queueError } = await supabase
+        .from("speaking_queue")
+        .select("id, position")
+        .eq("meeting_id", meetingId)
+        .order("position", { ascending: true });
+
+      if (queueError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          queueError,
+          "Failed to fetch queue for reordering",
+        );
+      }
+
+      const currentItemIndex = currentQueue.findIndex(item => item.position === newPosition);
+      if (currentItemIndex === -1) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          undefined,
+          "Invalid position for reordering",
+        );
+      }
+
+      // Shift positions to make room for the new position
+      const updates = [];
+      if (newPosition < currentQueue[currentItemIndex].position) {
+        // Moving up - shift items down
+        for (let i = newPosition - 1; i < currentQueue.length; i++) {
+          if (currentQueue[i].position >= newPosition) {
+            updates.push({
+              id: currentQueue[i].id,
+              position: currentQueue[i].position + 1
+            });
+          }
+        }
+      } else {
+        // Moving down - shift items up
+        for (let i = 0; i < currentQueue.length; i++) {
+          if (currentQueue[i].position > newPosition && currentQueue[i].position <= currentQueue[currentItemIndex].position) {
+            updates.push({
+              id: currentQueue[i].id,
+              position: currentQueue[i].position - 1
+            });
+          }
+        }
+      }
+
+      // Update the target item to new position
+      updates.push({
+        id: currentQueue.find(item => item.participant_id === participantId)?.id,
+        position: newPosition
+      });
+
+      // Execute all updates
+      for (const update of updates) {
+        const { error } = await supabase
+          .from("speaking_queue")
+          .update({ position: update.position })
+          .eq("id", update.id);
+
+        if (error) {
+          throw new AppError(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            error,
+            "Failed to update queue position",
+          );
+        }
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to reorder queue item",
+      );
+    }
+  }
+
   // Helper: Reorder queue positions
   private static async reorderQueue(meetingId: string): Promise<void> {
     try {
@@ -508,6 +594,54 @@ export class SupabaseMeetingService {
         ErrorCode.INTERNAL_SERVER_ERROR,
         error as Error,
         "Failed to reorder queue",
+      );
+    }
+  }
+
+  // End meeting (mark as inactive and clean up)
+  static async endMeeting(meetingId: string): Promise<void> {
+    try {
+      // Mark meeting as inactive
+      const { error: meetingError } = await supabase
+        .from("meetings")
+        .update({ is_active: false })
+        .eq("id", meetingId);
+
+      if (meetingError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          meetingError,
+          "Failed to end meeting",
+        );
+      }
+
+      // Mark all participants as inactive
+      const { error: participantsError } = await supabase
+        .from("participants")
+        .update({ is_active: false })
+        .eq("meeting_id", meetingId);
+
+      if (participantsError) {
+        console.warn("Failed to deactivate participants:", participantsError);
+        // Don't throw here as the meeting is already ended
+      }
+
+      // Clear speaking queue
+      const { error: queueError } = await supabase
+        .from("speaking_queue")
+        .delete()
+        .eq("meeting_id", meetingId);
+
+      if (queueError) {
+        console.warn("Failed to clear speaking queue:", queueError);
+        // Don't throw here as the meeting is already ended
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to end meeting",
       );
     }
   }

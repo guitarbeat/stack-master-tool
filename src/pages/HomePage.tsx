@@ -1,8 +1,4 @@
-import { Hero } from '@/components/Hero'
-import { ActionCards } from '@/components/ActionCards'
-import { Features } from '@/components/Features'
-import { HowItWorks } from '@/components/HowItWorks'
-import { Testimonials } from '@/components/Testimonials'
+import { ActionCards } from '@/components/features/homepage/ActionCards'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { LogOut } from 'lucide-react'
@@ -28,9 +24,9 @@ function HomePage() {
   }
 
   return (
-    <main className="min-h-screen relative overflow-hidden" role="main">
+    <main className="min-h-screen bg-background" role="main">
       {user && (
-        <div className="border-b bg-background">
+        <div className="border-b">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -40,24 +36,16 @@ function HomePage() {
           </div>
         </div>
       )}
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
-        <Hero />
-        <section aria-labelledby="action-cards-heading" className="mb-8 sm:mb-12">
-          <h2 id="action-cards-heading" className="sr-only">Main Actions</h2>
-          <ActionCards />
-        </section>
-        <section aria-labelledby="features-heading" className="mb-8 sm:mb-12">
-          <h2 id="features-heading" className="sr-only">Platform Features</h2>
-          <Features />
-        </section>
-        <section aria-labelledby="how-it-works-heading" className="mb-8 sm:mb-12">
-          <h2 id="how-it-works-heading" className="sr-only">How It Works</h2>
-          <HowItWorks />
-        </section>
-        <section aria-labelledby="testimonials-heading" className="mb-8 sm:mb-12">
-          <h2 id="testimonials-heading" className="sr-only">Testimonials</h2>
-          <Testimonials />
-        </section>
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-bold mb-4">Stack Master Tool</h1>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Democratic meeting facilitation with organized speaking queues
+          </p>
+        </div>
+
+        <ActionCards />
       </div>
     </main>
   )

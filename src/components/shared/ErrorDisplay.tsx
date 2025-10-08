@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw, WifiOff, Clock, Shield, XCircle, AlertCircle, Info, AlertOctagon } from 'lucide-react';
-import { AppError, getErrorDisplayInfo, ErrorType } from '../utils/errorHandling';
+import { AppError, getErrorDisplayInfo, ErrorType } from '../../utils/errorHandling';
 
 interface ErrorDisplayProps {
   error: AppError | Error;

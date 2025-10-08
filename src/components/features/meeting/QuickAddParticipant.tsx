@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Plus, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// TODO: Integrate this component into MeetingRoom for participant management
+
 interface QuickAddParticipantProps {
   onAddParticipant: (name: string) => void;
   disabled?: boolean;

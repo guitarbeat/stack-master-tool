@@ -1,5 +1,7 @@
 import { Star, Quote, Users, Heart, Globe } from 'lucide-react'
 import useTiltEffect from '@/hooks/use-tilt'
+import { TESTIMONIALS } from './constants'
+import { SectionHeader, SectionCTA } from './SectionHeader'
 
 export const Testimonials = () => {
   const { setCardRef, handleMouseMove, handleMouseEnter, handleMouseLeave } = useTiltEffect({
@@ -10,32 +12,7 @@ export const Testimonials = () => {
     mouseFollowSmoothness: 0.18
   })
 
-  const testimonials = [
-    {
-      name: "Community Feedback",
-      role: "User Experience",
-      organization: "Open Source Community",
-      content: "This tool helps create more inclusive and organized discussions by ensuring everyone has a fair chance to speak.",
-      rating: 4,
-      avatar: "CF"
-    },
-    {
-      name: "Facilitator Insights",
-      role: "Meeting Management",
-      organization: "Democratic Process",
-      content: "The speaking queue system makes it easier to manage turn-taking and maintain order in group discussions.",
-      rating: 4,
-      avatar: "FI"
-    },
-    {
-      name: "User Research",
-      role: "Accessibility Focus",
-      organization: "Inclusive Design",
-      content: "The platform's design prioritizes equal participation and helps create more structured, productive conversations.",
-      rating: 4,
-      avatar: "UR"
-    }
-  ]
+  const testimonials = TESTIMONIALS
 
   const stats = [
     { icon: <Users className="w-5 h-5 text-primary" />, value: "Open", label: "Source Project" },
@@ -45,20 +22,13 @@ export const Testimonials = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Section Header */}
-      <div className="text-center mb-12 sm:mb-16">
-        <div className="inline-flex items-center gap-2 text-primary font-semibold text-sm sm:text-base mb-4">
-          <Quote className="w-4 h-4" />
-          <span>Community Voices</span>
-        </div>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Community
-          <span className="text-primary"> Feedback</span>
-        </h2>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
-          Feedback from users about the tool's effectiveness in facilitating democratic discussions
-        </p>
-      </div>
+      <SectionHeader
+        icon={Quote}
+        badge="Community Voices"
+        title="Community"
+        subtitle="Feedback"
+        description="Feedback from users about the tool's effectiveness in facilitating democratic discussions"
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 sm:gap-8 mb-12 sm:mb-16">
@@ -136,33 +106,27 @@ export const Testimonials = () => {
         ))}
       </div>
 
-      {/* Bottom CTA */}
-      <div className="text-center mt-12 sm:mt-16">
-        <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-3xl mx-auto">
-          <h3 className="text-xl sm:text-2xl font-bold gradient-text mb-3">
-            Try the Tool
-          </h3>
-          <p className="text-muted-foreground text-sm sm:text-base mb-6">
-            Create a meeting or use the manual stack keeper to facilitate democratic discussions.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span>Open Source</span>
-            </div>
-            <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4 text-primary" />
-              <span>Free to Use</span>
-            </div>
-            <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
-            <div className="flex items-center gap-1">
-              <Heart className="w-4 h-4 text-accent" />
-              <span>MIT Licensed</span>
-            </div>
+      <SectionCTA
+        title="Try the Tool"
+        description="Create a meeting or use the manual stack keeper to facilitate democratic discussions."
+      >
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+            <span>Open Source</span>
+          </div>
+          <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+          <div className="flex items-center gap-1">
+            <Users className="w-4 h-4 text-primary" />
+            <span>Free to Use</span>
+          </div>
+          <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+          <div className="flex items-center gap-1">
+            <Heart className="w-4 h-4 text-accent" />
+            <span>MIT Licensed</span>
           </div>
         </div>
-      </div>
+      </SectionCTA>
     </div>
   )
 }

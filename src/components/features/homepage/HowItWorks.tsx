@@ -1,6 +1,8 @@
 import { ExpandableCard } from '@/components/ui/expandable-card'
 import useTiltEffect from '@/hooks/use-tilt'
-import { MessageSquare, Users, Leaf, ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
+import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
+import { HOW_IT_WORKS_STEPS, MEETING_MODES } from './constants'
+import { SectionHeader } from './SectionHeader'
 
 export const HowItWorks = () => {
   const { setCardRef, handleMouseMove, handleMouseEnter, handleMouseLeave } = useTiltEffect({
@@ -11,44 +13,22 @@ export const HowItWorks = () => {
     mouseFollowSmoothness: 0.12
   })
 
-  const steps = [
-    {
-      icon: <MessageSquare className="w-8 h-8 text-primary" />,
-      title: "HOST a Meeting",
-      summary: "Set up and facilitate",
-      details: "As a facilitator, create a new meeting room with full control over the speaking queue. Enable remote access for participants to join, manage the discussion flow, and ensure fair participation."
-    },
-    {
-      icon: <Users className="w-8 h-8 text-accent" />,
-      title: "JOIN a Meeting",
-      summary: "Participate in discussions",
-      details: "Enter a meeting code to join an active discussion. Raise your hand to join the speaking queue, see your position, and contribute to the democratic process with real-time feedback."
-    },
-    {
-      icon: <Leaf className="w-8 h-8 text-primary" />,
-      title: "WATCH a Meeting",
-      summary: "Observe and display",
-      details: "Perfect for stakeholders and observers. View meetings in read-only mode with display-optimized layouts, speaking analytics, and real-time queue visualization - no participation required."
-    }
-  ]
+  const steps = HOW_IT_WORKS_STEPS.map((step, index) => ({
+    icon: <step.icon className={`w-8 h-8 ${index === 0 ? 'text-primary' : index === 1 ? 'text-accent' : 'text-primary'}`} />,
+    title: step.title,
+    summary: step.summary,
+    details: step.details
+  }))
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Section Header */}
-      <div className="text-center mb-12 sm:mb-16">
-        <div className="inline-flex items-center gap-2 text-primary font-semibold text-sm sm:text-base mb-4">
-          <Sparkles className="w-4 h-4" />
-          <span>How It Works</span>
-        </div>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Three Ways to
-          <br />
-          <span className="text-primary">Participate</span>
-        </h2>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Choose your role: HOST to facilitate, JOIN to participate, or WATCH to observe democratic discussions
-        </p>
-      </div>
+      <SectionHeader
+        icon={Sparkles}
+        badge="How It Works"
+        title="Three Ways to"
+        subtitle="Participate"
+        description="Choose your role: HOST to facilitate, JOIN to participate, or WATCH to observe democratic discussions"
+      />
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {steps.map((item, index) => (

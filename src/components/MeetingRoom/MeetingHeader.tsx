@@ -35,12 +35,14 @@ export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, a
             onClick={copyMeetingCode}
             className="px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
             title="Copy meeting code"
+            aria-label="Copy meeting code to clipboard"
           >
             Copy Code
           </button>
           <button
             onClick={onLeaveMeeting}
             className="flex items-center text-red-600 hover:text-red-700 transition-colors"
+            aria-label="Leave meeting and return to home"
           >
             <LogOut className="w-5 h-5 mr-2" />
             Leave

@@ -1,6 +1,6 @@
 import { LogOut, RefreshCw, Wifi, Clock, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ErrorDisplay } from "../ErrorDisplay";
+import { ErrorDisplay } from "../shared/ErrorDisplay";
 import { AppError, ErrorCode } from "../../utils/errorHandling";
 import { useState, useCallback, useEffect } from "react";
 

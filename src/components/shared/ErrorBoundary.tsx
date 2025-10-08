@@ -2,7 +2,7 @@ import { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { getErrorDisplayInfo, logError } from '../utils/errorHandling';
+import { getErrorDisplayInfo, logError } from '../../utils/errorHandling';
 
 interface Props {
   children: ReactNode;

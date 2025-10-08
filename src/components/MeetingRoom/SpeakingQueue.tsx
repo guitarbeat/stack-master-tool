@@ -2,11 +2,14 @@ import { Hand, MessageCircle, Info, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { getQueueTypeDisplay } from "../../utils/queue";
 
 interface QueueItem {
   id: string;
   participantName: string;
+  participantId: string;
+  isFacilitator: boolean;
   type: string;
   timestamp: number;
 }
@@ -15,9 +18,17 @@ interface SpeakingQueueProps {
   speakingQueue: QueueItem[];
   participantName: string;
   onLeaveQueue: () => void;
+  onUpdateParticipantName?: (participantId: string, newName: string) => void;
+  currentUserId?: string;
 }
 
-export const SpeakingQueue = ({ speakingQueue, participantName, onLeaveQueue }: SpeakingQueueProps) => {
+export const SpeakingQueue = ({
+  speakingQueue,
+  participantName,
+  onLeaveQueue,
+  onUpdateParticipantName,
+  currentUserId
+}: SpeakingQueueProps) => {
   if (speakingQueue.length === 0) {
     return (
       <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
@@ -78,9 +89,20 @@ export const SpeakingQueue = ({ speakingQueue, participantName, onLeaveQueue }: 
                   {isDirect && <MessageCircle className="h-4 w-4 text-primary" />}
                   {isPointInfo && <Info className="h-4 w-4 text-blue-600" />}
                   {isClarify && <Settings className="h-4 w-4 text-purple-600" />}
-                  <span className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}>
-                    {entry.participantName}
-                  </span>
+                  {onUpdateParticipantName ? (
+                    <EnhancedEditableParticipantName
+                      participantId={entry.participantId}
+                      currentName={entry.participantName}
+                      isFacilitator={entry.isFacilitator}
+                      onNameUpdate={onUpdateParticipantName}
+                      disabled={!entry.isFacilitator && entry.participantId !== currentUserId}
+                      className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}
+                    />
+                  ) : (
+                    <span className={`font-semibold text-lg ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}>
+                      {entry.participantName}
+                    </span>
+                  )}
                 </div>
                 <Badge
                   variant="outline"
