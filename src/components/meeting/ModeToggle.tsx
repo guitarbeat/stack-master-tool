@@ -2,19 +2,21 @@ import { Plus, UserPlus } from 'lucide-react'
 import { useMouseFollow } from '@/hooks/use-mouse-follow'
 
 interface ModeToggleProps {
-  mode: 'create' | 'join'
+  mode: 'host' | 'join'
   step: number
-  onSelectCreate: () => void
+  onSelectHost: () => void
   onSelectJoin: () => void
 }
 
-function ModeToggle({ mode, step, onSelectCreate, onSelectJoin }: ModeToggleProps): JSX.Element | null {
+function ModeToggle({ mode, step, onSelectHost, onSelectJoin }: ModeToggleProps): JSX.Element | null {
   const { containerRef, mousePosition, isHovering, handleMouseMove, handleMouseEnter, handleMouseLeave } = useMouseFollow({
     enabled: step === 1,
     smoothness: 0.2
   })
 
-  if (step !== 1) return null
+  if (step !== 1) {
+    return null;
+  }
 
   // Calculate indicator position based on mouse or selected state
   const getIndicatorStyle = () => {
@@ -36,7 +38,7 @@ function ModeToggle({ mode, step, onSelectCreate, onSelectJoin }: ModeToggleProp
       }
     } else {
       // Use selected state when not hovering
-      return mode === 'create' 
+      return mode === 'host' 
         ? {
             left: '6px',
             width: 'calc(50% - 6px)',
@@ -64,18 +66,18 @@ function ModeToggle({ mode, step, onSelectCreate, onSelectJoin }: ModeToggleProp
           style={getIndicatorStyle()}
         />
         <button
-          onClick={onSelectCreate}
+          onClick={onSelectHost}
           className={`toggle-button relative z-10 px-4 sm:px-6 h-10 rounded-lg text-sm font-semibold transition-all duration-300 ease-out flex items-center justify-center flex-1 ${
-            mode === 'create'
+            mode === 'host'
               ? 'text-white shadow-sm transform scale-[1.02]'
               : 'text-foreground/70 hover:text-foreground hover:scale-[1.01] dark:text-zinc-300 dark:hover:text-zinc-100'
           }`}
         >
           <Plus className={`w-4 h-4 mr-2 transition-all duration-300 ${
-            mode === 'create' ? 'text-white' : 'text-primary'
+            mode === 'host' ? 'text-white' : 'text-primary'
           }`} />
-          <span className="hidden sm:inline">Create</span>
-          <span className="sm:hidden">Create</span>
+          <span className="hidden sm:inline">Host</span>
+          <span className="sm:hidden">Host</span>
         </button>
         <button
           onClick={onSelectJoin}

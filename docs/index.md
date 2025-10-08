@@ -36,9 +36,9 @@ Welcome to the Stack Master Tool documentation! This directory contains all proj
 
 ## 🔄 Migration & History
 
-| Document                  | Purpose                                              |
-| ------------------------- | ---------------------------------------------------- |
-| **MIGRATION_COMPLETE.md** | Complete migration documentation (Render → Supabase) |
+| Document         | Purpose                           |
+| ---------------- | --------------------------------- |
+| **CHANGELOG.md** | Version history and release notes |
 
 ## 📂 Directory Structure
 
@@ -51,10 +51,19 @@ docs/
 ├── 📄 ENVIRONMENT_SETUP.md # Environment configuration
 ├── 📄 CHANGELOG.md          # Release notes
 ├── 📄 LICENSE               # License information
-├── 📄 MIGRATION_COMPLETE.md # Migration documentation
 ├── 📁 deployment/           # All deployment configurations
 └── 📁 build/               # Build and infrastructure configs
 ```
+
+## 🎯 Three-Mode Architecture
+
+Stack Master Tool offers three distinct ways to participate in democratic discussions, inspired by jparty.tv's approach:
+
+- **🎯 HOST** - Facilitator controls with manual stack management and remote access
+- **🌿 JOIN** - Participant interaction with speaking queue and real-time feedback  
+- **👁️ WATCH** - Observer display optimized for projection screens and stakeholders
+
+Each mode is designed for specific use cases and provides tailored functionality for different types of users.
 
 ## 🚀 Quick Start
 
@@ -66,8 +75,8 @@ docs/
 ## 📞 Support
 
 - **Issues**: Check [README.md](README.md) troubleshooting section
-- **Migration**: See [MIGRATION_COMPLETE.md](MIGRATION_COMPLETE.md)
 - **Deployment**: Follow [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)
+- **Development**: Read [AI_RULES.md](AI_RULES.md)
 
 ---
 

@@ -8,21 +8,21 @@ export const HowItWorks = () => {
   const steps = [
     {
       icon: <MessageSquare className="w-8 h-8 text-primary" />,
-      title: "Create Meeting",
-      summary: "Set up a meeting room",
-      details: "Create a new meeting room or join an existing one using a meeting code. Each meeting has a unique space where participants can gather and participate in the discussion."
+      title: "HOST a Meeting",
+      summary: "Set up and facilitate",
+      details: "As a facilitator, create a new meeting room with full control over the speaking queue. Enable remote access for participants to join, manage the discussion flow, and ensure fair participation."
     },
     {
       icon: <Users className="w-8 h-8 text-accent" />,
-      title: "Add Participants",
-      summary: "Build the speaking queue",
-      details: "Participants can add themselves to the speaking queue. The system ensures everyone has an equal opportunity to contribute to the discussion in an organized manner."
+      title: "JOIN a Meeting",
+      summary: "Participate in discussions",
+      details: "Enter a meeting code to join an active discussion. Raise your hand to join the speaking queue, see your position, and contribute to the democratic process with real-time feedback."
     },
     {
       icon: <Leaf className="w-8 h-8 text-primary" />,
-      title: "Facilitate Discussion",
-      summary: "Manage the speaking order",
-      details: "The facilitator manages the speaking order and ensures fair turn-taking. The system helps maintain organized, democratic discussions where everyone can participate effectively."
+      title: "WATCH a Meeting",
+      summary: "Observe and display",
+      details: "Perfect for stakeholders and observers. View meetings in read-only mode with display-optimized layouts, speaking analytics, and real-time queue visualization - no participation required."
     }
   ]
 
@@ -35,12 +35,12 @@ export const HowItWorks = () => {
           <span>How It Works</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          How to Use the
+          Three Ways to
           <br />
-          <span className="text-primary">Stack Tool</span>
+          <span className="text-primary">Participate</span>
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Three simple steps to set up and facilitate democratic discussions
+          Choose your role: HOST to facilitate, JOIN to participate, or WATCH to observe democratic discussions
         </p>
       </div>
 

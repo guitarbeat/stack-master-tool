@@ -52,11 +52,11 @@ export const Features = () => {
           <span>Platform Features</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Platform
-          <span className="text-primary"> Features</span>
+          Three-Mode
+          <span className="text-primary"> Platform</span>
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
-          Key features that support democratic meeting facilitation and organized discussions.
+          HOST, JOIN, and WATCH modes designed for different roles in democratic meeting facilitation. Each mode provides tailored functionality for facilitators, participants, and observers.
         </p>
       </div>
 
@@ -107,15 +107,15 @@ export const Features = () => {
       <div className="text-center mt-12 sm:mt-16">
         <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto">
           <h3 className="text-xl sm:text-2xl font-bold gradient-text mb-3">
-            Get Started
+            Choose Your Mode
           </h3>
           <p className="text-muted-foreground text-sm sm:text-base mb-6">
-            Create a meeting or use the manual stack keeper to begin facilitating democratic discussions.
+            HOST to facilitate, JOIN to participate, or WATCH to observe - each mode is designed for your specific role in democratic discussions.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <div className="text-2xl sm:text-3xl">🌱</div>
+            <div className="text-2xl sm:text-3xl">🎯</div>
             <div className="text-2xl sm:text-3xl">🌿</div>
-            <div className="text-2xl sm:text-3xl">🌳</div>
+            <div className="text-2xl sm:text-3xl">👁️</div>
           </div>
         </div>
       </div>

@@ -104,11 +104,41 @@ See `ENVIRONMENT_SETUP.md` for detailed configuration instructions. Required var
 
 ## Features
 
-### Three Meeting Views
+### Three-Mode Architecture (Inspired by jparty.tv)
 
-- **HOST** - Full facilitator controls with both manual and remote meeting management
-- **JOIN** - Participant view with queue interaction capabilities
-- **WATCH** - Public read-only observer view (no authentication required)
+Our platform offers three distinct ways to participate in democratic discussions, inspired by jparty.tv's approach to meeting facilitation:
+
+#### **HOST Mode** - Facilitator Controls
+- **Purpose**: Full facilitator controls with both manual and remote meeting management
+- **URL Pattern**: `/meeting?mode=host`
+- **Features**:
+  - Manual stack management and participant control
+  - Enable/disable remote access for participants
+  - Real-time participant management and name editing
+  - Speaking analytics and distribution tracking
+  - Meeting title editing and QR code generation
+- **Use Cases**: Meeting facilitators, moderators, organizers
+
+#### **JOIN Mode** - Participant Interaction
+- **Purpose**: Participant view with queue interaction capabilities
+- **URL Pattern**: `/meeting?mode=join&code=MEETING_CODE`
+- **Features**:
+  - Enter meeting code to join active discussions
+  - Raise hand to join speaking queue
+  - Real-time queue position feedback
+  - Speaking time tracking and history
+- **Use Cases**: Meeting participants, speakers, attendees
+
+#### **WATCH Mode** - Observer Display
+- **Purpose**: Public read-only observer view optimized for display screens
+- **URL Pattern**: `/watch/MEETING_CODE` or `/meeting?mode=watch&code=MEETING_CODE`
+- **Features**:
+  - Display-optimized layout for projection screens
+  - Real-time speaking queue visualization
+  - Speaking analytics and distribution charts
+  - Large, clear fonts for visibility
+  - No authentication required
+- **Use Cases**: Stakeholders, observers, display screens, meeting rooms
 
 ### Core Functionality
 
@@ -145,7 +175,8 @@ See `ENVIRONMENT_SETUP.md` for detailed configuration instructions. Required var
 
 - **`/meeting?mode=host`** - Host view (facilitator controls with name editing)
 - **`/meeting?mode=join`** - Join view (participant actions)
-- **`/meeting?mode=watch`** - Watch view (public observer)
+- **`/meeting?mode=watch&code=CODE`** - Watch view (public observer with meeting code)
+- **`/watch/:code`** - Simplified watch URL (redirects to watch mode)
 - **`/join/:code`** - Direct join redirect (redirects to frontend)
 
 ## Getting Started

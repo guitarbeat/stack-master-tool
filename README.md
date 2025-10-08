@@ -58,8 +58,10 @@ pnpm cap:build:ios     # Build iOS app
 
 ## 🌟 Key Features
 
+- ✅ **Three-Mode Architecture** - HOST (facilitate), JOIN (participate), WATCH (observe) - inspired by jparty.tv
 - ✅ **Real-time Speaking Queues** - Live queue management
 - ✅ **Meeting Analytics** - Speaking time distribution charts
+- ✅ **Display-Optimized Watch Mode** - Perfect for projection screens and observers
 - ✅ **Cross-platform** - Web + Mobile (iOS/Android)
 - ✅ **Type-safe** - Full TypeScript coverage
 - ✅ **Production-ready** - Optimized builds and security

@@ -12,9 +12,9 @@ export const ActionCards = () => {
     {
       to: "/meeting?mode=host",
       icon: <Users className="w-8 h-8 text-primary" />,
-      title: "Host a Meeting",
+      title: "HOST a Meeting",
       description:
-        "Facilitate speakers with manual control or enable remote access for participants to join.",
+        "Full facilitator controls with manual stack management and remote access capabilities. Create meetings, manage participants, and control the speaking queue.",
       cta: "Start Hosting",
       emoji: "🎯",
       gradient: "from-primary to-accent",
@@ -23,12 +23,15 @@ export const ActionCards = () => {
         "Manual stack management",
         "Enable remote access",
         "Full facilitator controls",
+        "Real-time participant management",
+        "Speaking analytics & distribution",
       ],
+      isPrimary: true,
     },
     {
       to: "/meeting?mode=join",
-      icon: <QrCode className="w-8 h-8 text-accent" />,
-      title: "Join a Meeting",
+      icon: <QrCode className="w-6 h-6 text-accent" />,
+      title: "JOIN a Meeting",
       description:
         "Enter a meeting code to participate in an active discussion and join the speaking queue.",
       cta: "Join Meeting",
@@ -40,13 +43,14 @@ export const ActionCards = () => {
         "Join active discussion",
         "Raise your hand to speak",
       ],
+      isPrimary: false,
     },
     {
       to: "/meeting?mode=watch",
-      icon: <Eye className="w-8 h-8 text-primary" />,
-      title: "Watch a Meeting",
+      icon: <Eye className="w-6 h-6 text-primary" />,
+      title: "WATCH a Meeting",
       description:
-        "Observe a meeting in read-only mode. Perfect for stakeholders and observers.",
+        "Observe a meeting in read-only mode. Perfect for stakeholders, observers, and display screens.",
       cta: "Watch Meeting",
       emoji: "👁️",
       gradient: "from-primary to-primary/80",
@@ -55,7 +59,10 @@ export const ActionCards = () => {
         "Enter meeting code",
         "Read-only viewing",
         "No participation needed",
+        "Display-optimized layout",
+        "Speaking analytics visible",
       ],
+      isPrimary: false,
     },
   ];
 
@@ -65,19 +72,87 @@ export const ActionCards = () => {
       <div className="text-center mb-8 sm:mb-12">
         <div className="inline-flex items-center gap-2 text-primary font-semibold text-sm sm:text-base mb-4">
           <Sparkles className="w-4 h-4" />
-          <span>Choose Your Path</span>
+          <span>Three-Mode Architecture</span>
         </div>
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-4">
-          Get
-          <span className="text-primary"> Started</span>
+          Choose Your
+          <span className="text-primary"> Role</span>
         </h2>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Choose how you want to use the stack facilitation tool
+        <p className="text-muted-foreground text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
+          Inspired by jparty.tv's approach, our platform offers three distinct ways to participate in democratic discussions. 
+          Whether you're facilitating, participating, or observing, there's a mode designed for your needs.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
-        {actions.map((action, index) => (
+      {/* Primary HOST Card */}
+      <div className="mb-8">
+        {actions.filter(action => action.isPrimary).map((action, index) => (
+          <div key={index} className="group">
+            <Link to={action.to} className="block h-full">
+              <div className="liquid-glass rounded-2xl sm:rounded-3xl p-8 sm:p-12 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden group-hover:shadow-glow">
+                {/* Background Elements */}
+                <div
+                  className={`absolute top-0 right-0 w-32 sm:w-40 h-32 sm:h-40 ${action.bgBlob} organic-blob opacity-50 group-hover:opacity-70 transition-opacity duration-500`}
+                ></div>
+                <div className="absolute bottom-0 left-0 w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+
+                <div className="relative z-10 space-y-8">
+                  {/* Header */}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="liquid-glass p-6 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        {action.icon}
+                      </div>
+                      <div className="text-4xl sm:text-5xl opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+                        {action.emoji}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-3xl sm:text-4xl font-bold gradient-text mb-4 group-hover:scale-105 transition-transform duration-300">
+                        {action.title}
+                      </h3>
+                      <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed">
+                        {action.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {action.features.map((feature, featureIndex) => (
+                      <div
+                        key={featureIndex}
+                        className="flex items-center gap-3 text-sm sm:text-base text-muted-foreground"
+                      >
+                        <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <div className="pt-4">
+                    <div
+                      className={`liquid-glass px-8 sm:px-12 py-4 sm:py-6 rounded-2xl bg-gradient-to-r ${action.gradient} text-white font-semibold flex items-center justify-center text-lg sm:text-xl group-hover:scale-105 transition-all duration-300`}
+                    >
+                      <span>{action.cta}</span>
+                      <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl sm:rounded-3xl"></div>
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
+
+      {/* Secondary Cards */}
+      <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+        {actions.filter(action => !action.isPrimary).map((action, index) => (
           <div key={index} className="group">
             <Link to={action.to} className="block h-full">
               <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 h-full transition-all duration-500 group-hover:scale-[1.02] relative overflow-hidden group-hover:shadow-glow">

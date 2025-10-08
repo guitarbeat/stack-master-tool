@@ -51,17 +51,6 @@ function AppLayout({ children }: AppLayoutProps) {
               aria-label="Main navigation"
             >
               <Link
-                to="/meeting?mode=watch"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/meeting") && location.search.includes("mode=watch")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                }`}
-              >
-                <Users className="w-4 h-4 mr-1 inline" />
-                Watch
-              </Link>
-              <Link
                 to="/meeting?mode=host"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
                   isActive("/meeting") && location.search.includes("mode=host")
@@ -82,6 +71,17 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 <UserPlus className="w-4 h-4 mr-1" />
                 Join
+              </Link>
+              <Link
+                to="/meeting?mode=watch"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/meeting") && location.search.includes("mode=watch")
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <Users className="w-4 h-4 mr-1 inline" />
+                Watch
               </Link>
             </nav>
             <ThemeToggle />

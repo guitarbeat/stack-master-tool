@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import { MeetingContext } from "@/components/MeetingRoom/MeetingContext";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
+import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { useAuth } from "@/hooks/useAuth";
 import {
   SupabaseMeetingService,
@@ -28,6 +29,7 @@ type MeetingMode = "host" | "join" | "watch";
 export default function MeetingRoom() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const params = useParams();
   const [meetingCode, setMeetingCode] = useState<string>("");
   const [meetingId, setMeetingId] = useState<string>("");
   const [mode, setMode] = useState<MeetingMode | null>(null);
@@ -47,28 +49,37 @@ export default function MeetingRoom() {
   const [qrUrl, setQrUrl] = useState<string>("");
 
   useEffect(() => {
-    const modeParam = searchParams.get("mode") as MeetingMode;
-    const codeParam = searchParams.get("code");
+    // Handle /watch/:code route
+    if (params.code) {
+      setMode("watch");
+      setMeetingCode(params.code);
+    } else {
+      const modeParam = searchParams.get("mode") as MeetingMode;
+      const codeParam = searchParams.get("code");
 
-    if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
-      setError("Invalid meeting mode. Please use host, join, or watch.");
-      setIsLoading(false);
-      return;
-    }
+      if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
+        setError("Invalid meeting mode. Please use host, join, or watch.");
+        setIsLoading(false);
+        return;
+      }
 
-    setMode(modeParam);
+      setMode(modeParam);
 
-    // For join/watch modes, we prefer a meeting code; if missing in join mode, we'll show a form
-    if (modeParam === "watch" && !codeParam) {
-      setError("Meeting code is required to watch a meeting.");
-      setIsLoading(false);
-      return;
+      // For join/watch modes, we prefer a meeting code; if missing in join mode, we'll show a form
+      if (modeParam === "watch" && !codeParam) {
+        setError("Meeting code is required to watch a meeting.");
+        setIsLoading(false);
+        return;
+      }
     }
 
     // Host: create meeting on Supabase, else: fetch by code
     const bootstrap = async () => {
       try {
-        if (modeParam === "host") {
+        const currentMode = params.code ? "watch" : (searchParams.get("mode") as MeetingMode);
+        const currentCode = params.code || searchParams.get("code");
+        
+        if (currentMode === "host") {
           const facilitatorName = user?.email ?? "Facilitator";
           const created = await SupabaseMeetingService.createMeeting(
             "New Meeting",
@@ -82,8 +93,8 @@ export default function MeetingRoom() {
             setServerParticipants(full.participants);
             setServerQueue(full.speakingQueue);
           }
-        } else if (codeParam) {
-          const full = await SupabaseMeetingService.getMeeting(codeParam);
+        } else if (currentCode) {
+          const full = await SupabaseMeetingService.getMeeting(currentCode);
           if (!full) {
             setError("Meeting not found or inactive.");
             return;
@@ -106,7 +117,9 @@ export default function MeetingRoom() {
 
   // Realtime subscriptions
   useEffect(() => {
-    if (!meetingId) return;
+    if (!meetingId) {
+      return;
+    }
     const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, {
       onParticipantsUpdated: setServerParticipants,
       onQueueUpdated: setServerQueue,
@@ -119,7 +132,9 @@ export default function MeetingRoom() {
       onNextSpeaker: () => void 0,
       onError: () => void 0,
     });
-    return () => unsubscribe?.();
+    return () => {
+      unsubscribe?.();
+    };
   }, [meetingId]);
 
   if (isLoading) {
@@ -219,6 +234,27 @@ export default function MeetingRoom() {
     name: "Jane Smith",
     startedSpeakingAt: new Date(Date.now() - 120000), // 2 minutes ago
   };
+
+  // Watch mode optimized layout
+  if (mode === "watch") {
+    // Mock speaking distribution data for demonstration
+    const mockSpeakingDistribution = [
+      { name: "Jane Smith", value: 180 }, // 3 minutes
+      { name: "John Doe", value: 120 },   // 2 minutes
+      { name: "Alice Johnson", value: 90 }, // 1.5 minutes
+      { name: "Bob Wilson", value: 60 },  // 1 minute
+    ];
+
+    return (
+      <DisplayLayout
+        meetingData={mockMeetingData}
+        participants={mockParticipants}
+        currentSpeaker={mockCurrentSpeaker}
+        speakingQueue={serverQueue}
+        speakingDistribution={mockSpeakingDistribution}
+      />
+    );
+  }
 
   return (
     <MeetingContext
