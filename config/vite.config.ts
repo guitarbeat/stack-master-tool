@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
     // Only enable HMR in development
     hmr: mode === 'development' ? {} : false,
   },
+  css: {
+    postcss: './config/postcss.config.js',
+  },
   plugins: [
     react(),
     // Only use component tagger in development
