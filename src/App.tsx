@@ -3,11 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
-import MeetingRoom from "./pages/MeetingRoom";
-import CreateMeeting from "./pages/CreateMeeting";
 import Auth from "./pages/Auth";
 import AppLayout from "./components/layout/AppLayout";
 
@@ -23,9 +20,6 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/create" element={<ProtectedRoute><CreateMeeting /></ProtectedRoute>} />
-            <Route path="/meeting" element={<MeetingRoom />} />
-            <Route path="/meeting/:meetingId" element={<MeetingRoom />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

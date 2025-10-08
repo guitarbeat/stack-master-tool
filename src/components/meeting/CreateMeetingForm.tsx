@@ -47,7 +47,7 @@ function CreateMeetingForm({ onSuccess }: CreateMeetingFormProps): JSX.Element {
         meetingCode: meeting.code,
         meetingId: meeting.id,
         title: meeting.title,
-        facilitatorName: meeting.facilitatorName,
+        facilitator: meeting.facilitator,
       });
     } catch (err) {
       console.error("Error creating meeting:", err);

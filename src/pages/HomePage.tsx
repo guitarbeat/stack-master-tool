@@ -4,11 +4,9 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { LogOut } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
-import { useNavigate } from 'react-router-dom'
 
 function HomePage() {
   const { user, signOut } = useAuth()
-  const navigate = useNavigate()
 
   const handleSignOut = async () => {
     const { error } = await signOut()

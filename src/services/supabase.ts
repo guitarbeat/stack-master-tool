@@ -74,13 +74,13 @@ export class SupabaseMeetingService {
         id: data.id,
         code: data.meeting_code,
         title: data.title,
-        facilitatorName: data.facilitator_name,
+        facilitator: data.facilitator_name,
         createdAt: data.created_at,
         isActive: data.is_active,
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to create meeting');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to create meeting');
     }
   }
 
@@ -128,7 +128,7 @@ export class SupabaseMeetingService {
         id: meeting.id,
         code: meeting.meeting_code,
         title: meeting.title,
-        facilitatorName: meeting.facilitator_name,
+        facilitator: meeting.facilitator_name,
         createdAt: meeting.created_at,
         isActive: meeting.is_active,
         participants: participants.map(p => ({
@@ -151,7 +151,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to fetch meeting');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to fetch meeting');
     }
   }
 
@@ -195,7 +195,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to join meeting');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to join meeting');
     }
   }
 
@@ -255,7 +255,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to join queue');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to join queue');
     }
   }
 
@@ -276,7 +276,7 @@ export class SupabaseMeetingService {
       await this.reorderQueue(meetingId);
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to leave queue');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to leave queue');
     }
   }
 
@@ -326,7 +326,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to move to next speaker');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to move to next speaker');
     }
   }
 
@@ -343,7 +343,7 @@ export class SupabaseMeetingService {
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to update meeting title');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to update meeting title');
     }
   }
 
@@ -360,7 +360,7 @@ export class SupabaseMeetingService {
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to update participant name');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to update participant name');
     }
   }
 
@@ -390,7 +390,7 @@ export class SupabaseMeetingService {
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error, 'Failed to reorder queue');
+      throw new AppError(ErrorCode.INTERNAL_SERVER_ERROR, error as Error, 'Failed to reorder queue');
     }
   }
 }
@@ -445,7 +445,7 @@ export class SupabaseRealtimeService {
           table: 'speaking_queue',
           filter: `meeting_id=eq.${meetingId}`,
         },
-        async (payload) => {
+        async (_payload) => {
           try {
             const meeting = await SupabaseMeetingService.getMeeting(meetingId);
             if (meeting) {

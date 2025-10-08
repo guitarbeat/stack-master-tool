@@ -1,4 +1,3 @@
-export { MeetingRoomRefactored as MeetingRoom } from './MeetingRoomRefactored';
 export { MeetingHeader } from './MeetingHeader';
 export { CurrentSpeakerAlert } from './CurrentSpeakerAlert';
 export { SpeakingQueue } from './SpeakingQueue';
