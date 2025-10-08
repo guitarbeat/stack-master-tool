@@ -1,0 +1,445 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Copy/Paste Detector Report</title><link href="styles/tailwind.css" rel="stylesheet"><link href="styles/prism.css" rel="stylesheet"></head><body class="bg-gray-100"><header class="bg-white shadow py-4"><div class="container mx-auto px-4"><h1 class="text-3xl font-semibold text-gray-800">jscpd - copy/paste report</h1></div></header><main class="container mx-auto my-8 p-4 bg-white shadow rounded"><section class="mb-8" id="dashboard"><h2 class="text-2xl font-semibold text-gray-700 mb-4">Dashboard</h2><div class="grid grid-cols-4 gap-4"><div class="bg-blue-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-blue-800 mb-2">Total Files</h3><span class="text-4xl font-bold text-blue-800">233</span></div><div class="bg-green-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-green-800 mb-2">Total Lines of Code</h3><span class="text-4xl font-bold text-green-800">19322</span></div><div class="bg-yellow-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-yellow-800 mb-2">Number of Clones</h3><span class="text-4xl font-bold text-yellow-800">18</span></div><div class="bg-red-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-red-800 mb-2">Duplicated Lines</h3><span class="text-4xl font-bold text-red-800">436 (2.26%)</span></div></div></section><section class="mb-8" id="formats"><h2 class="text-2xl font-semibold text-gray-700 mb-4">Formats with Duplications</h2><table class="w-full table-auto"><thead><tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal"><th class="py-3 px-6 text-left">Format</th><th class="py-3 px-6 text-left">Files</th><th class="py-3 px-6 text-left">Lines</th><th class="py-3 px-6 text-left">Clones</th><th class="py-3 px-6 text-left">Duplicated Lines</th><th class="py-3 px-6 text-left">Duplicated Tokens</th></tr></thead><tbody><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#javascript-clones">javascript</a></td><td class="py-3 px-6">96</td><td class="py-3 px-6">5040</td><td class="py-3 px-6">2</td><td class="py-3 px-6">118</td><td class="py-3 px-6">815</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#tsx-clones">tsx</a></td><td class="py-3 px-6">106</td><td class="py-3 px-6">10663</td><td class="py-3 px-6">14</td><td class="py-3 px-6">291</td><td class="py-3 px-6">2094</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#typescript-clones">typescript</a></td><td class="py-3 px-6">29</td><td class="py-3 px-6">3514</td><td class="py-3 px-6">2</td><td class="py-3 px-6">27</td><td class="py-3 px-6">253</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#jsx-clones">jsx</a></td><td class="py-3 px-6">2</td><td class="py-3 px-6">105</td><td class="py-3 px-6">0</td><td class="py-3 px-6">0</td><td class="py-3 px-6">0</td></tr></tbody></table></section><section class="mb-8" id="txt-clones"><a name="javascript-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">javascript</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">src/components/ui/context-menu.tsx (Line 66:7 - Line 148:52), src/components/ui/menubar.tsx (Line 101:9 - Line 183:36)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn1" onclick="toggleCodeBlock('cloneGroup1', 'expandBtn1', 'collapseBtn1')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn1" onclick="toggleCodeBlock('cloneGroup1', 'expandBtn1', 'collapseBtn1')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup1"><code class="language-javascript text-sm text-gray-800">)}
+      {...props}
+    /&gt;
+  &lt;/ContextMenuPrimitive.Portal&gt;
+));
+ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName;
+
+const ContextMenuItem = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.Item&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.Item&gt; &amp; {
+    inset?: boolean;
+  }
+&gt;(({ className, inset, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.Item
+    ref={ref}
+    className={cn(
+      &quot;relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50&quot;,
+      inset &amp;&amp; &quot;pl-8&quot;,
+      className
+    )}
+    {...props}
+  /&gt;
+));
+ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName;
+
+const ContextMenuCheckboxItem = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.CheckboxItem&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.CheckboxItem&gt; &amp; {
+    checked?: boolean | &quot;indeterminate&quot; | undefined;
+  }
+&gt;(({ className, children, checked, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.CheckboxItem
+    ref={ref}
+    className={cn(
+      &quot;relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50&quot;,
+      className
+    )}
+    checked={checked ?? false}
+    {...props}
+  &gt;
+    &lt;span className=&quot;absolute left-2 flex h-3.5 w-3.5 items-center justify-center&quot;&gt;
+      &lt;ContextMenuPrimitive.ItemIndicator&gt;
+        &lt;Check className=&quot;h-4 w-4&quot; /&gt;
+      &lt;/ContextMenuPrimitive.ItemIndicator&gt;
+    &lt;/span&gt;
+    {children}
+  &lt;/ContextMenuPrimitive.CheckboxItem&gt;
+));
+ContextMenuCheckboxItem.displayName =
+  ContextMenuPrimitive.CheckboxItem.displayName;
+
+const ContextMenuRadioItem = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.RadioItem&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.RadioItem&gt;
+&gt;(({ className, children, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.RadioItem
+    ref={ref}
+    className={cn(
+      &quot;relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50&quot;,
+      className
+    )}
+    {...props}
+  &gt;
+    &lt;span className=&quot;absolute left-2 flex h-3.5 w-3.5 items-center justify-center&quot;&gt;
+      &lt;ContextMenuPrimitive.ItemIndicator&gt;
+        &lt;Circle className=&quot;h-2 w-2 fill-current&quot; /&gt;
+      &lt;/ContextMenuPrimitive.ItemIndicator&gt;
+    &lt;/span&gt;
+    {children}
+  &lt;/ContextMenuPrimitive.RadioItem&gt;
+));
+ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName;
+
+const ContextMenuLabel = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.Label&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.Label&gt; &amp; {
+    inset?: boolean;
+  }
+&gt;(({ className, inset, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.Label
+    ref={ref}
+    className={cn(
+      &quot;px-2 py-1.5 text-sm font-semibold text-foreground&quot;</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/EditableParticipantName.tsx (Line 70:6 - Line 106:16), src/components/EnhancedEditableParticipantName.tsx (Line 97:6 - Line 132:3)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn14" onclick="toggleCodeBlock('cloneGroup14', 'expandBtn14', 'collapseBtn14')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn14" onclick="toggleCodeBlock('cloneGroup14', 'expandBtn14', 'collapseBtn14')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup14"><code class="language-javascript text-sm text-gray-800">={editName}
+          onChange={(e) =&gt; setEditName(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className=&quot;h-8 text-sm&quot;
+          maxLength={50}
+          autoFocus
+          disabled={isUpdating}
+        /&gt;
+        &lt;Button
+          size=&quot;sm&quot;
+          variant=&quot;ghost&quot;
+          onClick={handleSaveEdit}
+          disabled={isUpdating || editName.trim() === ''}
+          className=&quot;h-8 w-8 p-0&quot;
+        &gt;
+          &lt;Check className=&quot;h-4 w-4 text-green-600&quot; /&gt;
+        &lt;/Button&gt;
+        &lt;Button
+          size=&quot;sm&quot;
+          variant=&quot;ghost&quot;
+          onClick={handleCancelEdit}
+          disabled={isUpdating}
+          className=&quot;h-8 w-8 p-0&quot;
+        &gt;
+          &lt;X className=&quot;h-4 w-4 text-red-600&quot; /&gt;
+        &lt;/Button&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div className=&quot;flex items-center gap-2 group&quot;&gt;
+      &lt;span className=&quot;font-medium&quot;&gt;{currentName}&lt;/span&gt;
+      &lt;Button
+        size=&quot;sm&quot;
+        variant=&quot;ghost&quot;
+        onClick={handleStartEdit</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="tsx-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">tsx</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">src/components/meeting/JoinMeetingForm.tsx (Line 26:5 - Line 38:5), src/components/meeting/MeetingCreationForm.tsx (Line 35:9 - Line 49:5)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn2" onclick="toggleCodeBlock('cloneGroup2', 'expandBtn2', 'collapseBtn2')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn2" onclick="toggleCodeBlock('cloneGroup2', 'expandBtn2', 'collapseBtn2')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup2"><code class="language-tsx text-sm text-gray-800">&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;form onSubmit={onSubmit} className=&quot;space-y-6&quot;&gt;
+        {error &amp;&amp; (
+          &lt;div className=&quot;bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-900/40&quot;&gt;
+            &lt;p className=&quot;text-red-600 dark:text-red-300 text-sm&quot;&gt;{error}&lt;/p&gt;
+          &lt;/div&gt;
+        )}
+
+        &lt;div&gt;
+          &lt;label className=&quot;block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2&quot;&gt;
+            Meeting Code</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateSuccess.tsx (Line 12:19 - Line 24:2), src/components/meeting/MeetingSuccessStep.tsx (Line 17:24 - Line 33:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn3" onclick="toggleCodeBlock('cloneGroup3', 'expandBtn3', 'collapseBtn3')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn3" onclick="toggleCodeBlock('cloneGroup3', 'expandBtn3', 'collapseBtn3')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup3"><code class="language-tsx text-sm text-gray-800">): JSX.Element {
+  return (
+    &lt;div className=&quot;bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800&quot;&gt;
+      &lt;div className=&quot;text-center mb-8&quot;&gt;
+        &lt;div className=&quot;bg-accent/20 p-4 rounded-full w-16 h-16 mx-auto mb-4&quot;&gt;
+          &lt;QrCodeIcon className=&quot;w-8 h-8 text-accent mx-auto&quot; /&gt;
+        &lt;/div&gt;
+        &lt;h1 className=&quot;text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2&quot;&gt;Your meeting is ready!&lt;/h1&gt;
+        &lt;p className=&quot;text-gray-600 dark:text-zinc-400&quot;&gt;Share this code or link with participants&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;div className=&quot;space-y-6&quot;&gt;
+        &lt;</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateSuccess.tsx (Line 24:9 - Line 42:10), src/components/meeting/MeetingSuccessStep.tsx (Line 34:9 - Line 52:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn4" onclick="toggleCodeBlock('cloneGroup4', 'expandBtn4', 'collapseBtn4')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn4" onclick="toggleCodeBlock('cloneGroup4', 'expandBtn4', 'collapseBtn4')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup4"><code class="language-tsx text-sm text-gray-800">&lt;div className=&quot;text-center&quot;&gt;
+          &lt;label className=&quot;block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2&quot;&gt;
+            Meeting Code
+          &lt;/label&gt;
+          &lt;div className=&quot;bg-gray-50 dark:bg-zinc-950 border-2 border-dashed border-gray-300 dark:border-zinc-800 rounded-lg p-6&quot;&gt;
+            &lt;div className=&quot;text-4xl font-bold text-primary mb-2&quot;&gt;
+              {meetingCode}
+            &lt;/div&gt;
+            &lt;button
+              onClick={onCopyCode}
+              className=&quot;flex items-center justify-center mx-auto text-sm text-gray-600 hover:text-gray-900 dark:text-zinc-300 dark:hover:text-zinc-100&quot;
+            &gt;
+              &lt;Copy className=&quot;w-4 h-4 mr-1&quot; /&gt;
+              Copy Code
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        {qrCodeUrl</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateSuccess.tsx (Line 42:9 - Line 57:2), src/components/meeting/MeetingSuccessStep.tsx (Line 53:9 - Line 68:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn5" onclick="toggleCodeBlock('cloneGroup5', 'expandBtn5', 'collapseBtn5')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn5" onclick="toggleCodeBlock('cloneGroup5', 'expandBtn5', 'collapseBtn5')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup5"><code class="language-tsx text-sm text-gray-800">{qrCodeUrl &amp;&amp; (
+          &lt;div className=&quot;text-center&quot;&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2&quot;&gt;
+              QR Code
+            &lt;/label&gt;
+            &lt;div className=&quot;flex justify-center&quot;&gt;
+              &lt;img
+                src={qrCodeUrl}
+                alt=&quot;QR code to join meeting&quot;
+                className=&quot;w-48 h-48 border border-gray-200 dark:border-zinc-800 rounded bg-white&quot;
+              /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+
+        &lt;</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateSuccess.tsx (Line 55:2 - Line 88:14), src/components/meeting/MeetingSuccessStep.tsx (Line 68:21 - Line 100:19)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn6" onclick="toggleCodeBlock('cloneGroup6', 'expandBtn6', 'collapseBtn6')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn6" onclick="toggleCodeBlock('cloneGroup6', 'expandBtn6', 'collapseBtn6')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup6"><code class="language-tsx text-sm text-gray-800">}
+
+        &lt;div&gt;
+          &lt;label className=&quot;block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2&quot;&gt;
+            Shareable Link
+          &lt;/label&gt;
+          &lt;div className=&quot;flex&quot;&gt;
+            &lt;input
+              type=&quot;text&quot;
+              readOnly
+              value={shareableLink}
+              className=&quot;flex-1 px-4 py-3 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100&quot;
+            /&gt;
+            &lt;button
+              onClick={onCopyLink}
+              className=&quot;px-4 py-3 bg-gray-200 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-300 transition-colors dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-700&quot;
+            &gt;
+              &lt;Copy className=&quot;w-5 h-5&quot; /&gt;
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;button
+          onClick={onStartMeeting}
+          className=&quot;w-full bg-accent text-white py-3 px-6 rounded-lg font-semibold hover:bg-accent-hover transition-colors&quot;
+        &gt;
+          Start meeting
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default CreateSuccess</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateMeetingForm.tsx (Line 67:3 - Line 98:186), src/components/meeting/MeetingCreationForm.tsx (Line 24:3 - Line 57:208)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn7" onclick="toggleCodeBlock('cloneGroup7', 'expandBtn7', 'collapseBtn7')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn7" onclick="toggleCodeBlock('cloneGroup7', 'expandBtn7', 'collapseBtn7')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup7"><code class="language-tsx text-sm text-gray-800">return (
+    &lt;div className=&quot;bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800&quot;&gt;
+      &lt;div className=&quot;text-center mb-8&quot;&gt;
+        &lt;div className=&quot;bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4&quot;&gt;
+          &lt;Users className=&quot;w-8 h-8 text-primary mx-auto&quot; /&gt;
+        &lt;/div&gt;
+        &lt;h1 className=&quot;text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-2&quot;&gt;
+          Host Meeting
+        &lt;/h1&gt;
+        &lt;p className=&quot;text-gray-600 dark:text-zinc-400&quot;&gt;
+          Set up your meeting and share the invitation link
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;form onSubmit={handleSubmit} className=&quot;space-y-6&quot;&gt;
+        {error &amp;&amp; (
+          &lt;div className=&quot;bg-red-50 border border-red-200 rounded-lg p-4 dark:bg-red-900/20 dark:border-red-900/40&quot;&gt;
+            &lt;p className=&quot;text-red-600 dark:text-red-300 text-sm&quot;&gt;{error}&lt;/p&gt;
+          &lt;/div&gt;
+        )}
+
+        &lt;div&gt;
+          &lt;label className=&quot;block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2&quot;&gt;
+            Meeting Name
+          &lt;/label&gt;
+          &lt;input
+            type=&quot;text&quot;
+            required
+            disabled={loading}
+            value={meetingData.name}
+            onChange={e =&gt; handleChange({ name: e.target.value })}
+            className=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateMeetingForm.tsx (Line 98:186 - Line 113:186), src/components/meeting/MeetingCreationForm.tsx (Line 57:208 - Line 72:208)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn8" onclick="toggleCodeBlock('cloneGroup8', 'expandBtn8', 'collapseBtn8')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn8" onclick="toggleCodeBlock('cloneGroup8', 'expandBtn8', 'collapseBtn8')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup8"><code class="language-tsx text-sm text-gray-800">&quot;
+            placeholder=&quot;e.g., Weekly Team Meeting&quot;
+          /&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;label className=&quot;block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2&quot;&gt;
+            Your Name (Facilitator)
+          &lt;/label&gt;
+          &lt;input
+            type=&quot;text&quot;
+            required
+            disabled={loading}
+            value={meetingData.facilitatorName}
+            onChange={e =&gt; handleChange({ facilitatorName: e.target.value })}
+            className=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/meeting/CreateMeetingForm.tsx (Line 113:186 - Line 134:2), src/components/meeting/MeetingCreationForm.tsx (Line 72:208 - Line 94:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn9" onclick="toggleCodeBlock('cloneGroup9', 'expandBtn9', 'collapseBtn9')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn9" onclick="toggleCodeBlock('cloneGroup9', 'expandBtn9', 'collapseBtn9')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup9"><code class="language-tsx text-sm text-gray-800">&quot;
+            placeholder=&quot;Your name&quot;
+          /&gt;
+        &lt;/div&gt;
+
+        &lt;button
+          type=&quot;submit&quot;
+          disabled={loading}
+          className=&quot;w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-hover transition-colors disabled:bg-primary/60 disabled:cursor-not-allowed flex items-center justify-center&quot;
+        &gt;
+          {loading ? (
+            &lt;&gt;
+              &lt;Loader2 className=&quot;w-5 h-5 mr-2 animate-spin&quot; /&gt;
+              Hosting Meeting...
+            &lt;/&gt;
+          ) : (
+            &quot;Host Meeting&quot;
+          )}
+        &lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  );</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/MeetingRoom/MeetingContext.tsx (Line 81:10 - Line 108:78), src/components/MeetingRoom/QueuePositionFeedback.tsx (Line 62:9 - Line 89:33)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn10" onclick="toggleCodeBlock('cloneGroup10', 'expandBtn10', 'collapseBtn10')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn10" onclick="toggleCodeBlock('cloneGroup10', 'expandBtn10', 'collapseBtn10')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup10"><code class="language-tsx text-sm text-gray-800">]);
+
+  // Update current speaker duration
+  useEffect(() =&gt; {
+    if (!currentSpeaker?.startedSpeakingAt) {
+      setCurrentSpeakerDuration('');
+      return;
+    }
+
+    const updateSpeakerTime = () =&gt; {
+      const now = new Date();
+      const diff = now.getTime() - currentSpeaker.startedSpeakingAt!.getTime();
+      const minutes = Math.floor(diff / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      
+      if (minutes &gt; 0) {
+        setCurrentSpeakerDuration(`${minutes}m ${seconds}s`);
+      } else {
+        setCurrentSpeakerDuration(`${seconds}s`);
+      }
+    };
+
+    updateSpeakerTime();
+    const interval = setInterval(updateSpeakerTime, 1000);
+    return () =&gt; clearInterval(interval);
+  }, [currentSpeaker?.startedSpeakingAt]);
+
+  // Simulate recent activity (in a real app, this would come from the backend)</code></pre></div><div class="py-4"><p class="text-gray-600">src/pages/Auth.tsx (Line 75:11 - Line 88:7), src/pages/Auth.tsx (Line 38:15 - Line 51:7)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn12" onclick="toggleCodeBlock('cloneGroup12', 'expandBtn12', 'collapseBtn12')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn12" onclick="toggleCodeBlock('cloneGroup12', 'expandBtn12', 'collapseBtn12')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup12"><code class="language-tsx text-sm text-gray-800">);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        toast({
+          title: &quot;Validation Error&quot;,
+          description: err.errors[0].message,
+          variant: &quot;destructive&quot;,
+        });
+        return;
+      }
+    }
+
+    setLoading(true);
+    const { error } = await signUp</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/ErrorBoundary.tsx (Line 43:2 - Line 60:5), src/components/ErrorBoundaryWrapper.tsx (Line 128:2 - Line 147:20)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn13" onclick="toggleCodeBlock('cloneGroup13', 'expandBtn13', 'collapseBtn13')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn13" onclick="toggleCodeBlock('cloneGroup13', 'expandBtn13', 'collapseBtn13')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup13"><code class="language-tsx text-sm text-gray-800">&gt;
+          &lt;Card className=&quot;w-full max-w-md&quot;&gt;
+            &lt;CardHeader className=&quot;text-center&quot;&gt;
+              &lt;div className=&quot;mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10&quot;&gt;
+                &lt;AlertTriangle className=&quot;h-6 w-6 text-destructive&quot; /&gt;
+              &lt;/div&gt;
+              &lt;CardTitle className=&quot;text-xl&quot;&gt;{errorInfo.title}&lt;/CardTitle&gt;
+            &lt;/CardHeader&gt;
+            &lt;CardContent className=&quot;space-y-4&quot;&gt;
+              &lt;p className=&quot;text-center text-muted-foreground&quot;&gt;
+                {errorInfo.description}
+              &lt;/p&gt;
+              {errorInfo.action &amp;&amp; (
+                &lt;p className=&quot;text-center text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg&quot;&gt;
+                  💡 {errorInfo.action}
+                &lt;/p&gt;
+              )}
+              {this</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/EditableParticipantName.tsx (Line 23:6 - Line 56:15), src/components/EnhancedEditableParticipantName.tsx (Line 35:2 - Line 68:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn15" onclick="toggleCodeBlock('cloneGroup15', 'expandBtn15', 'collapseBtn15')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn15" onclick="toggleCodeBlock('cloneGroup15', 'expandBtn15', 'collapseBtn15')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup15"><code class="language-tsx text-sm text-gray-800">);
+
+  const handleStartEdit = () =&gt; {
+    setEditName(currentName);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () =&gt; {
+    setEditName(currentName);
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = async () =&gt; {
+    if (editName.trim() === currentName || editName.trim() === '') {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      await onNameUpdate(participantId, editName.trim());
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update participant name:', error);
+      // Reset to original name on error
+      setEditName(currentName);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) =&gt; {
+    if (e.key === 'Enter') {
+      handleSaveEdit</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/EditableMeetingTitle.tsx (Line 48:13 - Line 63:2), src/components/EditableParticipantName.tsx (Line 48:12 - Line 63:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn16" onclick="toggleCodeBlock('cloneGroup16', 'expandBtn16', 'collapseBtn16')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn16" onclick="toggleCodeBlock('cloneGroup16', 'expandBtn16', 'collapseBtn16')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup16"><code class="language-tsx text-sm text-gray-800">);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) =&gt; {
+    if (e.key === 'Enter') {
+      handleSaveEdit();
+    } else if (e.key === 'Escape') {
+      handleCancelEdit();
+    }
+  };
+
+  if (!isFacilitator || disabled) {
+    return &lt;span className={className}&gt;</code></pre></div><div class="py-4"><p class="text-gray-600">src/components/EditableMeetingTitle.tsx (Line 73:2 - Line 102:2), src/components/EditableParticipantName.tsx (Line 73:2 - Line 102:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn17" onclick="toggleCodeBlock('cloneGroup17', 'expandBtn17', 'collapseBtn17')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn17" onclick="toggleCodeBlock('cloneGroup17', 'expandBtn17', 'collapseBtn17')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup17"><code class="language-tsx text-sm text-gray-800">
+          maxLength={100}
+          autoFocus
+          disabled={isUpdating}
+        /&gt;
+        &lt;Button
+          size=&quot;sm&quot;
+          variant=&quot;ghost&quot;
+          onClick={handleSaveEdit}
+          disabled={isUpdating || editTitle.trim() === ''}
+          className=&quot;h-8 w-8 p-0&quot;
+        &gt;
+          &lt;Check className=&quot;h-4 w-4 text-green-600&quot; /&gt;
+        &lt;/Button&gt;
+        &lt;Button
+          size=&quot;sm&quot;
+          variant=&quot;ghost&quot;
+          onClick={handleCancelEdit}
+          disabled={isUpdating}
+          className=&quot;h-8 w-8 p-0&quot;
+        &gt;
+          &lt;X className=&quot;h-4 w-4 text-red-600&quot; /&gt;
+        &lt;/Button&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div className=&quot;flex items-center gap-2 group&quot;&gt;
+      &lt;span className={className}&gt;</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="typescript-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">typescript</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">src/integrations/supabase/types.ts (Line 210:13 - Line 223:7), src/integrations/supabase/types.ts (Line 185:13 - Line 198:7)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn0" onclick="toggleCodeBlock('cloneGroup0', 'expandBtn0', 'collapseBtn0')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn0" onclick="toggleCodeBlock('cloneGroup0', 'expandBtn0', 'collapseBtn0')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup0"><code class="language-typescript text-sm text-gray-800">&lt;
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema[&quot;Tables&quot;]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[&quot;schema&quot;]][&quot;Tables&quot;]
+    : never = never,
+&gt; = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[&quot;schema&quot;]][&quot;Tables&quot;][TableName] extends {
+      Update</code></pre></div><div class="py-4"><p class="text-gray-600">src/utils/errorMonitoring.ts (Line 184:2 - Line 198:2), src/utils/errorMonitoring.ts (Line 29:2 - Line 44:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn11" onclick="toggleCodeBlock('cloneGroup11', 'expandBtn11', 'collapseBtn11')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn11" onclick="toggleCodeBlock('cloneGroup11', 'expandBtn11', 'collapseBtn11')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup11"><code class="language-typescript text-sm text-gray-800">= {
+      totalErrors: 0,
+      errorsByType: {} as Record&lt;ErrorType, number&gt;,
+      errorsByCode: {} as Record&lt;ErrorCode, number&gt;,
+      errorsByContext: {},
+      errorsBySeverity: { low: 0, medium: 0, high: 0 },
+      errorsByHour: {},
+      recentErrors: [],
+      errorTrends: {
+        last24Hours: 0,
+        lastHour: 0,
+        lastMinute: 0
+      }
+    };
+  }</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="jsx-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">jsx</h2><div class="divide-y divide-gray-200 border-b-2"><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div></section><!-- Add more sections for other formats and clone groups as needed--></main><footer class="bg-white shadow mt-8 py-4"><div class="container mx-auto px-4 text-center"><p class="text-sm text-gray-600">This report is generated by jscpd, an open-source copy/paste detector.</p><p class="text-sm text-gray-600">jscpd is licensed under the MIT License.</p><a class="text-blue-500 text-sm" href="https://github.com/kucherenko/jscpd" target="_blank" rel="noopener noreferrer">View jscpd on GitHub</a></div></footer><script src="js/prism.js"></script><script>function toggleCodeBlock(codeBlockId, expandBtnId, collapseBtnId) {
+  const codeBlock = document.getElementById(codeBlockId);
+  const expandBtn = document.getElementById(expandBtnId);
+  const collapseBtn = document.getElementById(collapseBtnId);
+
+  codeBlock.classList.toggle('hidden');
+  expandBtn.classList.toggle('hidden');
+  collapseBtn.classList.toggle('hidden');
+}</script></body></html>

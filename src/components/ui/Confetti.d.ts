@@ -1,9 +1,6 @@
-import { FC } from 'react';
-
-interface ConfettiProps {
-  triggerKey?: number;
-  key?: number;
+declare module '../components/ui/Confetti.jsx' {
+  import { FC } from 'react';
+  
+  const Confetti: FC;
+  export default Confetti;
 }
-
-declare const Confetti: FC<ConfettiProps>;
-export default Confetti;
