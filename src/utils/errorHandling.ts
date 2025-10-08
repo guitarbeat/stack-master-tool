@@ -420,14 +420,13 @@ export class AppError extends Error {
 
 function getErrorTypeFromCode(code: ErrorCode): ErrorType {
   // Timeout errors (check first to avoid being caught by network)
-  if (code.includes("TIMEOUT") && code !== "NETWORK_TIMEOUT") {
+  if (code.includes("TIMEOUT")) {
     return ErrorType.TIMEOUT;
   }
 
   // Network errors
   if (
     code.startsWith("CONNECTION") ||
-    code === "NETWORK_TIMEOUT" ||
     code === "OFFLINE" ||
     code === "WEBSOCKET_DISCONNECTED" ||
     code === "SERVER_UNREACHABLE"
@@ -441,7 +440,9 @@ function getErrorTypeFromCode(code: ErrorCode): ErrorType {
     code.startsWith("NOT_IN") ||
     code.startsWith("MEETING_ACCESS") ||
     code.startsWith("FACILITATOR") ||
-    code === "INSUFFICIENT_PERMISSIONS"
+    code.startsWith("WATCHER") ||
+    code === "INSUFFICIENT_PERMISSIONS" ||
+    code === "INVALID_ROLE"
   ) {
     return ErrorType.AUTHENTICATION;
   }
