@@ -6,14 +6,19 @@ import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Security headers for production
   server: {
     host: "::",
     port: 8080,
+    // Only enable HMR in development
+    hmr: mode === 'development' ? {} : false,
   },
-  plugins: [dyadComponentTagger(), 
+  plugins: [
+    // Dyad component tagger for development collaboration
+    dyadComponentTagger(),
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    // Only use component tagger in development
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -22,32 +27,71 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    // Target modern browsers for better performance
+    target: 'es2020',
+    // Optimize CSS
+    cssCodeSplit: true,
     // Ensure proper SPA routing in production
     rollupOptions: {
       output: {
         manualChunks: {
+          // Core React libraries
           vendor: ['react', 'react-dom'],
+          // Routing
           router: ['react-router-dom'],
-          ui: ['lucide-react', '@radix-ui/react-toast', '@radix-ui/react-tooltip'],
+          // UI framework libraries
+          ui: ['lucide-react', '@radix-ui/react-toast', '@radix-ui/react-tooltip', '@radix-ui/react-dialog'],
+          // State management and utilities
+          state: ['@tanstack/react-query', '@supabase/supabase-js', 'zod'],
         },
+        // Optimize chunk naming for better caching
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
     // Optimize build for better performance
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
-        drop_debugger: true,
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production',
+        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
+      },
+      mangle: {
+        safari10: true,
       },
     },
-    // Enable source maps for production debugging
-    sourcemap: false,
-    // Optimize chunk size
-    chunkSizeWarningLimit: 1000,
+    // Enable source maps only in development
+    sourcemap: mode === 'development',
+    // Optimize chunk size limits
+    chunkSizeWarningLimit: 600,
+    // Enable build reports for analysis
+    reportCompressedSize: false,
+    // Optimize dependencies
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
   preview: {
     port: 4173,
     host: "::",
+    // Security headers for preview server
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+    },
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@vite/client', '@vite/env'],
+  },
+  // Define global constants
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
 }));
 

@@ -8,7 +8,8 @@ This is a modern React TypeScript application built for meeting facilitation and
 
 - **Frontend Framework**: React 18 with TypeScript (strict mode enabled)
 - **Build Tool**: Vite with SWC for fast development and optimized production builds
-- **Package Manager**: Bun (faster alternative to npm/yarn)
+- **Package Manager**: pnpm (efficient package manager with strict dependency resolution)
+- **Mobile Framework**: Capacitor (cross-platform mobile apps)
 - **Backend/Database**: Supabase (PostgreSQL with real-time subscriptions)
 
 ### UI & Styling
