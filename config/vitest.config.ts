@@ -1,9 +1,18 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react-swc';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
+import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
+  esbuild: {
+    // Enable JSX in .js files
+    loader: 'tsx',
+    include: /\.(ts|tsx|js|jsx)$/,
+  },
+  // Use the app TypeScript config for path resolution
+  // This ensures @/* aliases work in tests
   test: {
     globals: true,
     environment: 'jsdom',
@@ -47,14 +56,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '../src'),
-      '@lib': path.resolve(__dirname, '../src/lib'),
-      '@components': path.resolve(__dirname, '../src/components'),
-      '@hooks': path.resolve(__dirname, '../src/hooks'),
-      '@utils': path.resolve(__dirname, '../src/utils'),
-      '@services': path.resolve(__dirname, '../src/services'),
-      '@pages': path.resolve(__dirname, '../src/pages'),
-      '@types': path.resolve(__dirname, '../src/types'),
-      '@integrations': path.resolve(__dirname, '../src/integrations'),
     },
   },
 });

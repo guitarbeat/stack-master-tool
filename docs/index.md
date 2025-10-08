@@ -1,17 +1,28 @@
 # 📚 Documentation Index
 
-Welcome to the Stack Master Tool documentation! This directory contains all project documentation organized by purpose.
+Welcome to the Stack Master Tool documentation! This directory contains all project documentation organized into **Tasks** (consumable guides you can follow) and **FYI** (informational reference material).
 
-## 📖 Core Documentation
+## ✅ **TASKS** - Consumable Guides
 
-| Document                                               | Purpose                                           | Audience          |
-| ------------------------------------------------------ | ------------------------------------------------- | ----------------- |
-| **[README.md](README.md)**                             | Complete project overview, setup, and usage guide | All users         |
-| **[AI_RULES.md](AI_RULES.md)**                         | Development guidelines and coding standards       | Developers        |
-| **[PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)** | Production deployment checklist                   | DevOps/Deployers  |
-| **[ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)**       | Environment configuration guide                   | Developers/DevOps |
+These documents contain step-by-step instructions and checklists you can actually follow and execute:
 
-## 🏗️ Infrastructure & Deployment
+| Document                                               | Purpose                                      | Time to Complete |
+| ------------------------------------------------------ | -------------------------------------------- | ---------------- |
+| **[ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)**       | Step-by-step environment configuration guide | 10-15 minutes    |
+| **[PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)** | Complete production deployment checklist     | 30-60 minutes    |
+
+## 📋 **FYI** - Reference Information
+
+These documents provide background information, guidelines, and reference material:
+
+| Document                         | Purpose                                      | Audience        |
+| -------------------------------- | -------------------------------------------- | --------------- |
+| **[README.md](README.md)**       | Project overview, features, and architecture | All users       |
+| **[AI_RULES.md](AI_RULES.md)**   | Development guidelines and coding standards  | Developers      |
+| **[CHANGELOG.md](CHANGELOG.md)** | Version history and release notes            | All users       |
+| **[LICENSE](LICENSE)**           | MIT license terms                            | Legal/All users |
+
+## 🏗️ **Infrastructure & Deployment**
 
 ### [deployment/](deployment/) - Deployment Configurations
 
@@ -19,30 +30,17 @@ Welcome to the Stack Master Tool documentation! This directory contains all proj
 - `netlify.toml` - Netlify deployment configuration
 - `vercel.json` - Vercel deployment configuration
 
-## 📋 Project Management
-
-| Document         | Purpose                           |
-| ---------------- | --------------------------------- |
-| **CHANGELOG.md** | Version history and release notes |
-| **LICENSE**      | MIT license terms                 |
-
-## 🔄 Migration & History
-
-| Document         | Purpose                           |
-| ---------------- | --------------------------------- |
-| **CHANGELOG.md** | Version history and release notes |
-
 ## 📂 Directory Structure
 
 ```
 docs/
 ├── 📄 index.md              # This file - documentation navigation
-├── 📄 README.md             # Main project documentation
-├── 📄 AI_RULES.md           # Development guidelines
-├── 📄 PRODUCTION_CHECKLIST.md # Production deployment guide
-├── 📄 ENVIRONMENT_SETUP.md # Environment configuration
-├── 📄 CHANGELOG.md          # Release notes
-├── 📄 LICENSE               # License information
+├── ✅ ENVIRONMENT_SETUP.md  # TASK - Environment configuration guide
+├── ✅ PRODUCTION_CHECKLIST.md # TASK - Production deployment checklist
+├── 📋 README.md             # FYI - Project overview & features
+├── 📋 AI_RULES.md           # FYI - Development guidelines
+├── 📋 CHANGELOG.md          # FYI - Version history & release notes
+├── 📋 LICENSE               # FYI - MIT license terms
 └── 📁 deployment/           # Deployment configurations
 ```
 
@@ -58,16 +56,24 @@ Each mode is designed for specific use cases and provides tailored functionality
 
 ## 🚀 Quick Start
 
-1. **New to the project?** → Start with [README.md](README.md)
-2. **Setting up development?** → Check [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
-3. **Deploying to production?** → Follow [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)
-4. **Contributing code?** → Read [AI_RULES.md](AI_RULES.md)
+### **I'm new to the project:**
+→ Start with **[README.md](README.md)** (FYI - project overview)
+
+### **I need to set up the development environment:**
+→ Follow **[ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)** (TASK - step-by-step guide)
+
+### **I need to deploy to production:**
+→ Complete **[PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)** (TASK - deployment checklist)
+
+### **I want to contribute code:**
+→ Read **[AI_RULES.md](AI_RULES.md)** (FYI - development guidelines)
 
 ## 📞 Support
 
-- **Issues**: Check [README.md](README.md) troubleshooting section
-- **Deployment**: Follow [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)
-- **Development**: Read [AI_RULES.md](AI_RULES.md)
+- **Technical Issues**: Check [README.md](README.md) troubleshooting section
+- **Setup Problems**: Follow [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
+- **Deployment Help**: Use [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)
+- **Code Contributions**: Read [AI_RULES.md](AI_RULES.md)
 
 ---
 
