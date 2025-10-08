@@ -29,7 +29,9 @@ export function useMouseFollow(options: UseMouseFollowOptions = {}): UseMouseFol
   const [isHovering, setIsHovering] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!options.enabled) return;
+    if (!options.enabled) {
+      return;
+    }
     const rect = containerRef.current?.getBoundingClientRect();
     if (rect) {
       setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -39,12 +41,12 @@ export function useMouseFollow(options: UseMouseFollowOptions = {}): UseMouseFol
   const handleMouseEnter = () => setIsHovering(true);
   const handleMouseLeave = () => setIsHovering(false);
 
-  return { 
-    containerRef, 
-    mousePosition, 
-    isHovering, 
-    handleMouseMove, 
-    handleMouseEnter, 
-    handleMouseLeave 
+  return {
+    containerRef,
+    mousePosition,
+    isHovering,
+    handleMouseMove,
+    handleMouseEnter,
+    handleMouseLeave
   };
 }

@@ -17,13 +17,17 @@ export const useDragAndDrop = (): UseDragAndDropReturn => {
 
   const handleDragStart = useCallback((index: number) => {
     // Disallow dragging current speaker (index 0)
-    if (index === 0) return;
+    if (index === 0) {
+      return;
+    }
     setDragIndex(index);
   }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, index: number) => {
     // Allow dropping only on non-current speaker positions
-    if (index === 0) return;
+    if (index === 0) {
+      return;
+    }
     e.preventDefault();
     setDragOverIndex(index);
   }, []);
@@ -33,18 +37,22 @@ export const useDragAndDrop = (): UseDragAndDropReturn => {
   }, []);
 
   const handleDrop = useCallback((index: number, onReorder: (dragIndex: number, targetIndex: number) => void) => {
-    if (dragIndex === null) return;
-    if (dragIndex === 0) return; // safety check
-    
+    if (dragIndex === null) {
+      return;
+    }
+    if (dragIndex === 0) {
+      return;
+    } // safety check
+
     // Do not allow dropping into current speaker slot
     const targetIndex = index === 0 ? 1 : index;
-    
+
     if (targetIndex === dragIndex) {
       setDragIndex(null);
       setDragOverIndex(null);
       return;
     }
-    
+
     onReorder(dragIndex, targetIndex);
     setDragIndex(null);
     setDragOverIndex(null);

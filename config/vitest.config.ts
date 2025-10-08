@@ -4,15 +4,9 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  esbuild: {
-    // Enable JSX in .js files
-    loader: 'tsx',
-    include: /\.(ts|tsx|js|jsx)$/,
-  },
   test: {
-    globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts', './src/components/__tests__/setup.ts'],
+    setupFiles: ['./src/test/setup.ts'],
     css: true,
     include: [
       'src/**/*.{test,spec}.{js,ts,jsx,tsx}',

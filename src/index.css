@@ -5,9 +5,9 @@
 @layer base {
   :root {
     /* Core Colors - Enhanced earthy palette */
-    --background: 30 20% 15%;
-    --foreground: 60 8% 98%;
-    --card: 30 20% 18%;
+    --background: 30 20% 20%;
+    --foreground: 60 8% 95%;
+    --card: 30 20% 22%;
     --card-foreground: 60 8% 98%;
     --border: 120 15% 25%;
     --input: 120 15% 20%;

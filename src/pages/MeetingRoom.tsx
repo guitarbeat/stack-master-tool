@@ -42,6 +42,7 @@ export default function MeetingRoom() {
   const [error, setError] = useState<string | null>(null);
   const [codeInput, setCodeInput] = useState<string>("");
   const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
+  const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   const { user } = useAuth();
 
   const [serverMeeting, setServerMeeting] =
@@ -54,23 +55,76 @@ export default function MeetingRoom() {
   const [qrUrl, setQrUrl] = useState<string>("");
 
   // Advanced features hooks
-  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts({
-    onNextSpeaker: () => {
-      // TODO: Implement queue advancement
-      console.log('Next speaker shortcut triggered');
-    },
-    onUndo: () => {
-      // TODO: Implement undo functionality
-      console.log('Undo shortcut triggered');
-    },
-    onToggleShortcuts: () => {
-      console.log('Toggle shortcuts triggered');
+  const [lastSpeaker, setLastSpeaker] = useState<SbQueueItem | null>(null);
+
+  const handleNextSpeaker = async () => {
+    if (!meetingId) {
+      return;
     }
+    try {
+      const removedSpeaker = await SupabaseMeetingService.nextSpeaker(meetingId);
+      setLastSpeaker(removedSpeaker);
+    } catch (error) {
+      console.error("Error advancing to next speaker:", error);
+      // Optionally, show an error toast to the user
+    }
+  };
+
+  const handleUndo = async () => {
+    if (!meetingId || !lastSpeaker) {
+      return;
+    }
+    try {
+      await SupabaseMeetingService.joinQueue(
+        meetingId,
+        lastSpeaker.participantId,
+      );
+      setLastSpeaker(null); // Clear the last speaker after undoing
+    } catch (error) {
+      console.error("Error undoing next speaker:", error);
+      // Optionally, show an error toast to the user
+    }
+  };
+
+  const { showKeyboardShortcuts, toggleShortcuts } = useKeyboardShortcuts({
+    onNextSpeaker: handleNextSpeaker,
+    onUndo: handleUndo,
+    onToggleShortcuts: toggleShortcuts
   });
 
   const { speakerTimer, elapsedTime, startTimer, stopTimer, formatTime } = useSpeakerTimer();
   const { speakingHistory, addSpeakingSegment, getTotalSpeakingTime, getSpeakingDistribution } = useSpeakingHistory();
   const { dragIndex, handleDragStart, handleDrop, isDragOver } = useDragAndDrop();
+
+  // Queue management functions
+  const handleJoinQueue = async () => {
+    if (!meetingId || !currentParticipantId) {
+      return;
+    }
+    try {
+      await SupabaseMeetingService.joinQueue(meetingId, currentParticipantId);
+      // The real-time subscription will update the UI
+    } catch (error) {
+      console.error("Failed to join queue:", error);
+    }
+  };
+
+  const handleLeaveQueue = async () => {
+    if (!meetingId || !currentParticipantId) {
+      return;
+    }
+    try {
+      await SupabaseMeetingService.leaveQueue(meetingId, currentParticipantId);
+      // The real-time subscription will update the UI
+    } catch (error) {
+      console.error("Failed to leave queue:", error);
+    }
+  };
+
+  const handleReorderQueue = async (dragIndex: number, targetIndex: number) => {
+    // This would need to be implemented in the Supabase service
+    console.log(`Reorder queue: ${dragIndex} -> ${targetIndex}`);
+  };
 
   useEffect(() => {
     // Handle /watch/:code route
@@ -118,16 +172,42 @@ export default function MeetingRoom() {
             setServerQueue(full.speakingQueue);
           }
         } else if (currentCode) {
-          const full = await SupabaseMeetingService.getMeeting(currentCode);
-          if (!full) {
-            setError("Meeting not found or inactive.");
+          try {
+            const full = await SupabaseMeetingService.getMeeting(currentCode);
+            if (!full) {
+              setError(`Meeting "${currentCode}" not found or inactive. Please check the code and try again.`);
+              return;
+            }
+            setMeetingId(full.id);
+            setMeetingCode(full.code);
+            setServerMeeting(full);
+            setServerParticipants(full.participants);
+            setServerQueue(full.speakingQueue);
+
+            // For JOIN mode, create participant if meeting exists
+            if (currentMode === "join") {
+              try {
+                const participantName = user?.email ?? `Participant-${Date.now()}`;
+                const participant = await SupabaseMeetingService.joinMeeting(
+                  currentCode,
+                  participantName,
+                  false // not facilitator
+                );
+                // Store the current participant ID for queue operations
+                setCurrentParticipantId(participant.id);
+                // Add the new participant to the list
+                setServerParticipants(prev => [...prev, participant]);
+              } catch (joinError) {
+                console.error("Failed to join meeting as participant:", joinError);
+                setError("Failed to join meeting. Please try again.");
+                return;
+              }
+            }
+          } catch (fetchError) {
+            console.error("Error fetching meeting:", fetchError);
+            setError("Unable to connect to meeting. Please check your internet connection and try again.");
             return;
           }
-          setMeetingId(full.id);
-          setMeetingCode(full.code);
-          setServerMeeting(full);
-          setServerParticipants(full.participants);
-          setServerQueue(full.speakingQueue);
         }
       } catch (e) {
         setError("Failed to connect to meeting.");
@@ -197,7 +277,9 @@ export default function MeetingRoom() {
             onSubmit={(e) => {
               e.preventDefault();
               const normalized = codeInput.trim().toUpperCase();
-              if (normalized.length < 4) return; // simple guard
+              if (normalized.length < 4) {
+                return; // simple guard
+              }
               navigate(`/meeting?mode=join&code=${normalized}`);
             }}
             className="space-y-4"
@@ -293,9 +375,9 @@ export default function MeetingRoom() {
             ? "observer"
             : "participant"
       }
-      onAddToQueue={() => {}}
-      onRemoveFromQueue={() => {}}
-      onReorderQueue={() => {}}
+      onAddToQueue={handleJoinQueue}
+      onRemoveFromQueue={handleLeaveQueue}
+      onReorderQueue={handleReorderQueue}
       onUpdateParticipant={() => {}}
       onEndMeeting={() => navigate("/")}
     >
@@ -348,7 +430,9 @@ export default function MeetingRoom() {
                   className="w-full py-2 rounded-lg bg-primary text-white font-semibold hover:opacity-90 disabled:opacity-50"
                   disabled={!meetingCode}
                   onClick={async () => {
-                    if (!meetingCode) return;
+                    if (!meetingCode) {
+                      return;
+                    }
                     const link = `${window.location.origin}/meeting?mode=join&code=${meetingCode}`;
                     const dataUrl = await QRCode.toDataURL(link, {
                       width: 256,
@@ -411,6 +495,41 @@ export default function MeetingRoom() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Keyboard Shortcuts Modal */}
+      {showKeyboardShortcuts && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Keyboard Shortcuts</h3>
+              <button
+                onClick={toggleShortcuts}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-3">
+              {mode === "host" && (
+                <>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm">Next Speaker</span>
+                    <kbd className="px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded text-xs">Enter</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm">Undo Last Action</span>
+                    <kbd className="px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded text-xs">Ctrl+Z</kbd>
+                  </div>
+                </>
+              )}
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm">Show/Hide Shortcuts</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded text-xs">?</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </MeetingContext>
   );
 }

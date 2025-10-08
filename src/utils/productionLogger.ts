@@ -181,3 +181,23 @@ export const logInfo = logger.info.bind(logger);
 export const logDebug = logger.debug.bind(logger);
 export const logPerformance = logger.performance.bind(logger);
 export const logUserAction = logger.userAction.bind(logger);
+
+// Generic logging function that accepts level as string
+export const logProduction = (level: string, data: any): void => {
+  switch (level.toLowerCase()) {
+    case 'error':
+      logger.error(data.error || 'Production error', data);
+      break;
+    case 'warn':
+      logger.warn(data.message || 'Production warning', data);
+      break;
+    case 'info':
+      logger.info(data.message || 'Production info', data);
+      break;
+    case 'debug':
+      logger.debug(data.message || 'Production debug', data);
+      break;
+    default:
+      logger.info(`Production log [${level}]`, data);
+  }
+};

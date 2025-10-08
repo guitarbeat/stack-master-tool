@@ -3,7 +3,13 @@ import useTiltEffect from '@/hooks/use-tilt'
 import { MessageSquare, Users, Leaf, ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
 
 export const HowItWorks = () => {
-  const cardsRef = useTiltEffect()
+  const { setCardRef, handleMouseMove, handleMouseEnter, handleMouseLeave } = useTiltEffect({
+    maxTilt: 10,
+    scale: 1.01,
+    speed: 200,
+    followMouse: true,
+    mouseFollowSmoothness: 0.12
+  })
 
   const steps = [
     {
@@ -46,7 +52,14 @@ export const HowItWorks = () => {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {steps.map((item, index) => (
-          <div key={index} ref={(el) => (cardsRef.current[index] = el)} className="tilt-card group">
+          <div
+            key={index}
+            ref={setCardRef(index)}
+            onMouseMove={handleMouseMove(index)}
+            onMouseEnter={handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave(index)}
+            className="tilt-card group"
+          >
             <ExpandableCard
               className="liquid-glass rounded-2xl sm:rounded-3xl h-full transition-all duration-500 group-hover:scale-105 text-center relative overflow-hidden"
               trigger={

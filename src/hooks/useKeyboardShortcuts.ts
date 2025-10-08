@@ -18,8 +18,10 @@ export const useKeyboardShortcuts = (config: KeyboardShortcutsConfig) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger shortcuts when typing in inputs
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
       switch (e.key) {
         case 'n':
           if (e.ctrlKey || e.metaKey) {

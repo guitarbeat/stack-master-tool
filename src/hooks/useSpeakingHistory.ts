@@ -36,10 +36,12 @@ export const useSpeakingHistory = () => {
   const getSpeakingDistribution = useCallback((includeDirectResponses: boolean = true) => {
     // Aggregate data by participant
     const totals = new Map<string, { name: string; ms: number }>();
-    
+
     // Include finished segments
     for (const seg of speakingHistory) {
-      if (!includeDirectResponses && seg.isDirectResponse) continue;
+      if (!includeDirectResponses && seg.isDirectResponse) {
+        continue;
+      }
       const key = seg.participantId;
       const prev = totals.get(key) || { name: seg.participantName, ms: 0 };
       prev.ms += seg.durationMs;

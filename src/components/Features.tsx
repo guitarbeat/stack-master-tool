@@ -2,7 +2,13 @@ import { Shield, Clock, Users2, Zap, Heart, Globe } from 'lucide-react'
 import useTiltEffect from '@/hooks/use-tilt'
 
 export const Features = () => {
-  const cardsRef = useTiltEffect()
+  const { setCardRef, handleMouseMove, handleMouseEnter, handleMouseLeave } = useTiltEffect({
+    maxTilt: 12,
+    scale: 1.02,
+    speed: 150,
+    followMouse: true,
+    mouseFollowSmoothness: 0.15
+  })
 
   const features = [
     {
@@ -63,7 +69,14 @@ export const Features = () => {
       {/* Features Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {features.map((feature, index) => (
-          <div key={index} ref={(el) => (cardsRef.current[index] = el)} className="tilt-card group">
+          <div
+            key={index}
+            ref={setCardRef(index)}
+            onMouseMove={handleMouseMove(index)}
+            onMouseEnter={handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave(index)}
+            className="tilt-card group"
+          >
             <div className="liquid-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 h-full transition-all duration-500 group-hover:scale-105 relative overflow-hidden">
               {/* Background Decoration */}
               <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 organic-blob opacity-50"></div>

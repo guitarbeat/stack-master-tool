@@ -69,35 +69,41 @@ export const useSpeakerTimer = (): UseSpeakerTimerReturn => {
   }, []);
 
   const pauseTimer = useCallback(() => {
-    if (!speakerTimer) return;
-    
+    if (!speakerTimer) {
+      return;
+    }
+
     const now = Date.now();
     const currentElapsed = now - speakerTimer.startTime.getTime() - (speakerTimer.pausedTime || 0);
-    
+
     setSpeakerTimer(prev => prev ? {
       ...prev,
       isActive: false,
       pausedTime: (prev.pausedTime || 0) + currentElapsed
     } : null);
-    
+
     pausedAtRef.current = now;
   }, [speakerTimer]);
 
   const resumeTimer = useCallback(() => {
-    if (!speakerTimer) return;
-    
+    if (!speakerTimer) {
+      return;
+    }
+
     setSpeakerTimer(prev => prev ? {
       ...prev,
       isActive: true,
       startTime: new Date()
     } : null);
-    
+
     pausedAtRef.current = null;
   }, [speakerTimer]);
 
   const resetTimer = useCallback(() => {
-    if (!speakerTimer) return;
-    
+    if (!speakerTimer) {
+      return;
+    }
+
     setSpeakerTimer(prev => prev ? {
       ...prev,
       startTime: new Date(),
