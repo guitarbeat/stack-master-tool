@@ -27,8 +27,6 @@ interface UseMeetingStateReturn {
   setCurrentParticipantId: (id: string) => void;
   
   // * UI state
-  remoteEnabled: boolean;
-  setRemoteEnabled: (enabled: boolean) => void;
   isLiveMeeting: boolean;
   setIsLiveMeeting: (live: boolean) => void;
   showJohnDoe: boolean;
@@ -72,7 +70,6 @@ export function useMeetingState(): UseMeetingStateReturn {
   const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   
   // * UI state
-  const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
   const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
   const [showJohnDoe, setShowJohnDoe] = useState(true);
   
@@ -162,8 +159,6 @@ export function useMeetingState(): UseMeetingStateReturn {
     setCurrentParticipantId,
     
     // * UI state
-    remoteEnabled,
-    setRemoteEnabled,
     isLiveMeeting,
     setIsLiveMeeting,
     showJohnDoe,

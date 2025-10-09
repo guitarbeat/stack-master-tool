@@ -51,7 +51,6 @@ export default function MeetingRoom() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<AppError | string | null>(null);
   const [codeInput, setCodeInput] = useState<string>("");
-  const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
   const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
   const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   const { user } = useAuth();
@@ -726,8 +725,6 @@ export default function MeetingRoom() {
           <HostSettingsPanel
             isLiveMeeting={isLiveMeeting}
             setIsLiveMeeting={setIsLiveMeeting}
-            remoteEnabled={remoteEnabled}
-            setRemoteEnabled={setRemoteEnabled}
             meetingCode={meetingCode}
             onQrGenerate={(url, type) => {
               setQrUrl(url);
