@@ -181,3 +181,4 @@ capacitor.config.ts
 
 # GitHub workflows (if using different CI/CD)
 .github/
+.vercel

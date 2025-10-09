@@ -903,7 +903,6 @@ export default function MeetingRoom() {
             )}
           </div>
         </div>
-        )}
       </div>
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
         <DialogContent className="max-w-md">
@@ -980,6 +979,7 @@ export default function MeetingRoom() {
           </div>
         </div>
       )}
-    </MeetingContext>
+    </div>
+  </MeetingContext>
   );
 }
