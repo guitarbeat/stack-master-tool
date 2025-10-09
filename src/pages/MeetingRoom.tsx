@@ -13,6 +13,7 @@ import { AddParticipants } from "@/components/features/meeting/AddParticipants";
 import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useToast } from "@/components/shared/ToastProvider";
+import { Toggle } from "@/components/ui/toggle";
 // import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -684,31 +685,31 @@ export default function MeetingRoom() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
-          <div className="bg-muted/30 text-muted-foreground rounded-lg p-4 border border-border/50">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3">
+          <div className="bg-muted/30 text-muted-foreground rounded-lg p-3 border border-border/50 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
               <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                <label className="inline-flex items-center gap-2 text-xs min-h-[44px] sm:min-h-auto">
-                  <input
-                    type="checkbox"
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                <div className="flex items-center gap-3">
+                  <Toggle
                     checked={isLiveMeeting}
-                    onChange={(e) => setIsLiveMeeting(e.target.checked)}
-                    className="w-4 h-4 sm:w-3 sm:h-3"
+                    onCheckedChange={setIsLiveMeeting}
+                    size="sm"
+                    aria-label="Toggle live meeting mode"
                   />
-                  Live Meeting
-                </label>
-                <label className="inline-flex items-center gap-2 text-xs min-h-[44px] sm:min-h-auto">
-                  <input
-                    type="checkbox"
+                  <span className="text-sm font-medium">Live Meeting</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Toggle
                     checked={remoteEnabled}
-                    onChange={(e) => setRemoteEnabled(e.target.checked)}
-                    className="w-4 h-4 sm:w-3 sm:h-3"
+                    onCheckedChange={setRemoteEnabled}
+                    size="sm"
+                    aria-label="Toggle remote joining"
                   />
-                  Enable remote joining
-                </label>
+                  <span className="text-sm font-medium">Enable remote joining</span>
+                </div>
               </div>
             </div>
-            <div className="mb-3 text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
               <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
             </div>
@@ -797,18 +798,18 @@ export default function MeetingRoom() {
             )}
 
             {/* Participant Management - HOST mode only */}
-            <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
-              <div className="mb-6">
-                <h2 className="text-lg font-semibold">Participant Management</h2>
-                <p className="text-sm text-muted-foreground">
+            <div className="bg-card text-card-foreground rounded-xl p-4 shadow-lg border">
+              <div className="mb-4">
+                <h2 className="text-base font-semibold">Participant Management</h2>
+                <p className="text-xs text-muted-foreground">
                   Add, edit, and manage meeting participants
                 </p>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Add Participants */}
                 <div>
-                  <h3 className="text-sm font-medium text-foreground mb-3">Add Participants</h3>
+                  <h3 className="text-sm font-medium text-foreground mb-2">Add Participants</h3>
                   <AddParticipants
                     onAddParticipant={handleAddParticipant}
                     placeholder="Enter participant names (comma or newline separated)"
@@ -834,32 +835,38 @@ export default function MeetingRoom() {
           onLeaveMeeting={() => navigate("/")}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            <SpeakingQueue
-              speakingQueue={serverQueue.map((item, _index) => ({
-                id: item.id,
-                participantName: item.participantName,
-                participantId: item.participantId,
-                isFacilitator: item.isFacilitator,
-                type: item.queueType,
-                timestamp: new Date(item.joinedQueueAt).getTime(),
-              }))}
-              participantName={user?.email ?? "Current User"}
-              onLeaveQueue={handleLeaveQueue}
-              onUpdateParticipantName={handleParticipantNameUpdate}
-              currentUserId={currentParticipantId}
-            />
-            {mode === "join" && (
-              <QueuePositionFeedback
-                queuePosition={1}
-                joinedAt={new Date()}
-                currentSpeaker={currentSpeakerFromQueue}
-                queueHistory={[]}
-              />
-            )}
-          </div>
+        {/* Speaking Queue - Front and Center */}
+        <div className="mb-6">
+          <SpeakingQueue
+            speakingQueue={serverQueue.map((item, _index) => ({
+              id: item.id,
+              participantName: item.participantName,
+              participantId: item.participantId,
+              isFacilitator: item.isFacilitator,
+              type: item.queueType,
+              timestamp: new Date(item.joinedQueueAt).getTime(),
+            }))}
+            participantName={user?.email ?? "Current User"}
+            onLeaveQueue={handleLeaveQueue}
+            onUpdateParticipantName={handleParticipantNameUpdate}
+            currentUserId={currentParticipantId}
+          />
+        </div>
 
+        {/* Queue Position Feedback for participants */}
+        {mode === "join" && (
+          <div className="mb-6">
+            <QueuePositionFeedback
+              queuePosition={1}
+              joinedAt={new Date()}
+              currentSpeaker={currentSpeakerFromQueue}
+              queueHistory={[]}
+            />
+          </div>
+        )}
+
+        {/* Secondary content in a more compact layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-4 sm:space-y-6">
             {/* Actions Panel - only for participants (join mode), not hosts or observers */}
             {mode === "join" && (
@@ -870,7 +877,9 @@ export default function MeetingRoom() {
                 participantName="Current User"
               />
             )}
+          </div>
 
+          <div className="space-y-4 sm:space-y-6">
             {/* Analytics for HOST mode */}
             {mode === "host" && (
               <SpeakingAnalytics
