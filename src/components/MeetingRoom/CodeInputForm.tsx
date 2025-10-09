@@ -56,7 +56,7 @@ export function CodeInputForm({ mode, onError }: CodeInputFormProps) {
                 value={codeInput}
                 onChange={(e) => setCodeInput(e.target.value)}
                 placeholder={placeholder}
-                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus-ring text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
                 aria-label="Meeting code"
                 autoComplete="off"
                 autoCapitalize="characters"

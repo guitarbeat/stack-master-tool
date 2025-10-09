@@ -18,6 +18,7 @@ interface UseMeetingStateReturn {
   mode: MeetingMode | null;
   setMode: (mode: MeetingMode | null) => void;
   isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
   error: AppError | string | null;
   codeInput: string;
   setCodeInput: (code: string) => void;
@@ -27,6 +28,7 @@ interface UseMeetingStateReturn {
   serverMeeting: MeetingWithParticipants | null;
   serverParticipants: SbParticipant[];
   serverQueue: SbQueueItem[];
+  setServerQueue: (queue: SbQueueItem[]) => void;
   currentParticipantId: string;
   setCurrentParticipantId: (id: string) => void;
   
@@ -160,6 +162,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     mode,
     setMode,
     isLoading,
+    setIsLoading,
     error,
     codeInput,
     setCodeInput,
@@ -169,6 +172,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     serverMeeting,
     serverParticipants,
     serverQueue,
+    setServerQueue,
     currentParticipantId,
     setCurrentParticipantId,
     
@@ -202,7 +206,7 @@ export function useMeetingState(): UseMeetingStateReturn {
  * Creates a new meeting and sets up initial state
  */
 async function handleHostMode(
-  user: User,
+  user: User | null,
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,
   setServerMeeting: (meeting: MeetingWithParticipants | null) => void,

@@ -24,7 +24,15 @@ function AppLayout({ children }: AppLayoutProps) {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900 flex flex-col">
+    <>
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900 flex flex-col">
       <header
         className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800"
         role="banner"
@@ -144,7 +152,7 @@ function AppLayout({ children }: AppLayoutProps) {
           </div>
         )}
       </header>
-      <main className="flex-grow" role="main">
+      <main id="main-content" className="flex-grow" role="main">
         {children}
       </main>
       <footer
@@ -165,6 +173,7 @@ function AppLayout({ children }: AppLayoutProps) {
         </div>
       </footer>
     </div>
+    </>
   );
 }
 

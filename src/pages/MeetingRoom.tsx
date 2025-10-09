@@ -50,6 +50,7 @@ export default function MeetingRoom() {
     mode,
     setMode,
     isLoading,
+    setIsLoading,
     error,
     codeInput,
     setCodeInput,
@@ -57,6 +58,7 @@ export default function MeetingRoom() {
     serverMeeting,
     serverParticipants,
     serverQueue,
+    setServerQueue,
     currentParticipantId,
     setCurrentParticipantId,
     isLiveMeeting,
@@ -126,6 +128,32 @@ export default function MeetingRoom() {
         error: error instanceof Error ? error.message : String(error)
       });
       // TODO: Show user-friendly error toast
+    }
+  };
+
+  const handleLeaveQueue = async () => {
+    if (!meetingId || !currentParticipantId) {
+      return;
+    }
+    try {
+      await SupabaseMeetingService.leaveQueue(meetingId, currentParticipantId);
+      showToast({
+        type: 'success',
+        title: 'Left Queue',
+        message: 'You have been removed from the speaking queue.'
+      });
+    } catch (error) {
+      logProduction('error', {
+        action: 'leave_queue',
+        meetingId,
+        participantId: currentParticipantId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to Leave Queue',
+        message: 'There was an error removing you from the queue. Please try again.'
+      });
     }
   };
 
@@ -256,125 +284,7 @@ export default function MeetingRoom() {
     }
   };
 
-  useEffect(() => {
-    // Handle /watch/:code route
-    if (params.code) {
-      setMode("watch");
-      setMeetingCode(params.code);
-    } else {
-      const modeParam = searchParams.get("mode") as MeetingMode;
-      const codeParam = searchParams.get("code");
-
-      if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
-        setError(new AppError(ErrorCode.INVALID_OPERATION, undefined, "Invalid meeting mode. Please use host, join, or watch."));
-        setIsLoading(false);
-        return;
-      }
-
-      setMode(modeParam);
-
-      // For join/watch modes, we need a meeting code; for host mode, code is optional
-      if ((modeParam === "join" || modeParam === "watch") && !codeParam) {
-        // Will show code input form in render logic
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    // Host: create meeting on Supabase, else: fetch by code
-    const bootstrap = async () => {
-      try {
-        const currentMode = params.code ? "watch" : (searchParams.get("mode") as MeetingMode);
-        const currentCode = params.code ?? searchParams.get("code");
-        
-        if (currentMode === "host") {
-          const facilitatorName = user?.email ?? "Facilitator";
-          const created = await SupabaseMeetingService.createMeeting(
-            "New Meeting",
-            facilitatorName,
-          );
-          setMeetingId(created.id);
-          setMeetingCode(created.code);
-          const full = await SupabaseMeetingService.getMeeting(created.code);
-          if (full) {
-            setServerMeeting(full);
-            setServerParticipants(full.participants);
-            setServerQueue(full.speakingQueue);
-          }
-        } else if (currentCode) {
-          try {
-            // Validate meeting code before making API call
-            const validation = validateMeetingCode(currentCode);
-            if (!validation.isValid) {
-              setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code format"));
-              return;
-            }
-
-            const full = await SupabaseMeetingService.getMeeting(validation.normalizedCode);
-            if (!full) {
-              setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${validation.normalizedCode}" not found or inactive. Please check the code and try again.`));
-              return;
-            }
-            setMeetingId(full.id);
-            setMeetingCode(full.code);
-            setServerMeeting(full);
-            setServerParticipants(full.participants);
-            setServerQueue(full.speakingQueue);
-
-            // For JOIN mode, create participant if meeting exists
-            if (currentMode === "join") {
-              try {
-                const participantName = user?.email ?? `Participant-${Date.now()}`;
-                const participant = await SupabaseMeetingService.joinMeeting(
-                  validation.normalizedCode,
-                  participantName,
-                  false // not facilitator
-                );
-                // Store the current participant ID for queue operations
-                setCurrentParticipantId(participant.id);
-                // Add the new participant to the list
-                setServerParticipants(prev => [...prev, participant]);
-              } catch (joinError) {
-                logProduction("error", {
-                  action: "join_meeting_participant",
-                  meetingCode: validation.normalizedCode,
-                  participantName: user?.email ?? `Participant-${Date.now()}`,
-                  error: joinError instanceof Error ? joinError.message : String(joinError)
-                });
-                
-                // Provide more specific error messages based on error type
-                if (joinError instanceof AppError) {
-                  setError(joinError);
-                } else {
-                  setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
-                }
-              }
-            }
-          } catch (fetchError) {
-            logProduction("error", {
-              action: "fetch_meeting",
-              meetingCode: currentCode,
-              mode: currentMode,
-              error: fetchError instanceof Error ? fetchError.message : String(fetchError)
-            });
-            
-            // Provide more specific error messages based on error type
-            if (fetchError instanceof AppError) {
-              setError(fetchError);
-            } else {
-              setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
-            }
-          }
-        }
-      } catch (_e) {
-        setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Failed to connect to meeting."));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void bootstrap();
-  }, [searchParams, user?.email, params.code, setCurrentParticipantId, setError]);
+  // Meeting initialization is handled by useMeetingState hook
 
   // Realtime subscriptions
   useEffect(() => {
@@ -467,7 +377,16 @@ export default function MeetingRoom() {
       <div className="container mx-auto px-4 py-6">
         <ErrorState
           error={error}
-          onRetry={() => navigate("/")}
+          onRetry={() => {
+            // For join/watch modes, clear error and go back to code entry
+            if (mode === "join" || mode === "watch") {
+              setError(null);
+              setCodeInput("");
+              window.history.replaceState(null, "", `/${window.location.pathname.split('/')[1]}?mode=${mode}`);
+            } else {
+              navigate("/");
+            }
+          }}
           showHomeButton={true}
         />
       </div>
@@ -500,7 +419,7 @@ export default function MeetingRoom() {
                 value={codeInput}
                 onChange={(e) => setCodeInput(e.target.value)}
                 placeholder="e.g. 54ANDG"
-                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px]"
+                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus-ring text-base sm:text-sm min-h-[48px]"
                 aria-label="Meeting code"
                 autoComplete="off"
                 autoCapitalize="characters"
@@ -595,7 +514,7 @@ export default function MeetingRoom() {
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value)}
                   placeholder="e.g. 54ANDG"
-                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus-ring text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
                   aria-label="Meeting code"
                   autoComplete="off"
                   autoCapitalize="characters"
