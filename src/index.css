@@ -473,6 +473,20 @@
     backdrop-filter: blur(20px);
   }
 
+  .dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
+
+  .drag-over {
+    border: 2px dashed hsl(var(--primary));
+    background: hsl(var(--primary) / 0.05);
+  }
+
+  .draggable-item {
+    cursor: grab;
+  }
+
   .organic-blob {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     animation: organic-morph 8s ease-in-out infinite;

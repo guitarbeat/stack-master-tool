@@ -1,9 +1,11 @@
+import React from "react";
 import { Hand, MessageCircle, Info, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { getQueueTypeDisplay } from "../../utils/queue";
+import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 
 interface QueueItem {
   id: string;
@@ -20,6 +22,8 @@ interface SpeakingQueueProps {
   onLeaveQueue: () => void;
   onUpdateParticipantName?: (participantId: string, newName: string) => void;
   currentUserId?: string;
+  isFacilitator?: boolean;
+  onReorderQueue?: (dragIndex: number, targetIndex: number) => void;
 }
 
 export const SpeakingQueue = ({
@@ -27,8 +31,11 @@ export const SpeakingQueue = ({
   participantName,
   onLeaveQueue,
   onUpdateParticipantName,
-  currentUserId
+  currentUserId,
+  isFacilitator = false,
+  onReorderQueue
 }: SpeakingQueueProps) => {
+  const { dragIndex, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd, isDragOver } = useDragAndDrop({ isFacilitator });
   if (speakingQueue.length === 0) {
     return (
       <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
@@ -68,16 +75,25 @@ export const SpeakingQueue = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {speakingQueue.map((entry, index) => {
-          const { type, participantName: entryName, participantId, isFacilitator } = entry;
+          const { type, participantName: entryName, participantId, isFacilitator: entryIsFacilitator } = entry;
           const isSelf = entryName === participantName;
           const isDirect = type === 'direct-response';
           const isPointInfo = type === 'point-of-info';
           const isClarify = type === 'clarification';
           const isCurrentSpeaker = index === 0;
+          const canDrag = index !== 0 && (isFacilitator || isSelf);
+          const isDragging = dragIndex === index;
+          const isDragOverItem = isDragOver(index);
           
           return (
             <div
               key={entry.id}
+              draggable={canDrag}
+              onDragStart={() => canDrag && handleDragStart(index)}
+              onDragOver={(e) => canDrag && handleDragOver(e, index)}
+              onDragLeave={handleDragLeave}
+              onDrop={() => canDrag && onReorderQueue && handleDrop(index, onReorderQueue)}
+              onDragEnd={handleDragEnd}
               className={`p-4 rounded-lg border-l-4 transition-all ${
                 isCurrentSpeaker
                   ? 'bg-primary/5 border-primary shadow-sm'
@@ -88,7 +104,11 @@ export const SpeakingQueue = ({
                   : isClarify
                   ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-400'
                   : 'bg-slate-50 dark:bg-slate-700 border-slate-300'
-              } ${isSelf ? 'ring-2 ring-primary/20 bg-primary/5' : ''}`}
+              } ${isSelf ? 'ring-2 ring-primary/20 bg-primary/5' : ''} ${
+                canDrag ? 'draggable-item cursor-grab' : ''
+              } ${isDragging ? 'dragging opacity-50 cursor-grabbing' : ''} ${
+                isDragOverItem ? 'drag-over border-2 border-dashed border-primary bg-primary/5' : ''
+              }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">

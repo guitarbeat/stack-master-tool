@@ -961,6 +961,92 @@ export class SupabaseMeetingService {
   }
 
   /**
+   * * Delete empty rooms older than 1 hour
+   */
+  static async deleteEmptyOldRooms(): Promise<void> {
+    try {
+      // Get meetings that are:
+      // 1. is_active = true
+      // 2. created_at < NOW() - INTERVAL '1 hour'
+      // 3. Have 0 active participants
+      const { data: emptyOldMeetings, error: queryError } = await supabase
+        .from("meetings")
+        .select(`
+          id,
+          created_at,
+          participants!inner(id)
+        `)
+        .eq("is_active", true)
+        .lt("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString())
+        .eq("participants.is_active", false);
+
+      if (queryError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          queryError,
+          "Failed to query empty old meetings",
+        );
+      }
+
+      if (!emptyOldMeetings || emptyOldMeetings.length === 0) {
+        return; // No empty old meetings to delete
+      }
+
+      // Get meetings with 0 active participants
+      const meetingsToDelete = [];
+      for (const meeting of emptyOldMeetings) {
+        const { data: activeParticipants, error: participantError } = await supabase
+          .from("participants")
+          .select("id")
+          .eq("meeting_id", meeting.id)
+          .eq("is_active", true);
+
+        if (participantError) {
+          logProduction("warn", {
+            action: "check_participants_failed",
+            meetingId: meeting.id,
+            error: participantError.message
+          });
+          continue;
+        }
+
+        if (!activeParticipants || activeParticipants.length === 0) {
+          meetingsToDelete.push(meeting.id);
+        }
+      }
+
+      // Delete the empty old meetings
+      if (meetingsToDelete.length > 0) {
+        const { error: deleteError } = await supabase
+          .from("meetings")
+          .delete()
+          .in("id", meetingsToDelete);
+
+        if (deleteError) {
+          throw new AppError(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            deleteError,
+            "Failed to delete empty old meetings",
+          );
+        }
+
+        logProduction("info", {
+          action: "deleted_empty_old_rooms",
+          count: meetingsToDelete.length,
+          meetingIds: meetingsToDelete
+        });
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to delete empty old rooms",
+      );
+    }
+  }
+
+  /**
    * * Delete a meeting (only by facilitator)
    */
   static async deleteMeeting(meetingId: string, facilitatorId: string): Promise<void> {

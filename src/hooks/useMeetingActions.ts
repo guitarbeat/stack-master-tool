@@ -147,19 +147,38 @@ export function useMeetingActions({
    * * Handles reordering items in the speaking queue
    */
   const handleReorderQueue = async (dragIndex: number, targetIndex: number) => {
-    if (!meetingId) {
+    if (!meetingId || !serverQueue) {
       return;
     }
 
     try {
-      // * This would need to be passed from the component since we don't have access to serverQueue here
-      // * For now, we'll leave this as a placeholder that needs to be implemented properly
-      logProduction("error", {
-        action: "reorder_queue",
+      const itemToMove = serverQueue[dragIndex];
+      if (!itemToMove?.id) {
+        logProduction("warn", {
+          action: "reorder_queue_no_item",
+          meetingId,
+          dragIndex,
+          targetIndex
+        });
+        return;
+      }
+
+      // Calculate new position based on target index
+      const newPosition = targetIndex + 1; // positions are 1-based in DB
+
+      await SupabaseMeetingService.reorderQueueItem(
+        meetingId,
+        itemToMove.participant_id,
+        newPosition
+      );
+
+      logProduction("info", {
+        action: "reorder_queue_success",
         meetingId,
         dragIndex,
         targetIndex,
-        error: "Queue reordering not fully implemented in hook"
+        participantId: itemToMove.participant_id,
+        newPosition
       });
     } catch (error) {
       logProduction("error", {

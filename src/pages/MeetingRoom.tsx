@@ -229,7 +229,7 @@ export default function MeetingRoom() {
 
   const { speakerTimer: _speakerTimer, elapsedTime: _elapsedTime, startTimer: _startTimer, stopTimer: _stopTimer, formatTime: _formatTime } = useSpeakerTimer();
   const { speakingHistory, addSpeakingSegment: _addSpeakingSegment, getTotalSpeakingTime: _getTotalSpeakingTime, getSpeakingDistribution } = useSpeakingHistory();
-  const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop();
+  const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop({ isFacilitator: mode === 'host' });
 
 
   const handleUpdateParticipant = async (participantId: string, updates: { name?: string }) => {
@@ -805,6 +805,8 @@ export default function MeetingRoom() {
                 onLeaveQueue={handleLeaveQueue}
                 onUpdateParticipantName={handleParticipantNameUpdate}
                 currentUserId={currentParticipantId}
+                isFacilitator={mode === 'host'}
+                onReorderQueue={handleReorderQueue}
               />
             </div>
             <div>
@@ -862,6 +864,8 @@ export default function MeetingRoom() {
                 onLeaveQueue={() => {}}
                 onUpdateParticipantName={() => {}}
                 currentUserId={null}
+                isFacilitator={false}
+                onReorderQueue={() => {}}
               />
             </div>
             <div>

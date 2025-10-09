@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Users, MessageCircle, Clock, User, Trash2 } from "lucide-react";
 import { SupabaseMeetingService } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
@@ -14,12 +15,15 @@ interface Room {
   meeting_code: string;
   title: string;
   facilitator_name: string;
+  facilitator_id: string | null;
   created_at: string;
   participant_count: number;
 }
 
 export function RoomBrowser() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { showToast } = useToast();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +33,9 @@ export function RoomBrowser() {
 
   const loadActiveRooms = async () => {
     try {
+      // Clean up empty old rooms first
+      await SupabaseMeetingService.deleteEmptyOldRooms();
+
       // Get active meetings
       const meetings = await SupabaseMeetingService.getActiveMeetings();
 
@@ -41,6 +48,7 @@ export function RoomBrowser() {
             meeting_code: meeting.meeting_code,
             title: meeting.title,
             facilitator_name: meeting.facilitator_name,
+            facilitator_id: meeting.facilitator_id,
             created_at: meeting.created_at,
             participant_count: participants.length,
           };
@@ -64,6 +72,42 @@ export function RoomBrowser() {
 
   const handleWatchRoom = (meetingCode: string) => {
     navigate(`/meeting?mode=watch&code=${meetingCode}`);
+  };
+
+  const handleDeleteRoom = async (roomId: string, roomTitle: string) => {
+    if (!user?.id) {
+      showToast({
+        title: "Authentication Required",
+        message: "You must be logged in to delete rooms",
+        type: "error"
+      });
+      return;
+    }
+
+    try {
+      await SupabaseMeetingService.deleteMeeting(roomId, user.id);
+      
+      showToast({
+        title: "Room Deleted",
+        message: `Room "${roomTitle}" has been deleted`,
+        type: "success"
+      });
+
+      // Refresh the room list
+      await loadActiveRooms();
+    } catch (error) {
+      logProduction("error", {
+        action: "delete_room",
+        roomId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      showToast({
+        title: "Failed to Delete Room",
+        message: error instanceof Error ? error.message : "Please try again",
+        type: "error"
+      });
+    }
   };
 
   if (loading) {
@@ -149,6 +193,36 @@ export function RoomBrowser() {
                   >
                     👁️ Watch
                   </Button>
+                  {user?.id === room.facilitator_id && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          aria-label="Delete room"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Room?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the room "{room.title}" and all its data. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteRoom(room.id, room.title)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete Room
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
               </div>
             </CardContent>

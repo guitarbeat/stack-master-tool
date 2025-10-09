@@ -1,5 +1,9 @@
 import { useState, useCallback } from 'react';
 
+interface UseDragAndDropProps {
+  isFacilitator: boolean;
+}
+
 interface UseDragAndDropReturn {
   dragIndex: number | null;
   dragOverIndex: number | null;
@@ -11,7 +15,7 @@ interface UseDragAndDropReturn {
   isDragOver: (index: number) => boolean;
 }
 
-export const useDragAndDrop = (): UseDragAndDropReturn => {
+export const useDragAndDrop = ({ isFacilitator }: UseDragAndDropProps): UseDragAndDropReturn => {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -53,10 +57,17 @@ export const useDragAndDrop = (): UseDragAndDropReturn => {
       return;
     }
 
+    // If not facilitator, only allow moving backwards (targetIndex > dragIndex)
+    if (!isFacilitator && targetIndex <= dragIndex) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
     onReorder(dragIndex, targetIndex);
     setDragIndex(null);
     setDragOverIndex(null);
-  }, [dragIndex]);
+  }, [dragIndex, isFacilitator]);
 
   const handleDragEnd = useCallback(() => {
     setDragIndex(null);
