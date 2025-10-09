@@ -14,7 +14,9 @@ import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useToast } from "@/components/shared/ToastProvider";
 import { Toggle } from "@/components/ui/toggle";
+
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
+
 // import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -28,7 +30,7 @@ import {
   type Participant as SbParticipant,
   type QueueItem as SbQueueItem,
 } from "@/services/supabase";
-// import { validateMeetingCode, validateParticipantName } from "@/utils/meetingValidation";
+import { validateMeetingCode, validateParticipantName } from "@/utils/meetingValidation";
 import { logProduction } from "@/utils/productionLogger";
 import QRCode from "qrcode";
 import {
@@ -70,6 +72,7 @@ export default function MeetingRoom() {
   const [qrUrl, setQrUrl] = useState<string>("");
   const [qrType, setQrType] = useState<'join' | 'watch'>('join');
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [showJohnDoe, setShowJohnDoe] = useState(true); // * Track John Doe visibility
 
   const handleQrScan = (scannedUrl: string) => {
     // For now, QR scanning is not fully implemented
@@ -222,6 +225,17 @@ export default function MeetingRoom() {
       return;
     }
 
+    // * Handle fake John Doe participant (ID "1")
+    if (participantId === "1") {
+      setShowJohnDoe(false);
+      showToast({
+        type: 'success',
+        title: 'Participant Removed',
+        message: 'John Doe has been removed from the meeting'
+      });
+      return;
+    }
+
     try {
       await SupabaseMeetingService.removeParticipant(participantId);
       showToast({
@@ -318,7 +332,7 @@ export default function MeetingRoom() {
       setMeetingCode(params.code);
     } else {
       const modeParam = searchParams.get("mode") as MeetingMode;
-      const _codeParam = searchParams.get("code");
+      const codeParam = searchParams.get("code");
 
       if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
         setError(new AppError(ErrorCode.INVALID_OPERATION, undefined, "Invalid meeting mode. Please use host, join, or watch."));
@@ -328,7 +342,12 @@ export default function MeetingRoom() {
 
       setMode(modeParam);
 
-      // For join/watch modes, we prefer a meeting code; if missing, we'll show a form
+      // For join/watch modes, we need a meeting code; for host mode, code is optional
+      if ((modeParam === "join" || modeParam === "watch") && !codeParam) {
+        // Will show code input form in render logic
+        setIsLoading(false);
+        return;
+      }
     }
 
     // Host: create meeting on Supabase, else: fetch by code
@@ -353,9 +372,16 @@ export default function MeetingRoom() {
           }
         } else if (currentCode) {
           try {
-            const full = await SupabaseMeetingService.getMeeting(currentCode);
+            // Validate meeting code before making API call
+            const validation = validateMeetingCode(currentCode);
+            if (!validation.isValid) {
+              setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code format"));
+              return;
+            }
+
+            const full = await SupabaseMeetingService.getMeeting(validation.normalizedCode);
             if (!full) {
-              setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${currentCode}" not found or inactive. Please check the code and try again.`));
+              setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${validation.normalizedCode}" not found or inactive. Please check the code and try again.`));
               return;
             }
             setMeetingId(full.id);
@@ -369,7 +395,7 @@ export default function MeetingRoom() {
               try {
                 const participantName = user?.email ?? `Participant-${Date.now()}`;
                 const participant = await SupabaseMeetingService.joinMeeting(
-                  currentCode,
+                  validation.normalizedCode,
                   participantName,
                   false // not facilitator
                 );
@@ -380,11 +406,17 @@ export default function MeetingRoom() {
               } catch (joinError) {
                 logProduction("error", {
                   action: "join_meeting_participant",
-                  meetingCode: currentCode,
+                  meetingCode: validation.normalizedCode,
                   participantName: user?.email ?? `Participant-${Date.now()}`,
                   error: joinError instanceof Error ? joinError.message : String(joinError)
                 });
-                setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
+                
+                // Provide more specific error messages based on error type
+                if (joinError instanceof AppError) {
+                  setError(joinError);
+                } else {
+                  setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
+                }
                 return;
               }
             }
@@ -395,7 +427,13 @@ export default function MeetingRoom() {
               mode: currentMode,
               error: fetchError instanceof Error ? fetchError.message : String(fetchError)
             });
-            setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
+            
+            // Provide more specific error messages based on error type
+            if (fetchError instanceof AppError) {
+              setError(fetchError);
+            } else {
+              setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
+            }
             return;
           }
         }
@@ -415,7 +453,13 @@ export default function MeetingRoom() {
       return;
     }
     const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, {
-      onParticipantsUpdated: setServerParticipants,
+      onParticipantsUpdated: (participants) => {
+        setServerParticipants(participants);
+        // * Hide John Doe when real participants join
+        if (participants.length > 0) {
+          setShowJohnDoe(false);
+        }
+      },
       onQueueUpdated: setServerQueue,
       onMeetingTitleUpdated: (title) =>
         setServerMeeting((m) =>
@@ -496,51 +540,36 @@ export default function MeetingRoom() {
   // Join flow with code entry UI when no code provided
   if (mode === "join" && !meetingCode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4 py-8">
-        <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border-0">
-            <div className="text-center mb-6 sm:mb-8">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-slate-100">Join a Meeting</h1>
-              <p className="text-base sm:text-sm text-slate-600 dark:text-slate-400">
-                Enter the 6-character meeting code shared by the host.
-              </p>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const normalized = codeInput.trim().toUpperCase();
-                if (normalized.length < 4) {
-                  return; // simple guard
-                }
-                navigate(`/meeting?mode=join&code=${normalized}`);
-              }}
-              className="space-y-5 sm:space-y-6"
-            >
-              <div className="space-y-3">
-                <input
-                  value={codeInput}
-                  onChange={(e) => setCodeInput(e.target.value)}
-                  placeholder="e.g. 54ANDG"
-                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
-                  aria-label="Meeting code"
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  autoCorrect="off"
-                  spellCheck="false"
-                />
-                <button
-                  type="button"
-                  onClick={() => setScannerOpen(true)}
-                  className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 font-medium hover:bg-slate-200 dark:hover:bg-slate-600 active:bg-slate-300 dark:active:bg-slate-500 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
-                >
-                  📱 Scan QR Code
-                </button>
-              </div>
+      <div className="container mx-auto px-4 py-8 sm:py-10 max-w-xl">
+        <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Join a Meeting</h1>
+          <p className="text-base sm:text-sm text-muted-foreground mb-6 sm:mb-8">
+            Enter the 6-character meeting code shared by the host.
+          </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const validation = validateMeetingCode(codeInput);
+              if (!validation.isValid) {
+                setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+                return;
+              }
+              navigate(`/meeting?mode=join&code=${validation.normalizedCode}`);
+            }}
+            className="space-y-5 sm:space-y-6"
+          >
+            <div className="space-y-3">
+              <input
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+                placeholder="e.g. 54ANDG"
+                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px]"
+                aria-label="Meeting code"
+                autoComplete="off"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck="false"
+              />
               <button
                 type="submit"
                 className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
@@ -578,7 +607,7 @@ export default function MeetingRoom() {
           hasRaisedHand: false,
           joinedAt: new Date(p.joinedAt),
         }))
-    : [
+    : showJohnDoe ? [
         {
           id: "1",
           name: "John Doe",
@@ -586,7 +615,7 @@ export default function MeetingRoom() {
           hasRaisedHand: false,
           joinedAt: new Date(),
         },
-      ];
+      ] : [];
 
   // Determine current speaker from the actual queue (first person in queue)
   const currentSpeakerFromQueue = serverQueue.length > 0 ? {
@@ -615,11 +644,12 @@ export default function MeetingRoom() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const normalized = codeInput.trim().toUpperCase();
-                if (normalized.length < 4) {
-                  return; // simple guard
+                const validation = validateMeetingCode(codeInput);
+                if (!validation.isValid) {
+                  setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+                  return;
                 }
-                navigate(`/meeting?mode=watch&code=${normalized}`);
+                navigate(`/meeting?mode=watch&code=${validation.normalizedCode}`);
               }}
               className="space-y-5 sm:space-y-6"
             >
@@ -695,9 +725,9 @@ export default function MeetingRoom() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
-          <div className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3">
-              <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100">Meeting Settings</h3>
+          <div className="bg-muted/30 text-muted-foreground rounded-lg p-3 border border-border/50 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
+              <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                 <div className="flex items-center gap-3">
                   <Toggle
@@ -719,7 +749,7 @@ export default function MeetingRoom() {
                 </div>
               </div>
             </div>
-            <div className="mb-3 text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
               <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
             </div>
@@ -808,18 +838,18 @@ export default function MeetingRoom() {
             )}
 
             {/* Participant Management - HOST mode only */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border-0">
-              <div className="mb-6">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Participant Management</h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="bg-card text-card-foreground rounded-xl p-4 shadow-lg border">
+              <div className="mb-4">
+                <h2 className="text-base font-semibold">Participant Management</h2>
+                <p className="text-xs text-muted-foreground">
                   Add, edit, and manage meeting participants
                 </p>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Add Participants */}
                 <div>
-                  <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-3">Add Participants</h3>
+                  <h3 className="text-sm font-medium text-foreground mb-2">Add Participants</h3>
                   <AddParticipants
                     onAddParticipant={handleAddParticipant}
                     placeholder="Enter participant names (comma or newline separated)"

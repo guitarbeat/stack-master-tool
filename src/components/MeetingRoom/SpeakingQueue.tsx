@@ -31,15 +31,18 @@ export const SpeakingQueue = ({
 }: SpeakingQueueProps) => {
   if (speakingQueue.length === 0) {
     return (
-      <Card className="bg-card text-card-foreground rounded-2xl p-4 sm:p-6 shadow-lg border">
-        <CardHeader className="pb-3 sm:pb-4">
-          <CardTitle className="text-lg sm:text-xl font-bold text-card-foreground">Speaking Queue</CardTitle>
+      <Card className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-xl border-2 border-primary/20">
+        <CardHeader className="pb-4 sm:pb-6">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-card-foreground flex items-center gap-3">
+            <Hand className="w-6 h-6 text-primary" />
+            Speaking Queue
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 sm:py-8">
-            <Hand className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
-            <p className="text-muted-foreground text-base sm:text-lg">No one in queue</p>
-            <p className="text-sm text-muted-foreground">Raise your hand to speak!</p>
+          <div className="text-center py-8 sm:py-12">
+            <Hand className="w-16 h-16 sm:w-20 sm:h-20 text-primary/60 mx-auto mb-4 sm:mb-6" />
+            <p className="text-muted-foreground text-lg sm:text-xl font-medium mb-2">No one in queue</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Raise your hand to speak!</p>
           </div>
         </CardContent>
       </Card>
@@ -47,9 +50,12 @@ export const SpeakingQueue = ({
   }
 
   return (
-    <Card className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
-      <CardHeader className="pb-3 sm:pb-4">
-        <CardTitle className="text-lg sm:text-xl font-bold text-card-foreground">Speaking Queue</CardTitle>
+    <Card className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl dark:bg-zinc-900 dark:border dark:border-zinc-800 border-2 border-primary/20">
+      <CardHeader className="pb-4 sm:pb-6">
+        <CardTitle className="text-xl sm:text-2xl font-bold text-card-foreground flex items-center gap-3">
+          <Hand className="w-6 h-6 text-primary" />
+          Speaking Queue
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
         {speakingQueue.map((entry, index) => {
