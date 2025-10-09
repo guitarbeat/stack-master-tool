@@ -675,25 +675,7 @@ export default function MeetingRoom() {
   }
 
   return (
-    <MeetingContext
-      meetingData={mockMeetingData}
-      participants={mockParticipants}
-      currentSpeaker={currentSpeakerFromQueue}
-      speakingQueue={[]}
-      userRole={
-        mode === "host"
-          ? "facilitator"
-          : mode === "watch"
-            ? "observer"
-            : "participant"
-      }
-      onAddToQueue={handleJoinQueue}
-      onRemoveFromQueue={handleLeaveQueue}
-      onReorderQueue={handleReorderQueue}
-      onUpdateParticipant={handleUpdateParticipant}
-      onRemoveParticipant={handleRemoveParticipant}
-      onEndMeeting={handleEndMeeting}
-    >
+    <>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
@@ -801,6 +783,7 @@ export default function MeetingRoom() {
                     </button>
                 </div>
               </div>
+              </div>
             )}
             {!isLiveMeeting && (
               <div className="text-xs text-muted-foreground bg-muted/20 p-3 rounded">
@@ -904,40 +887,9 @@ export default function MeetingRoom() {
           </div>
         </div>
       </div>
-      <Dialog open={qrOpen} onOpenChange={setQrOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {qrType === 'join' ? 'Join via QR code' : 'Watch via QR code'}
-            </DialogTitle>
-            <DialogDescription>
-              {qrType === 'join'
-                ? 'Scan this QR code with your phone to join the meeting as a participant.'
-                : 'Scan this QR code with your phone to observe the meeting remotely.'
-              }
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center justify-center py-4">
-            {qrUrl && (
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <img
-                  src={qrUrl}
-                  alt={`${qrType === 'join' ? 'Join' : 'Watch'} QR Code`}
-                  className="w-48 h-48 sm:w-64 sm:h-64"
-                />
-              </div>
-            )}
-          </div>
-          <div className="text-center text-sm text-muted-foreground">
-            {qrType === 'join'
-              ? 'Participants can scan this code to join the speaking queue.'
-              : 'Observers can scan this code to watch the meeting remotely.'
-            }
-          </div>
-        </DialogContent>
-      </Dialog>
 
-      {/* QR Code Scanner */}
+      <>
+        {/* QR Code Scanner */}
       {scannerOpen && (
         <QrCodeScanner
           onScan={handleQrScan}
@@ -979,7 +931,41 @@ export default function MeetingRoom() {
           </div>
         </div>
       )}
-    </div>
-  </MeetingContext>
+
+      {/* QR Code Dialog */}
+      <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {qrType === 'join' ? 'Join via QR code' : 'Watch via QR code'}
+            </DialogTitle>
+            <DialogDescription>
+              {qrType === 'join'
+                ? 'Scan this QR code with your phone to join the meeting as a participant.'
+                : 'Scan this QR code with your phone to observe the meeting remotely.'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-center py-4">
+            {qrUrl && (
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <img
+                  src={qrUrl}
+                  alt={`${qrType === 'join' ? 'Join' : 'Watch'} QR Code`}
+                  className="w-48 h-48 sm:w-64 sm:h-64"
+                />
+              </div>
+            )}
+          </div>
+          <div className="text-center text-sm text-muted-foreground">
+            {qrType === 'join'
+              ? 'Participants can scan this code to join the speaking queue.'
+              : 'Observers can scan this code to watch the meeting remotely.'
+            }
+          </div>
+        </DialogContent>
+      </Dialog>
+      </>
+    </>
   );
 }
