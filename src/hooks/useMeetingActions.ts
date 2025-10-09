@@ -44,10 +44,10 @@ interface UseMeetingActionsReturn {
 export function useMeetingActions({
   meetingId,
   currentParticipantId,
-  mode,
+  _mode,
   setLastSpeaker,
   setShowJohnDoe,
-  setServerParticipants,
+  _setServerParticipants,
 }: UseMeetingActionsProps): UseMeetingActionsReturn {
   const navigate = useNavigate();
   const { showToast } = useToast();

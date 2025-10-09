@@ -26,7 +26,7 @@ export function HostSettingsPanel({
   setIsLiveMeeting,
   meetingCode,
   onQrGenerate,
-  onScannerOpen,
+  _onScannerOpen,
   // * Participant management props
   mockParticipants,
   onAddParticipant,
@@ -77,7 +77,7 @@ export function HostSettingsPanel({
             <button
               className="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100"
               aria-label="Copy join link to clipboard"
-              onClick={() => handleCopyLink('join')}
+              onClick={() => void handleCopyLink('join')}
             >
               Copy
             </button>
@@ -91,7 +91,7 @@ export function HostSettingsPanel({
             <button
               className="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100"
               aria-label="Copy watch link to clipboard"
-              onClick={() => handleCopyLink('watch')}
+              onClick={() => void handleCopyLink('watch')}
             >
               Copy
             </button>
@@ -106,7 +106,7 @@ export function HostSettingsPanel({
                 className="flex-1 py-1.5 px-2 rounded bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-xs font-medium transition-colors"
                 disabled={!meetingCode}
                 aria-label="Generate QR code for joining this meeting"
-                onClick={() => handleGenerateQr('join')}
+                onClick={() => void handleGenerateQr('join')}
               >
                 📱 Join QR
               </button>
@@ -114,7 +114,7 @@ export function HostSettingsPanel({
                 className="flex-1 py-1.5 px-2 rounded bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-xs font-medium transition-colors"
                 disabled={!meetingCode}
                 aria-label="Generate QR code for watching this meeting"
-                onClick={() => handleGenerateQr('watch')}
+                onClick={() => void handleGenerateQr('watch')}
               >
                 👁️ Watch QR
               </button>

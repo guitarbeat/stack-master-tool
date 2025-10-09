@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw, WifiOff, Clock, Shield, XCircle, AlertCircle, Info, AlertOctagon } from 'lucide-react';
 import { AppError, getErrorDisplayInfo, ErrorType } from '../../utils/errorHandling';
+import { getVersionInfo, getCompactVersion } from '../../utils/version';
 
 interface ErrorDisplayProps {
   error: AppError | Error;
@@ -101,21 +102,46 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             </div>
           )}
 
-          {showDetails && error instanceof AppError && (
+          {showDetails && (
             <details className="text-xs opacity-75 mb-3">
               <summary className="cursor-pointer hover:opacity-100 flex items-center">
                 <span>Technical Details</span>
                 <span className="ml-1 text-xs">▼</span>
               </summary>
               <div className="mt-2 space-y-1 bg-black/5 dark:bg-white/5 p-2 rounded">
-                <div><strong>Code:</strong> {error.details.code}</div>
-                <div><strong>Type:</strong> {error.details.type}</div>
-                <div><strong>Severity:</strong> {severity}</div>
-                <div><strong>Retryable:</strong> {isRetryable ? 'Yes' : 'No'}</div>
-                <div><strong>Timestamp:</strong> {new Date(error.details.timestamp).toLocaleString()}</div>
-                {error.details.originalError && (
-                  <div><strong>Original Error:</strong> {error.details.originalError.message}</div>
+                {error instanceof AppError && (
+                  <>
+                    <div><strong>Code:</strong> {error.details.code}</div>
+                    <div><strong>Type:</strong> {error.details.type}</div>
+                    <div><strong>Severity:</strong> {severity}</div>
+                    <div><strong>Retryable:</strong> {isRetryable ? 'Yes' : 'No'}</div>
+                    <div><strong>Timestamp:</strong> {new Date(error.details.timestamp).toLocaleString()}</div>
+                    {error.details.originalError && (
+                      <div><strong>Original Error:</strong> {error.details.originalError.message}</div>
+                    )}
+                    <hr className="my-2 border-gray-300 dark:border-gray-600" />
+                  </>
                 )}
+                {/* Version and build information */}
+                {(() => {
+                  const versionInfo = getVersionInfo();
+                  const buildDate = new Date(versionInfo.buildTime).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  });
+                  return (
+                    <>
+                      <div><strong>Version:</strong> {getCompactVersion()}</div>
+                      <div><strong>Commit:</strong> {versionInfo.gitCommit}</div>
+                      <div><strong>Branch:</strong> {versionInfo.gitBranch}</div>
+                      <div><strong>Build Time:</strong> {buildDate}</div>
+                      <div><strong>Environment:</strong> {versionInfo.environment}</div>
+                    </>
+                  );
+                })()}
               </div>
             </details>
           )}

@@ -140,7 +140,7 @@ export function useMeetingState(): UseMeetingStateReturn {
             setCurrentParticipantId
           );
         }
-      } catch (e) {
+      } catch (_e) {
         setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Failed to connect to meeting."));
       } finally {
         setIsLoading(false);

@@ -284,7 +284,7 @@ export default function MeetingRoom() {
     const bootstrap = async () => {
       try {
         const currentMode = params.code ? "watch" : (searchParams.get("mode") as MeetingMode);
-        const currentCode = params.code || searchParams.get("code");
+        const currentCode = params.code ?? searchParams.get("code");
         
         if (currentMode === "host") {
           const facilitatorName = user?.email ?? "Facilitator";
@@ -305,7 +305,7 @@ export default function MeetingRoom() {
             // Validate meeting code before making API call
             const validation = validateMeetingCode(currentCode);
             if (!validation.isValid) {
-              setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code format"));
+              setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code format"));
               return;
             }
 
@@ -426,11 +426,11 @@ export default function MeetingRoom() {
       void handleBeforeUnload();
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", () => void handleBeforeUnload());
     window.addEventListener("unload", handleUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", () => void handleBeforeUnload());
       window.removeEventListener("unload", handleUnload);
       // Mark as inactive when component unmounts (navigating away)
       if (currentParticipantId && mode === "join") {
@@ -487,7 +487,7 @@ export default function MeetingRoom() {
               e.preventDefault();
               const validation = validateMeetingCode(codeInput);
               if (!validation.isValid) {
-                setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+                setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code"));
                 return;
               }
               navigate(`/meeting?mode=join&code=${validation.normalizedCode}`);
@@ -582,7 +582,7 @@ export default function MeetingRoom() {
                 e.preventDefault();
                 const validation = validateMeetingCode(codeInput);
                 if (!validation.isValid) {
-                  setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+                  setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code"));
                   return;
                 }
                 navigate(`/meeting?mode=watch&code=${validation.normalizedCode}`);

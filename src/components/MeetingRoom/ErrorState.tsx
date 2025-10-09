@@ -35,7 +35,7 @@ export const ErrorState = ({
           await result;
         }
         setIsRetrying(false);
-      } catch (err) {
+      } catch (_err) {
         setIsRetrying(false);
         if (retryCount < maxRetries - 1) {
           setNextRetryIn(Math.min(retryDelay / 1000, 10));
@@ -81,9 +81,9 @@ export const ErrorState = ({
         <div className="mb-6">
           <ErrorDisplay 
             error={appError}
-            onRetry={canRetry ? handleRetry : undefined}
+            onRetry={canRetry ? () => void handleRetry() : undefined}
             onGoHome={showHomeButton ? handleGoHome : undefined}
-            showDetails={false}
+            showDetails={true}
           />
         </div>
 
@@ -92,7 +92,7 @@ export const ErrorState = ({
           <div className="space-y-4">
             {canRetry && (
               <button
-                onClick={handleRetry}
+                onClick={() => void handleRetry()}
                 disabled={isRetrying}
                 className="w-full py-3 sm:py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px] text-base sm:text-sm transition-colors"
               >

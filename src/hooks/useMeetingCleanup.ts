@@ -31,11 +31,11 @@ export function useMeetingCleanup({ currentParticipantId, mode }: UseMeetingClea
       void handleBeforeUnload();
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", () => void handleBeforeUnload());
     window.addEventListener("unload", handleUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", () => void handleBeforeUnload());
       window.removeEventListener("unload", handleUnload);
       // * Mark as inactive when component unmounts (navigating away)
       if (currentParticipantId && mode === "join") {

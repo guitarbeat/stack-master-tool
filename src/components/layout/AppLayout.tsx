@@ -1,8 +1,8 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, UserPlus, Users, Menu, X, Info } from "lucide-react";
+import { Plus, UserPlus, Users, Menu, X } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
-import { getPoweredByString, getCompactVersion, isDevelopment } from "@/utils/version";
+import { getSimplePoweredByString } from "@/utils/version";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -157,23 +157,10 @@ function AppLayout({ children }: AppLayoutProps) {
             alt="ICC2 Logo"
             className="h-12 w-auto object-contain drop-shadow-sm dark:brightness-110"
           />
-          <div className="text-center space-y-2">
+          <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-zinc-400">
-              {getPoweredByString()}
+              {getSimplePoweredByString()}
             </p>
-            {isDevelopment() && (
-              <button
-                onClick={() => {
-                  const details = `Version: ${getCompactVersion()}\nBuilt: ${new Date().toLocaleString()}\nEnvironment: Development`;
-                  alert(details);
-                }}
-                className="text-xs text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 flex items-center gap-1 mx-auto transition-colors"
-                title="Click for version details"
-              >
-                <Info className="w-3 h-3" />
-                Dev Build
-              </button>
-            )}
           </div>
         </div>
       </footer>
