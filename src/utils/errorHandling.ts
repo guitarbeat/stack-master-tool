@@ -1,4 +1,6 @@
 // Error handling utilities and constants
+import { logProduction } from './productionLogger';
+
 export enum ErrorType {
   NETWORK = "NETWORK",
   VALIDATION = "VALIDATION",
@@ -394,7 +396,7 @@ export class AppError extends Error {
 
   constructor(code: ErrorCode, originalError?: Error, customMessage?: string) {
     const errorInfo = ERROR_MESSAGES[code];
-    const message = customMessage || errorInfo.description;
+    const message = customMessage ?? errorInfo.description;
 
     super(message);
     this.name = "AppError";
@@ -404,9 +406,9 @@ export class AppError extends Error {
       code,
       message,
       userMessage: errorInfo.title,
-      action: errorInfo.action || "",
+      action: errorInfo.action ?? "",
       retryable: isRetryableError(code),
-      severity: errorInfo.severity || "medium",
+      severity: errorInfo.severity ?? "medium",
       timestamp: new Date().toISOString(),
     };
 
@@ -539,19 +541,22 @@ export const logError = (error: AppError | Error, context?: string) => {
           originalError: error,
         };
 
-  console.error(`[${timestamp}] ${context ? `[${context}] ` : ""}Error:`, {
-    ...errorInfo,
+  logProduction('error', {
+    action: 'log_error',
+    context,
+    error: error.message,
     stack: error.stack,
+    ...errorInfo
   });
 
   // Track error for monitoring and analytics
   if (typeof window !== "undefined") {
-    import("./errorMonitoring").then(({ trackAndLogError }) => {
+    void import("./errorMonitoring").then(({ trackAndLogError }) => {
       trackAndLogError(error, context);
     });
     
     // Add production logging
-    import("./productionLogger").then(({ logProduction }) => {
+    void import("./productionLogger").then(({ logProduction }) => {
       logProduction('error', {
         error: error.message,
         context,

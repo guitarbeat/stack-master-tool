@@ -10,7 +10,7 @@ interface HostSettingsPanelProps {
   onQrGenerate: (url: string, type: 'join' | 'watch') => void;
   onScannerOpen: () => void;
   // * Participant management props
-  mockParticipants: any[];
+  mockParticipants: Array<{ id: string; name: string; isFacilitator: boolean; hasRaisedHand: boolean; joinedAt: string; isActive: boolean }>;
   onAddParticipant: (name: string) => Promise<void>;
   onUpdateParticipant: (participantId: string, updates: { name?: string }) => Promise<void>;
   onRemoveParticipant: (participantId: string) => Promise<void>;
@@ -34,9 +34,9 @@ export function HostSettingsPanel({
   onRemoveParticipant,
   userRole,
 }: HostSettingsPanelProps) {
-  const handleCopyLink = (type: 'join' | 'watch') => {
+  const handleCopyLink = async (type: 'join' | 'watch') => {
     const link = `${window.location.origin}/meeting?mode=${type}&code=${meetingCode}`;
-    navigator.clipboard.writeText(link);
+    await navigator.clipboard.writeText(link);
   };
 
   const handleGenerateQr = async (type: 'join' | 'watch') => {

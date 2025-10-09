@@ -3,7 +3,7 @@
 // This file provides global type definitions for vitest test utilities
 // It makes describe, it, expect, vi, beforeEach, afterEach, etc. available globally in test files
 
-import type { TestAPI, ExpectStatic, MockInstance } from 'vitest';
+import type { TestAPI, ExpectStatic } from 'vitest';
 
 declare global {
   const describe: TestAPI['describe'];

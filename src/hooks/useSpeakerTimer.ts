@@ -44,7 +44,7 @@ export const useSpeakerTimer = (): UseSpeakerTimerReturn => {
       intervalRef.current = setInterval(() => {
         const now = Date.now();
         const startTime = speakerTimer.startTime.getTime();
-        const pausedTime = speakerTimer.pausedTime || 0;
+        const pausedTime = speakerTimer.pausedTime ?? 0;
         setElapsedTime(now - startTime - pausedTime);
       }, 100);
     }
@@ -74,12 +74,12 @@ export const useSpeakerTimer = (): UseSpeakerTimerReturn => {
     }
 
     const now = Date.now();
-    const currentElapsed = now - speakerTimer.startTime.getTime() - (speakerTimer.pausedTime || 0);
+    const currentElapsed = now - speakerTimer.startTime.getTime() - (speakerTimer.pausedTime ?? 0);
 
     setSpeakerTimer(prev => prev ? {
       ...prev,
       isActive: false,
-      pausedTime: (prev.pausedTime || 0) + currentElapsed
+      pausedTime: (prev.pausedTime ?? 0) + currentElapsed
     } : null);
 
     pausedAtRef.current = now;

@@ -20,7 +20,7 @@ export function CodeInputForm({ mode, onError }: CodeInputFormProps) {
     e.preventDefault();
     const validation = validateMeetingCode(codeInput);
     if (!validation.isValid) {
-      onError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+      onError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code"));
       return;
     }
     navigate(`/meeting?mode=${mode}&code=${validation.normalizedCode}`);

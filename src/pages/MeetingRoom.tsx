@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
-import { MeetingContext } from "@/components/MeetingRoom/MeetingContext";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
@@ -11,7 +10,7 @@ import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFee
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
 import { LoadingState } from "@/components/shared/LoadingState";
-import { useToast } from "@/components/shared/ToastProvider";
+import { useToast } from "@/hooks/use-toast";
 
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 
@@ -26,12 +25,9 @@ import {
   SupabaseMeetingService,
   SupabaseRealtimeService,
   type MeetingWithParticipants,
-  type Participant as SbParticipant,
-  type QueueItem as SbQueueItem,
 } from "@/services/supabase";
-import { validateMeetingCode, validateParticipantName } from "@/utils/meetingValidation";
+import { validateMeetingCode } from "@/utils/meetingValidation";
 import { logProduction } from "@/utils/productionLogger";
-import QRCode from "qrcode";
 import {
   Dialog,
   DialogContent,
@@ -84,7 +80,10 @@ export default function MeetingRoom() {
     // This function provides the framework for when proper QR scanning is added
     // * Log QR scan for debugging in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('QR scan attempted with URL:', scannedUrl);
+      logProduction('info', {
+        action: 'qr_scan_attempted',
+        scannedUrl
+      });
     }
     setScannerOpen(false);
   };
@@ -141,60 +140,6 @@ export default function MeetingRoom() {
   const { speakingHistory, addSpeakingSegment: _addSpeakingSegment, getTotalSpeakingTime: _getTotalSpeakingTime, getSpeakingDistribution } = useSpeakingHistory();
   const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop();
 
-  // Queue management functions
-  const handleJoinQueue = async () => {
-    if (!meetingId || !currentParticipantId) {
-      return;
-    }
-    try {
-      await SupabaseMeetingService.joinQueue(meetingId, currentParticipantId);
-      // The real-time subscription will update the UI
-    } catch (error) {
-      logProduction("error", {
-        action: "join_queue",
-        meetingId,
-        participantId: currentParticipantId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-  };
-
-  const handleLeaveQueue = async () => {
-    if (!meetingId || !currentParticipantId) {
-      return;
-    }
-    try {
-      await SupabaseMeetingService.leaveQueue(meetingId, currentParticipantId);
-      // The real-time subscription will update the UI
-    } catch (error) {
-      logProduction("error", {
-        action: "leave_queue",
-        meetingId,
-        participantId: currentParticipantId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-  };
-
-  const handleReorderQueue = async (dragIndex: number, targetIndex: number) => {
-    if (!meetingId || !serverQueue[dragIndex]) {
-      return;
-    }
-
-    try {
-      const { participantId } = serverQueue[dragIndex];
-      await SupabaseMeetingService.reorderQueueItem(meetingId, participantId, targetIndex + 1);
-      // Real-time subscription will update the UI
-    } catch (error) {
-      logProduction("error", {
-        action: "reorder_queue",
-        meetingId,
-        dragIndex,
-        targetIndex,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-  };
 
   const handleUpdateParticipant = async (participantId: string, updates: { name?: string }) => {
     if (!participantId || !updates.name?.trim()) {
@@ -262,25 +207,6 @@ export default function MeetingRoom() {
     }
   };
 
-  const handleEndMeeting = async () => {
-    if (!meetingId) {
-      return;
-    }
-
-    try {
-      await SupabaseMeetingService.endMeeting(meetingId);
-      // Navigate back to home after ending meeting
-      navigate("/");
-    } catch (error) {
-      logProduction("error", {
-        action: "end_meeting",
-        meetingId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      // Still navigate home even if cleanup fails
-      navigate("/");
-    }
-  };
 
   // Handler for AddParticipants component
   const handleAddParticipant = async (name: string) => {
@@ -421,7 +347,6 @@ export default function MeetingRoom() {
                 } else {
                   setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
                 }
-                return;
               }
             }
           } catch (fetchError) {
@@ -438,7 +363,6 @@ export default function MeetingRoom() {
             } else {
               setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
             }
-            return;
           }
         }
       } catch (_e) {
@@ -449,7 +373,7 @@ export default function MeetingRoom() {
     };
 
     void bootstrap();
-  }, [searchParams, user?.email]);
+  }, [searchParams, user?.email, params.code, setCurrentParticipantId, setError]);
 
   // Realtime subscriptions
   useEffect(() => {
@@ -488,7 +412,11 @@ export default function MeetingRoom() {
         } catch (error) {
           // * Log warning for debugging in development
           if (process.env.NODE_ENV === 'development') {
-            console.warn("Failed to mark participant as inactive:", error);
+            logProduction('warn', {
+              action: 'mark_participant_inactive',
+              participantId: currentParticipantId,
+              error: error instanceof Error ? error.message : String(error)
+            });
           }
         }
       }
@@ -506,15 +434,19 @@ export default function MeetingRoom() {
       window.removeEventListener("unload", handleUnload);
       // Mark as inactive when component unmounts (navigating away)
       if (currentParticipantId && mode === "join") {
-        SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
+        void SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
           // * Log warning for debugging in development
           if (process.env.NODE_ENV === 'development') {
-            console.warn("Failed to mark participant as inactive on unmount:", error);
+            logProduction('warn', {
+              action: 'mark_participant_inactive_unmount',
+              participantId: currentParticipantId,
+              error: error instanceof Error ? error.message : String(error)
+            });
           }
         });
       }
     };
-  }, [currentParticipantId, mode]);
+  }, [currentParticipantId, mode, setShowJohnDoe]);
 
   if (isLoading) {
     return (

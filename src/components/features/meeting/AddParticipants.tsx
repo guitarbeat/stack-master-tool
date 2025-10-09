@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logProduction } from '@/utils/productionLogger';
 
 // TODO: Integrate this component into MeetingRoom for participant management
 
@@ -57,9 +58,11 @@ export function AddParticipants({
       setIsExpanded(false);
     } catch (error) {
       // * Log error for debugging in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error adding participants:', error);
-      }
+      logProduction('error', {
+        action: 'add_participants',
+        error: error instanceof Error ? error.message : String(error),
+        participants: names
+      });
     } finally {
       setIsAdding(false);
     }

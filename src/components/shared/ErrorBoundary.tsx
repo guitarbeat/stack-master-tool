@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { getErrorDisplayInfo, logError } from '../../utils/errorHandling';
+import { logProduction } from '@/utils/productionLogger';
 
 interface Props {
   children: ReactNode;
@@ -23,10 +24,12 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // * Log error for debugging in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
+    logProduction('error', {
+      action: 'error_boundary',
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    });
     logError(error, 'ErrorBoundary');
   }
 
@@ -40,7 +43,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   public override render() {
     if (this.state.hasError) {
-      const errorInfo = getErrorDisplayInfo(this.state.error || new Error('Unknown error'));
+      const errorInfo = getErrorDisplayInfo(this.state.error ?? new Error('Unknown error'));
       
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">

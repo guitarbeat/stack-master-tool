@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 const emailSchema = z.string().trim().email({ message: "Invalid email address" }).max(255);
@@ -16,6 +16,7 @@ const nameSchema = z.string().trim().min(1, { message: "Name is required" }).max
 export default function Auth() {
   const navigate = useNavigate();
   const { signIn, signUp, user } = useAuth();
+  const { showToast } = useToast();
   
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
@@ -38,10 +39,10 @@ export default function Auth() {
       passwordSchema.parse(signInPassword);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
+        showToast({
           title: "Validation Error",
-          description: err.errors[0].message,
-          variant: "destructive",
+          message: err.errors[0].message,
+          type: "error",
         });
         return;
       }
@@ -51,13 +52,13 @@ export default function Auth() {
     const { error } = await signIn(signInEmail, signInPassword);
     
     if (error) {
-      toast({
+      showToast({
         title: "Sign In Failed",
         description: error.message,
         variant: "destructive",
       });
     } else {
-      toast({
+      showToast({
         title: "Welcome back!",
         description: "Successfully signed in.",
       });
@@ -75,10 +76,10 @@ export default function Auth() {
       nameSchema.parse(signUpName);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
+        showToast({
           title: "Validation Error",
-          description: err.errors[0].message,
-          variant: "destructive",
+          message: err.errors[0].message,
+          type: "error",
         });
         return;
       }
@@ -88,13 +89,13 @@ export default function Auth() {
     const { error } = await signUp(signUpEmail, signUpPassword, signUpName);
     
     if (error) {
-      toast({
+      showToast({
         title: "Sign Up Failed",
         description: error.message,
         variant: "destructive",
       });
     } else {
-      toast({
+      showToast({
         title: "Account Created!",
         description: "Please check your email to verify your account.",
       });

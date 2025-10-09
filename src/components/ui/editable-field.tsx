@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit2, Check, X } from "lucide-react";
+import { logProduction } from "@/utils/productionLogger";
 
 interface EditableFieldProps<T = string> {
   value: T;
@@ -48,13 +49,17 @@ export function EditableField<T extends string = string>({
 
     setIsUpdating(true);
     try {
-      await onUpdate(editValue.trim() as T);
+      const result = onUpdate(editValue.trim() as T);
+      if (result && typeof result.then === 'function') {
+        await result;
+      }
       setIsEditing(false);
     } catch (error) {
-      // * Log error for debugging in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error("Failed to update value:", error);
-      }
+      logProduction('error', {
+        action: 'update_field_value',
+        value: editValue,
+        error: error instanceof Error ? error.message : String(error)
+      });
       // Reset to original value on error
       setEditValue(value);
     } finally {

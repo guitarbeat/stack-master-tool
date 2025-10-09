@@ -2,24 +2,25 @@ import { ActionCards } from '@/components/features/homepage/ActionCards'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { LogOut, Users, QrCode, Eye } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
-import { MEETING_MODES } from '@/components/features/homepage/constants'
+import { useToast } from '@/hooks/use-toast'
 
 function HomePage() {
   const { user, signOut } = useAuth()
+  const { showToast } = useToast()
 
   const handleSignOut = async () => {
     const { error } = await signOut()
     if (error) {
-      toast({
+      showToast({
+        type: 'error',
         title: 'Error',
-        description: 'Failed to sign out',
-        variant: 'destructive',
+        message: 'Failed to sign out',
       })
     } else {
-      toast({
+      showToast({
+        type: 'success',
         title: 'Signed out',
-        description: 'Successfully signed out',
+        message: 'Successfully signed out',
       })
     }
   }

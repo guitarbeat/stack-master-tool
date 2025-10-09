@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Edit2, Check, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { logProduction } from '@/utils/productionLogger';
 
 // TODO: Integrate this component into MeetingRoom for inline participant name editing
 
@@ -61,10 +62,12 @@ export function EnhancedEditableParticipantName({
       }
       setIsEditing(false);
     } catch (error) {
-      // * Log error for debugging in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to update participant name:', error);
-      }
+      logProduction('error', {
+        action: 'update_participant_name',
+        participantId,
+        newName: editName,
+        error: error instanceof Error ? error.message : String(error)
+      });
       // Reset to original name on error
       setEditName(currentName);
     } finally {

@@ -43,7 +43,7 @@ export const useSpeakingHistory = () => {
         continue;
       }
       const key = seg.participantId;
-      const prev = totals.get(key) || { name: seg.participantName, ms: 0 };
+      const prev = totals.get(key) ?? { name: seg.participantName, ms: 0 };
       prev.ms += seg.durationMs;
       totals.set(key, prev);
     }

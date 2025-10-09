@@ -12,8 +12,8 @@ interface MeetingHeaderProps {
 }
 
 export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, additionalBadge }: MeetingHeaderProps) => {
-  const copyMeetingCode = () => {
-    navigator.clipboard.writeText(meetingData.code);
+  const copyMeetingCode = async () => {
+    await navigator.clipboard.writeText(meetingData.code);
   };
 
   return (

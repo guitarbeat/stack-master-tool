@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { SupabaseMeetingService } from "@/services/supabase";
+import { logProduction } from "@/utils/productionLogger";
 
 interface UseMeetingCleanupProps {
   currentParticipantId: string;
@@ -17,10 +18,11 @@ export function useMeetingCleanup({ currentParticipantId, mode }: UseMeetingClea
         try {
           await SupabaseMeetingService.leaveMeeting(currentParticipantId);
         } catch (error) {
-          // * Log warning for debugging in development
-          if (process.env.NODE_ENV === 'development') {
-            console.warn("Failed to mark participant as inactive:", error);
-          }
+          logProduction('warn', {
+            action: 'mark_participant_inactive',
+            participantId: currentParticipantId,
+            error: error instanceof Error ? error.message : String(error)
+          });
         }
       }
     };
@@ -37,11 +39,12 @@ export function useMeetingCleanup({ currentParticipantId, mode }: UseMeetingClea
       window.removeEventListener("unload", handleUnload);
       // * Mark as inactive when component unmounts (navigating away)
       if (currentParticipantId && mode === "join") {
-        SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
-          // * Log warning for debugging in development
-          if (process.env.NODE_ENV === 'development') {
-            console.warn("Failed to mark participant as inactive on unmount:", error);
-          }
+        void SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
+          logProduction('warn', {
+            action: 'mark_participant_inactive_unmount',
+            participantId: currentParticipantId,
+            error: error instanceof Error ? error.message : String(error)
+          });
         });
       }
     };

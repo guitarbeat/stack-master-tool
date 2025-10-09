@@ -2,6 +2,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, RefreshCw } from "lucide-react";
+import { logProduction } from "@/utils/productionLogger";
 // Image removed
 
 const NotFound = () => {
@@ -9,13 +10,10 @@ const NotFound = () => {
   const [isWiggling, setIsWiggling] = useState(false);
 
   useEffect(() => {
-    // * Log 404 error for debugging in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error(
-        "404 Error: User attempted to access non-existent route:",
-        location.pathname
-      );
-    }
+    logProduction('warn', {
+      action: '404_error',
+      pathname: location.pathname
+    });
   }, [location.pathname]);
 
   const handleWiggle = () => {

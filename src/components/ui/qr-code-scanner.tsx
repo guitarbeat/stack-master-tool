@@ -34,7 +34,7 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
         setIsScanning(true);
         scanForQrCode();
       }
-    } catch (_err) {
+    } catch {
       setError('Camera access denied or not available. Please enter the meeting code manually.');
       setIsScanning(false);
     }

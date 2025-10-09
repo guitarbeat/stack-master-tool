@@ -12,7 +12,7 @@ interface LogEntry {
   timestamp: string;
   level: LogLevel;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   userId?: string;
   sessionId?: string;
   userAgent?: string;
@@ -39,7 +39,7 @@ class ProductionLogger {
   private formatMessage(
     level: LogLevel,
     message: string,
-    data?: any,
+    data?: Record<string, unknown>,
   ): LogEntry {
     return {
       timestamp: new Date().toISOString(),
@@ -88,7 +88,7 @@ class ProductionLogger {
           : "log";
 
     if (!this.isProduction) {
-      console[logMethod](`[${levelName}] ${entry.message}`, entry.data || "");
+      console[logMethod](`[${levelName}] ${entry.message}`, entry.data ?? "");
     }
 
     // Send to analytics/monitoring service in production
@@ -97,7 +97,7 @@ class ProductionLogger {
       this.isProduction &&
       entry.level >= LogLevel.WARN
     ) {
-      this.sendToAnalytics(entry);
+      void this.sendToAnalytics(entry);
     }
   }
 
@@ -109,7 +109,10 @@ class ProductionLogger {
         // Sentry integration
         // * Log analytics event for debugging in development
         if (process.env.NODE_ENV === 'development') {
-          console.warn("Analytics event:", entry);
+          logProduction('info', {
+            action: 'analytics_event',
+            entry
+          });
         }
       }
 
@@ -123,33 +126,36 @@ class ProductionLogger {
       // Don't log analytics errors to avoid infinite loops
       // * Log analytics error for debugging in development
       if (process.env.NODE_ENV === 'development') {
-        console.error("Failed to send analytics:", error);
+        logProduction('error', {
+          action: 'analytics_send_failed',
+          error: error instanceof Error ? error.message : String(error)
+        });
       }
     }
   }
 
-  debug(message: string, data?: any): void {
+  debug(message: string, data?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       this.log(this.formatMessage(LogLevel.DEBUG, message, data));
     }
   }
 
-  info(message: string, data?: any): void {
+  info(message: string, data?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.INFO)) {
       this.log(this.formatMessage(LogLevel.INFO, message, data));
     }
   }
 
-  warn(message: string, data?: any): void {
+  warn(message: string, data?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.WARN)) {
       this.log(this.formatMessage(LogLevel.WARN, message, data));
     }
   }
 
-  error(message: string, error?: Error | any): void {
+  error(message: string, error?: Error | Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.ERROR)) {
       const entry = this.formatMessage(LogLevel.ERROR, message, {
-        error: error?.message || error,
+        error: error?.message ?? error,
         stack: error?.stack,
         ...error,
       });
@@ -158,17 +164,17 @@ class ProductionLogger {
   }
 
   // Performance monitoring
-  performance(metric: string, value: number, data?: any): void {
+  performance(metric: string, value: number, data?: Record<string, unknown>): void {
     this.info(`Performance: ${metric}`, { value, ...data });
   }
 
   // User action tracking
-  userAction(action: string, data?: any): void {
+  userAction(action: string, data?: Record<string, unknown>): void {
     this.info(`User Action: ${action}`, data);
   }
 
   // Error boundary logging
-  errorBoundary(error: Error, errorInfo: any): void {
+  errorBoundary(error: Error, errorInfo: Record<string, unknown>): void {
     this.error("Error Boundary Caught", {
       error: error.message,
       stack: error.stack,
@@ -189,19 +195,19 @@ export const logPerformance = logger.performance.bind(logger);
 export const logUserAction = logger.userAction.bind(logger);
 
 // Generic logging function that accepts level as string
-export const logProduction = (level: string, data: any): void => {
+export const logProduction = (level: string, data: Record<string, unknown>): void => {
   switch (level.toLowerCase()) {
     case 'error':
-      logger.error(data.error || 'Production error', data);
+      logger.error(data.error ?? 'Production error', data);
       break;
     case 'warn':
-      logger.warn(data.message || 'Production warning', data);
+      logger.warn(data.message ?? 'Production warning', data);
       break;
     case 'info':
-      logger.info(data.message || 'Production info', data);
+      logger.info(data.message ?? 'Production info', data);
       break;
     case 'debug':
-      logger.debug(data.message || 'Production debug', data);
+      logger.debug(data.message ?? 'Production debug', data);
       break;
     default:
       logger.info(`Production log [${level}]`, data);

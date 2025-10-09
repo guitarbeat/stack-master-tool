@@ -1,4 +1,5 @@
 import { AppError, ErrorCode } from "../utils/errorHandling";
+import { logProduction } from "../utils/productionLogger";
 // Use the single, validated client from integrations to avoid duplicate config
 import { supabase } from "@/integrations/supabase/client";
 
@@ -59,7 +60,10 @@ export class SupabaseMeetingService {
         meetingCode = codeData;
       } catch (dbError) {
         // Fallback to client-side generation if database function fails
-        console.warn("Database meeting code generation failed, using fallback:", dbError);
+        logProduction('warn', {
+          action: 'database_meeting_code_generation_failed',
+          error: dbError instanceof Error ? dbError.message : String(dbError)
+        });
         
         // Use the same character set as the database function
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -779,7 +783,11 @@ export class SupabaseMeetingService {
         .eq("meeting_id", meetingId);
 
       if (participantsError) {
-        console.warn("Failed to deactivate participants:", participantsError);
+        logProduction('warn', {
+          action: 'failed_to_deactivate_participants',
+          meetingId,
+          error: participantsError.message
+        });
         // Don't throw here as the meeting is already ended
       }
 
@@ -790,7 +798,11 @@ export class SupabaseMeetingService {
         .eq("meeting_id", meetingId);
 
       if (queueError) {
-        console.warn("Failed to clear speaking queue:", queueError);
+        logProduction('warn', {
+          action: 'failed_to_clear_speaking_queue',
+          meetingId,
+          error: queueError.message
+        });
         // Don't throw here as the meeting is already ended
       }
     } catch (error) {
@@ -816,7 +828,7 @@ export class SupabaseRealtimeService {
       onParticipantJoined: (participant: Participant) => void;
       onParticipantLeft: (participantId: string) => void;
       onNextSpeaker: (speaker: QueueItem) => void;
-      onError: (error: any) => void;
+      onError: (error: Error | unknown) => void;
     },
   ) {
     const participantsChannel = supabase

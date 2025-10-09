@@ -122,7 +122,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     const bootstrap = async () => {
       try {
         const currentMode = params.code ? "watch" : (searchParams.get("mode") as MeetingMode);
-        const currentCode = params.code || searchParams.get("code");
+        const currentCode = params.code ?? searchParams.get("code");
         
         if (currentMode === "host") {
           await handleHostMode(user, setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue);
@@ -148,7 +148,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     };
 
     void bootstrap();
-  }, [searchParams, user?.email, params.code]);
+  }, [searchParams, user?.email, params.code, user]);
 
   return {
     // * Core meeting state
@@ -243,7 +243,7 @@ async function handleJoinOrWatchMode(
     // * Validate meeting code before making API call
     const validation = validateMeetingCode(currentCode);
     if (!validation.isValid) {
-      setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code format"));
+      setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code format"));
       return;
     }
 
@@ -286,7 +286,6 @@ async function handleJoinOrWatchMode(
         } else {
           setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
         }
-        return;
       }
     }
   } catch (fetchError) {
@@ -303,6 +302,5 @@ async function handleJoinOrWatchMode(
     } else {
       setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
     }
-    return;
   }
 }

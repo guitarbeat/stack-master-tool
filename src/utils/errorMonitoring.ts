@@ -1,5 +1,6 @@
 // Error monitoring and analytics utilities
 import { AppError, ErrorType, ErrorCode } from './errorHandling';
+import { logProduction } from './productionLogger';
 
 interface ErrorMetrics {
   totalErrors: number;
@@ -77,9 +78,9 @@ class ErrorMonitor {
         timestamp: error.details.timestamp,
         type,
         code,
-        context: context || '',
+        context: context ?? '',
         message: error.details.message,
-        severity: severity || 'medium',
+        severity: severity ?? 'medium',
         userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
         url: typeof window !== 'undefined' ? window.location.href : ''
       });
@@ -98,7 +99,7 @@ class ErrorMonitor {
         timestamp,
         type: ErrorType.UNKNOWN,
         code: 'UNKNOWN' as ErrorCode,
-        context: context || '',
+        context: context ?? '',
         message: error.message,
         severity: 'medium',
         userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
@@ -204,7 +205,8 @@ class ErrorMonitor {
       // Error data prepared for external service
       // * Log error for debugging in development
       if (process.env.NODE_ENV === 'development') {
-        console.log('Error would be sent to monitoring service:', {
+        logProduction('info', {
+          action: 'error_monitoring_service',
         timestamp: new Date().toISOString(),
         context,
         userAgent: navigator.userAgent,
@@ -230,7 +232,7 @@ class ErrorMonitor {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify(errorData)
-      // }).catch(console.error);
+      // }).catch(error => logProduction('error', { action: 'monitoring_service_error', error: error.message }));
     }
   }
 
@@ -271,10 +273,12 @@ export const errorMonitor = new ErrorMonitor();
 
 // Enhanced error logging function that also tracks metrics
 export const trackAndLogError = (error: AppError | Error, context?: string) => {
-  // * Log to console for debugging in development
-  if (process.env.NODE_ENV === 'development') {
-    console.error(`[${context || 'Unknown'}] Error:`, error);
-  }
+  logProduction('error', {
+    action: 'track_and_log_error',
+    context: context ?? 'Unknown',
+    error: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined
+  });
   
   // Track in metrics
   errorMonitor.trackError(error, context);
@@ -284,7 +288,7 @@ export const trackAndLogError = (error: AppError | Error, context?: string) => {
 };
 
 // Performance monitoring for error-prone operations
-export const withErrorTracking = <T extends any[], R>(
+export const withErrorTracking = <T extends unknown[], R>(
   fn: (...args: T) => R,
   context: string
 ) => {

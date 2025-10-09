@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/shared/ToastProvider";
+import { useToast } from "@/hooks/use-toast";
 import { SupabaseMeetingService, type QueueItem as SbQueueItem } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
 
@@ -10,7 +10,7 @@ interface UseMeetingActionsProps {
   mode: string | null;
   setLastSpeaker: (speaker: SbQueueItem | null) => void;
   setShowJohnDoe: (show: boolean) => void;
-  setServerParticipants: (fn: (prev: any[]) => any[]) => void;
+  setServerParticipants: (fn: (prev: SbQueueItem[]) => SbQueueItem[]) => void;
 }
 
 interface UseMeetingActionsReturn {
@@ -324,10 +324,10 @@ export function useMeetingActions({
   const handleQrScan = (scannedUrl: string) => {
     // * For now, QR scanning is not fully implemented
     // * This function provides the framework for when proper QR scanning is added
-    // * Log QR scan for debugging in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('QR scan attempted with URL:', scannedUrl);
-    }
+    logProduction('info', {
+      action: 'qr_scan_attempted',
+      scannedUrl
+    });
   };
 
   return {
