@@ -55,6 +55,9 @@ export default function MeetingRoom() {
   const { user } = useAuth();
   const { showToast } = useToast();
 
+  // Determine user role based on mode
+  const userRole = mode === "host" ? "facilitator" : mode === "watch" ? "observer" : "participant";
+
   const [serverMeeting, setServerMeeting] =
     useState<MeetingWithParticipants | null>(null);
   const [serverParticipants, setServerParticipants] = useState<SbParticipant[]>(
@@ -400,7 +403,7 @@ export default function MeetingRoom() {
     };
 
     void bootstrap();
-  }, [searchParams, user?.email, currentMode]);
+  }, [searchParams, user?.email]);
 
   // Realtime subscriptions
   useEffect(() => {
