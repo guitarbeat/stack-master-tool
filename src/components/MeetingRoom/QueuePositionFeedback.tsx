@@ -71,7 +71,12 @@ export const QueuePositionFeedback = ({
 
     const updateSpeakerTime = () => {
       const now = new Date();
-      const diff = now.getTime() - currentSpeaker.startedSpeakingAt!.getTime();
+      // * Safe null check instead of non-null assertion
+      if (!currentSpeaker.startedSpeakingAt) {
+        setCurrentSpeakerDuration('');
+        return;
+      }
+      const diff = now.getTime() - currentSpeaker.startedSpeakingAt.getTime();
       const minutes = Math.floor(diff / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
       

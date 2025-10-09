@@ -1,4 +1,4 @@
-import { LogOut, RefreshCw, Wifi, Clock, AlertTriangle } from "lucide-react";
+import { LogOut, RefreshCw, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ErrorDisplay } from "../shared/ErrorDisplay";
 import { AppError, ErrorCode } from "../../utils/errorHandling";
@@ -29,7 +29,11 @@ export const ErrorState = ({
       setIsRetrying(true);
       setRetryCount(prev => prev + 1);
       try {
-        await onRetry();
+        // * Handle both sync and async onRetry functions
+        const result = onRetry();
+        if (result && typeof result.then === 'function') {
+          await result;
+        }
         setIsRetrying(false);
       } catch (err) {
         setIsRetrying(false);
@@ -62,7 +66,7 @@ export const ErrorState = ({
       }, 1000);
       return () => clearTimeout(timer);
     } else if (nextRetryIn === 0 && retryCount < maxRetries) {
-      handleRetry();
+      void handleRetry();
     }
   }, [nextRetryIn, retryCount, maxRetries, handleRetry]);
 

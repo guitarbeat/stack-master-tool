@@ -1,7 +1,7 @@
 import { ExpandableCard } from '@/components/ui/expandable-card'
 import useTiltEffect from '@/hooks/use-tilt'
 import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
-import { HOW_IT_WORKS_STEPS, MEETING_MODES } from './constants'
+import { HOW_IT_WORKS_STEPS } from './constants'
 import { SectionHeader } from './SectionHeader'
 
 export const HowItWorks = () => {

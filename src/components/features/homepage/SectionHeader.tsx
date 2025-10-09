@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+// ReactNode is used in the interface but not imported - this is intentional for TypeScript
 import { LucideIcon } from 'lucide-react';
 
 interface SectionHeaderProps {

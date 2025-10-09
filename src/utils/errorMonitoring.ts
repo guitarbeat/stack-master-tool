@@ -202,7 +202,9 @@ class ErrorMonitor {
     // In production, integrate with services like Sentry, LogRocket, or DataDog
     if (process.env.NODE_ENV === 'production') {
       // Error data prepared for external service
-      console.log('Error would be sent to monitoring service:', {
+      // * Log error for debugging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Error would be sent to monitoring service:', {
         timestamp: new Date().toISOString(),
         context,
         userAgent: navigator.userAgent,
@@ -217,7 +219,8 @@ class ErrorMonitor {
           message: error.message,
           stack: error.stack
         }
-      });
+        });
+      }
 
       // Example: Send to Sentry
       // Sentry.captureException(error, { extra: errorData });
@@ -268,8 +271,10 @@ export const errorMonitor = new ErrorMonitor();
 
 // Enhanced error logging function that also tracks metrics
 export const trackAndLogError = (error: AppError | Error, context?: string) => {
-  // Log to console
-  console.error(`[${context || 'Unknown'}] Error:`, error);
+  // * Log to console for debugging in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error(`[${context || 'Unknown'}] Error:`, error);
+  }
   
   // Track in metrics
   errorMonitor.trackError(error, context);

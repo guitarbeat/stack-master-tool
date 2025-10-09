@@ -51,7 +51,10 @@ export function EditableField<T extends string = string>({
       await onUpdate(editValue.trim() as T);
       setIsEditing(false);
     } catch (error) {
-      console.error("Failed to update value:", error);
+      // * Log error for debugging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Failed to update value:", error);
+      }
       // Reset to original value on error
       setEditValue(value);
     } finally {
