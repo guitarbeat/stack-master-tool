@@ -1,8 +1,9 @@
 import { ActionCards } from '@/components/features/homepage/ActionCards'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
-import { LogOut } from 'lucide-react'
+import { LogOut, Users, QrCode, Eye } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
+import { MEETING_MODES } from '@/components/features/homepage/constants'
 
 function HomePage() {
   const { user, signOut } = useAuth()
@@ -38,11 +39,34 @@ function HomePage() {
       )}
 
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold mb-4">Stack Master Tool</h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Democratic meeting facilitation with organized speaking queues
+        {/* * Consolidated Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
+            Stack Master Tool
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+            Democratic meeting facilitation with organized speaking queues. 
+            Choose your role to participate in fair, structured discussions.
           </p>
+          
+          {/* * Mode Overview - Simplified */}
+          <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base mb-12">
+            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+              <Users className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-primary">HOST</span>
+              <span className="text-muted-foreground">Facilitate & Control</span>
+            </div>
+            <div className="flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full">
+              <QrCode className="w-4 h-4 text-accent" />
+              <span className="font-semibold text-accent">JOIN</span>
+              <span className="text-muted-foreground">Participate & Speak</span>
+            </div>
+            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+              <Eye className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-primary">WATCH</span>
+              <span className="text-muted-foreground">Observe & Display</span>
+            </div>
+          </div>
         </div>
 
         <ActionCards />
