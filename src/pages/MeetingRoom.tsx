@@ -605,22 +605,44 @@ export default function MeetingRoom() {
           onLeaveMeeting={() => navigate("/")}
         />
 
-        {/* Speaking Queue - Front and Center */}
-        <div className="mb-6">
-          <SpeakingQueue
-            speakingQueue={serverQueue.map((item, _index) => ({
-              id: item.id,
-              participantName: item.participantName,
-              participantId: item.participantId,
-              isFacilitator: item.isFacilitator,
-              type: item.queueType,
-              timestamp: new Date(item.joinedQueueAt).getTime(),
-            }))}
-            participantName={user?.email ?? "Current User"}
-            onLeaveQueue={handleLeaveQueue}
-            onUpdateParticipantName={handleParticipantNameUpdate}
-            currentUserId={currentParticipantId}
-          />
+        {/* Main Content - Speaking Queue and Analytics Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Speaking Queue */}
+          <div>
+            <SpeakingQueue
+              speakingQueue={serverQueue.map((item, _index) => ({
+                id: item.id,
+                participantName: item.participantName,
+                participantId: item.participantId,
+                isFacilitator: item.isFacilitator,
+                type: item.queueType,
+                timestamp: new Date(item.joinedQueueAt).getTime(),
+              }))}
+              participantName={user?.email ?? "Current User"}
+              onLeaveQueue={handleLeaveQueue}
+              onUpdateParticipantName={handleParticipantNameUpdate}
+              currentUserId={currentParticipantId}
+            />
+          </div>
+
+          {/* Meeting Analytics */}
+          <div>
+            <SpeakingAnalytics
+              speakingDistribution={getSpeakingDistribution()}
+              totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+              averageSpeakingTime={
+                speakingHistory.length > 0
+                  ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                  : 0
+              }
+              meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+              totalParticipants={mockParticipants.length}
+              queueActivity={speakingHistory.length}
+              directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+              currentSpeaker={currentSpeakerFromQueue}
+              isHostMode={mode === "host"}
+            />
+          </div>
         </div>
 
         {/* Queue Position Feedback for participants */}
@@ -650,24 +672,7 @@ export default function MeetingRoom() {
           </div>
 
           <div className="space-y-4 sm:space-y-6">
-            {/* Analytics for HOST mode */}
-            {mode === "host" && (
-              <SpeakingAnalytics
-                speakingDistribution={getSpeakingDistribution()}
-                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
-                averageSpeakingTime={
-                  speakingHistory.length > 0
-                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
-                    : 0
-                }
-                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
-                totalParticipants={mockParticipants.length}
-                queueActivity={speakingHistory.length}
-                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue}
-                isHostMode={true}
-              />
-            )}
+            {/* Additional content can go here if needed */}
           </div>
         </div>
       </div>
