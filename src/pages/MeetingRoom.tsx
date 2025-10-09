@@ -69,6 +69,7 @@ export default function MeetingRoom() {
   const [qrUrl, setQrUrl] = useState<string>("");
   const [qrType, setQrType] = useState<'join' | 'watch'>('join');
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [showJohnDoe, setShowJohnDoe] = useState(true); // * Track John Doe visibility
 
   const handleQrScan = (scannedUrl: string) => {
     // For now, QR scanning is not fully implemented
@@ -218,6 +219,17 @@ export default function MeetingRoom() {
 
   const handleRemoveParticipant = async (participantId: string) => {
     if (!participantId) {
+      return;
+    }
+
+    // * Handle fake John Doe participant (ID "1")
+    if (participantId === "1") {
+      setShowJohnDoe(false);
+      showToast({
+        type: 'success',
+        title: 'Participant Removed',
+        message: 'John Doe has been removed from the meeting'
+      });
       return;
     }
 
@@ -414,7 +426,13 @@ export default function MeetingRoom() {
       return;
     }
     const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, {
-      onParticipantsUpdated: setServerParticipants,
+      onParticipantsUpdated: (participants) => {
+        setServerParticipants(participants);
+        // * Hide John Doe when real participants join
+        if (participants.length > 0) {
+          setShowJohnDoe(false);
+        }
+      },
       onQueueUpdated: setServerQueue,
       onMeetingTitleUpdated: (title) =>
         setServerMeeting((m) =>
@@ -568,7 +586,7 @@ export default function MeetingRoom() {
           hasRaisedHand: false,
           joinedAt: new Date(p.joinedAt),
         }))
-    : [
+    : showJohnDoe ? [
         {
           id: "1",
           name: "John Doe",
@@ -576,7 +594,7 @@ export default function MeetingRoom() {
           hasRaisedHand: false,
           joinedAt: new Date(),
         },
-      ];
+      ] : [];
 
   // Determine current speaker from the actual queue (first person in queue)
   const currentSpeakerFromQueue = serverQueue.length > 0 ? {
