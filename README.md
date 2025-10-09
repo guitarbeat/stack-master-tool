@@ -17,6 +17,36 @@ pnpm dev
 pnpm build:prod
 ```
 
+## 📊 Version Information
+
+The application includes automated version tracking powered by Aaron's Love ❤️
+
+**Current Version:**
+```bash
+# Check current version info
+node scripts/update-version.js
+```
+
+**Version Display:**
+- **Footer**: Shows fun, randomized "Powered by Aaron's Love" messages
+- **Dev Mode**: Click "Dev Build" for detailed version information
+- **Production**: Clean, professional version display
+
+**Build-time Information:**
+- Package version from `package.json`
+- Git commit hash and branch
+- Build timestamp
+- Environment detection
+
+**Version Management:**
+```bash
+# Bump version (updates package.json, creates git commit and tag)
+npm version 1.1.0
+
+# Or use the custom script
+node scripts/update-version.js 1.1.0
+```
+
 ## 📁 Project Structure
 
 ```

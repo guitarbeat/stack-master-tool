@@ -45,6 +45,7 @@
     "test:dev:coverage": "node scripts/test-runner.js coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "version": "node scripts/update-version.js",
     "prepare": "husky",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .build/dist node_modules/.vite coverage .reports/test-results .reports/playwright-report *.log",
