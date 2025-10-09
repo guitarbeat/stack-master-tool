@@ -6,19 +6,19 @@ import { cn } from '@/lib/utils';
 
 // TODO: Integrate this component into MeetingRoom for participant management
 
-interface QuickAddParticipantProps {
+interface AddParticipantsProps {
   onAddParticipant: (name: string) => void;
   disabled?: boolean;
   placeholder?: string;
   className?: string;
 }
 
-export function QuickAddParticipant({
+export function AddParticipants({
   onAddParticipant,
   disabled = false,
   placeholder = "Add participant...",
   className
-}: QuickAddParticipantProps) {
+}: AddParticipantsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -91,10 +91,10 @@ export function QuickAddParticipant({
           "transition-all duration-200 hover:scale-105 min-h-[44px] text-sm sm:text-xs px-3 sm:px-2",
           className
         )}
-        data-quick-add-trigger
+        data-add-participants-trigger
       >
         <Plus className="w-4 h-4 sm:w-3 sm:h-3 mr-2" />
-        Quick Add
+        Add Participants
       </Button>
     );
   }
