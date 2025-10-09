@@ -598,6 +598,46 @@ export class SupabaseMeetingService {
     }
   }
 
+  // Remove participant from meeting (facilitator only)
+  static async removeParticipant(participantId: string): Promise<void> {
+    try {
+      // First, remove from speaking queue if they're in it
+      const { error: queueError } = await supabase
+        .from("speaking_queue")
+        .delete()
+        .eq("participant_id", participantId);
+
+      if (queueError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          queueError,
+          "Failed to remove participant from queue",
+        );
+      }
+
+      // Then remove the participant
+      const { error } = await supabase
+        .from("participants")
+        .delete()
+        .eq("id", participantId);
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to remove participant",
+        );
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to remove participant",
+      );
+    }
+  }
+
   // End meeting (mark as inactive and clean up)
   static async leaveMeeting(participantId: string): Promise<void> {
     try {

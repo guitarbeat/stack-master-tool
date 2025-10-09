@@ -10,6 +10,9 @@ import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFee
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
 import { QuickAddParticipant } from "@/components/features/meeting/QuickAddParticipant";
+import { ParticipantList } from "@/components/features/meeting/ParticipantList";
+import { LoadingState } from "@/components/shared/LoadingState";
+import { useToast } from "@/components/shared/ToastProvider";
 // import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -50,6 +53,7 @@ export default function MeetingRoom() {
   const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
   const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const [serverMeeting, setServerMeeting] =
     useState<MeetingWithParticipants | null>(null);
@@ -187,6 +191,11 @@ export default function MeetingRoom() {
 
     try {
       await SupabaseMeetingService.updateParticipantName(participantId, updates.name.trim());
+      showToast({
+        type: 'success',
+        title: 'Name Updated',
+        message: `Participant name updated to ${updates.name.trim()}`
+      });
       // Real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
@@ -194,6 +203,38 @@ export default function MeetingRoom() {
         participantId,
         updates,
         error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to Update Name',
+        message: 'Please try again or check your connection'
+      });
+    }
+  };
+
+  const handleRemoveParticipant = async (participantId: string) => {
+    if (!participantId) {
+      return;
+    }
+
+    try {
+      await SupabaseMeetingService.removeParticipant(participantId);
+      showToast({
+        type: 'success',
+        title: 'Participant Removed',
+        message: 'Participant has been removed from the meeting'
+      });
+      // Real-time subscription will update the UI
+    } catch (error) {
+      logProduction("error", {
+        action: "remove_participant",
+        participantId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to Remove Participant',
+        message: 'Please try again or check your connection'
       });
     }
   };
@@ -226,6 +267,11 @@ export default function MeetingRoom() {
 
     try {
       await SupabaseMeetingService.joinMeeting(meetingId, name, false);
+      showToast({
+        type: 'success',
+        title: 'Participant Added',
+        message: `${name} has been added to the meeting`
+      });
       // Real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
@@ -234,7 +280,11 @@ export default function MeetingRoom() {
         participantName: name,
         error: error instanceof Error ? error.message : String(error)
       });
-      // TODO: Show user-friendly error toast
+      showToast({
+        type: 'error',
+        title: 'Failed to Add Participant',
+        message: 'Please try again or check your connection'
+      });
     }
   };
 
@@ -415,8 +465,10 @@ export default function MeetingRoom() {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading meeting...</p>
+          <LoadingState 
+            message="Loading meeting..." 
+            size="lg"
+          />
         </div>
       </div>
     );
@@ -639,30 +691,31 @@ export default function MeetingRoom() {
       onRemoveFromQueue={handleLeaveQueue}
       onReorderQueue={handleReorderQueue}
       onUpdateParticipant={handleUpdateParticipant}
+      onRemoveParticipant={handleRemoveParticipant}
       onEndMeeting={handleEndMeeting}
     >
-      <div className="container mx-auto px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
           <div className="bg-muted/30 text-muted-foreground rounded-lg p-4 border border-border/50">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3">
               <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
-              <div className="flex items-center gap-4">
-                <label className="inline-flex items-center gap-2 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <label className="inline-flex items-center gap-2 text-xs min-h-[44px] sm:min-h-auto">
                   <input
                     type="checkbox"
                     checked={isLiveMeeting}
                     onChange={(e) => setIsLiveMeeting(e.target.checked)}
-                    className="w-3 h-3"
+                    className="w-4 h-4 sm:w-3 sm:h-3"
                   />
                   Live Meeting
                 </label>
-                <label className="inline-flex items-center gap-2 text-xs">
+                <label className="inline-flex items-center gap-2 text-xs min-h-[44px] sm:min-h-auto">
                   <input
                     type="checkbox"
                     checked={remoteEnabled}
                     onChange={(e) => setRemoteEnabled(e.target.checked)}
-                    className="w-3 h-3"
+                    className="w-4 h-4 sm:w-3 sm:h-3"
                   />
                   Enable remote joining
                 </label>
@@ -755,19 +808,34 @@ export default function MeetingRoom() {
               </div>
             )}
 
-            {/* Quick Add Participant Component - HOST mode only */}
+            {/* Participant Management - HOST mode only */}
             <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold">Add Participants</h2>
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold">Participant Management</h2>
                 <p className="text-sm text-muted-foreground">
-                  Quickly add multiple participants to the meeting
+                  Add, edit, and manage meeting participants
                 </p>
               </div>
-              <QuickAddParticipant
-                onAddParticipant={handleQuickAddParticipant}
-                placeholder="Enter participant names (comma or newline separated)"
-                className="w-full"
-              />
+              
+              <div className="space-y-6">
+                {/* Add Participants */}
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-3">Add Participants</h3>
+                  <QuickAddParticipant
+                    onAddParticipant={handleQuickAddParticipant}
+                    placeholder="Enter participant names (comma or newline separated)"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Participant List */}
+                <ParticipantList
+                  participants={mockParticipants}
+                  onUpdateParticipant={handleUpdateParticipant}
+                  onRemoveParticipant={handleRemoveParticipant}
+                  userRole={userRole}
+                />
+              </div>
             </div>
           </div>
         )}

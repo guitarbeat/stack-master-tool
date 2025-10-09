@@ -31,6 +31,7 @@ interface MeetingContextProps {
   onRemoveFromQueue?: () => void;
   onReorderQueue?: () => void;
   onUpdateParticipant?: () => void;
+  onRemoveParticipant?: (participantId: string) => void;
   onEndMeeting?: () => void;
   children: React.ReactNode;
 }
