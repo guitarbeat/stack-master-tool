@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build:prod && cp -r ./.build/dist .",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build:prod",
+  "outputDirectory": ".build/dist",
   "framework": "vite",
   "rewrites": [
     {

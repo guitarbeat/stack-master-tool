@@ -844,19 +844,21 @@ export class SupabaseRealtimeService {
         async (payload) => {
           try {
             const meeting = await SupabaseMeetingService.getMeeting(meetingId);
-            if (meeting) {
+            if (meeting && callbacks.onParticipantsUpdated) {
               callbacks.onParticipantsUpdated(meeting.participants);
 
-              if (payload.eventType === "INSERT") {
+              if (payload.eventType === "INSERT" && callbacks.onParticipantJoined) {
                 callbacks.onParticipantJoined(
                   meeting.participants[meeting.participants.length - 1],
                 );
-              } else if (payload.eventType === "DELETE") {
+              } else if (payload.eventType === "DELETE" && callbacks.onParticipantLeft) {
                 callbacks.onParticipantLeft(payload.old.id);
               }
             }
           } catch (error) {
-            callbacks.onError(error);
+            if (callbacks.onError) {
+              callbacks.onError(error);
+            }
           }
         },
       );
@@ -872,11 +874,13 @@ export class SupabaseRealtimeService {
       async (_payload) => {
         try {
           const meeting = await SupabaseMeetingService.getMeeting(meetingId);
-          if (meeting) {
+          if (meeting && callbacks.onQueueUpdated) {
             callbacks.onQueueUpdated(meeting.speakingQueue);
           }
         } catch (error) {
-          callbacks.onError(error);
+          if (callbacks.onError) {
+            callbacks.onError(error);
+          }
         }
       },
     );
@@ -891,11 +895,13 @@ export class SupabaseRealtimeService {
       },
       async (payload) => {
         try {
-          if (payload.new.title !== payload.old.title) {
+          if (payload.new.title !== payload.old.title && callbacks.onMeetingTitleUpdated) {
             callbacks.onMeetingTitleUpdated(payload.new.title);
           }
         } catch (error) {
-          callbacks.onError(error);
+          if (callbacks.onError) {
+            callbacks.onError(error);
+          }
         }
       },
     );
