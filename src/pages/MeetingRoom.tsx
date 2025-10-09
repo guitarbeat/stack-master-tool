@@ -606,7 +606,7 @@ export default function MeetingRoom() {
         />
 
         {/* Main Content - Speaking Queue and Analytics Side by Side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className={`grid gap-6 mb-6 ${mode === "host" ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}>
           {/* Speaking Queue */}
           <div>
             <SpeakingQueue
@@ -625,24 +625,26 @@ export default function MeetingRoom() {
             />
           </div>
 
-          {/* Meeting Analytics */}
-          <div>
-            <SpeakingAnalytics
-              speakingDistribution={getSpeakingDistribution()}
-              totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
-              averageSpeakingTime={
-                speakingHistory.length > 0
-                  ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
-                  : 0
-              }
-              meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
-              totalParticipants={mockParticipants.length}
-              queueActivity={speakingHistory.length}
-              directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-              currentSpeaker={currentSpeakerFromQueue}
-              isHostMode={mode === "host"}
-            />
-          </div>
+          {/* Meeting Analytics - Only visible in host mode */}
+          {mode === "host" && (
+            <div>
+              <SpeakingAnalytics
+                speakingDistribution={getSpeakingDistribution()}
+                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+                averageSpeakingTime={
+                  speakingHistory.length > 0
+                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                    : 0
+                }
+                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+                totalParticipants={mockParticipants.length}
+                queueActivity={speakingHistory.length}
+                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+                currentSpeaker={currentSpeakerFromQueue}
+                isHostMode={mode === "host"}
+              />
+            </div>
+          )}
         </div>
 
         {/* Queue Position Feedback for participants */}

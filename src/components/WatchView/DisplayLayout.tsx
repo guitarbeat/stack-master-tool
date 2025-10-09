@@ -167,8 +167,8 @@ export const DisplayLayout: React.FC<DisplayLayoutProps> = ({
               </CardContent>
             </Card>
 
-            {/* Speaking Analytics */}
-            {speakingDistribution.length > 0 && (
+            {/* Speaking Analytics - Hidden in watch mode */}
+            {false && speakingDistribution.length > 0 && (
               <SpeakingAnalytics
                 speakingDistribution={speakingDistribution}
                 totalSpeakingTime={totalSpeakingTime}
