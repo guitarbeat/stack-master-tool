@@ -11,7 +11,7 @@ interface EnhancedEditableParticipantNameProps {
   participantId: string;
   currentName: string;
   isFacilitator: boolean;
-  onNameUpdate: (participantId: string, newName: string) => void;
+  onNameUpdate: (participantId: string, newName: string) => void | Promise<void>;
   disabled?: boolean;
   className?: string;
 }

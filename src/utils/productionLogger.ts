@@ -88,6 +88,7 @@ class ProductionLogger {
           : "log";
 
     if (!this.isProduction) {
+      // eslint-disable-next-line no-console
       console[logMethod](`[${levelName}] ${entry.message}`, entry.data ?? "");
     }
 

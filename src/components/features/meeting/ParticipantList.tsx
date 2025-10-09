@@ -13,8 +13,8 @@ interface Participant {
 
 interface ParticipantListProps {
   participants: Participant[];
-  onUpdateParticipant: (participantId: string, updates: { name?: string }) => void;
-  onRemoveParticipant: (participantId: string) => void;
+  onUpdateParticipant: (participantId: string, updates: { name?: string }) => void | Promise<void>;
+  onRemoveParticipant: (participantId: string) => void | Promise<void>;
   userRole?: string;
   className?: string;
 }

@@ -69,7 +69,7 @@ export function EditableField<T extends string = string>({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSaveEdit();
+      void handleSaveEdit();
     } else if (e.key === "Escape") {
       handleCancelEdit();
     }

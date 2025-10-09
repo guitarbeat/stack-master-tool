@@ -401,7 +401,7 @@ export default function MeetingRoom() {
     return () => {
       unsubscribe?.();
     };
-  }, [meetingId]);
+  }, [meetingId, setShowJohnDoe]);
 
   // Cleanup: Mark participant as inactive when leaving
   useEffect(() => {

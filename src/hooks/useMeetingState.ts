@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { User } from "@supabase/supabase-js";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { validateMeetingCode } from "@/utils/meetingValidation";
 import { SupabaseMeetingService, type MeetingWithParticipants, type Participant as SbParticipant, type QueueItem as SbQueueItem } from "@/services/supabase";
@@ -201,7 +202,7 @@ export function useMeetingState(): UseMeetingStateReturn {
  * Creates a new meeting and sets up initial state
  */
 async function handleHostMode(
-  user: any,
+  user: User,
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,
   setServerMeeting: (meeting: MeetingWithParticipants | null) => void,
@@ -230,7 +231,7 @@ async function handleHostMode(
 async function handleJoinOrWatchMode(
   currentMode: MeetingMode,
   currentCode: string,
-  user: any,
+  user: User | null,
   setError: (error: AppError | string | null) => void,
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,

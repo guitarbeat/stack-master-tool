@@ -8,7 +8,7 @@ import { logProduction } from '@/utils/productionLogger';
 // TODO: Integrate this component into MeetingRoom for participant management
 
 interface AddParticipantsProps {
-  onAddParticipant: (name: string) => void;
+  onAddParticipant: (name: string) => void | Promise<void>;
   disabled?: boolean;
   placeholder?: string;
   className?: string;

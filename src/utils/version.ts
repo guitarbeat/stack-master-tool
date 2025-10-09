@@ -28,7 +28,7 @@ export function getVersionInfo(): VersionInfo {
     gitCommit: __GIT_COMMIT__ || 'unknown',
     gitBranch: __GIT_BRANCH__ || 'unknown',
     isProduction: process.env.NODE_ENV === 'production',
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV ?? 'development',
   };
 }
 
