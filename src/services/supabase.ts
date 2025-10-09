@@ -44,11 +44,57 @@ export class SupabaseMeetingService {
     facilitatorName: string,
   ): Promise<MeetingData> {
     try {
-      // Generate a 6-char uppercase join code client-side to satisfy NOT NULL/UNIQUE constraints
-      const meetingCode = Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase();
+      // Generate a proper 6-character meeting code using the database function
+      // This ensures consistency with the database schema and validation
+      let meetingCode: string;
+      
+      try {
+        const { data: codeData, error: codeError } = await supabase
+          .rpc('generate_meeting_code');
+        
+        if (codeError) {
+          throw new Error(`Database function failed: ${codeError.message}`);
+        }
+
+        meetingCode = codeData;
+      } catch (dbError) {
+        // Fallback to client-side generation if database function fails
+        console.warn("Database meeting code generation failed, using fallback:", dbError);
+        
+        // Use the same character set as the database function
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let result = '';
+        let codeExists = true;
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        while (codeExists && attempts < maxAttempts) {
+          result = '';
+          for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+          
+          // Check if code already exists
+          const { data: existing } = await supabase
+            .from("meetings")
+            .select("meeting_code")
+            .eq("meeting_code", result)
+            .single();
+          
+          codeExists = !!existing;
+          attempts++;
+        }
+        
+        if (codeExists) {
+          throw new AppError(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            undefined,
+            "Unable to generate unique meeting code after multiple attempts"
+          );
+        }
+        
+        meetingCode = result;
+      }
       const { data, error } = await supabase
         .from("meetings")
         .insert({
@@ -91,10 +137,38 @@ export class SupabaseMeetingService {
     code: string,
   ): Promise<MeetingWithParticipants | null> {
     try {
+      // Validate meeting code format before making API call
+      if (!code || typeof code !== "string") {
+        throw new AppError(
+          ErrorCode.INVALID_MEETING_CODE,
+          undefined,
+          "Meeting code is required"
+        );
+      }
+
+      const normalizedCode = code.toUpperCase().trim();
+      
+      // Check if code is exactly 6 characters and contains only valid characters
+      if (normalizedCode.length !== 6) {
+        throw new AppError(
+          ErrorCode.INVALID_MEETING_CODE,
+          undefined,
+          "Meeting code must be exactly 6 characters"
+        );
+      }
+
+      if (!/^[A-Z0-9]{6}$/.test(normalizedCode)) {
+        throw new AppError(
+          ErrorCode.INVALID_MEETING_CODE,
+          undefined,
+          "Meeting code can only contain letters and numbers"
+        );
+      }
+
       const { data: meeting, error: meetingError } = await supabase
         .from("meetings")
         .select("*")
-        .eq("meeting_code", code.toUpperCase())
+        .eq("meeting_code", normalizedCode)
         .eq("is_active", true)
         .single();
 
@@ -180,8 +254,27 @@ export class SupabaseMeetingService {
     isFacilitator: boolean = false,
   ): Promise<Participant> {
     try {
+      // Validate meeting code format before proceeding
+      if (!meetingCode || typeof meetingCode !== "string") {
+        throw new AppError(
+          ErrorCode.INVALID_MEETING_CODE,
+          undefined,
+          "Meeting code is required"
+        );
+      }
+
+      const normalizedCode = meetingCode.toUpperCase().trim();
+      
+      if (normalizedCode.length !== 6 || !/^[A-Z0-9]{6}$/.test(normalizedCode)) {
+        throw new AppError(
+          ErrorCode.INVALID_MEETING_CODE,
+          undefined,
+          "Meeting code must be exactly 6 characters and contain only letters and numbers"
+        );
+      }
+
       // First, get the meeting
-      const meeting = await this.getMeeting(meetingCode);
+      const meeting = await this.getMeeting(normalizedCode);
       if (!meeting) {
         throw new AppError(
           ErrorCode.MEETING_NOT_FOUND,

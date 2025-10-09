@@ -26,7 +26,7 @@ import {
   type Participant as SbParticipant,
   type QueueItem as SbQueueItem,
 } from "@/services/supabase";
-// import { validateMeetingCode, validateParticipantName } from "@/utils/meetingValidation";
+import { validateMeetingCode, validateParticipantName } from "@/utils/meetingValidation";
 import { logProduction } from "@/utils/productionLogger";
 import QRCode from "qrcode";
 import {
@@ -316,7 +316,7 @@ export default function MeetingRoom() {
       setMeetingCode(params.code);
     } else {
       const modeParam = searchParams.get("mode") as MeetingMode;
-      const _codeParam = searchParams.get("code");
+      const codeParam = searchParams.get("code");
 
       if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
         setError(new AppError(ErrorCode.INVALID_OPERATION, undefined, "Invalid meeting mode. Please use host, join, or watch."));
@@ -326,7 +326,12 @@ export default function MeetingRoom() {
 
       setMode(modeParam);
 
-      // For join/watch modes, we prefer a meeting code; if missing, we'll show a form
+      // For join/watch modes, we need a meeting code; for host mode, code is optional
+      if ((modeParam === "join" || modeParam === "watch") && !codeParam) {
+        // Will show code input form in render logic
+        setIsLoading(false);
+        return;
+      }
     }
 
     // Host: create meeting on Supabase, else: fetch by code
@@ -351,9 +356,16 @@ export default function MeetingRoom() {
           }
         } else if (currentCode) {
           try {
-            const full = await SupabaseMeetingService.getMeeting(currentCode);
+            // Validate meeting code before making API call
+            const validation = validateMeetingCode(currentCode);
+            if (!validation.isValid) {
+              setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code format"));
+              return;
+            }
+
+            const full = await SupabaseMeetingService.getMeeting(validation.normalizedCode);
             if (!full) {
-              setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${currentCode}" not found or inactive. Please check the code and try again.`));
+              setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${validation.normalizedCode}" not found or inactive. Please check the code and try again.`));
               return;
             }
             setMeetingId(full.id);
@@ -367,7 +379,7 @@ export default function MeetingRoom() {
               try {
                 const participantName = user?.email ?? `Participant-${Date.now()}`;
                 const participant = await SupabaseMeetingService.joinMeeting(
-                  currentCode,
+                  validation.normalizedCode,
                   participantName,
                   false // not facilitator
                 );
@@ -378,11 +390,17 @@ export default function MeetingRoom() {
               } catch (joinError) {
                 logProduction("error", {
                   action: "join_meeting_participant",
-                  meetingCode: currentCode,
+                  meetingCode: validation.normalizedCode,
                   participantName: user?.email ?? `Participant-${Date.now()}`,
                   error: joinError instanceof Error ? joinError.message : String(joinError)
                 });
-                setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
+                
+                // Provide more specific error messages based on error type
+                if (joinError instanceof AppError) {
+                  setError(joinError);
+                } else {
+                  setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
+                }
                 return;
               }
             }
@@ -393,7 +411,13 @@ export default function MeetingRoom() {
               mode: currentMode,
               error: fetchError instanceof Error ? fetchError.message : String(fetchError)
             });
-            setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
+            
+            // Provide more specific error messages based on error type
+            if (fetchError instanceof AppError) {
+              setError(fetchError);
+            } else {
+              setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
+            }
             return;
           }
         }
@@ -503,11 +527,12 @@ export default function MeetingRoom() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              const normalized = codeInput.trim().toUpperCase();
-              if (normalized.length < 4) {
-                return; // simple guard
+              const validation = validateMeetingCode(codeInput);
+              if (!validation.isValid) {
+                setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+                return;
               }
-              navigate(`/meeting?mode=join&code=${normalized}`);
+              navigate(`/meeting?mode=join&code=${validation.normalizedCode}`);
             }}
             className="space-y-5 sm:space-y-6"
           >
@@ -604,11 +629,12 @@ export default function MeetingRoom() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const normalized = codeInput.trim().toUpperCase();
-                if (normalized.length < 4) {
-                  return; // simple guard
+                const validation = validateMeetingCode(codeInput);
+                if (!validation.isValid) {
+                  setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error || "Invalid meeting code"));
+                  return;
                 }
-                navigate(`/meeting?mode=watch&code=${normalized}`);
+                navigate(`/meeting?mode=watch&code=${validation.normalizedCode}`);
               }}
               className="space-y-5 sm:space-y-6"
             >
