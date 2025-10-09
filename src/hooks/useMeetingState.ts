@@ -32,6 +32,10 @@ interface UseMeetingStateReturn {
   showJohnDoe: boolean;
   setShowJohnDoe: (show: boolean) => void;
   
+  // * Speaker management
+  lastSpeaker: SbQueueItem | null;
+  setLastSpeaker: (speaker: SbQueueItem | null) => void;
+  
   // * QR/Scanner state
   qrOpen: boolean;
   setQrOpen: (open: boolean) => void;
@@ -72,6 +76,9 @@ export function useMeetingState(): UseMeetingStateReturn {
   // * UI state
   const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
   const [showJohnDoe, setShowJohnDoe] = useState(true);
+  
+  // * Speaker management
+  const [lastSpeaker, setLastSpeaker] = useState<SbQueueItem | null>(null);
   
   // * QR/Scanner state
   const [qrOpen, setQrOpen] = useState(false);
@@ -163,6 +170,10 @@ export function useMeetingState(): UseMeetingStateReturn {
     setIsLiveMeeting,
     showJohnDoe,
     setShowJohnDoe,
+    
+    // * Speaker management
+    lastSpeaker,
+    setLastSpeaker,
     
     // * QR/Scanner state
     qrOpen,
