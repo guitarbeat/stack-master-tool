@@ -48,6 +48,7 @@ export default function MeetingRoom() {
     meetingCode,
     meetingId,
     mode,
+    setMode,
     isLoading,
     error,
     codeInput,
