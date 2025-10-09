@@ -873,12 +873,15 @@ export default function MeetingRoom() {
           </div>
 
           <div className="space-y-4 sm:space-y-6">
-            <ActionsPanel
-              isInQueue={false}
-              onJoinQueue={() => {}}
-              onLeaveQueue={() => {}}
-              participantName="Current User"
-            />
+            {/* Actions Panel - only for participants (join mode), not hosts or observers */}
+            {mode === "join" && (
+              <ActionsPanel
+                isInQueue={false}
+                onJoinQueue={() => {}}
+                onLeaveQueue={() => {}}
+                participantName="Current User"
+              />
+            )}
 
             {/* Analytics for HOST mode */}
             {mode === "host" && (
