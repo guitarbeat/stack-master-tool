@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
@@ -787,28 +787,28 @@ export default function MeetingRoom() {
           onLeaveMeeting={() => navigate("/")}
         />
 
-        {/* Role-based Content */}
-        {mode === "host" && (
-          /* Host: Full management view */
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <SpeakingQueue
-                speakingQueue={serverQueue.map((item, _index) => ({
-                  id: item.id,
-                  participantName: item.participantName,
-                  participantId: item.participantId,
-                  isFacilitator: item.isFacilitator,
-                  type: item.queueType,
-                  timestamp: new Date(item.joinedQueueAt).getTime(),
-                }))}
-                participantName={user?.email ?? "Current User"}
-                onLeaveQueue={handleLeaveQueue}
-                onUpdateParticipantName={handleParticipantNameUpdate}
-                currentUserId={currentParticipantId}
-                isFacilitator={mode === 'host'}
-                onReorderQueue={handleReorderQueue}
-              />
-            </div>
+        {/* Main Content - Speaking Queue and Analytics Side by Side */}
+        <div className={`grid gap-6 mb-6 ${mode === "host" ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}>
+          {/* Speaking Queue */}
+          <div>
+            <SpeakingQueue
+              speakingQueue={serverQueue.map((item, _index) => ({
+                id: item.id,
+                participantName: item.participantName,
+                participantId: item.participantId,
+                isFacilitator: item.isFacilitator,
+                type: item.queueType,
+                timestamp: new Date(item.joinedQueueAt).getTime(),
+              }))}
+              participantName={user?.email ?? "Current User"}
+              onLeaveQueue={handleLeaveQueue}
+              onUpdateParticipantName={handleParticipantNameUpdate}
+              currentUserId={currentParticipantId}
+            />
+          </div>
+
+          {/* Meeting Analytics - Only visible in host mode */}
+          {mode === "host" && (
             <div>
               <SpeakingAnalytics
                 speakingDistribution={getSpeakingDistribution()}
@@ -823,12 +823,13 @@ export default function MeetingRoom() {
                 queueActivity={speakingHistory.length}
                 directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
                 currentSpeaker={currentSpeakerFromQueue}
-                isHostMode={true}
+                isHostMode={mode === "host"}
               />
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
+        {/* Queue Position Feedback for participants */}
         {mode === "join" && (
           /* Participant: Personal actions view */
           <>
