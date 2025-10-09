@@ -1,4 +1,6 @@
 import { Toggle } from "@/components/ui/toggle";
+import { AddParticipants } from "@/components/features/meeting/AddParticipants";
+import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import QRCode from "qrcode";
 
 interface HostSettingsPanelProps {
@@ -9,11 +11,17 @@ interface HostSettingsPanelProps {
   meetingCode: string;
   onQrGenerate: (url: string, type: 'join' | 'watch') => void;
   onScannerOpen: () => void;
+  // * Participant management props
+  mockParticipants: any[];
+  onAddParticipant: (name: string) => Promise<void>;
+  onUpdateParticipant: (participantId: string, updates: { name?: string }) => Promise<void>;
+  onRemoveParticipant: (participantId: string) => Promise<void>;
+  userRole: string;
 }
 
 /**
- * * Component for host meeting settings and controls
- * Provides toggles for meeting settings and sharing options
+ * * Component for host meeting settings and participant management
+ * Provides toggles for meeting settings, sharing options, and participant management
  */
 export function HostSettingsPanel({
   isLiveMeeting,
@@ -23,6 +31,12 @@ export function HostSettingsPanel({
   meetingCode,
   onQrGenerate,
   onScannerOpen,
+  // * Participant management props
+  mockParticipants,
+  onAddParticipant,
+  onUpdateParticipant,
+  onRemoveParticipant,
+  userRole,
 }: HostSettingsPanelProps) {
   const handleCopyLink = (type: 'join' | 'watch') => {
     const link = `${window.location.origin}/meeting?mode=${type}&code=${meetingCode}`;
@@ -129,6 +143,36 @@ export function HostSettingsPanel({
           <p><strong>Local Meeting Mode:</strong> This meeting is set to local/manual mode. Enable "Live Meeting" to allow remote participants to join.</p>
         </div>
       )}
+
+      {/* Participant Management Section */}
+      <div className="bg-card text-card-foreground rounded-xl p-4 shadow-lg border mt-4">
+        <div className="mb-4">
+          <h2 className="text-base font-semibold">Participant Management</h2>
+          <p className="text-xs text-muted-foreground">
+            Add, edit, and manage meeting participants
+          </p>
+        </div>
+        
+        <div className="space-y-4">
+          {/* Add Participants */}
+          <div>
+            <h3 className="text-sm font-medium text-foreground mb-2">Add Participants</h3>
+            <AddParticipants
+              onAddParticipant={onAddParticipant}
+              placeholder="Enter participant names (comma or newline separated)"
+              className="w-full"
+            />
+          </div>
+
+          {/* Participant List */}
+          <ParticipantList
+            participants={mockParticipants}
+            onUpdateParticipant={onUpdateParticipant}
+            onRemoveParticipant={onRemoveParticipant}
+            userRole={userRole}
+          />
+        </div>
+      </div>
     </div>
   );
 }
