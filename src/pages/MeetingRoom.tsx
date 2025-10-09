@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { MeetingContext } from "@/components/MeetingRoom/MeetingContext";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
@@ -42,6 +42,8 @@ import {
 
 export default function MeetingRoom() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const params = useParams();
   const { user } = useAuth();
   const { showToast } = useToast();
 
