@@ -2,11 +2,11 @@ import { LogOut, RefreshCw, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ErrorDisplay } from "../shared/ErrorDisplay";
 import { AppError, ErrorCode } from "../../utils/errorHandling";
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 interface ErrorStateProps {
   error: string | AppError;
-  onRetry?: () => void;
+  onRetry?: () => void | Promise<void>;
   showHomeButton?: boolean;
   maxRetries?: number;
   retryDelay?: number;

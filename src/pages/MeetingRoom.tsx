@@ -5,6 +5,7 @@ import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
+import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
@@ -43,9 +44,10 @@ export default function MeetingRoom() {
   const [meetingId, setMeetingId] = useState<string>("");
   const [mode, setMode] = useState<MeetingMode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | string | null>(null);
   const [codeInput, setCodeInput] = useState<string>("");
   const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
+  const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
   const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   const { user } = useAuth();
 
@@ -262,7 +264,7 @@ export default function MeetingRoom() {
       const _codeParam = searchParams.get("code");
 
       if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
-        setError("Invalid meeting mode. Please use host, join, or watch.");
+        setError(new AppError(ErrorCode.INVALID_OPERATION, undefined, "Invalid meeting mode. Please use host, join, or watch."));
         setIsLoading(false);
         return;
       }
@@ -296,7 +298,7 @@ export default function MeetingRoom() {
           try {
             const full = await SupabaseMeetingService.getMeeting(currentCode);
             if (!full) {
-              setError(`Meeting "${currentCode}" not found or inactive. Please check the code and try again.`);
+              setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${currentCode}" not found or inactive. Please check the code and try again.`));
               return;
             }
             setMeetingId(full.id);
@@ -325,7 +327,7 @@ export default function MeetingRoom() {
                   participantName: user?.email ?? `Participant-${Date.now()}`,
                   error: joinError instanceof Error ? joinError.message : String(joinError)
                 });
-                setError("Failed to join meeting. Please try again.");
+                setError(new AppError(ErrorCode.MEETING_ACCESS_DENIED, undefined, "Failed to join meeting. Please try again."));
                 return;
               }
             }
@@ -336,12 +338,12 @@ export default function MeetingRoom() {
               mode: currentMode,
               error: fetchError instanceof Error ? fetchError.message : String(fetchError)
             });
-            setError("Unable to connect to meeting. Please check your internet connection and try again.");
+            setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Unable to connect to meeting. Please check your internet connection and try again."));
             return;
           }
         }
       } catch (_e) {
-        setError("Failed to connect to meeting.");
+        setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Failed to connect to meeting."));
       } finally {
         setIsLoading(false);
       }
@@ -644,48 +646,64 @@ export default function MeetingRoom() {
         {mode === "host" && (
           <div className="bg-muted/30 text-muted-foreground rounded-lg p-4 border border-border/50">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-foreground">Remote Access</h3>
-              <label className="inline-flex items-center gap-2 text-xs">
-                <input
-                  type="checkbox"
-                  checked={remoteEnabled}
-                  onChange={(e) => setRemoteEnabled(e.target.checked)}
-                  className="w-3 h-3"
-                />
-                Enable remote joining
-              </label>
-            </div>
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Join link</span>
-              <button
-                className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
-                aria-label="Copy join link to clipboard"
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/meeting?mode=join&code=${meetingCode}`,
-                  )
-                }
-              >
-                Copy
-              </button>
+              <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
+              <div className="flex items-center gap-4">
+                <label className="inline-flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={isLiveMeeting}
+                    onChange={(e) => setIsLiveMeeting(e.target.checked)}
+                    className="w-3 h-3"
+                  />
+                  Live Meeting
+                </label>
+                <label className="inline-flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={remoteEnabled}
+                    onChange={(e) => setRemoteEnabled(e.target.checked)}
+                    className="w-3 h-3"
+                  />
+                  Enable remote joining
+                </label>
               </div>
-              <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}</code>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Watch link</span>
+            </div>
+            <div className="mb-3 text-xs text-muted-foreground">
+              <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
+              <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
+            </div>
+            {isLiveMeeting && remoteEnabled && (
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Join link</span>
                 <button
                   className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
-                  aria-label="Copy watch link to clipboard"
+                  aria-label="Copy join link to clipboard"
                   onClick={() =>
                     navigator.clipboard.writeText(
-                      `${window.location.origin}/meeting?mode=watch&code=${meetingCode}`,
+                      `${window.location.origin}/meeting?mode=join&code=${meetingCode}`,
                     )
                   }
                 >
                   Copy
                 </button>
-              </div>
-              <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
+                </div>
+                <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}</code>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Watch link</span>
+                  <button
+                    className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
+                    aria-label="Copy watch link to clipboard"
+                    onClick={() =>
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/meeting?mode=watch&code=${meetingCode}`,
+                      )
+                    }
+                  >
+                    Copy
+                  </button>
+                </div>
+                <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
               <div className="pt-2 space-y-2">
                 <div className="flex gap-2">
                   <button
@@ -730,7 +748,12 @@ export default function MeetingRoom() {
                     </button>
                 </div>
               </div>
-            </div>
+            )}
+            {!isLiveMeeting && (
+              <div className="text-xs text-muted-foreground bg-muted/20 p-3 rounded">
+                <p><strong>Local Meeting Mode:</strong> This meeting is set to local/manual mode. Enable "Live Meeting" to allow remote participants to join.</p>
+              </div>
+            )}
 
             {/* Quick Add Participant Component - HOST mode only */}
             <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
@@ -809,6 +832,7 @@ export default function MeetingRoom() {
             )}
           </div>
         </div>
+        )}
       </div>
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
         <DialogContent className="max-w-md">
