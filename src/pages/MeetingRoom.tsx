@@ -575,8 +575,8 @@ export default function MeetingRoom() {
               >
                 Join Meeting
               </button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     );
