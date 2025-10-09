@@ -43,6 +43,7 @@ export class SupabaseMeetingService {
   static async createMeeting(
     title: string,
     facilitatorName: string,
+    facilitatorId?: string,
   ): Promise<MeetingData> {
     try {
       // Generate a proper 6-character meeting code using the database function
@@ -104,6 +105,7 @@ export class SupabaseMeetingService {
         .insert({
           title: title.trim(),
           facilitator_name: facilitatorName.trim(),
+          facilitator_id: facilitatorId || null,
           meeting_code: meetingCode,
           is_active: true,
         })
@@ -539,6 +541,58 @@ export class SupabaseMeetingService {
     }
   }
 
+  static async updateMeetingCode(
+    meetingId: string,
+    newCode: string,
+  ): Promise<void> {
+    try {
+      // Validate the new code format
+      if (!/^[A-Z0-9]{6}$/.test(newCode)) {
+        throw new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          undefined,
+          "Meeting code must be exactly 6 uppercase letters and numbers"
+        );
+      }
+
+      // Check if the code is already in use by another meeting
+      const { data: existing } = await supabase
+        .from("meetings")
+        .select("id")
+        .eq("meeting_code", newCode)
+        .neq("id", meetingId)
+        .single();
+
+      if (existing) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          undefined,
+          "This meeting code is already in use. Please choose a different code."
+        );
+      }
+
+      const { error } = await supabase
+        .from("meetings")
+        .update({ meeting_code: newCode })
+        .eq("id", meetingId);
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to update meeting code",
+        );
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to update meeting code",
+      );
+    }
+  }
+
   // Update participant name (facilitator only)
   static async updateParticipantName(
     participantId: string,
@@ -811,6 +865,148 @@ export class SupabaseMeetingService {
         ErrorCode.INTERNAL_SERVER_ERROR,
         error as Error,
         "Failed to end meeting",
+      );
+    }
+  }
+
+  /**
+   * * Get all active meetings for room browsing
+   */
+  static async getActiveMeetings(): Promise<Meeting[]> {
+    try {
+      const { data, error } = await supabase
+        .from("meetings")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to get active meetings",
+        );
+      }
+
+      return data || [];
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to get active meetings",
+      );
+    }
+  }
+
+  /**
+   * * Get active participants count for a meeting
+   */
+  static async getParticipants(meetingId: string): Promise<Participant[]> {
+    try {
+      const { data, error } = await supabase
+        .from("participants")
+        .select("*")
+        .eq("meeting_id", meetingId)
+        .eq("is_active", true)
+        .order("joined_at", { ascending: true });
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to get participants",
+        );
+      }
+
+      return data || [];
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to get participants",
+      );
+    }
+  }
+
+  /**
+   * * Get meetings created by a specific facilitator
+   */
+  static async getMeetingsByFacilitator(facilitatorId: string): Promise<Meeting[]> {
+    try {
+      const { data, error } = await supabase
+        .from("meetings")
+        .select("*")
+        .eq("facilitator_id", facilitatorId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to get facilitator meetings",
+        );
+      }
+
+      return data || [];
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to get facilitator meetings",
+      );
+    }
+  }
+
+  /**
+   * * Delete a meeting (only by facilitator)
+   */
+  static async deleteMeeting(meetingId: string, facilitatorId: string): Promise<void> {
+    try {
+      // First check if the user is the facilitator
+      const { data: meeting, error: checkError } = await supabase
+        .from("meetings")
+        .select("facilitator_id")
+        .eq("id", meetingId)
+        .single();
+
+      if (checkError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          checkError,
+          "Failed to verify meeting ownership",
+        );
+      }
+
+      if (meeting.facilitator_id !== facilitatorId) {
+        throw new AppError(
+          ErrorCode.FORBIDDEN,
+          undefined,
+          "Only the meeting facilitator can delete this room",
+        );
+      }
+
+      // Delete the meeting (this will cascade to participants and speaking queue)
+      const { error: deleteError } = await supabase
+        .from("meetings")
+        .delete()
+        .eq("id", meetingId);
+
+      if (deleteError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          deleteError,
+          "Failed to delete meeting",
+        );
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to delete meeting",
       );
     }
   }

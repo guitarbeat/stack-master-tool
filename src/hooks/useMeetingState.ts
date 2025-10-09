@@ -22,6 +22,8 @@ interface UseMeetingStateReturn {
   error: AppError | string | null;
   codeInput: string;
   setCodeInput: (code: string) => void;
+  participantName: string;
+  setParticipantName: (name: string) => void;
   setError: (error: AppError | string | null) => void;
   
   // * Server state
@@ -72,6 +74,7 @@ export function useMeetingState(): UseMeetingStateReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<AppError | string | null>(null);
   const [codeInput, setCodeInput] = useState<string>("");
+  const [participantName, setParticipantName] = useState<string>("");
   
   // * Server state
   const [serverMeeting, setServerMeeting] = useState<MeetingWithParticipants | null>(null);
@@ -104,6 +107,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     } else {
       const modeParam = searchParams.get("mode") as MeetingMode;
       const codeParam = searchParams.get("code");
+      const nameParam = searchParams.get("name");
 
       if (!modeParam || !["host", "join", "watch"].includes(modeParam)) {
         setError(new AppError(ErrorCode.INVALID_OPERATION, undefined, "Invalid meeting mode. Please use host, join, or watch."));
@@ -112,6 +116,11 @@ export function useMeetingState(): UseMeetingStateReturn {
       }
 
       setMode(modeParam);
+
+      // * For join mode, extract participant name from URL if provided
+      if (modeParam === "join" && nameParam) {
+        setParticipantName(decodeURIComponent(nameParam));
+      }
 
       // * For join/watch modes, we need a meeting code; for host mode, code is optional
       if ((modeParam === "join" || modeParam === "watch") && !codeParam) {
@@ -126,13 +135,15 @@ export function useMeetingState(): UseMeetingStateReturn {
       try {
         const currentMode = params.code ? "watch" : (searchParams.get("mode") as MeetingMode);
         const currentCode = params.code ?? searchParams.get("code");
-        
+        const currentName = searchParams.get("name");
+
         if (currentMode === "host") {
           await handleHostMode(user, setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue);
         } else if (currentCode) {
           await handleJoinOrWatchMode(
             currentMode as MeetingMode,
             currentCode,
+            currentName ? decodeURIComponent(currentName) : "",
             user,
             setError,
             setMeetingId,
@@ -166,11 +177,15 @@ export function useMeetingState(): UseMeetingStateReturn {
     error,
     codeInput,
     setCodeInput,
+    participantName,
+    setParticipantName,
     setError,
     
     // * Server state
     serverMeeting,
+    setServerMeeting,
     serverParticipants,
+    setServerParticipants,
     serverQueue,
     setServerQueue,
     currentParticipantId,
@@ -213,19 +228,13 @@ async function handleHostMode(
   setServerParticipants: (participants: SbParticipant[]) => void,
   setServerQueue: (queue: SbQueueItem[]) => void
 ) {
-  const facilitatorName = user?.email ?? "Facilitator";
-  const created = await SupabaseMeetingService.createMeeting(
-    "New Meeting",
-    facilitatorName,
-  );
-  setMeetingId(created.id);
-  setMeetingCode(created.code);
-  const full = await SupabaseMeetingService.getMeeting(created.code);
-  if (full) {
-    setServerMeeting(full);
-    setServerParticipants(full.participants);
-    setServerQueue(full.speakingQueue);
-  }
+  // Don't automatically create a meeting - let the user create one manually
+  // This allows users to choose custom room names and only create when ready
+  setMeetingId("");
+  setMeetingCode("");
+  setServerMeeting(null);
+  setServerParticipants([]);
+  setServerQueue([]);
 }
 
 /**
@@ -235,6 +244,7 @@ async function handleHostMode(
 async function handleJoinOrWatchMode(
   currentMode: MeetingMode,
   currentCode: string,
+  participantName: string,
   user: User | null,
   setError: (error: AppError | string | null) => void,
   setMeetingId: (id: string) => void,
@@ -267,10 +277,11 @@ async function handleJoinOrWatchMode(
     // * For JOIN mode, create participant if meeting exists
     if (currentMode === "join") {
       try {
-        const participantName = user?.email ?? `Participant-${Date.now()}`;
+        // Use provided participant name or fallback to user email or generated name
+        const finalParticipantName = participantName || user?.email || `Participant-${Date.now()}`;
         const participant = await SupabaseMeetingService.joinMeeting(
           validation.normalizedCode,
-          participantName,
+          finalParticipantName,
           false // not facilitator
         );
         // * Store the current participant ID for queue operations
@@ -281,7 +292,7 @@ async function handleJoinOrWatchMode(
         logProduction("error", {
           action: "join_meeting_participant",
           meetingCode: validation.normalizedCode,
-          participantName: user?.email ?? `Participant-${Date.now()}`,
+          participantName: participantName || user?.email || `Participant-${Date.now()}`,
           error: joinError instanceof Error ? joinError.message : String(joinError)
         });
         

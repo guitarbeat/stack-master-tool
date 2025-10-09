@@ -1,5 +1,52 @@
 # Changelog
 
+## 2025-10-09 - Public Room Browsing System
+
+### Summary
+
+Implemented a comprehensive public room browsing system that transforms the meeting experience from code-based access to discoverable room exploration. Anyone can now create custom-named meeting rooms and browse active rooms through an intuitive interface, making meetings more accessible and discoverable.
+
+### Key Features
+
+- **Public Room Browser**: New `/rooms` page showing all active meeting rooms in a card-based layout
+- **Open Room Creation**: Anyone can create meeting rooms with custom names (no authentication required)
+- **Real-time Room Discovery**: Live updates showing active rooms and participant counts
+- **Multiple Access Methods**: Browse rooms visually, join directly, or use traditional meeting codes
+- **Custom Room Names**: Meaningful room titles instead of generic "New Meeting" labels
+- **Empty Database Architecture**: Database starts clean and fills organically with user-created rooms
+- **Enhanced Navigation**: New "Rooms" tab in the main navigation
+
+### Technical Changes
+
+- **New RoomBrowser Component**: Card-based room discovery with real-time participant counts
+- **Modified Host Flow**: Host mode now shows room creation interface instead of auto-creating meetings
+- **Enhanced Supabase Service**: Added `getActiveMeetings()` and `getParticipants()` methods
+- **Updated Navigation**: Added "Rooms" tab to desktop and mobile navigation
+- **Database Cleanup**: Cleared all existing meetings to start with clean slate
+- **Route Updates**: Added `/rooms` route and room creation routing
+
+### User Experience Improvements
+
+- **Discoverable Meetings**: No need to know meeting codes in advance
+- **Visual Room Selection**: Browse active rooms with participant counts and status
+- **Direct Joining**: One-click joining from room cards
+- **Fallback Options**: Traditional code-based joining still available
+- **Empty State Handling**: Encourages room creation when no active rooms exist
+
+### Database Changes
+
+- **Clean Slate**: All existing meetings removed, database starts empty
+- **Organic Growth**: Rooms appear as users create them
+- **Real-time Updates**: Room browser updates automatically as rooms are created/deleted
+
+### Impact
+
+- **Improved Accessibility**: Meetings are now discoverable without prior knowledge
+- **Enhanced User Experience**: Multiple ways to find and join discussions
+- **Scalable Architecture**: System grows organically with user activity
+- **Open Participation**: Anyone can create and join rooms freely
+- **Maintained Security**: Traditional code-based access still available for private meetings
+
 ## 2025-01-27 - Speaking Distribution for Local Meetings
 
 ### Summary

@@ -1,7 +1,22 @@
+import { useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { AddParticipants } from "@/components/features/meeting/AddParticipants";
 import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import QRCode from "qrcode";
+import { RefreshCw, Edit3, Check, X, AlertTriangle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface HostSettingsPanelProps {
   isLiveMeeting: boolean;
@@ -9,6 +24,8 @@ interface HostSettingsPanelProps {
   meetingCode: string;
   onQrGenerate: (url: string, type: 'join' | 'watch') => void;
   onScannerOpen: () => void;
+  onMeetingCodeChange?: (newCode: string) => Promise<void>;
+  onEndMeeting?: () => void;
   // * Participant management props
   mockParticipants: Array<{ id: string; name: string; isFacilitator: boolean; hasRaisedHand: boolean; joinedAt: string; isActive: boolean }>;
   onAddParticipant: (name: string) => Promise<void>;
@@ -27,6 +44,8 @@ export function HostSettingsPanel({
   meetingCode,
   onQrGenerate,
   _onScannerOpen,
+  onMeetingCodeChange,
+  onEndMeeting,
   // * Participant management props
   mockParticipants,
   onAddParticipant,
@@ -34,9 +53,38 @@ export function HostSettingsPanel({
   onRemoveParticipant,
   userRole,
 }: HostSettingsPanelProps) {
+  const [isEditingCode, setIsEditingCode] = useState(false);
+  const [codeInput, setCodeInput] = useState(meetingCode);
+
   const handleCopyLink = async (type: 'join' | 'watch') => {
     const link = `${window.location.origin}/meeting?mode=${type}&code=${meetingCode}`;
     await navigator.clipboard.writeText(link);
+  };
+
+  const handleStartEditing = () => {
+    setCodeInput(meetingCode);
+    setIsEditingCode(true);
+  };
+
+  const handleCancelEditing = () => {
+    setCodeInput(meetingCode);
+    setIsEditingCode(false);
+  };
+
+  const handleSaveCode = async () => {
+    if (!codeInput.trim()) return;
+    if (onMeetingCodeChange) {
+      await onMeetingCodeChange(codeInput.trim().toUpperCase());
+    }
+    setIsEditingCode(false);
+  };
+
+  const handleRegenerateCode = async () => {
+    const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    if (onMeetingCodeChange) {
+      await onMeetingCodeChange(newCode);
+    }
+    setCodeInput(newCode);
   };
 
   const handleGenerateQr = async (type: 'join' | 'watch') => {
@@ -64,8 +112,116 @@ export function HostSettingsPanel({
           <span className="text-sm font-medium">Live Meeting</span>
         </div>
       </div>
-      
-      <div className="text-xs text-muted-foreground">
+
+      {/* End Meeting Button */}
+      {onEndMeeting && (
+        <div className="mb-4 pt-2 border-t border-border/50">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="w-full"
+                aria-label="End meeting for all participants"
+              >
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                End Meeting
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>End Meeting?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will end the meeting for all participants. The meeting will be marked as inactive and participants will no longer be able to join. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={onEndMeeting}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  End Meeting
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
+
+      {/* Meeting Code Display and Editing */}
+      <div className="mt-4 pt-4 border-t border-border/50">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+          <label className="text-sm font-medium text-foreground">Meeting Code</label>
+          <div className="flex items-center gap-2">
+            {isEditingCode ? (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSaveCode}
+                  disabled={!codeInput.trim()}
+                >
+                  <Check className="w-3 h-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCancelEditing}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleStartEditing}
+                  disabled={!onMeetingCodeChange}
+                >
+                  <Edit3 className="w-3 h-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleRegenerateCode}
+                  disabled={!onMeetingCodeChange}
+                  title="Generate new random code"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {isEditingCode ? (
+          <Input
+            value={codeInput}
+            onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+            className="font-mono text-center text-lg tracking-wider"
+            maxLength={6}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSaveCode();
+              if (e.key === 'Escape') handleCancelEditing();
+            }}
+          />
+        ) : (
+          <div className="flex items-center justify-center">
+            <code className="px-4 py-2 bg-primary/10 text-primary font-mono text-xl tracking-wider rounded border">
+              {meetingCode}
+            </code>
+          </div>
+        )}
+
+        <p className="text-xs text-muted-foreground mt-2 text-center">
+          Share this code with participants to join your meeting
+        </p>
+      </div>
+
+      <div className="text-xs text-muted-foreground mt-4">
         <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
         <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
       </div>

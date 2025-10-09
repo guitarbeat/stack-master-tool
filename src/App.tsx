@@ -1,5 +1,4 @@
 import React from "react";
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/shared/ToastProvider";
@@ -9,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
 import Auth from "./pages/Auth";
 import MeetingRoom from "./pages/MeetingRoom";
+import Rooms from "./pages/Rooms";
 import AppLayout from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
@@ -18,13 +18,13 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ToastProvider>
-          <Toaster />
           <Sonner />
           <AppLayout>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/meeting" element={<MeetingRoom />} />
+              <Route path="/rooms" element={<Rooms />} />
               <Route path="/watch/:code" element={<MeetingRoom />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

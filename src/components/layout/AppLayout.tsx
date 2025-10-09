@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, UserPlus, Users, Menu, X } from "lucide-react";
+import { Plus, UserPlus, Users, Menu, X, MessageSquare } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
 import { getSimplePoweredByString } from "@/utils/version";
 
@@ -92,6 +92,17 @@ function AppLayout({ children }: AppLayoutProps) {
                 <Users className="w-4 h-4 mr-1 inline" />
                 Watch
               </Link>
+              <Link
+                to="/rooms"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
+                  isActive("/rooms")
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 mr-1" />
+                Rooms
+              </Link>
             </nav>
             <ThemeToggle />
             <button
@@ -147,6 +158,18 @@ function AppLayout({ children }: AppLayoutProps) {
               >
                 <UserPlus className="w-4 h-4 mr-2" />
                 Join Meeting
+              </Link>
+              <Link
+                to="/rooms"
+                onClick={closeMobileMenu}
+                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/rooms")
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Browse Rooms
               </Link>
             </nav>
           </div>

@@ -20,19 +20,21 @@ export const MEETING_MODES = {
     emoji: '🎯',
     title: 'HOST a Meeting',
     shortDesc: 'Facilitate & Control',
-    fullDesc: 'Full facilitator controls with manual stack management and remote access capabilities. Create meetings, manage participants, and control the speaking queue.',
+    fullDesc: 'Take charge as the meeting facilitator. Create your meeting room, manage the speaking queue, and ensure fair participation for all attendees.',
     joinDesc: 'Set up and facilitate',
     features: [
-      'Manual stack management',
-      'Enable remote access',
-      'Full facilitator controls',
-      'Real-time participant management',
-      'Speaking analytics & distribution'
+      'Create meeting room with unique code',
+      'Control speaking queue manually',
+      'Enable/disable remote participation',
+      'Monitor speaking time distribution',
+      'Full administrative controls'
     ],
     icon: Users,
-    gradient: 'from-primary to-accent',
-    bgBlob: 'bg-primary/10',
-    color: 'text-primary'
+    gradient: 'from-blue-500 to-blue-600',
+    bgBlob: 'bg-blue-50 dark:bg-blue-950/20',
+    color: 'text-blue-600 dark:text-blue-400',
+    borderColor: 'border-blue-200 dark:border-blue-800',
+    hoverColor: 'hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
   },
   join: {
     id: 'join',
@@ -40,17 +42,21 @@ export const MEETING_MODES = {
     emoji: '🌿',
     title: 'JOIN a Meeting',
     shortDesc: 'Participate & Speak',
-    fullDesc: 'Enter a meeting code to participate in an active discussion and join the speaking queue.',
+    fullDesc: 'Become an active participant in democratic discussions. Join the speaking queue, share your thoughts, and contribute to structured conversations.',
     joinDesc: 'Participate in discussions',
     features: [
-      'Enter meeting code',
-      'Join active discussion',
-      'Raise your hand to speak'
+      'Enter meeting code to join',
+      'Raise hand to join speaking queue',
+      'See your position in line',
+      'Receive speaking turn notifications',
+      'Contribute to group discussions'
     ],
     icon: QrCode,
-    gradient: 'from-accent to-accent/80',
-    bgBlob: 'bg-accent/10',
-    color: 'text-accent'
+    gradient: 'from-green-500 to-green-600',
+    bgBlob: 'bg-green-50 dark:bg-green-950/20',
+    color: 'text-green-600 dark:text-green-400',
+    borderColor: 'border-green-200 dark:border-green-800',
+    hoverColor: 'hover:shadow-green-100 dark:hover:shadow-green-900/50'
   },
   watch: {
     id: 'watch',
@@ -58,19 +64,21 @@ export const MEETING_MODES = {
     emoji: '👁️',
     title: 'WATCH a Meeting',
     shortDesc: 'Observe & Display',
-    fullDesc: 'Observe a meeting in read-only mode. Perfect for stakeholders, observers, and display screens.',
+    fullDesc: 'Observe meetings passively without participating. Perfect for stakeholders, note-takers, or displaying meetings on large screens.',
     joinDesc: 'Observe and display',
     features: [
-      'Enter meeting code',
-      'Read-only viewing',
-      'No participation needed',
-      'Display-optimized layout',
-      'Speaking analytics visible'
+      'Enter meeting code as observer',
+      'View-only access (no participation)',
+      'Optimized for display screens',
+      'Real-time queue and speaker tracking',
+      'Perfect for large audiences'
     ],
     icon: Eye,
-    gradient: 'from-primary to-primary/80',
-    bgBlob: 'bg-primary/10',
-    color: 'text-primary'
+    gradient: 'from-purple-500 to-purple-600',
+    bgBlob: 'bg-purple-50 dark:bg-purple-950/20',
+    color: 'text-purple-600 dark:text-purple-400',
+    borderColor: 'border-purple-200 dark:border-purple-800',
+    hoverColor: 'hover:shadow-purple-100 dark:hover:shadow-purple-900/50'
   }
 } as const;
 

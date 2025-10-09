@@ -21,6 +21,7 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
 import { useSpeakingHistory } from "@/hooks/useSpeakingHistory";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
+import { useMeetingActions } from "@/hooks/useMeetingActions";
 import {
   SupabaseMeetingService,
   SupabaseRealtimeService,
@@ -46,7 +47,9 @@ export default function MeetingRoom() {
   // * Use the centralized meeting state hook
   const {
     meetingCode,
+    setMeetingCode,
     meetingId,
+    setMeetingId,
     mode,
     setMode,
     isLoading,
@@ -54,9 +57,13 @@ export default function MeetingRoom() {
     error,
     codeInput,
     setCodeInput,
+    participantName,
+    setParticipantName,
     setError,
     serverMeeting,
+    setServerMeeting,
     serverParticipants,
+    setServerParticipants,
     serverQueue,
     setServerQueue,
     currentParticipantId,
@@ -77,6 +84,61 @@ export default function MeetingRoom() {
     setScannerOpen,
     userRole,
   } = useMeetingState();
+
+  // * Meeting actions hook for host functionality
+  const { handleEndMeeting } = useMeetingActions({
+    meetingId,
+    currentParticipantId,
+    mode,
+    setLastSpeaker,
+    setShowJohnDoe,
+    setServerParticipants: () => {},
+  });
+
+  const handleCreateRoom = async () => {
+    if (!codeInput.trim()) return;
+
+    try {
+      setIsLoading(true);
+      const facilitatorName = user?.email ?? "Anonymous Facilitator";
+      const created = await SupabaseMeetingService.createMeeting(
+        codeInput.trim(),
+        facilitatorName,
+        user?.id,
+      );
+
+      // Update the meeting state
+      setMeetingId(created.id);
+      setMeetingCode(created.code);
+
+      // Load the full meeting data
+      const full = await SupabaseMeetingService.getMeeting(created.code);
+      if (full) {
+        setServerMeeting(full);
+        setServerParticipants(full.participants);
+        setServerQueue(full.speakingQueue);
+      }
+
+      // Clear the input
+      setCodeInput("");
+      showToast({
+        title: "Room Created!",
+        description: `Room "${created.title}" is now live with code ${created.code}`,
+      });
+    } catch (error) {
+      logProduction("error", {
+        action: "create_room_failed",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      showToast({
+        title: "Failed to create room",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleQrScan = (scannedUrl: string) => {
     // For now, QR scanning is not fully implemented
@@ -284,14 +346,36 @@ export default function MeetingRoom() {
     }
   };
 
+  const handleMeetingCodeChange = async (newCode: string) => {
+    if (!meetingId) return;
+
+    try {
+      await SupabaseMeetingService.updateMeetingCode(meetingId, newCode);
+      // Update local state
+      setMeetingCode(newCode);
+      showToast({
+        type: 'success',
+        title: 'Meeting code updated',
+        message: `New meeting code: ${newCode}`,
+      });
+    } catch (error) {
+      showToast({
+        type: 'error',
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to update meeting code',
+      });
+      throw error; // Re-throw to let the UI handle it
+    }
+  };
+
   // Meeting initialization is handled by useMeetingState hook
 
   // Realtime subscriptions
   useEffect(() => {
-    if (!meetingId) {
+    if (!meetingId || !meetingCode) {
       return;
     }
-    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, {
+    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, meetingCode, {
       onParticipantsUpdated: (participants) => {
         setServerParticipants(participants);
         // * Hide John Doe when real participants join
@@ -312,7 +396,7 @@ export default function MeetingRoom() {
     return () => {
       unsubscribe?.();
     };
-  }, [meetingId, setShowJohnDoe]);
+  }, [meetingId, meetingCode, setShowJohnDoe]);
 
   // Cleanup: Mark participant as inactive when leaving
   useEffect(() => {
@@ -393,43 +477,79 @@ export default function MeetingRoom() {
     );
   }
 
-  // Join flow with code entry UI when no code provided
+  // Join flow with code and name entry UI when no code provided
   if (mode === "join" && !meetingCode) {
     return (
       <div className="container mx-auto px-4 py-8 sm:py-10 max-w-xl">
         <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
           <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Join a Meeting</h1>
           <p className="text-base sm:text-sm text-muted-foreground mb-6 sm:mb-8">
-            Enter the 6-character meeting code shared by the host.
+            Enter your name and the 6-character meeting code shared by the host.
           </p>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              const validation = validateMeetingCode(codeInput);
-              if (!validation.isValid) {
-                setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code"));
+              const codeValidation = validateMeetingCode(codeInput);
+              if (!codeValidation.isValid) {
+                setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, codeValidation.error ?? "Invalid meeting code"));
                 return;
               }
-              navigate(`/meeting?mode=join&code=${validation.normalizedCode}`);
+              if (!participantName.trim()) {
+                setError(new AppError(ErrorCode.VALIDATION_ERROR, undefined, "Please enter your name"));
+                return;
+              }
+              navigate(`/meeting?mode=join&code=${codeValidation.normalizedCode}&name=${encodeURIComponent(participantName.trim())}`);
             }}
             className="space-y-5 sm:space-y-6"
           >
-            <div className="space-y-3">
-              <input
-                value={codeInput}
-                onChange={(e) => setCodeInput(e.target.value)}
-                placeholder="e.g. 54ANDG"
-                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus-ring text-base sm:text-sm min-h-[48px]"
-                aria-label="Meeting code"
-                autoComplete="off"
-                autoCapitalize="characters"
-                autoCorrect="off"
-                spellCheck="false"
-              />
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="participant-name" className="text-sm font-medium text-foreground">
+                  Your Name
+                </label>
+                <input
+                  id="participant-name"
+                  value={participantName}
+                  onChange={(e) => setParticipantName(e.target.value)}
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus-ring text-base sm:text-sm min-h-[48px]"
+                  aria-label="Your name"
+                  autoComplete="name"
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="meeting-code" className="text-sm font-medium text-foreground">
+                  Meeting Code
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="meeting-code"
+                    value={codeInput}
+                    onChange={(e) => setCodeInput(e.target.value)}
+                    placeholder="e.g. 54ANDG"
+                    className="flex-1 px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus-ring text-base sm:text-sm min-h-[48px]"
+                    aria-label="Meeting code"
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    spellCheck="false"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCodeInput(Math.random().toString(36).substring(2, 8).toUpperCase())}
+                    className="px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors min-h-[48px]"
+                    title="Generate random code"
+                    aria-label="Generate random meeting code"
+                  >
+                    🎲
+                  </button>
+                </div>
+              </div>
               <button
                 type="submit"
                 className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
-                disabled={!codeInput.trim()}
+                disabled={!codeInput.trim() || !participantName.trim()}
               >
                 Join Meeting
               </button>
@@ -510,17 +630,28 @@ export default function MeetingRoom() {
               className="space-y-5 sm:space-y-6"
             >
               <div className="space-y-3">
-                <input
-                  value={codeInput}
-                  onChange={(e) => setCodeInput(e.target.value)}
-                  placeholder="e.g. 54ANDG"
-                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus-ring text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
-                  aria-label="Meeting code"
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  autoCorrect="off"
-                  spellCheck="false"
-                />
+                <div className="flex gap-2">
+                  <input
+                    value={codeInput}
+                    onChange={(e) => setCodeInput(e.target.value)}
+                    placeholder="e.g. 54ANDG"
+                    className="flex-1 px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus-ring text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
+                    aria-label="Meeting code"
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    autoCorrect="off"
+                    spellCheck="false"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCodeInput(Math.random().toString(36).substring(2, 8).toUpperCase())}
+                    className="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors min-h-[48px]"
+                    title="Generate random code"
+                    aria-label="Generate random meeting code"
+                  >
+                    🎲
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={() => setScannerOpen(true)}
@@ -576,11 +707,60 @@ export default function MeetingRoom() {
     );
   }
 
+  // Show room creation interface for host mode when no meeting exists
+  if (mode === "host" && !meetingId) {
+    return (
+      <>
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">Create a Meeting Room</h1>
+            <p className="text-muted-foreground">
+              Set up a new meeting room that anyone can discover and join
+            </p>
+          </div>
+
+          <div className="bg-card rounded-lg p-6 shadow-lg border">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">Room Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Team Standup, Strategy Session, Open Forum"
+                  className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={codeInput}
+                  onChange={(e) => setCodeInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCreateRoom()}
+                />
+              </div>
+
+              <button
+                onClick={handleCreateRoom}
+                disabled={!codeInput.trim()}
+                className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-md font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                🚀 Create Room
+              </button>
+
+              <div className="text-center pt-4 border-t">
+                <button
+                  onClick={() => navigate("/rooms")}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  ← Back to Rooms
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Host settings and participant management */}
-        {mode === "host" && (
+        {/* Host Management Panel */}
+        {mode === "host" && meetingId && (
           <HostSettingsPanel
             isLiveMeeting={isLiveMeeting}
             setIsLiveMeeting={setIsLiveMeeting}
@@ -591,6 +771,8 @@ export default function MeetingRoom() {
               setQrOpen(true);
             }}
             onScannerOpen={() => setScannerOpen(true)}
+            onMeetingCodeChange={handleMeetingCodeChange}
+            onEndMeeting={handleEndMeeting}
             mockParticipants={mockParticipants}
             onAddParticipant={handleAddParticipant}
             onUpdateParticipant={handleUpdateParticipant}
@@ -605,76 +787,102 @@ export default function MeetingRoom() {
           onLeaveMeeting={() => navigate("/")}
         />
 
-        {/* Main Content - Speaking Queue and Analytics Side by Side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Speaking Queue */}
-          <div>
-            <SpeakingQueue
-              speakingQueue={serverQueue.map((item, _index) => ({
-                id: item.id,
-                participantName: item.participantName,
-                participantId: item.participantId,
-                isFacilitator: item.isFacilitator,
-                type: item.queueType,
-                timestamp: new Date(item.joinedQueueAt).getTime(),
-              }))}
-              participantName={user?.email ?? "Current User"}
-              onLeaveQueue={handleLeaveQueue}
-              onUpdateParticipantName={handleParticipantNameUpdate}
-              currentUserId={currentParticipantId}
-            />
+        {/* Role-based Content */}
+        {mode === "host" && (
+          /* Host: Full management view */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <SpeakingQueue
+                speakingQueue={serverQueue.map((item, _index) => ({
+                  id: item.id,
+                  participantName: item.participantName,
+                  participantId: item.participantId,
+                  isFacilitator: item.isFacilitator,
+                  type: item.queueType,
+                  timestamp: new Date(item.joinedQueueAt).getTime(),
+                }))}
+                participantName={user?.email ?? "Current User"}
+                onLeaveQueue={handleLeaveQueue}
+                onUpdateParticipantName={handleParticipantNameUpdate}
+                currentUserId={currentParticipantId}
+              />
+            </div>
+            <div>
+              <SpeakingAnalytics
+                speakingDistribution={getSpeakingDistribution()}
+                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+                averageSpeakingTime={
+                  speakingHistory.length > 0
+                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                    : 0
+                }
+                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+                totalParticipants={mockParticipants.length}
+                queueActivity={speakingHistory.length}
+                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+                currentSpeaker={currentSpeakerFromQueue}
+                isHostMode={true}
+              />
+            </div>
           </div>
+        )}
 
-          {/* Meeting Analytics */}
-          <div>
-            <SpeakingAnalytics
-              speakingDistribution={getSpeakingDistribution()}
-              totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
-              averageSpeakingTime={
-                speakingHistory.length > 0
-                  ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
-                  : 0
-              }
-              meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
-              totalParticipants={mockParticipants.length}
-              queueActivity={speakingHistory.length}
-              directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-              currentSpeaker={currentSpeakerFromQueue}
-              isHostMode={mode === "host"}
-            />
-          </div>
-        </div>
-
-        {/* Queue Position Feedback for participants */}
         {mode === "join" && (
-          <div className="mb-6">
+          /* Participant: Personal actions view */
+          <>
             <QueuePositionFeedback
               queuePosition={1}
               joinedAt={new Date()}
               currentSpeaker={currentSpeakerFromQueue}
               queueHistory={[]}
             />
-          </div>
+            <ActionsPanel
+              isInQueue={false}
+              onJoinQueue={() => {}}
+              onLeaveQueue={() => {}}
+              participantName="Current User"
+            />
+          </>
         )}
 
-        {/* Secondary content in a more compact layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <div className="space-y-4 sm:space-y-6">
-            {/* Actions Panel - only for participants (join mode), not hosts or observers */}
-            {mode === "join" && (
-              <ActionsPanel
-                isInQueue={false}
-                onJoinQueue={() => {}}
+        {mode === "watch" && (
+          /* Observer: Read-only queue view */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <SpeakingQueue
+                speakingQueue={serverQueue.map((item, _index) => ({
+                  id: item.id,
+                  participantName: item.participantName,
+                  participantId: item.participantId,
+                  isFacilitator: item.isFacilitator,
+                  type: item.queueType,
+                  timestamp: new Date(item.joinedQueueAt).getTime(),
+                }))}
+                participantName={user?.email ?? "Observer"}
                 onLeaveQueue={() => {}}
-                participantName="Current User"
+                onUpdateParticipantName={() => {}}
+                currentUserId={null}
               />
-            )}
+            </div>
+            <div>
+              <SpeakingAnalytics
+                speakingDistribution={getSpeakingDistribution()}
+                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+                averageSpeakingTime={
+                  speakingHistory.length > 0
+                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                    : 0
+                }
+                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+                totalParticipants={mockParticipants.length}
+                queueActivity={speakingHistory.length}
+                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+                currentSpeaker={currentSpeakerFromQueue}
+                isHostMode={false}
+              />
+            </div>
           </div>
-
-          <div className="space-y-4 sm:space-y-6">
-            {/* Additional content can go here if needed */}
-          </div>
-        </div>
+        )}
       </div>
 
       <>

@@ -1,9 +1,15 @@
-# Stack Facilitation App
+# Stack Master Tool
 
-Stack Facilitation App is an open-source application for democratic meeting facilitation. It provides three distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), and **WATCH** (public observer).
+Stack Master Tool is an open-source application for democratic meeting facilitation with real-time speaking queues and room discovery. It provides four distinct meeting views: **HOST** (facilitator controls), **JOIN** (participant actions), **WATCH** (public observer), and **ROOMS** (room discovery and browsing).
 
 ## ✨ Recent Features
 
+- ✅ **Public Room Browsing System** - Discover and join active meeting rooms through intuitive room browser
+- ✅ **Open Room Creation** - Anyone can create meeting rooms with custom names (no authentication required)
+- ✅ **Enhanced User Experience** - Multiple ways to discover and join rooms (browse, direct join, code entry)
+- ✅ **Custom Room Names** - Meaningful room titles instead of generic "New Meeting" labels
+- ✅ **Empty Database Architecture** - Database starts clean and fills up organically as people create rooms
+- ✅ **Real-time Room Discovery** - Live updates showing active rooms and participant counts
 - ✅ **Comprehensive Testing Suite** - Unit, integration, and E2E tests with 80%+ coverage
 - ✅ **Performance-Optimized Testing** - Parallel test execution with thread pools and optimized configurations
 - ✅ **Advanced CI/CD Workflows** - Automated testing with matrix builds, security scanning, and performance monitoring
@@ -104,20 +110,34 @@ See `ENVIRONMENT_SETUP.md` for detailed configuration instructions. Required var
 
 ## Features
 
-### Three-Mode Architecture (Inspired by jparty.tv)
+### Four-Mode Architecture (Inspired by jparty.tv)
 
-Our platform offers three distinct ways to participate in democratic discussions, inspired by jparty.tv's approach to meeting facilitation:
+Our platform offers four distinct ways to participate in democratic discussions, inspired by jparty.tv's approach to meeting facilitation:
 
 #### **HOST Mode** - Facilitator Controls
-- **Purpose**: Full facilitator controls with both manual and remote meeting management
+- **Purpose**: Create and manage meeting rooms with full facilitator controls
 - **URL Pattern**: `/meeting?mode=host`
 - **Features**:
+  - Custom room name creation (no authentication required)
   - Manual stack management and participant control
   - Enable/disable remote access for participants
   - Real-time participant management and name editing
   - Speaking analytics and distribution tracking
   - Meeting title editing and QR code generation
+  - End meeting functionality with confirmation
 - **Use Cases**: Meeting facilitators, moderators, organizers
+
+#### **ROOMS Mode** - Room Discovery
+- **Purpose**: Browse and discover active meeting rooms to join
+- **URL Pattern**: `/rooms`
+- **Features**:
+  - Public room browser showing all active rooms
+  - Real-time participant counts and activity status
+  - Direct join buttons for each room
+  - Watch-only access for observers
+  - Empty state with room creation encouragement
+  - Fallback code-based joining option
+- **Use Cases**: Participants looking for active discussions, meeting observers, room discovery
 
 #### **JOIN Mode** - Participant Interaction
 - **Purpose**: Participant view with queue interaction capabilities
@@ -142,6 +162,12 @@ Our platform offers three distinct ways to participate in democratic discussions
 
 ### Core Functionality
 
+- **Public Room Browsing System** - Discover and join active meeting rooms through intuitive interface
+- **Open Room Creation** - Anyone can create custom-named meeting rooms without authentication
+- **Real-time Room Discovery** - Live updates showing active rooms and participant counts
+- **Multiple Access Methods** - Browse rooms, direct join, or use meeting codes
+- **Custom Room Names** - Meaningful room titles instead of generic labels
+- **Empty Database Architecture** - Clean slate that fills organically with user-created rooms
 - **Speaking Distribution Analytics** - Pie charts showing speaking time distribution for both local and remote meetings
 - **Real-time Speaking Tracking** - Automatic tracking of speaking time with timer controls
 - **Real-time Name Editing** - Facilitators can edit participant names and meeting titles
@@ -149,10 +175,21 @@ Our platform offers three distinct ways to participate in democratic discussions
 - **Speaking Queue Management** - Real-time queue with position tracking and interventions
 - **Public Watch URLs** - Easy sharing with `/join/:code` redirects
 - **Role-based Access Control** - Secure facilitator-only editing capabilities
+- **End Meeting Controls** - Clean meeting termination with confirmation dialogs
+- **Room Browsing Features** - Interactive room discovery with participant counts and activity status
 - **Comprehensive Testing** - Unit, integration, and E2E test coverage with 80%+ coverage
 - **Performance-Optimized Testing** - Parallel test execution with thread pools and optimized configurations
 - **Advanced CI/CD** - Automated testing with matrix builds, security scanning, and performance monitoring
 - **Error Handling** - Robust error boundaries and user feedback
+
+### Room Browsing Features
+
+- **Public Room Discovery** - Browse all active meeting rooms in one place
+- **Real-time Updates** - Live participant counts and room activity status
+- **Direct Room Joining** - One-click joining from room cards
+- **Empty State Handling** - Encourages room creation when no active rooms exist
+- **Fallback Access** - Traditional code-based joining still available
+- **Responsive Design** - Works seamlessly across desktop and mobile devices
 
 ### Speaking Distribution Features
 
@@ -173,8 +210,11 @@ Our platform offers three distinct ways to participate in democratic discussions
 
 ## URL Structure
 
-- **`/meeting?mode=host`** - Host view (facilitator controls with name editing)
+- **`/`** - Homepage with mode selection
+- **`/rooms`** - Room browser (discover and join active rooms)
+- **`/meeting?mode=host`** - Host view (create/manage meeting rooms)
 - **`/meeting?mode=join`** - Join view (participant actions)
+- **`/meeting?mode=join&code=CODE`** - Direct join with meeting code
 - **`/meeting?mode=watch&code=CODE`** - Watch view (public observer with meeting code)
 - **`/watch/:code`** - Simplified watch URL (redirects to watch mode)
 - **`/join/:code`** - Direct join redirect (redirects to frontend)
@@ -300,13 +340,19 @@ stack-facilitation-app/
 ├── src/                          # Frontend source code
 │   ├── components/               # React components
 │   │   ├── MeetingRoom/         # Meeting room views (Host, Join, Watch)
+│   │   ├── RoomBrowser.tsx      # Public room discovery component
 │   │   ├── StackKeeper/         # Speaking queue management
 │   │   │   └── SpeakingDistribution.tsx # Speaking analytics pie chart
 │   │   ├── Facilitator/         # Facilitator-specific components
 │   │   ├── ui/                  # shadcn/ui components
 │   │   ├── EditableParticipantName.tsx  # Name editing component
 │   │   └── EditableMeetingTitle.tsx     # Title editing component
+│   ├── pages/                   # Page components
+│   │   ├── Rooms.tsx            # Room browser page
+│   │   └── MeetingRoom.tsx      # Main meeting interface
 │   ├── hooks/                   # Custom React hooks
+│   │   ├── useMeetingState.ts   # Meeting state management
+│   │   ├── useMeetingActions.ts # Meeting action handlers
 │   │   ├── useUnifiedFacilitator.ts     # Main facilitator hook
 │   │   ├── useSpeakingHistory.ts        # Speaking time tracking
 │   │   ├── useSpeakerTimer.ts           # Speaker timer functionality

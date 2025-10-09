@@ -6,34 +6,32 @@
 -- ============================================
 -- Wrap auth.uid() calls with (select auth.uid()) to avoid re-evaluation for each row
 
--- Fix speaking_queue policies
+-- Fix speaking_queue policies to allow anonymous access like participants
 DROP POLICY IF EXISTS "Participants can join queue" ON public.speaking_queue;
-CREATE POLICY "Participants can join queue"
-ON public.speaking_queue
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM public.participants
-    WHERE participants.id = speaking_queue.participant_id
-    AND participants.user_id = (select auth.uid())
-  )
-);
-
 DROP POLICY IF EXISTS "Users can leave their own queue" ON public.speaking_queue;
-CREATE POLICY "Users can leave their own queue"
+DROP POLICY IF EXISTS "Facilitators can manage queue" ON public.speaking_queue;
+DROP POLICY IF EXISTS "Anyone can view speaking queue" ON public.speaking_queue;
+DROP POLICY IF EXISTS "Anyone can join/leave queue" ON public.speaking_queue;
+
+-- Allow anyone to view the speaking queue
+CREATE POLICY "Anyone can view speaking queue"
 ON public.speaking_queue
-FOR DELETE
-TO authenticated
+FOR SELECT
+USING (true);
+
+-- Allow participants to join and leave queue anonymously
+CREATE POLICY "Anyone can join/leave queue"
+ON public.speaking_queue
+FOR ALL
 USING (
   EXISTS (
     SELECT 1 FROM public.participants
     WHERE participants.id = speaking_queue.participant_id
-    AND participants.user_id = (select auth.uid())
+    AND participants.is_active = true
   )
 );
 
-DROP POLICY IF EXISTS "Facilitators can manage queue" ON public.speaking_queue;
+-- Facilitators can manage queue (authenticated users only)
 CREATE POLICY "Facilitators can manage queue"
 ON public.speaking_queue
 FOR ALL
