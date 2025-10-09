@@ -31,18 +31,18 @@ export const SpeakingQueue = ({
 }: SpeakingQueueProps) => {
   if (speakingQueue.length === 0) {
     return (
-      <Card className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-xl border-2 border-primary/20">
-        <CardHeader className="pb-4 sm:pb-6">
-          <CardTitle className="text-xl sm:text-2xl font-bold text-card-foreground flex items-center gap-3">
-            <Hand className="w-6 h-6 text-primary" />
+      <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+        <CardHeader>
+          <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <Hand className="w-6 h-6" />
             Speaking Queue
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 sm:py-12">
-            <Hand className="w-16 h-16 sm:w-20 sm:h-20 text-primary/60 mx-auto mb-4 sm:mb-6" />
-            <p className="text-muted-foreground text-lg sm:text-xl font-medium mb-2">No one in queue</p>
-            <p className="text-sm sm:text-base text-muted-foreground">Raise your hand to speak!</p>
+          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <Hand className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p className="text-lg">No one in queue</p>
+            <p className="text-sm">Raise your hand to speak!</p>
           </div>
         </CardContent>
       </Card>
@@ -50,14 +50,14 @@ export const SpeakingQueue = ({
   }
 
   return (
-    <Card className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl dark:bg-zinc-900 dark:border dark:border-zinc-800 border-2 border-primary/20">
-      <CardHeader className="pb-4 sm:pb-6">
-        <CardTitle className="text-xl sm:text-2xl font-bold text-card-foreground flex items-center gap-3">
-          <Hand className="w-6 h-6 text-primary" />
+    <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+      <CardHeader>
+        <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <Hand className="w-6 h-6" />
           Speaking Queue
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 sm:space-y-4">
+      <CardContent className="space-y-4">
         {speakingQueue.map((entry, index) => {
           const { type, participantName: entryName, participantId, isFacilitator } = entry;
           const isSelf = entryName === participantName;
@@ -69,23 +69,21 @@ export const SpeakingQueue = ({
           return (
             <div
               key={entry.id}
-              className={`stack-card flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 rounded-xl border transition-standard gap-3 sm:gap-0 ${
+              className={`p-4 rounded-lg border-2 transition-all ${
                 isCurrentSpeaker
-                  ? 'current-speaker border-primary/40 text-primary-foreground'
-                  : 'glass-card hover:bg-muted/40 border-border/60'
+                  ? 'bg-primary/10 border-primary text-primary'
+                  : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600'
               } ${isSelf ? 'ring-2 ring-primary/30' : ''}`}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1">
-                <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
                   <Badge
                     variant={isCurrentSpeaker ? "default" : "secondary"}
                     className={`${
                       isCurrentSpeaker
-                        ? 'animate-pulse bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30'
-                        : 'px-3 sm:px-4 py-1.5 sm:py-2 font-semibold'
-                    } rounded-full text-sm ${
-                      isDirect ? 'bg-primary text-primary-foreground animate-pulse' : ''
-                    }`}
+                        ? 'animate-pulse'
+                        : ''
+                    } ${isDirect ? 'bg-orange-500 text-white animate-pulse' : ''}`}
                   >
                     {isCurrentSpeaker
                       ? (isDirect ? "🎤 Direct Response" : "🎤 Speaking")
@@ -93,7 +91,7 @@ export const SpeakingQueue = ({
                     }
                   </Badge>
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {isDirect && <MessageCircle className="h-4 w-4 text-primary flex-shrink-0" />}
+                    {isDirect && <MessageCircle className="h-4 w-4 text-orange-600 flex-shrink-0" />}
                     {isPointInfo && <Info className="h-4 w-4 text-blue-600 flex-shrink-0" />}
                     {isClarify && <Settings className="h-4 w-4 text-purple-600 flex-shrink-0" />}
                     {onUpdateParticipantName ? (
@@ -103,38 +101,38 @@ export const SpeakingQueue = ({
                         isFacilitator={isFacilitator}
                         onNameUpdate={onUpdateParticipantName}
                         disabled={!isFacilitator && participantId !== currentUserId}
-                        className={`font-semibold text-base sm:text-lg truncate ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}
+                        className={`font-semibold text-lg truncate ${isCurrentSpeaker ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}
                       />
                     ) : (
-                      <span className={`font-semibold text-base sm:text-lg truncate ${isCurrentSpeaker ? 'text-primary-foreground' : 'text-foreground'}`}>
+                      <span className={`font-semibold text-lg truncate ${isCurrentSpeaker ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
                         {entryName}
                       </span>
                     )}
                   </div>
                 </div>
-                <Badge
-                  variant="outline"
-                  className={`text-xs self-start sm:self-auto ${
-                    isDirect ? 'border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300' :
-                    isPointInfo ? 'border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300' :
-                    isClarify ? 'border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300' :
-                    'border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300'
-                  }`}
-                >
-                  {getQueueTypeDisplay(type)}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-1 self-end sm:self-center">
-                {isSelf && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onLeaveQueue}
-                    className="hover:bg-destructive/20 hover:text-destructive rounded-lg transition-fast min-h-[44px] px-3 sm:px-4 text-sm sm:text-base"
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={`text-xs ${
+                      isDirect ? 'border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300' :
+                      isPointInfo ? 'border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-300' :
+                      isClarify ? 'border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300' :
+                      'border-gray-300 text-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-gray-300'
+                    }`}
                   >
-                    Leave Queue
-                  </Button>
-                )}
+                    {getQueueTypeDisplay(type)}
+                  </Badge>
+                  {isSelf && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={onLeaveQueue}
+                      className="hover:bg-destructive/20 hover:text-destructive rounded-lg transition-fast px-3 text-sm"
+                    >
+                      Leave
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           );
