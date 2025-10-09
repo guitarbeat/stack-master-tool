@@ -1,15 +1,7 @@
 import { Link } from "react-router-dom";
 import { MEETING_MODES } from "./constants";
-import { Shield, Clock, Users2, Zap } from "lucide-react";
 
 export const ActionCards = () => {
-  // * Key features to highlight without redundancy
-  const keyFeatures = [
-    { icon: Shield, text: "Democratic Process" },
-    { icon: Clock, text: "Fair Turn-Taking" },
-    { icon: Users2, text: "Inclusive Design" },
-    { icon: Zap, text: "Real-time Sync" }
-  ];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -44,23 +36,6 @@ export const ActionCards = () => {
             </div>
           </Link>
         ))}
-      </div>
-
-      {/* * Key Features Overview - Simplified */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-8">Why Choose Stack Master?</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {keyFeatures.map((feature, index) => (
-            <div key={index} className="flex flex-col items-center gap-3 p-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <feature.icon className="w-6 h-6 text-primary" />
-              </div>
-              <span className="text-sm font-medium text-muted-foreground text-center">
-                {feature.text}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

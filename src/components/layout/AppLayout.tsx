@@ -157,7 +157,7 @@ function AppLayout({ children }: AppLayoutProps) {
             className="h-12 w-auto object-contain drop-shadow-sm dark:brightness-110"
           />
           <p className="text-sm text-gray-600 dark:text-zinc-400 text-center">
-            Powered by ICC Austin Stack
+            Powered by Aaron's Love
           </p>
         </div>
       </footer>
