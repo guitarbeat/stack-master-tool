@@ -81,12 +81,12 @@ export function QuickAddParticipant({
         variant="outline"
         size="sm"
         className={cn(
-          "transition-all duration-200 hover:scale-105",
+          "transition-all duration-200 hover:scale-105 min-h-[44px] text-sm sm:text-xs px-3 sm:px-2",
           className
         )}
         data-quick-add-trigger
       >
-        <Plus className="w-4 h-4 mr-2" />
+        <Plus className="w-4 h-4 sm:w-3 sm:h-3 mr-2" />
         Quick Add
       </Button>
     );
@@ -102,7 +102,7 @@ export function QuickAddParticipant({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={isAdding}
-          className="pr-10"
+          className="pr-10 min-h-[44px] text-base sm:text-sm"
         />
         {isAdding && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -114,7 +114,7 @@ export function QuickAddParticipant({
         onClick={handleAdd}
         disabled={!inputValue.trim() || isAdding}
         size="sm"
-        className="shrink-0"
+        className="shrink-0 min-h-[44px] text-sm sm:text-xs px-3 sm:px-2"
       >
         Add
       </Button>
@@ -123,9 +123,9 @@ export function QuickAddParticipant({
         disabled={isAdding}
         variant="ghost"
         size="sm"
-        className="shrink-0"
+        className="shrink-0 min-h-[44px] text-sm sm:text-xs px-3 sm:px-2"
       >
-        <X className="w-4 h-4" />
+        <X className="w-4 h-4 sm:w-3 sm:h-3" />
       </Button>
     </div>
   );

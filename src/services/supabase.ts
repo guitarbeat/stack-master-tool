@@ -599,6 +599,30 @@ export class SupabaseMeetingService {
   }
 
   // End meeting (mark as inactive and clean up)
+  static async leaveMeeting(participantId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from("participants")
+        .update({ is_active: false })
+        .eq("id", participantId);
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to leave meeting",
+        );
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to leave meeting",
+      );
+    }
+  }
+
   static async endMeeting(meetingId: string): Promise<void> {
     try {
       // Mark meeting as inactive

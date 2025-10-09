@@ -40,6 +40,12 @@ interface DisplayLayoutProps {
     name: string;
     value: number; // in seconds
   }>;
+  totalSpeakingTime?: number;
+  averageSpeakingTime?: number;
+  meetingDuration?: number;
+  totalParticipants?: number;
+  queueActivity?: number;
+  directResponses?: number;
 }
 
 export const DisplayLayout: React.FC<DisplayLayoutProps> = ({
@@ -47,7 +53,13 @@ export const DisplayLayout: React.FC<DisplayLayoutProps> = ({
   participants,
   currentSpeaker,
   speakingQueue,
-  speakingDistribution = []
+  speakingDistribution = [],
+  totalSpeakingTime = 0,
+  averageSpeakingTime = 0,
+  meetingDuration = 0,
+  totalParticipants = 0,
+  queueActivity = 0,
+  directResponses = 0
 }) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -162,10 +174,14 @@ export const DisplayLayout: React.FC<DisplayLayoutProps> = ({
             {speakingDistribution.length > 0 && (
               <SpeakingAnalytics
                 speakingDistribution={speakingDistribution}
-                totalSpeakingTime={speakingDistribution.reduce((sum, p) => sum + p.value, 0)}
-                averageSpeakingTime={speakingDistribution.length > 0 ? 
-                  speakingDistribution.reduce((sum, p) => sum + p.value, 0) / speakingDistribution.length : 0
-                }
+                totalSpeakingTime={totalSpeakingTime}
+                averageSpeakingTime={averageSpeakingTime}
+                meetingDuration={meetingDuration}
+                totalParticipants={totalParticipants}
+                queueActivity={queueActivity}
+                directResponses={directResponses}
+                currentSpeaker={currentSpeaker?.participantName}
+                isHostMode={false}
               />
             )}
           </div>

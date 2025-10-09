@@ -7,6 +7,7 @@ import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
+import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
 import { QuickAddParticipant } from "@/components/features/meeting/QuickAddParticipant";
 import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
@@ -56,6 +57,15 @@ export default function MeetingRoom() {
   const [serverQueue, setServerQueue] = useState<SbQueueItem[]>([]);
   const [qrOpen, setQrOpen] = useState(false);
   const [qrUrl, setQrUrl] = useState<string>("");
+  const [qrType, setQrType] = useState<'join' | 'watch'>('join');
+  const [scannerOpen, setScannerOpen] = useState(false);
+
+  const handleQrScan = (scannedUrl: string) => {
+    // For now, QR scanning is not fully implemented
+    // This function provides the framework for when proper QR scanning is added
+    console.log('QR scan attempted with URL:', scannedUrl);
+    setScannerOpen(false);
+  };
 
   // Advanced features hooks
   const [lastSpeaker, setLastSpeaker] = useState<SbQueueItem | null>(null);
@@ -359,6 +369,37 @@ export default function MeetingRoom() {
     };
   }, [meetingId]);
 
+  // Cleanup: Mark participant as inactive when leaving
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      if (currentParticipantId && mode === "join") {
+        try {
+          await SupabaseMeetingService.leaveMeeting(currentParticipantId);
+        } catch (error) {
+          console.warn("Failed to mark participant as inactive:", error);
+        }
+      }
+    };
+
+    const handleUnload = () => {
+      handleBeforeUnload();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+      // Mark as inactive when component unmounts (navigating away)
+      if (currentParticipantId && mode === "join") {
+        SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
+          console.warn("Failed to mark participant as inactive on unmount:", error);
+        });
+      }
+    };
+  }, [currentParticipantId, mode]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -385,10 +426,10 @@ export default function MeetingRoom() {
   // Join flow with code entry UI when no code provided
   if (mode === "join" && !meetingCode) {
     return (
-      <div className="container mx-auto px-4 py-10 max-w-xl">
-        <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
-          <h1 className="text-2xl font-bold mb-2">Join a Meeting</h1>
-          <p className="text-sm text-muted-foreground mb-6">
+      <div className="container mx-auto px-4 py-8 sm:py-10 max-w-xl">
+        <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Join a Meeting</h1>
+          <p className="text-base sm:text-sm text-muted-foreground mb-6 sm:mb-8">
             Enter the 6-character meeting code shared by the host.
           </p>
           <form
@@ -400,18 +441,31 @@ export default function MeetingRoom() {
               }
               navigate(`/meeting?mode=join&code=${normalized}`);
             }}
-            className="space-y-4"
+            className="space-y-5 sm:space-y-6"
           >
-            <input
-              value={codeInput}
-              onChange={(e) => setCodeInput(e.target.value)}
-              placeholder="e.g. 54ANDG"
-              className="w-full px-4 py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-              aria-label="Meeting code"
-            />
+            <div className="space-y-3">
+              <input
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+                placeholder="e.g. 54ANDG"
+                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px]"
+                aria-label="Meeting code"
+                autoComplete="off"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck="false"
+              />
+              <button
+                type="button"
+                onClick={() => setScannerOpen(true)}
+                className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-secondary text-secondary-foreground font-medium hover:opacity-90 active:opacity-80 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
+              >
+                📱 Scan QR Code
+              </button>
+            </div>
             <button
               type="submit"
-              className="w-full py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90"
+              className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 active:opacity-80 min-h-[48px] text-base sm:text-sm transition-colors"
               disabled={!codeInput.trim()}
             >
               Join Meeting
@@ -436,13 +490,15 @@ export default function MeetingRoom() {
   };
 
   const mockParticipants = serverParticipants.length
-    ? serverParticipants.map((p) => ({
-        id: p.id,
-        name: p.name,
-        isFacilitator: p.isFacilitator,
-        hasRaisedHand: false,
-        joinedAt: new Date(p.joinedAt),
-      }))
+    ? serverParticipants
+        .filter(p => p.isActive !== false) // Only include active participants (default to active if not specified)
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          isFacilitator: p.isFacilitator,
+          hasRaisedHand: false,
+          joinedAt: new Date(p.joinedAt),
+        }))
     : [
         {
           id: "1",
@@ -453,27 +509,27 @@ export default function MeetingRoom() {
         },
       ];
 
-  const mockCurrentSpeaker = {
-    id: "2",
-    name: "Jane Smith",
-    startedSpeakingAt: new Date(Date.now() - 120000), // 2 minutes ago
-  };
+  // Determine current speaker from the actual queue (first person in queue)
+  const currentSpeakerFromQueue = serverQueue.length > 0 ? {
+    participantName: serverQueue[0].participantName,
+    startedSpeakingAt: new Date(serverQueue[0].joinedQueueAt), // Use when they joined queue as approximation
+  } : null;
 
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20">
-        <div className="w-full max-w-md mx-4">
-          <div className="bg-card text-card-foreground rounded-2xl p-8 shadow-lg border">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 px-4 py-8">
+        <div className="w-full max-w-md">
+          <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold mb-2">Watch a Meeting</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Watch a Meeting</h1>
+              <p className="text-base sm:text-sm text-muted-foreground">
                 Enter the 6-character meeting code to observe the discussion.
               </p>
             </div>
@@ -486,18 +542,31 @@ export default function MeetingRoom() {
                 }
                 navigate(`/meeting?mode=watch&code=${normalized}`);
               }}
-              className="space-y-4"
+              className="space-y-5 sm:space-y-6"
             >
-              <input
-                value={codeInput}
-                onChange={(e) => setCodeInput(e.target.value)}
-                placeholder="e.g. 54ANDG"
-                className="w-full px-4 py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-                aria-label="Meeting code"
-              />
+              <div className="space-y-3">
+                <input
+                  value={codeInput}
+                  onChange={(e) => setCodeInput(e.target.value)}
+                  placeholder="e.g. 54ANDG"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px]"
+                  aria-label="Meeting code"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck="false"
+                />
+                <button
+                  type="button"
+                  onClick={() => setScannerOpen(true)}
+                  className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-secondary text-secondary-foreground font-medium hover:opacity-90 active:opacity-80 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  📱 Scan QR Code
+                </button>
+              </div>
               <button
                 type="submit"
-                className="w-full py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90"
+                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 active:opacity-80 min-h-[48px] text-base sm:text-sm transition-colors"
                 disabled={!codeInput.trim()}
               >
                 Watch Meeting
@@ -511,26 +580,33 @@ export default function MeetingRoom() {
 
   // Watch mode with meeting loaded
   if (mode === "watch") {
-    // Use real data if available, otherwise fallback to mock data
-    const speakingDistribution = serverParticipants.length > 0
+    // Use real speaking history data
+    const speakingDistribution = getSpeakingDistribution();
+    // Fallback to basic participant data if no speaking history
+    const fallbackDistribution = serverParticipants.length > 0
       ? serverParticipants.map(p => ({
           name: p.name,
-          value: Math.floor(Math.random() * 300) + 60 // Mock speaking time in seconds
+          value: 0 // No speaking time yet
         }))
-      : [
-          { name: "Jane Smith", value: 180 }, // 3 minutes
-          { name: "John Doe", value: 120 },   // 2 minutes
-          { name: "Alice Johnson", value: 90 }, // 1.5 minutes
-          { name: "Bob Wilson", value: 60 },  // 1 minute
-        ];
+      : [];
 
     return (
       <DisplayLayout
         meetingData={mockMeetingData}
         participants={mockParticipants}
-        currentSpeaker={mockCurrentSpeaker}
+        currentSpeaker={currentSpeakerFromQueue}
         speakingQueue={serverQueue}
-        speakingDistribution={speakingDistribution}
+        speakingDistribution={speakingDistribution.length > 0 ? speakingDistribution : fallbackDistribution}
+        totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+        averageSpeakingTime={
+          speakingHistory.length > 0
+            ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+            : 0
+        }
+        meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+        totalParticipants={mockParticipants.length}
+        queueActivity={speakingHistory.length}
+        directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
       />
     );
   }
@@ -539,7 +615,7 @@ export default function MeetingRoom() {
     <MeetingContext
       meetingData={mockMeetingData}
       participants={mockParticipants}
-      currentSpeaker={mockCurrentSpeaker}
+      currentSpeaker={currentSpeakerFromQueue}
       speakingQueue={[]}
       userRole={
         mode === "host"
@@ -554,7 +630,7 @@ export default function MeetingRoom() {
       onUpdateParticipant={handleUpdateParticipant}
       onEndMeeting={handleEndMeeting}
     >
-      <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="container mx-auto px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
           <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
@@ -600,26 +676,49 @@ export default function MeetingRoom() {
                 </button>
               </div>
               <code className="block break-all p-2 rounded bg-muted/30">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
-              <div className="pt-3">
-              <button
-                className="w-full py-2 rounded-lg bg-primary text-white font-semibold hover:opacity-90 disabled:opacity-50"
-                disabled={!meetingCode}
-                aria-label="Generate QR code for joining this meeting"
-                onClick={async () => {
-                    if (!meetingCode) {
-                      return;
-                    }
-                    const link = `${window.location.origin}/meeting?mode=join&code=${meetingCode}`;
-                    const dataUrl = await QRCode.toDataURL(link, {
-                      width: 256,
-                      margin: 2,
-                    });
-                    setQrUrl(dataUrl);
-                    setQrOpen(true);
-                  }}
-                >
-                  Show QR for Join Link
-                </button>
+              <div className="pt-3 space-y-2">
+                <div className="flex gap-2">
+                  <button
+                    className="flex-1 py-2 px-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 active:opacity-80 disabled:opacity-50 text-sm min-h-[44px] transition-colors"
+                    disabled={!meetingCode}
+                    aria-label="Generate QR code for joining this meeting"
+                    onClick={async () => {
+                        if (!meetingCode) {
+                          return;
+                        }
+                        const link = `${window.location.origin}/meeting?mode=join&code=${meetingCode}`;
+                        const dataUrl = await QRCode.toDataURL(link, {
+                          width: 256,
+                          margin: 2,
+                        });
+                        setQrUrl(dataUrl);
+                        setQrType('join');
+                        setQrOpen(true);
+                      }}
+                    >
+                      📱 Join QR
+                    </button>
+                  <button
+                    className="flex-1 py-2 px-3 rounded-lg bg-secondary text-secondary-foreground font-semibold hover:opacity-90 active:opacity-80 disabled:opacity-50 text-sm min-h-[44px] transition-colors"
+                    disabled={!meetingCode}
+                    aria-label="Generate QR code for watching this meeting"
+                    onClick={async () => {
+                        if (!meetingCode) {
+                          return;
+                        }
+                        const link = `${window.location.origin}/meeting?mode=watch&code=${meetingCode}`;
+                        const dataUrl = await QRCode.toDataURL(link, {
+                          width: 256,
+                          margin: 2,
+                        });
+                        setQrUrl(dataUrl);
+                        setQrType('watch');
+                        setQrOpen(true);
+                      }}
+                    >
+                      👁️ Watch QR
+                    </button>
+                </div>
               </div>
             </div>
 
@@ -646,8 +745,8 @@ export default function MeetingRoom() {
           onLeaveMeeting={() => navigate("/")}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <SpeakingQueue
               speakingQueue={serverQueue.map((item, index) => ({
                 id: item.id,
@@ -666,36 +765,81 @@ export default function MeetingRoom() {
               <QueuePositionFeedback
                 queuePosition={1}
                 joinedAt={new Date()}
-                currentSpeaker={mockCurrentSpeaker}
+                currentSpeaker={currentSpeakerFromQueue}
                 queueHistory={[]}
               />
             )}
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <ActionsPanel
               isInQueue={false}
               onJoinQueue={() => {}}
               onLeaveQueue={() => {}}
               participantName="Current User"
             />
+
+            {/* Analytics for HOST mode */}
+            {mode === "host" && (
+              <SpeakingAnalytics
+                speakingDistribution={getSpeakingDistribution()}
+                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+                averageSpeakingTime={
+                  speakingHistory.length > 0
+                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                    : 0
+                }
+                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+                totalParticipants={mockParticipants.length}
+                queueActivity={speakingHistory.length}
+                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+                currentSpeaker={currentSpeakerFromQueue}
+                isHostMode={true}
+              />
+            )}
           </div>
         </div>
       </div>
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Join via QR code</DialogTitle>
+            <DialogTitle>
+              {qrType === 'join' ? 'Join via QR code' : 'Watch via QR code'}
+            </DialogTitle>
             <DialogDescription>
-              Scan to open the join link on a phone.
+              {qrType === 'join'
+                ? 'Scan this QR code with your phone to join the meeting as a participant.'
+                : 'Scan this QR code with your phone to observe the meeting remotely.'
+              }
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center justify-center py-4">
-            {qrUrl && <img src={qrUrl} alt="Join QR" className="w-64 h-64" />}
+            {qrUrl && (
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <img
+                  src={qrUrl}
+                  alt={`${qrType === 'join' ? 'Join' : 'Watch'} QR Code`}
+                  className="w-48 h-48 sm:w-64 sm:h-64"
+                />
+              </div>
+            )}
+          </div>
+          <div className="text-center text-sm text-muted-foreground">
+            {qrType === 'join'
+              ? 'Participants can scan this code to join the speaking queue.'
+              : 'Observers can scan this code to watch the meeting remotely.'
+            }
           </div>
         </DialogContent>
       </Dialog>
 
+      {/* QR Code Scanner */}
+      {scannerOpen && (
+        <QrCodeScanner
+          onScan={handleQrScan}
+          onClose={() => setScannerOpen(false)}
+        />
+      )}
 
       {/* Keyboard Shortcuts Modal */}
       {showKeyboardShortcutsModal && (
