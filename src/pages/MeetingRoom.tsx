@@ -469,7 +469,7 @@ export default function MeetingRoom() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border text-center">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border-0 text-center">
           <LoadingState 
             message="Loading meeting..." 
             size="lg"
@@ -494,51 +494,60 @@ export default function MeetingRoom() {
   // Join flow with code entry UI when no code provided
   if (mode === "join" && !meetingCode) {
     return (
-      <div className="container mx-auto px-4 py-8 sm:py-10 max-w-xl">
-        <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Join a Meeting</h1>
-          <p className="text-base sm:text-sm text-muted-foreground mb-6 sm:mb-8">
-            Enter the 6-character meeting code shared by the host.
-          </p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const normalized = codeInput.trim().toUpperCase();
-              if (normalized.length < 4) {
-                return; // simple guard
-              }
-              navigate(`/meeting?mode=join&code=${normalized}`);
-            }}
-            className="space-y-5 sm:space-y-6"
-          >
-            <div className="space-y-3">
-              <input
-                value={codeInput}
-                onChange={(e) => setCodeInput(e.target.value)}
-                placeholder="e.g. 54ANDG"
-                className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px]"
-                aria-label="Meeting code"
-                autoComplete="off"
-                autoCapitalize="characters"
-                autoCorrect="off"
-                spellCheck="false"
-              />
-              <button
-                type="button"
-                onClick={() => setScannerOpen(true)}
-                className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-secondary text-secondary-foreground font-medium hover:opacity-90 active:opacity-80 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
-              >
-                📱 Scan QR Code
-              </button>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4 py-8">
+        <div className="w-full max-w-md">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border-0">
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-slate-100">Join a Meeting</h1>
+              <p className="text-base sm:text-sm text-slate-600 dark:text-slate-400">
+                Enter the 6-character meeting code shared by the host.
+              </p>
             </div>
-            <button
-              type="submit"
-              className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 active:opacity-80 min-h-[48px] text-base sm:text-sm transition-colors"
-              disabled={!codeInput.trim()}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const normalized = codeInput.trim().toUpperCase();
+                if (normalized.length < 4) {
+                  return; // simple guard
+                }
+                navigate(`/meeting?mode=join&code=${normalized}`);
+              }}
+              className="space-y-5 sm:space-y-6"
             >
-              Join Meeting
-            </button>
-          </form>
+              <div className="space-y-3">
+                <input
+                  value={codeInput}
+                  onChange={(e) => setCodeInput(e.target.value)}
+                  placeholder="e.g. 54ANDG"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
+                  aria-label="Meeting code"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck="false"
+                />
+                <button
+                  type="button"
+                  onClick={() => setScannerOpen(true)}
+                  className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 font-medium hover:bg-slate-200 dark:hover:bg-slate-600 active:bg-slate-300 dark:active:bg-slate-500 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  📱 Scan QR Code
+                </button>
+              </div>
+              <button
+                type="submit"
+                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
+                disabled={!codeInput.trim()}
+              >
+                Join Meeting
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     );
@@ -586,9 +595,9 @@ export default function MeetingRoom() {
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4 py-8">
         <div className="w-full max-w-md">
-          <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border-0">
             <div className="text-center mb-6 sm:mb-8">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -596,8 +605,8 @@ export default function MeetingRoom() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Watch a Meeting</h1>
-              <p className="text-base sm:text-sm text-muted-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-slate-100">Watch a Meeting</h1>
+              <p className="text-base sm:text-sm text-slate-600 dark:text-slate-400">
                 Enter the 6-character meeting code to observe the discussion.
               </p>
             </div>
@@ -617,7 +626,7 @@ export default function MeetingRoom() {
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value)}
                   placeholder="e.g. 54ANDG"
-                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px]"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-primary text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
                   aria-label="Meeting code"
                   autoComplete="off"
                   autoCapitalize="characters"
@@ -627,14 +636,14 @@ export default function MeetingRoom() {
                 <button
                   type="button"
                   onClick={() => setScannerOpen(true)}
-                  className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-secondary text-secondary-foreground font-medium hover:opacity-90 active:opacity-80 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 font-medium hover:bg-slate-200 dark:hover:bg-slate-600 active:bg-slate-300 dark:active:bg-slate-500 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   📱 Scan QR Code
                 </button>
               </div>
               <button
                 type="submit"
-                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 active:opacity-80 min-h-[48px] text-base sm:text-sm transition-colors"
+                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
                 disabled={!codeInput.trim()}
               >
                 Watch Meeting
@@ -684,9 +693,9 @@ export default function MeetingRoom() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
-          <div className="bg-muted/30 text-muted-foreground rounded-lg p-4 border border-border/50">
+          <div className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3">
-              <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
+              <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100">Meeting Settings</h3>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                 <label className="inline-flex items-center gap-2 text-xs min-h-[44px] sm:min-h-auto">
                   <input
@@ -708,16 +717,16 @@ export default function MeetingRoom() {
                 </label>
               </div>
             </div>
-            <div className="mb-3 text-xs text-muted-foreground">
+            <div className="mb-3 text-xs text-slate-600 dark:text-slate-400">
               <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
               <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
             </div>
             {isLiveMeeting && remoteEnabled && (
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Join link</span>
+                  <span className="text-slate-600 dark:text-slate-400">Join link</span>
                 <button
-                  className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
+                  className="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100"
                   aria-label="Copy join link to clipboard"
                   onClick={() =>
                     navigator.clipboard.writeText(
@@ -728,11 +737,11 @@ export default function MeetingRoom() {
                   Copy
                 </button>
                 </div>
-                <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}</code>
+                <code className="block break-all p-2 rounded bg-slate-100 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-100">{`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}</code>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Watch link</span>
+                  <span className="text-slate-600 dark:text-slate-400">Watch link</span>
                   <button
-                    className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
+                    className="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100"
                     aria-label="Copy watch link to clipboard"
                     onClick={() =>
                       navigator.clipboard.writeText(
@@ -743,11 +752,11 @@ export default function MeetingRoom() {
                     Copy
                   </button>
                 </div>
-                <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
+                <code className="block break-all p-2 rounded bg-slate-100 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-100">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
               <div className="pt-2 space-y-2">
                 <div className="flex gap-2">
                   <button
-                    className="flex-1 py-1.5 px-2 rounded bg-muted hover:bg-muted/80 text-xs font-medium transition-colors"
+                    className="flex-1 py-1.5 px-2 rounded bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-xs font-medium transition-colors"
                     disabled={!meetingCode}
                     aria-label="Generate QR code for joining this meeting"
                     onClick={async () => {
@@ -767,7 +776,7 @@ export default function MeetingRoom() {
                       📱 Join QR
                     </button>
                   <button
-                    className="flex-1 py-1.5 px-2 rounded bg-muted hover:bg-muted/80 text-xs font-medium transition-colors"
+                    className="flex-1 py-1.5 px-2 rounded bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-xs font-medium transition-colors"
                     disabled={!meetingCode}
                     aria-label="Generate QR code for watching this meeting"
                     onClick={async () => {
@@ -791,16 +800,16 @@ export default function MeetingRoom() {
               </div>
             )}
             {!isLiveMeeting && (
-              <div className="text-xs text-muted-foreground bg-muted/20 p-3 rounded">
+              <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 p-3 rounded">
                 <p><strong>Local Meeting Mode:</strong> This meeting is set to local/manual mode. Enable "Live Meeting" to allow remote participants to join.</p>
               </div>
             )}
 
             {/* Participant Management - HOST mode only */}
-            <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border-0">
               <div className="mb-6">
-                <h2 className="text-lg font-semibold">Participant Management</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Participant Management</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   Add, edit, and manage meeting participants
                 </p>
               </div>
@@ -808,7 +817,7 @@ export default function MeetingRoom() {
               <div className="space-y-6">
                 {/* Add Participants */}
                 <div>
-                  <h3 className="text-sm font-medium text-foreground mb-3">Add Participants</h3>
+                  <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-3">Add Participants</h3>
                   <AddParticipants
                     onAddParticipant={handleAddParticipant}
                     placeholder="Enter participant names (comma or newline separated)"
@@ -905,12 +914,12 @@ export default function MeetingRoom() {
       {/* Keyboard Shortcuts Modal */}
       {showKeyboardShortcutsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card text-card-foreground rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl border">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl border-0">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Keyboard Shortcuts</h3>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Keyboard Shortcuts</h3>
               <button
                 onClick={() => setShowKeyboardShortcutsModal(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               >
                 ✕
               </button>
@@ -919,18 +928,18 @@ export default function MeetingRoom() {
               {mode === "host" && (
                 <>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-sm">Next Speaker</span>
-                    <kbd className="px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded text-xs">Enter</kbd>
+                    <span className="text-sm text-slate-900 dark:text-slate-100">Next Speaker</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-700 dark:text-slate-100">Enter</kbd>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-sm">Undo Last Action</span>
-                    <kbd className="px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded text-xs">Ctrl+Z</kbd>
+                    <span className="text-sm text-slate-900 dark:text-slate-100">Undo Last Action</span>
+                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-700 dark:text-slate-100">Ctrl+Z</kbd>
                   </div>
                 </>
               )}
               <div className="flex justify-between items-center py-2">
-                <span className="text-sm">Show/Hide Shortcuts</span>
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded text-xs">?</kbd>
+                <span className="text-sm text-slate-900 dark:text-slate-100">Show/Hide Shortcuts</span>
+                <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-700 dark:text-slate-100">?</kbd>
               </div>
             </div>
           </div>
@@ -939,12 +948,12 @@ export default function MeetingRoom() {
 
       {/* QR Code Dialog */}
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white dark:bg-slate-800 border-0">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-slate-900 dark:text-slate-100">
               {qrType === 'join' ? 'Join via QR code' : 'Watch via QR code'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-slate-600 dark:text-slate-400">
               {qrType === 'join'
                 ? 'Scan this QR code with your phone to join the meeting as a participant.'
                 : 'Scan this QR code with your phone to observe the meeting remotely.'
@@ -953,7 +962,7 @@ export default function MeetingRoom() {
           </DialogHeader>
           <div className="flex items-center justify-center py-4">
             {qrUrl && (
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="bg-white dark:bg-slate-700 p-4 rounded-lg shadow-sm">
                 <img
                   src={qrUrl}
                   alt={`${qrType === 'join' ? 'Join' : 'Watch'} QR Code`}
@@ -962,7 +971,7 @@ export default function MeetingRoom() {
               </div>
             )}
           </div>
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-slate-600 dark:text-slate-400">
             {qrType === 'join'
               ? 'Participants can scan this code to join the speaking queue.'
               : 'Observers can scan this code to watch the meeting remotely.'
