@@ -11,8 +11,11 @@ type MeetingMode = "host" | "join" | "watch";
 interface UseMeetingStateReturn {
   // * Core meeting state
   meetingCode: string;
+  setMeetingCode: (code: string) => void;
   meetingId: string;
+  setMeetingId: (id: string) => void;
   mode: MeetingMode | null;
+  setMode: (mode: MeetingMode | null) => void;
   isLoading: boolean;
   error: AppError | string | null;
   codeInput: string;
@@ -150,8 +153,11 @@ export function useMeetingState(): UseMeetingStateReturn {
   return {
     // * Core meeting state
     meetingCode,
+    setMeetingCode,
     meetingId,
+    setMeetingId,
     mode,
+    setMode,
     isLoading,
     error,
     codeInput,
