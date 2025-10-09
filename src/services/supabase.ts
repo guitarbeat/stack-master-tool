@@ -821,6 +821,7 @@ export class SupabaseRealtimeService {
   // Subscribe to meeting changes
   static subscribeToMeeting(
     meetingId: string,
+    meetingCode: string,
     callbacks: {
       onParticipantsUpdated: (participants: Participant[]) => void;
       onQueueUpdated: (queue: QueueItem[]) => void;
@@ -843,7 +844,7 @@ export class SupabaseRealtimeService {
         },
         async (payload) => {
           try {
-            const meeting = await SupabaseMeetingService.getMeeting(meetingId);
+            const meeting = await SupabaseMeetingService.getMeeting(meetingCode);
             if (meeting && callbacks.onParticipantsUpdated) {
               callbacks.onParticipantsUpdated(meeting.participants);
 

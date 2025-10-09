@@ -239,12 +239,12 @@ export default function MeetingRoom() {
 
   // Handler for AddParticipants component
   const handleAddParticipant = async (name: string) => {
-    if (!meetingId) {
+    if (!meetingCode) {
       return Promise.resolve();
     }
 
     try {
-      await SupabaseMeetingService.joinMeeting(meetingId, name, false);
+      await SupabaseMeetingService.joinMeeting(meetingCode, name, false);
       showToast({
         type: 'success',
         title: 'Participant Added',
