@@ -27,12 +27,14 @@ interface UseMeetingStateReturn {
   setCurrentParticipantId: (id: string) => void;
   
   // * UI state
-  remoteEnabled: boolean;
-  setRemoteEnabled: (enabled: boolean) => void;
   isLiveMeeting: boolean;
   setIsLiveMeeting: (live: boolean) => void;
   showJohnDoe: boolean;
   setShowJohnDoe: (show: boolean) => void;
+  
+  // * Speaker management
+  lastSpeaker: SbQueueItem | null;
+  setLastSpeaker: (speaker: SbQueueItem | null) => void;
   
   // * QR/Scanner state
   qrOpen: boolean;
@@ -72,9 +74,11 @@ export function useMeetingState(): UseMeetingStateReturn {
   const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   
   // * UI state
-  const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
   const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
   const [showJohnDoe, setShowJohnDoe] = useState(true);
+  
+  // * Speaker management
+  const [lastSpeaker, setLastSpeaker] = useState<SbQueueItem | null>(null);
   
   // * QR/Scanner state
   const [qrOpen, setQrOpen] = useState(false);
@@ -162,12 +166,14 @@ export function useMeetingState(): UseMeetingStateReturn {
     setCurrentParticipantId,
     
     // * UI state
-    remoteEnabled,
-    setRemoteEnabled,
     isLiveMeeting,
     setIsLiveMeeting,
     showJohnDoe,
     setShowJohnDoe,
+    
+    // * Speaker management
+    lastSpeaker,
+    setLastSpeaker,
     
     // * QR/Scanner state
     qrOpen,

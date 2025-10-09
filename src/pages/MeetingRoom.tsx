@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MeetingContext } from "@/components/MeetingRoom/MeetingContext";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
@@ -17,6 +17,7 @@ import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 
 // import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
+import { useMeetingState } from "@/hooks/useMeetingState";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
 import { useSpeakingHistory } from "@/hooks/useSpeakingHistory";
@@ -39,38 +40,42 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-type MeetingMode = "host" | "join" | "watch";
-
 export default function MeetingRoom() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const params = useParams();
-  const [meetingCode, setMeetingCode] = useState<string>("");
-  const [meetingId, setMeetingId] = useState<string>("");
-  const [mode, setMode] = useState<MeetingMode | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<AppError | string | null>(null);
-  const [codeInput, setCodeInput] = useState<string>("");
-  const [remoteEnabled, setRemoteEnabled] = useState<boolean>(true);
-  const [isLiveMeeting, setIsLiveMeeting] = useState<boolean>(false);
-  const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  // Determine user role based on mode
-  const userRole = mode === "host" ? "facilitator" : mode === "watch" ? "observer" : "participant";
-
-  const [serverMeeting, setServerMeeting] =
-    useState<MeetingWithParticipants | null>(null);
-  const [serverParticipants, setServerParticipants] = useState<SbParticipant[]>(
-    [],
-  );
-  const [serverQueue, setServerQueue] = useState<SbQueueItem[]>([]);
-  const [qrOpen, setQrOpen] = useState(false);
-  const [qrUrl, setQrUrl] = useState<string>("");
-  const [qrType, setQrType] = useState<'join' | 'watch'>('join');
-  const [scannerOpen, setScannerOpen] = useState(false);
-  const [showJohnDoe, setShowJohnDoe] = useState(true); // * Track John Doe visibility
+  // * Use the centralized meeting state hook
+  const {
+    meetingCode,
+    meetingId,
+    mode,
+    isLoading,
+    error,
+    codeInput,
+    setCodeInput,
+    setError,
+    serverMeeting,
+    serverParticipants,
+    serverQueue,
+    currentParticipantId,
+    setCurrentParticipantId,
+    isLiveMeeting,
+    setIsLiveMeeting,
+    showJohnDoe,
+    setShowJohnDoe,
+    lastSpeaker,
+    setLastSpeaker,
+    qrOpen,
+    setQrOpen,
+    qrUrl,
+    setQrUrl,
+    qrType,
+    setQrType,
+    scannerOpen,
+    setScannerOpen,
+    userRole,
+  } = useMeetingState();
 
   const handleQrScan = (scannedUrl: string) => {
     // For now, QR scanning is not fully implemented
@@ -83,7 +88,6 @@ export default function MeetingRoom() {
   };
 
   // Advanced features hooks
-  const [lastSpeaker, setLastSpeaker] = useState<SbQueueItem | null>(null);
 
   const handleNextSpeaker = async () => {
     if (!meetingId) {
@@ -726,8 +730,6 @@ export default function MeetingRoom() {
           <HostSettingsPanel
             isLiveMeeting={isLiveMeeting}
             setIsLiveMeeting={setIsLiveMeeting}
-            remoteEnabled={remoteEnabled}
-            setRemoteEnabled={setRemoteEnabled}
             meetingCode={meetingCode}
             onQrGenerate={(url, type) => {
               setQrUrl(url);

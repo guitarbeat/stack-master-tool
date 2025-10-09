@@ -6,8 +6,6 @@ import QRCode from "qrcode";
 interface HostSettingsPanelProps {
   isLiveMeeting: boolean;
   setIsLiveMeeting: (live: boolean) => void;
-  remoteEnabled: boolean;
-  setRemoteEnabled: (enabled: boolean) => void;
   meetingCode: string;
   onQrGenerate: (url: string, type: 'join' | 'watch') => void;
   onScannerOpen: () => void;
@@ -26,8 +24,6 @@ interface HostSettingsPanelProps {
 export function HostSettingsPanel({
   isLiveMeeting,
   setIsLiveMeeting,
-  remoteEnabled,
-  setRemoteEnabled,
   meetingCode,
   onQrGenerate,
   onScannerOpen,
@@ -56,27 +52,16 @@ export function HostSettingsPanel({
 
   return (
     <div className="bg-muted/30 text-muted-foreground rounded-lg p-3 border border-border/50 mb-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
         <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-          <div className="flex items-center gap-3">
-            <Toggle
-              checked={isLiveMeeting}
-              onCheckedChange={setIsLiveMeeting}
-              size="sm"
-              aria-label="Toggle live meeting mode"
-            />
-            <span className="text-sm font-medium">Live Meeting</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Toggle
-              checked={remoteEnabled}
-              onCheckedChange={setRemoteEnabled}
-              size="sm"
-              aria-label="Toggle remote joining"
-            />
-            <span className="text-sm font-medium">Enable remote joining</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <Toggle
+            checked={isLiveMeeting}
+            onCheckedChange={setIsLiveMeeting}
+            size="sm"
+            aria-label="Toggle live meeting mode"
+          />
+          <span className="text-sm font-medium">Live Meeting</span>
         </div>
       </div>
       
@@ -85,7 +70,7 @@ export function HostSettingsPanel({
         <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
       </div>
       
-      {isLiveMeeting && remoteEnabled && (
+      {isLiveMeeting && (
         <div className="space-y-2 text-xs">
           <div className="flex items-center justify-between">
             <span className="text-slate-600 dark:text-slate-400">Join link</span>
