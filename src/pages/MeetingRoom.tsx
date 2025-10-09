@@ -9,7 +9,7 @@ import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
-import { QuickAddParticipant } from "@/components/features/meeting/QuickAddParticipant";
+import { AddParticipants } from "@/components/features/meeting/AddParticipants";
 import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useToast } from "@/components/shared/ToastProvider";
@@ -262,10 +262,10 @@ export default function MeetingRoom() {
     }
   };
 
-  // Handler for QuickAddParticipant component
-  const handleQuickAddParticipant = async (name: string) => {
+  // Handler for AddParticipants component
+  const handleAddParticipant = async (name: string) => {
     if (!meetingId) {
-      return;
+      return Promise.resolve();
     }
 
     try {
@@ -276,9 +276,10 @@ export default function MeetingRoom() {
         message: `${name} has been added to the meeting`
       });
       // Real-time subscription will update the UI
+      return Promise.resolve();
     } catch (error) {
       logProduction("error", {
-        action: "quick_add_participant",
+        action: "add_participant",
         meetingId,
         participantName: name,
         error: error instanceof Error ? error.message : String(error)
@@ -288,6 +289,7 @@ export default function MeetingRoom() {
         title: 'Failed to Add Participant',
         message: 'Please try again or check your connection'
       });
+      return Promise.reject(error);
     }
   };
 
@@ -807,8 +809,8 @@ export default function MeetingRoom() {
                 {/* Add Participants */}
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-3">Add Participants</h3>
-                  <QuickAddParticipant
-                    onAddParticipant={handleQuickAddParticipant}
+                  <AddParticipants
+                    onAddParticipant={handleAddParticipant}
                     placeholder="Enter participant names (comma or newline separated)"
                     className="w-full"
                   />
