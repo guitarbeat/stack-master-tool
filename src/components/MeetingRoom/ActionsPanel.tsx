@@ -12,7 +12,7 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
   const [showDirectOptions, setShowDirectOptions] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+    <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
       <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-6">Actions</h2>
       
       <div className="space-y-4">
@@ -46,7 +46,7 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
           </button>
 
           {showDirectOptions && !isInQueue && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 dark:bg-zinc-900 dark:border-zinc-800">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-lg z-10">
               <button
                 onClick={() => onJoinQueue('direct-response')}
                 className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 dark:hover:bg-zinc-800 dark:border-zinc-800"

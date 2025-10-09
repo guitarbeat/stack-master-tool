@@ -9,7 +9,7 @@ export const ActionCards = () => {
           <Link
             key={mode.id}
             to={`/meeting?mode=${mode.id}`}
-            className="block p-6 border rounded-lg hover:shadow-md transition-shadow"
+            className="block p-6 bg-card text-card-foreground border rounded-lg hover:shadow-md transition-shadow"
           >
             <div className="text-center">
               <div className="text-3xl mb-4">{mode.emoji}</div>

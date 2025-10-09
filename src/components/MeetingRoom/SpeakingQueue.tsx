@@ -31,15 +31,15 @@ export const SpeakingQueue = ({
 }: SpeakingQueueProps) => {
   if (speakingQueue.length === 0) {
     return (
-      <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+      <Card className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-bold text-gray-900 dark:text-zinc-100">Speaking Queue</CardTitle>
+          <CardTitle className="text-xl font-bold text-card-foreground">Speaking Queue</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <Hand className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-zinc-400">No one in queue</p>
-            <p className="text-sm text-gray-400 dark:text-zinc-500">Raise your hand to speak!</p>
+            <Hand className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No one in queue</p>
+            <p className="text-sm text-muted-foreground">Raise your hand to speak!</p>
           </div>
         </CardContent>
       </Card>
@@ -49,7 +49,7 @@ export const SpeakingQueue = ({
   return (
     <Card className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-gray-900 dark:text-zinc-100">Speaking Queue</CardTitle>
+        <CardTitle className="text-xl font-bold text-card-foreground">Speaking Queue</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {speakingQueue.map((entry, index) => {

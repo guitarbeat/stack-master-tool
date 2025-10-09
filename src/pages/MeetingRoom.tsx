@@ -362,7 +362,7 @@ export default function MeetingRoom() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800 text-center">
+        <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading meeting...</p>
         </div>
@@ -386,7 +386,7 @@ export default function MeetingRoom() {
   if (mode === "join" && !meetingCode) {
     return (
       <div className="container mx-auto px-4 py-10 max-w-xl">
-        <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+        <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
           <h1 className="text-2xl font-bold mb-2">Join a Meeting</h1>
           <p className="text-sm text-muted-foreground mb-6">
             Enter the 6-character meeting code shared by the host.
@@ -464,7 +464,7 @@ export default function MeetingRoom() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20">
         <div className="w-full max-w-md mx-4">
-          <div className="bg-white rounded-2xl p-8 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+          <div className="bg-card text-card-foreground rounded-2xl p-8 shadow-lg border">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -557,7 +557,7 @@ export default function MeetingRoom() {
       <div className="container mx-auto px-4 py-6 space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
-          <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+          <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Remote Access</h2>
               <label className="inline-flex items-center gap-2 text-sm">
@@ -624,7 +624,7 @@ export default function MeetingRoom() {
             </div>
 
             {/* Quick Add Participant Component - HOST mode only */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg dark:bg-zinc-900 dark:border dark:border-zinc-800">
+            <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
               <div className="mb-4">
                 <h2 className="text-lg font-semibold">Add Participants</h2>
                 <p className="text-sm text-muted-foreground">
@@ -700,7 +700,7 @@ export default function MeetingRoom() {
       {/* Keyboard Shortcuts Modal */}
       {showKeyboardShortcutsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
+          <div className="bg-card text-card-foreground rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Keyboard Shortcuts</h3>
               <button
