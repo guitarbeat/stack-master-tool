@@ -633,23 +633,24 @@ export default function MeetingRoom() {
       <div className="container mx-auto px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Host remote controls & share links */}
         {mode === "host" && (
-          <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-lg border">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Remote Access</h2>
-              <label className="inline-flex items-center gap-2 text-sm">
+          <div className="bg-muted/30 text-muted-foreground rounded-lg p-4 border border-border/50">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-foreground">Remote Access</h3>
+              <label className="inline-flex items-center gap-2 text-xs">
                 <input
                   type="checkbox"
                   checked={remoteEnabled}
                   onChange={(e) => setRemoteEnabled(e.target.checked)}
+                  className="w-3 h-3"
                 />
                 Enable remote joining
               </label>
             </div>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Join link</span>
               <button
-                className="px-3 py-1.5 rounded bg-gray-100 dark:bg-zinc-800"
+                className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
                 aria-label="Copy join link to clipboard"
                 onClick={() =>
                   navigator.clipboard.writeText(
@@ -660,11 +661,11 @@ export default function MeetingRoom() {
                 Copy
               </button>
               </div>
-              <code className="block break-all p-2 rounded bg-muted/30">{`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}</code>
+              <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}</code>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Watch link</span>
                 <button
-                  className="px-3 py-1.5 rounded bg-gray-100 dark:bg-zinc-800"
+                  className="px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80"
                   aria-label="Copy watch link to clipboard"
                   onClick={() =>
                     navigator.clipboard.writeText(
@@ -675,11 +676,11 @@ export default function MeetingRoom() {
                   Copy
                 </button>
               </div>
-              <code className="block break-all p-2 rounded bg-muted/30">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
-              <div className="pt-3 space-y-2">
+              <code className="block break-all p-2 rounded bg-muted/20 text-xs">{`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}</code>
+              <div className="pt-2 space-y-2">
                 <div className="flex gap-2">
                   <button
-                    className="flex-1 py-2 px-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 active:opacity-80 disabled:opacity-50 text-sm min-h-[44px] transition-colors"
+                    className="flex-1 py-1.5 px-2 rounded bg-muted hover:bg-muted/80 text-xs font-medium transition-colors"
                     disabled={!meetingCode}
                     aria-label="Generate QR code for joining this meeting"
                     onClick={async () => {
@@ -699,7 +700,7 @@ export default function MeetingRoom() {
                       📱 Join QR
                     </button>
                   <button
-                    className="flex-1 py-2 px-3 rounded-lg bg-secondary text-secondary-foreground font-semibold hover:opacity-90 active:opacity-80 disabled:opacity-50 text-sm min-h-[44px] transition-colors"
+                    className="flex-1 py-1.5 px-2 rounded bg-muted hover:bg-muted/80 text-xs font-medium transition-colors"
                     disabled={!meetingCode}
                     aria-label="Generate QR code for watching this meeting"
                     onClick={async () => {

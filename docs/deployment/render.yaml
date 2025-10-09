@@ -4,7 +4,7 @@ services:
     name: stack-master-tool
     env: static
     buildCommand: npm install && npm run build:prod
-    staticPublishPath: ./dist
+    staticPublishPath: ./.build/dist
     headers:
       - path: /*
         name: X-Frame-Options
