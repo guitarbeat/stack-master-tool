@@ -54,10 +54,17 @@ export function EnhancedEditableParticipantName({
 
     setIsUpdating(true);
     try {
-      await onNameUpdate(participantId, editName.trim());
+      // * Handle both sync and async onNameUpdate functions
+      const result = onNameUpdate(participantId, editName.trim());
+      if (result && typeof result.then === 'function') {
+        await result;
+      }
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to update participant name:', error);
+      // * Log error for debugging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to update participant name:', error);
+      }
       // Reset to original name on error
       setEditName(currentName);
     } finally {
@@ -68,7 +75,7 @@ export function EnhancedEditableParticipantName({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleSaveEdit();
+      void handleSaveEdit();
     } else if (e.key === 'Escape') {
       handleCancelEdit();
     }

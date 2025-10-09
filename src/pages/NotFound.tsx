@@ -9,10 +9,13 @@ const NotFound = () => {
   const [isWiggling, setIsWiggling] = useState(false);
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
+    // * Log 404 error for debugging in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error(
+        "404 Error: User attempted to access non-existent route:",
+        location.pathname
+      );
+    }
   }, [location.pathname]);
 
   const handleWiggle = () => {

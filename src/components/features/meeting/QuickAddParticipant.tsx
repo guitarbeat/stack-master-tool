@@ -47,12 +47,19 @@ export function QuickAddParticipant({
     try {
       // Add each name
       for (const name of names) {
-        await onAddParticipant(name);
+        // * Handle both sync and async onAddParticipant functions
+        const result = onAddParticipant(name);
+        if (result && typeof result.then === 'function') {
+          await result;
+        }
       }
       setInputValue('');
       setIsExpanded(false);
     } catch (error) {
-      console.error('Error adding participants:', error);
+      // * Log error for debugging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error adding participants:', error);
+      }
     } finally {
       setIsAdding(false);
     }
@@ -61,7 +68,7 @@ export function QuickAddParticipant({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAdd();
+      void handleAdd();
     } else if (e.key === 'Escape') {
       setInputValue('');
       setIsExpanded(false);

@@ -1,15 +1,12 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+// import { Progress } from "@/components/ui/progress";
 import { SpeakingAnalytics } from "./SpeakingAnalytics";
 import { 
   Users, 
-  Clock, 
-  BarChart3, 
   MessageCircle,
-  Timer,
-  TrendingUp
+  Timer
 } from "lucide-react";
 
 interface DisplayLayoutProps {
