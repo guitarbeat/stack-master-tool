@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Button } from './button';
 import { Camera, X, QrCode } from 'lucide-react';
 
@@ -7,7 +7,7 @@ interface QrCodeScannerProps {
   onClose: () => void;
 }
 
-export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
+export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -15,13 +15,13 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
   const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
-    startScanning();
+    void startScanning();
     return () => {
       stopScanning();
     };
-  }, []);
+  }, [startScanning, stopScanning]);
 
-  const startScanning = async () => {
+  const startScanning = useCallback(async () => {
     try {
       setError(null);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -34,19 +34,19 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
         setIsScanning(true);
         scanForQrCode();
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Camera access denied or not available. Please enter the meeting code manually.');
       setIsScanning(false);
     }
-  };
+  }, []);
 
-  const stopScanning = () => {
+  const stopScanning = useCallback(() => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
     }
     setIsScanning(false);
-  };
+  }, [stream]);
 
   const scanForQrCode = () => {
     // For now, we'll show the camera interface but note that full QR scanning

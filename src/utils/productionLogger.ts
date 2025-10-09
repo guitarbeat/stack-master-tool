@@ -107,7 +107,10 @@ class ProductionLogger {
       // This is a placeholder - implement based on your analytics provider
       if (import.meta.env.VITE_SENTRY_DSN) {
         // Sentry integration
-        console.warn("Analytics event:", entry);
+        // * Log analytics event for debugging in development
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("Analytics event:", entry);
+        }
       }
 
       // Could also send to custom endpoint
@@ -118,7 +121,10 @@ class ProductionLogger {
       // });
     } catch (error) {
       // Don't log analytics errors to avoid infinite loops
-      console.error("Failed to send analytics:", error);
+      // * Log analytics error for debugging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Failed to send analytics:", error);
+      }
     }
   }
 

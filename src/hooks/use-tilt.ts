@@ -32,10 +32,7 @@ export default function useTiltEffect(options: TiltOptions = {}) {
     perspective = 1000,
     scale = 1.05,
     speed = 300,
-    glare = false,
-    glareOpacity = 0.3,
-    followMouse = false,
-    mouseFollowSmoothness = 0.1
+    followMouse = false
   } = options;
 
   const cardsRef = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -112,9 +109,11 @@ export default function useTiltEffect(options: TiltOptions = {}) {
             const pos = mousePosition[i];
             const hovering = isHovering[i];
             if (pos && hovering && cardsRef.current.has(i)) {
-              const card = cardsRef.current.get(i)!;
-              const rect = card.getBoundingClientRect();
-              updateTilt(i, pos.x, pos.y, rect);
+              const card = cardsRef.current.get(i);
+              if (card) {
+                const rect = card.getBoundingClientRect();
+                updateTilt(i, pos.x, pos.y, rect);
+              }
             }
           });
           animationFrameRef.current = requestAnimationFrame(animate);
