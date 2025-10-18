@@ -541,28 +541,29 @@ export const logError = (error: AppError | Error, context?: string) => {
           originalError: error,
         };
 
-  logProduction('error', {
-    action: 'log_error',
+  const structuredError = {
+    ...errorInfo,
     context,
-    error: error.message,
+    action: "log_error",
     stack: error.stack,
-    ...errorInfo
+    error: error.message,
+  };
+
+  const contextLabel = context ? ` [${context}]` : "";
+  const logMessage = `[${timestamp}]${contextLabel} Error: ${errorInfo.message}`;
+
+  // eslint-disable-next-line no-console
+  console.error(logMessage, structuredError);
+
+  logProduction("error", {
+    ...structuredError,
+    timestamp,
   });
 
   // Track error for monitoring and analytics
   if (typeof window !== "undefined") {
     void import("./errorMonitoring").then(({ trackAndLogError }) => {
       trackAndLogError(error, context);
-    });
-    
-    // Add production logging
-    void import("./productionLogger").then(({ logProduction }) => {
-      logProduction('error', {
-        error: error.message,
-        context,
-        timestamp: new Date().toISOString(),
-        stack: error.stack
-      });
     });
   }
 };

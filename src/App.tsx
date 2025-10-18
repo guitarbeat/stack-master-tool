@@ -29,9 +29,8 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AppLayout>
-        </UnifiedToastProvider>
           <Analytics />
-        </ToastProvider>
+        </UnifiedToastProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

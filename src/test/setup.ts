@@ -1,125 +1,81 @@
-import React from 'react';
-import '@testing-library/jest-dom';
-import { expect, afterEach, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import * as matchers from '@testing-library/jest-dom/matchers';
+import React from "react"
+import "@testing-library/jest-dom"
+import { afterEach, expect, vi } from "vitest"
+import { cleanup } from "@testing-library/react"
+import * as matchers from "@testing-library/jest-dom/matchers"
 
-// Make React available globally for JSX
-global.React = React;
+expect.extend(matchers)
 
-// Extend Vitest's expect with jest-dom matchers
-expect.extend(matchers);
-
-// Cleanup after each test case
 afterEach(() => {
-  cleanup();
-});
+  cleanup()
+})
 
-// Mock DOM APIs that might be missing
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+declare global {
+  // eslint-disable-next-line no-var
+  var React: typeof import("react")
+}
 
-// Mock window.location
-Object.defineProperty(window, 'location', {
-  value: {
-    href: 'http://localhost:3000',
-    origin: 'http://localhost:3000',
-    pathname: '/',
-    search: '',
-    hash: '',
-    reload: vi.fn(),
-  },
-  writable: true,
-});
+globalThis.React = React
 
-// Mock document for testing
-Object.defineProperty(global, 'document', {
-  value: {
-    createElement: vi.fn(() => ({
-      setAttribute: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      focus: vi.fn(),
-      blur: vi.fn(),
-      click: vi.fn(),
-      getBoundingClientRect: vi.fn(() => ({
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        width: 0,
-        height: 0,
-      })),
-    })),
-    getElementById: vi.fn(),
-    querySelector: vi.fn(),
-    querySelectorAll: vi.fn(() => []),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    body: {
-      appendChild: vi.fn(),
-      removeChild: vi.fn(),
-    },
-  },
-  writable: true,
-});
+if (typeof window !== "undefined") {
+  if (!window.matchMedia) {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: vi
+        .fn()
+        .mockImplementation((query: string): MediaQueryList => ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        })),
+    })
+  }
 
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  root = null;
-  rootMargin = '';
-  thresholds = [];
-  
-  constructor() {}
+  Object.defineProperty(window, "location", {
+    writable: true,
+    configurable: true,
+    value: {
+      href: "http://localhost:3000",
+      origin: "http://localhost:3000",
+      pathname: "/",
+      search: "",
+      hash: "",
+      reload: vi.fn(),
+    } as Location,
+  })
+}
+
+class MockIntersectionObserver implements IntersectionObserver {
+  constructor(
+    _callback: IntersectionObserverCallback,
+    _options?: IntersectionObserverInit,
+  ) {}
+
+  readonly root: Element | null = null
+  readonly rootMargin = ""
+  readonly thresholds: ReadonlyArray<number> = []
+
   disconnect() {}
-  observe() {}
-  unobserve() {}
-  takeRecords() { return []; }
-} as IntersectionObserver;
+  observe(_target: Element): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return []
+  }
+  unobserve(_target: Element): void {}
+}
 
-// Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
-};
+globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver
 
-// Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => {},
-  }),
-});
+class MockResizeObserver implements ResizeObserver {
+  constructor(_callback: ResizeObserverCallback) {}
+  disconnect(): void {}
+  observe(_target: Element, _options?: ResizeObserverOptions): void {}
+  unobserve(_target: Element): void {}
+}
 
-// Mock window.location
-Object.defineProperty(window, 'location', {
-  value: {
-    href: 'http://localhost:3000',
-    origin: 'http://localhost:3000',
-    pathname: '/',
-    search: '',
-    hash: '',
-    reload: vi.fn(),
-  },
-  writable: true,
-});
+globalThis.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver

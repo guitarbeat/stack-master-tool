@@ -40,16 +40,67 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      children,
+      onClick,
+      onKeyDown,
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button"
+
+    const childArray = React.Children.toArray(children)
+    const spacedChildren =
+      childArray.length <= 1
+        ? children
+        : childArray.map((child, index) => {
+            if (index === 0) {
+              return child
+            }
+
+            return (
+              <React.Fragment key={`button-child-${index}`}>
+                {" "}
+                {typeof child === "string" ? child.trimStart() : child}
+              </React.Fragment>
+            )
+          })
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+      onKeyDown?.(event)
+
+      if (event.defaultPrevented || disabled) {
+        return
+      }
+
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault()
+        onClick?.(
+          event as unknown as React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        )
+      }
+    }
+
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
+        onClick={onClick}
+        onKeyDown={handleKeyDown}
+        disabled={disabled}
         {...props}
-      />
+      >
+        {spacedChildren}
+      </Comp>
     )
-  }
+  },
 )
 Button.displayName = "Button"
 
