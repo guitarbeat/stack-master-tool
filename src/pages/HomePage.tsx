@@ -31,7 +31,13 @@ function HomePage() {
         <div className="border-b">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">{user.email}</span>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                void handleSignOut();
+              }}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </Button>

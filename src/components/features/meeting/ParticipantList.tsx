@@ -87,7 +87,9 @@ export function ParticipantList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleRemove(participant.id)}
+                  onClick={() => {
+                    void handleRemove(participant.id);
+                  }}
                   disabled={removingId === participant.id}
                   className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-10 sm:h-8 sm:w-8 p-0 min-h-[44px] min-w-[44px] sm:min-h-[32px] sm:min-w-[32px]"
                   aria-label={`Remove ${participant.name}`}

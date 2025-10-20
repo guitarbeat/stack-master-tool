@@ -86,6 +86,10 @@ pnpm cap:build:android # Build Android app
 pnpm cap:build:ios     # Build iOS app
 ```
 
+> **Note:** If you run scripts with `npm`, use `./scripts/npm-with-clean-env.sh` (for example,
+> `./scripts/npm-with-clean-env.sh run lint`) to mirror the pnpm behaviour and avoid legacy
+> `http-proxy` warnings emitted by newer npm releases.
+
 ## 🌟 Key Features
 
 - ✅ **Three-Mode Architecture** - HOST (facilitate), JOIN (participate), WATCH (observe) - inspired by jparty.tv

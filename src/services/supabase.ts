@@ -116,7 +116,7 @@ export class SupabaseMeetingService {
         .insert({
           title: title.trim(),
           facilitator_name: facilitatorName.trim(),
-          facilitator_id: facilitatorId || null,
+            facilitator_id: facilitatorId ?? null,
           meeting_code: meetingCode,
           is_active: true,
         })
@@ -1186,81 +1186,91 @@ export class SupabaseRealtimeService {
           table: "participants",
           filter: `meeting_id=eq.${meetingId}`,
         },
-        async (payload) => {
-          try {
-            const meeting = await SupabaseMeetingService.getMeeting(meetingCode);
-            if (meeting && callbacks.onParticipantsUpdated) {
-              callbacks.onParticipantsUpdated(meeting.participants);
+        (payload) => {
+          void (async () => {
+            try {
+              const meeting = await SupabaseMeetingService.getMeeting(meetingCode);
+              if (meeting && callbacks.onParticipantsUpdated) {
+                callbacks.onParticipantsUpdated(meeting.participants);
 
-              if (payload.eventType === "INSERT" && callbacks.onParticipantJoined) {
-                callbacks.onParticipantJoined(
-                  meeting.participants[meeting.participants.length - 1],
-                );
-              } else if (payload.eventType === "DELETE" && callbacks.onParticipantLeft) {
-                callbacks.onParticipantLeft(payload.old.id);
+                if (payload.eventType === "INSERT" && callbacks.onParticipantJoined) {
+                  callbacks.onParticipantJoined(
+                    meeting.participants[meeting.participants.length - 1],
+                  );
+                } else if (payload.eventType === "DELETE" && callbacks.onParticipantLeft) {
+                  callbacks.onParticipantLeft(payload.old.id);
+                }
+              }
+            } catch (error) {
+              if (callbacks.onError) {
+                callbacks.onError(error);
               }
             }
-          } catch (error) {
-            if (callbacks.onError) {
-              callbacks.onError(error);
-            }
-          }
+          })();
         },
       );
 
-    const queueChannel = supabase.channel(`meeting-${meetingId}-queue`).on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "speaking_queue",
-        filter: `meeting_id=eq.${meetingId}`,
-      },
-      async (_payload) => {
-        try {
-          const meeting = await SupabaseMeetingService.getMeeting(meetingId);
-          if (meeting && callbacks.onQueueUpdated) {
-            callbacks.onQueueUpdated(meeting.speakingQueue);
-          }
-        } catch (error) {
-          if (callbacks.onError) {
-            callbacks.onError(error);
-          }
-        }
-      },
-    );
+    const queueChannel = supabase
+      .channel(`meeting-${meetingId}-queue`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "speaking_queue",
+          filter: `meeting_id=eq.${meetingId}`,
+        },
+        (_payload) => {
+          void (async () => {
+            try {
+              const meeting = await SupabaseMeetingService.getMeeting(meetingId);
+              if (meeting && callbacks.onQueueUpdated) {
+                callbacks.onQueueUpdated(meeting.speakingQueue);
+              }
+            } catch (error) {
+              if (callbacks.onError) {
+                callbacks.onError(error);
+              }
+            }
+          })();
+        },
+      );
 
-    const meetingChannel = supabase.channel(`meeting-${meetingId}-meeting`).on(
-      "postgres_changes",
-      {
-        event: "UPDATE",
-        schema: "public",
-        table: "meetings",
-        filter: `id=eq.${meetingId}`,
-      },
-      async (payload) => {
-        try {
-          if (payload.new.title !== payload.old.title && callbacks.onMeetingTitleUpdated) {
-            callbacks.onMeetingTitleUpdated(payload.new.title);
-          }
-        } catch (error) {
-          if (callbacks.onError) {
-            callbacks.onError(error);
-          }
-        }
-      },
-    );
+    const meetingChannel = supabase
+      .channel(`meeting-${meetingId}-meeting`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "meetings",
+          filter: `id=eq.${meetingId}`,
+        },
+        (payload) => {
+          void (async () => {
+            try {
+              if (payload.new.title !== payload.old.title && callbacks.onMeetingTitleUpdated) {
+                callbacks.onMeetingTitleUpdated(payload.new.title);
+              }
+            } catch (error) {
+              if (callbacks.onError) {
+                callbacks.onError(error);
+              }
+            }
+          })();
+        },
+      );
 
     // Subscribe to all channels
-    participantsChannel.subscribe();
-    queueChannel.subscribe();
-    meetingChannel.subscribe();
+    void participantsChannel.subscribe();
+    void queueChannel.subscribe();
+    void meetingChannel.subscribe();
 
     // Return unsubscribe function
     return () => {
-      participantsChannel.unsubscribe();
-      queueChannel.unsubscribe();
-      meetingChannel.unsubscribe();
+      void participantsChannel.unsubscribe();
+      void queueChannel.unsubscribe();
+      void meetingChannel.unsubscribe();
     };
   }
 }

@@ -28,7 +28,7 @@ export function RoomBrowser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadActiveRooms();
+    void loadActiveRooms();
   }, []);
 
   const loadActiveRooms = async () => {
@@ -214,7 +214,9 @@ export function RoomBrowser() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDeleteRoom(room.id, room.title)}
+                            onClick={() => {
+                              void handleDeleteRoom(room.id, room.title);
+                            }}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             Delete Room

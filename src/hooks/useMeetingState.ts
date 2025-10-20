@@ -156,7 +156,11 @@ export function useMeetingState(): UseMeetingStateReturn {
             setCurrentParticipantId
           );
         }
-      } catch (_e) {
+      } catch (error) {
+        logProduction("error", {
+          action: "bootstrap_meeting",
+          error: error instanceof Error ? error.message : String(error),
+        });
         setError(new AppError(ErrorCode.CONNECTION_FAILED, undefined, "Failed to connect to meeting."));
       } finally {
         setIsLoading(false);
@@ -277,9 +281,12 @@ async function handleJoinOrWatchMode(
 
     // * For JOIN mode, create participant if meeting exists
     if (currentMode === "join") {
+      const trimmedParticipantName = participantName?.trim();
       try {
         // Use provided participant name or fallback to user email or generated name
-        const finalParticipantName = participantName || user?.email || `Participant-${Date.now()}`;
+        const finalParticipantName = trimmedParticipantName && trimmedParticipantName.length > 0
+          ? trimmedParticipantName
+          : user?.email ?? `Participant-${Date.now()}`;
         const participant = await SupabaseMeetingService.joinMeeting(
           validation.normalizedCode,
           finalParticipantName,
@@ -293,7 +300,9 @@ async function handleJoinOrWatchMode(
         logProduction("error", {
           action: "join_meeting_participant",
           meetingCode: validation.normalizedCode,
-          participantName: participantName || user?.email || `Participant-${Date.now()}`,
+          participantName: trimmedParticipantName && trimmedParticipantName.length > 0
+            ? trimmedParticipantName
+            : user?.email ?? `Participant-${Date.now()}`,
           error: joinError instanceof Error ? joinError.message : String(joinError)
         });
         

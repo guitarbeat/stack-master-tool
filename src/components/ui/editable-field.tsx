@@ -101,7 +101,9 @@ export function EditableField<T extends string = string>({
         <Button
           size="sm"
           variant="ghost"
-          onClick={handleSaveEdit}
+          onClick={() => {
+            void handleSaveEdit();
+          }}
           disabled={isUpdating || editValue.trim() === ""}
           className="h-8 w-8 p-0"
         >
