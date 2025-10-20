@@ -725,7 +725,7 @@ export default function MeetingRoom() {
                 <input
                   type="text"
                   placeholder="e.g. Team Standup, Strategy Session, Open Forum"
-                  className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCreateRoom()}
