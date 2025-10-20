@@ -23,13 +23,13 @@ interface HostSettingsPanelProps {
   setIsLiveMeeting: (live: boolean) => void;
   meetingCode: string;
   onQrGenerate: (url: string, type: 'join' | 'watch') => void;
-  onScannerOpen: () => void;
+  onScannerOpen?: () => void;
   onMeetingCodeChange?: (newCode: string) => Promise<void>;
   onEndMeeting?: () => void;
   // * Participant management props
-  mockParticipants: Array<{ id: string; name: string; isFacilitator: boolean; hasRaisedHand: boolean; joinedAt: string; isActive: boolean }>;
+  mockParticipants: Array<{ id: string; name: string; isFacilitator: boolean; hasRaisedHand: boolean; joinedAt: Date; isActive: boolean }>;
   onAddParticipant: (name: string) => Promise<void>;
-  onUpdateParticipant: (participantId: string, updates: { name?: string }) => Promise<void>;
+  onUpdateParticipant: (participantId: string, newName: string) => Promise<void>;
   onRemoveParticipant: (participantId: string) => Promise<void>;
   userRole: string;
 }
@@ -43,7 +43,7 @@ export function HostSettingsPanel({
   setIsLiveMeeting,
   meetingCode,
   onQrGenerate,
-  _onScannerOpen,
+  onScannerOpen: _onScannerOpen,
   onMeetingCodeChange,
   onEndMeeting,
   // * Participant management props

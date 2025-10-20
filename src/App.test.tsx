@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
 import App from "./App";
@@ -10,8 +11,7 @@ vi.mock("@tanstack/react-query", () => ({
     getQueryData: vi.fn(),
     invalidateQueries: vi.fn(),
   })),
-  QueryClientProvider: ({ children }: { children: React.ReactNode }) =>
-    children,
+  QueryClientProvider: ({ children }: { children: ReactNode }) => children,
 }));
 
 // Mock the toast components
@@ -25,7 +25,7 @@ vi.mock("./components/ui/sonner", () => ({
 
 // Mock the AppLayout component
 vi.mock("./components/layout/AppLayout", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
+  default: ({ children }: { children: ReactNode }) => (
     <div data-testid="app-layout">{children}</div>
   ),
 }));

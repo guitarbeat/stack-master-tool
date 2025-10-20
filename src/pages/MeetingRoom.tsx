@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
@@ -39,7 +39,6 @@ import {
 
 export default function MeetingRoom() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const params = useParams();
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -89,10 +88,9 @@ export default function MeetingRoom() {
   const { handleEndMeeting } = useMeetingActions({
     meetingId,
     currentParticipantId,
-    mode,
+    serverQueue,
     setLastSpeaker,
     setShowJohnDoe,
-    setServerParticipants: () => {},
   });
 
   const handleCreateRoom = async () => {
@@ -232,24 +230,25 @@ export default function MeetingRoom() {
   const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop({ isFacilitator: mode === 'host' });
 
 
-  const handleUpdateParticipant = async (participantId: string, updates: { name?: string }) => {
-    if (!participantId || !updates.name?.trim()) {
+  const handleUpdateParticipant = async (participantId: string, newName: string) => {
+    if (!participantId || !newName.trim()) {
       return;
     }
 
     try {
-      await SupabaseMeetingService.updateParticipantName(participantId, updates.name.trim());
+      const normalizedName = newName.trim();
+      await SupabaseMeetingService.updateParticipantName(participantId, normalizedName);
       showToast({
         type: 'success',
         title: 'Name Updated',
-        message: `Participant name updated to ${updates.name.trim()}`
+        message: `Participant name updated to ${normalizedName}`
       });
       // Real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
         action: "update_participant",
         participantId,
-        updates,
+        newName,
         error: error instanceof Error ? error.message : String(error)
       });
       showToast({

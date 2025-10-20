@@ -33,7 +33,8 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       // Detect if we're in a mobile/capacitor environment
-      detectSessionInUrl: typeof window !== "undefined" && !window.Capacitor,
+      detectSessionInUrl:
+        typeof window !== "undefined" && !('Capacitor' in window),
     },
   }
 );

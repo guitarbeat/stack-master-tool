@@ -225,7 +225,12 @@ function useToast() {
     ...state,
     toast,
     showToast, // * Legacy API
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    dismiss: (toastId?: string) =>
+      dispatch(
+        toastId !== undefined
+          ? { type: "DISMISS_TOAST", toastId }
+          : { type: "DISMISS_TOAST" },
+      ),
   }
 }
 

@@ -1,9 +1,8 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { Toaster } from '@/components/ui/toaster';
-import { useToast } from '@/hooks/use-toast';
 
 interface UnifiedToastProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function UnifiedToastProvider({ children }: UnifiedToastProviderProps) {

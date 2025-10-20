@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ export default function Auth() {
     return null;
   }
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     try {
@@ -55,19 +55,20 @@ export default function Auth() {
       showToast({
         title: "Sign In Failed",
         description: error.message,
-        variant: "destructive",
+        type: "error",
       });
     } else {
       showToast({
         title: "Welcome back!",
         description: "Successfully signed in.",
+        type: "success",
       });
       navigate("/");
     }
     setLoading(false);
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     try {
@@ -92,12 +93,13 @@ export default function Auth() {
       showToast({
         title: "Sign Up Failed",
         description: error.message,
-        variant: "destructive",
+        type: "error",
       });
     } else {
       showToast({
         title: "Account Created!",
         description: "Please check your email to verify your account.",
+        type: "success",
       });
     }
     setLoading(false);

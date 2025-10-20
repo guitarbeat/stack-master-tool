@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { validateMeetingCode } from "@/utils/meetingValidation";
@@ -16,7 +16,7 @@ export function CodeInputForm({ mode, onError }: CodeInputFormProps) {
   const [codeInput, setCodeInput] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validation = validateMeetingCode(codeInput);
     if (!validation.isValid) {

@@ -14,13 +14,6 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
   const [error, setError] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
 
-  useEffect(() => {
-    void startScanning();
-    return () => {
-      stopScanning();
-    };
-  }, [startScanning, stopScanning]);
-
   const startScanning = useCallback(async () => {
     try {
       setError(null);
@@ -53,6 +46,13 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
     // would require additional libraries like @zxing/library or react-qr-reader
     // This provides the UI framework for when a proper scanning library is added
   };
+
+  useEffect(() => {
+    void startScanning();
+    return () => {
+      stopScanning();
+    };
+  }, [startScanning, stopScanning]);
 
   const handleManualEntry = () => {
     stopScanning();

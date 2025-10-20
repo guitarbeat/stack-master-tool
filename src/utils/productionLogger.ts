@@ -41,16 +41,33 @@ class ProductionLogger {
     message: string,
     data?: Record<string, unknown>,
   ): LogEntry {
-    return {
+    const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,
       message,
-      data,
-      userId: this.getUserId(),
-      sessionId: this.getSessionId(),
-      userAgent:
-        typeof navigator !== "undefined" ? navigator.userAgent : undefined,
     };
+
+    if (data && Object.keys(data).length > 0) {
+      entry.data = data;
+    }
+
+    const userId = this.getUserId();
+    if (userId) {
+      entry.userId = userId;
+    }
+
+    const sessionId = this.getSessionId();
+    if (sessionId) {
+      entry.sessionId = sessionId;
+    }
+
+    const userAgent =
+      typeof navigator !== "undefined" ? navigator.userAgent : undefined;
+    if (userAgent) {
+      entry.userAgent = userAgent;
+    }
+
+    return entry;
   }
 
   private getUserId(): string | undefined {
@@ -153,15 +170,13 @@ class ProductionLogger {
     }
   }
 
-  error(message: string, error?: Error | Record<string, unknown>): void {
-    if (this.shouldLog(LogLevel.ERROR)) {
-      const entry = this.formatMessage(LogLevel.ERROR, message, {
-        error: error?.message ?? error,
-        stack: error?.stack,
-        ...error,
-      });
-      this.log(entry);
+  error(message: string, data?: Record<string, unknown>): void {
+    if (!this.shouldLog(LogLevel.ERROR)) {
+      return;
     }
+
+    const context = data && Object.keys(data).length > 0 ? { ...data } : undefined;
+    this.log(this.formatMessage(LogLevel.ERROR, message, context));
   }
 
   // Performance monitoring
@@ -196,21 +211,52 @@ export const logPerformance = logger.performance.bind(logger);
 export const logUserAction = logger.userAction.bind(logger);
 
 // Generic logging function that accepts level as string
-export const logProduction = (level: string, data: Record<string, unknown>): void => {
-  switch (level.toLowerCase()) {
-    case 'error':
-      logger.error(data.error ?? 'Production error', data);
+type ProductionLogLevel = 'error' | 'warn' | 'info' | 'debug';
+
+type ProductionLogData = Record<string, unknown> & {
+  message?: string;
+  error?: unknown;
+  stack?: unknown;
+};
+
+export const logProduction = (
+  level: string,
+  data: ProductionLogData = {},
+): void => {
+  const normalizedLevel = level.toLowerCase() as ProductionLogLevel;
+  const context: Record<string, unknown> = { ...data };
+
+  if (data.error instanceof Error) {
+    context.error = data.error.message;
+    context.stack = data.error.stack ?? context.stack;
+  }
+
+  switch (normalizedLevel) {
+    case 'error': {
+      const message =
+        typeof data.error === 'string'
+          ? data.error
+          : data.message ?? 'Production error';
+      logger.error(message, context);
       break;
-    case 'warn':
-      logger.warn(data.message ?? 'Production warning', data);
+    }
+    case 'warn': {
+      const message = data.message ?? 'Production warning';
+      logger.warn(message, context);
       break;
-    case 'info':
-      logger.info(data.message ?? 'Production info', data);
+    }
+    case 'info': {
+      const message = data.message ?? 'Production info';
+      logger.info(message, context);
       break;
-    case 'debug':
-      logger.debug(data.message ?? 'Production debug', data);
+    }
+    case 'debug': {
+      const message = data.message ?? 'Production debug';
+      logger.debug(message, context);
       break;
-    default:
-      logger.info(`Production log [${level}]`, data);
+    }
+    default: {
+      logger.info(`Production log [${level}]`, context);
+    }
   }
 };

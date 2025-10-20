@@ -1,4 +1,3 @@
-import React from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { UnifiedToastProvider } from "@/components/shared/UnifiedToastProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

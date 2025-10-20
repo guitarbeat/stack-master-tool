@@ -1,10 +1,7 @@
-import React from "react";
-import { Hand, MessageCircle, Info, Settings } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
-import { getQueueTypeDisplay } from "../../utils/queue";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 
 interface QueueItem {
@@ -75,7 +72,7 @@ export const SpeakingQueue = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {speakingQueue.map((entry, index) => {
-          const { type, participantName: entryName, participantId, isFacilitator: entryIsFacilitator } = entry;
+          const { type, participantName: entryName, participantId } = entry;
           const isSelf = entryName === participantName;
           const isDirect = type === 'direct-response';
           const isPointInfo = type === 'point-of-info';

@@ -204,23 +204,26 @@ class ErrorMonitor {
     if (process.env.NODE_ENV === 'production') {
       // Error data prepared for external service
       // * Log error for debugging in development
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         logProduction('info', {
           action: 'error_monitoring_service',
-        timestamp: new Date().toISOString(),
-        context,
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        error: error instanceof AppError ? {
-          type: error.details.type,
-          code: error.details.code,
-          message: error.details.message,
-          retryable: error.details.retryable
-        } : {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        }
+          timestamp: new Date().toISOString(),
+          context,
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+          error:
+            error instanceof AppError
+              ? {
+                  type: error.details.type,
+                  code: error.details.code,
+                  message: error.details.message,
+                  retryable: error.details.retryable
+                }
+              : {
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack
+                }
         });
       }
 
