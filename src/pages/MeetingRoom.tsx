@@ -13,6 +13,7 @@ import { LoadingState } from "@/components/shared/LoadingState";
 import { useToast } from "@/hooks/use-toast";
 
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
+import { CodeInputForm } from "@/components/MeetingRoom/CodeInputForm";
 
 // import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
@@ -601,75 +602,28 @@ export default function MeetingRoom() {
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4 py-8">
-        <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border-0">
-            <div className="text-center mb-6 sm:mb-8">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-slate-900 dark:text-slate-100">Watch a Meeting</h1>
-              <p className="text-base sm:text-sm text-slate-600 dark:text-slate-400">
-                Enter the 6-character meeting code to observe the discussion.
-              </p>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const validation = validateMeetingCode(codeInput);
-                if (!validation.isValid) {
-                  setError(new AppError(ErrorCode.INVALID_MEETING_CODE, undefined, validation.error ?? "Invalid meeting code"));
-                  return;
-                }
-                navigate(`/meeting?mode=watch&code=${validation.normalizedCode}`);
-              }}
-              className="space-y-5 sm:space-y-6"
-            >
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <input
-                    value={codeInput}
-                    onChange={(e) => setCodeInput(e.target.value)}
-                    placeholder="e.g. 54ANDG"
-                    className="flex-1 px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-slate-300 dark:border-slate-600 focus-ring text-base sm:text-sm min-h-[48px] text-slate-900 dark:text-slate-100"
-                    aria-label="Meeting code"
-                    autoComplete="off"
-                    autoCapitalize="characters"
-                    autoCorrect="off"
-                    spellCheck="false"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setCodeInput(Math.random().toString(36).substring(2, 8).toUpperCase())}
-                    className="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors min-h-[48px]"
-                    title="Generate random code"
-                    aria-label="Generate random meeting code"
-                  >
-                    🎲
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setScannerOpen(true)}
-                  className="w-full py-3 sm:py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 font-medium hover:bg-slate-200 dark:hover:bg-slate-600 active:bg-slate-300 dark:active:bg-slate-500 min-h-[44px] text-sm sm:text-sm transition-colors flex items-center justify-center gap-2"
-                >
-                  📱 Scan QR Code
-                </button>
-              </div>
-              <button
-                type="submit"
-                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
-                disabled={!codeInput.trim()}
-              >
-                Watch Meeting
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
+      <CodeInputForm
+        mode="watch"
+        onError={(formError) => {
+          if (!formError) {
+            setError(null);
+            return;
+          }
+
+          if (formError instanceof AppError) {
+            setError(formError);
+            return;
+          }
+
+          setError(
+            new AppError(
+              ErrorCode.VALIDATION_ERROR,
+              undefined,
+              typeof formError === "string" ? formError : "Invalid meeting code",
+            ),
+          );
+        }}
+      />
     );
   }
 
