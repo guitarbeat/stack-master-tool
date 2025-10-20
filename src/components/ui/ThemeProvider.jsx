@@ -15,10 +15,17 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     const root = document.documentElement
+    const body = document.body
     if (theme === 'dark') {
       root.classList.add('dark')
     } else {
       root.classList.remove('dark')
+    }
+    root.dataset.theme = theme
+    root.style.colorScheme = theme
+    if (body) {
+      body.dataset.theme = theme
+      body.style.colorScheme = theme
     }
     localStorage.setItem('theme', theme)
   }, [theme])

@@ -4,70 +4,71 @@
 
 @layer base {
   :root {
-    /* Core Colors - Enhanced earthy palette */
-    --background: 30 20% 20%;
-    --foreground: 60 8% 95%;
-    --card: 30 20% 22%;
-    --card-foreground: 60 8% 98%;
-    --border: 120 15% 25%;
-    --input: 120 15% 20%;
-    --ring: 100 45% 40%;
+    color-scheme: light;
+    /* Core Colors - Daylight earthy palette */
+    --background: 45 43% 96%;
+    --foreground: 30 25% 18%;
+    --card: 45 38% 98%;
+    --card-foreground: 30 25% 18%;
+    --border: 120 18% 78%;
+    --input: 120 18% 88%;
+    --ring: 100 45% 38%;
 
     /* Primary Colors - Rich forest green */
-    --primary: 100 45% 40%;
-    --primary-foreground: 60 8% 100%;
-    --primary-hover: 100 45% 45%;
-    --primary-light: 100 45% 60%;
-    --primary-dark: 100 45% 30%;
+    --primary: 100 45% 35%;
+    --primary-foreground: 60 8% 98%;
+    --primary-hover: 100 45% 32%;
+    --primary-light: 100 45% 55%;
+    --primary-dark: 100 45% 28%;
 
     /* Secondary Colors - Warm earth tone */
-    --secondary: 30 25% 25%;
-    --secondary-foreground: 60 8% 95%;
-    --secondary-hover: 30 25% 30%;
-    --secondary-light: 30 25% 40%;
-    --secondary-dark: 30 25% 20%;
+    --secondary: 30 35% 82%;
+    --secondary-foreground: 30 25% 24%;
+    --secondary-hover: 30 35% 78%;
+    --secondary-light: 30 35% 88%;
+    --secondary-dark: 30 35% 70%;
 
     /* Accent Colors - Sage green */
-    --accent: 120 30% 50%;
-    --accent-foreground: 30 20% 15%;
-    --accent-hover: 120 30% 55%;
-    --accent-light: 120 30% 65%;
-    --accent-dark: 120 30% 40%;
+    --accent: 120 32% 55%;
+    --accent-foreground: 30 25% 20%;
+    --accent-hover: 120 32% 50%;
+    --accent-light: 120 32% 68%;
+    --accent-dark: 120 32% 42%;
 
     /* Muted Colors */
-    --muted: 120 15% 20%;
-    --muted-foreground: 120 8% 75%;
-    --muted-light: 120 15% 30%;
-    --muted-dark: 120 15% 15%;
+    --muted: 120 20% 92%;
+    --muted-foreground: 120 15% 32%;
+    --muted-light: 120 20% 96%;
+    --muted-dark: 120 20% 78%;
 
     /* Status Colors - Enhanced for better contrast */
-    --success: 120 50% 45%;
-    --success-foreground: 60 8% 100%;
-    --success-hover: 120 50% 50%;
-    --success-light: 120 50% 60%;
+    --success: 120 50% 42%;
+    --success-foreground: 60 8% 98%;
+    --success-hover: 120 50% 38%;
+    --success-light: 120 50% 62%;
 
-    --warning: 45 90% 55%;
-    --warning-foreground: 30 20% 15%;
-    --warning-hover: 45 90% 60%;
-    --warning-light: 45 90% 70%;
+    --warning: 45 90% 60%;
+    --warning-foreground: 30 25% 20%;
+    --warning-hover: 45 90% 55%;
+    --warning-light: 45 90% 72%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 0 75% 56%;
     --destructive-foreground: 60 8% 100%;
-    --destructive-hover: 0 75% 60%;
-    --destructive-light: 0 75% 70%;
+    --destructive-hover: 0 75% 50%;
+    --destructive-light: 0 75% 72%;
 
-    --info: 200 80% 50%;
+    --info: 200 80% 55%;
     --info-foreground: 60 8% 100%;
-    --info-hover: 200 80% 55%;
-    --info-light: 200 80% 65%;
+    --info-hover: 200 80% 50%;
+    --info-light: 200 80% 70%;
 
     /* Theme Colors - Refined earthy palette */
-    --earthy-brown: 30 25% 18%;
-    --moss-green: 100 40% 30%;
-    --sage-green: 120 25% 55%;
-    --forest-green: 100 50% 25%;
-    --warm-beige: 45 20% 85%;
-    --deep-forest: 100 30% 15%;
+    --earthy-brown: 30 25% 40%;
+    --moss-green: 100 40% 35%;
+    --sage-green: 120 30% 65%;
+    --forest-green: 100 50% 30%;
+    --warm-beige: 45 35% 90%;
+    --deep-forest: 100 30% 22%;
 
     /* Design Tokens */
     --radius: 1.2rem;
@@ -94,7 +95,7 @@
     --gradient-elegant: linear-gradient(
       180deg,
       hsl(var(--background)),
-      hsl(var(--muted) / 0.4),
+      hsl(var(--muted) / 0.5),
       hsl(var(--card))
     );
     --gradient-forest: linear-gradient(
@@ -130,29 +131,38 @@
 
     /* Shadows */
     --shadow-elegant:
-      0 20px 25px -5px hsl(var(--primary) / 0.1),
-      0 10px 10px -5px hsl(var(--primary) / 0.04);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
+      0 20px 25px -5px hsl(var(--primary) / 0.12),
+      0 10px 10px -5px hsl(var(--primary) / 0.05);
+    --shadow-glow: 0 0 35px hsl(var(--primary) / 0.25);
     --shadow-card:
       0 4px 6px -1px hsl(var(--primary) / 0.1),
-      0 2px 4px -1px hsl(var(--primary) / 0.06);
+      0 2px 4px -1px hsl(var(--primary) / 0.04);
 
     /* Glass Effects */
-    --liquid-glass: rgba(255, 255, 255, 0.05);
-    --liquid-border: rgba(255, 255, 255, 0.1);
+    --liquid-glass: rgba(255, 255, 255, 0.65);
+    --liquid-border: rgba(255, 255, 255, 0.8);
 
     /* Sidebar Colors */
-    --sidebar-background: 30 25% 20%;
-    --sidebar-foreground: 60 9% 100%;
-    --sidebar-primary: 100 40% 25%;
-    --sidebar-primary-foreground: 60 9% 100%;
-    --sidebar-accent: 120 20% 60%;
-    --sidebar-accent-foreground: 30 25% 20%;
-    --sidebar-border: 120 13% 91%;
-    --sidebar-ring: 100 40% 25%;
+    --sidebar-background: 45 38% 94%;
+    --sidebar-foreground: 30 25% 22%;
+    --sidebar-primary: 100 40% 32%;
+    --sidebar-primary-foreground: 60 9% 98%;
+    --sidebar-accent: 120 28% 64%;
+    --sidebar-accent-foreground: 30 25% 24%;
+    --sidebar-border: 120 16% 82%;
+    --sidebar-ring: 100 40% 32%;
+  }
+
+  [data-theme='light'] {
+    color-scheme: light;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
   }
 
   .dark {
+    color-scheme: dark;
     /* Core Colors - Enhanced dark mode */
     --background: 30 15% 8%;
     --foreground: 60 8% 98%;
@@ -325,6 +335,35 @@
         hsl(var(--card) / 0.2)
       );
     background-attachment: fixed;
+  }
+
+  input,
+  textarea,
+  select {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: inset 0 1px 1px hsl(var(--background) / 0.25);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    border-color: hsl(var(--ring));
+    box-shadow:
+      0 0 0 2px hsl(var(--ring) / 0.35),
+      inset 0 1px 1px hsl(var(--background) / 0.2);
   }
 }
 
