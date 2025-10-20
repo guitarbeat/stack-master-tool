@@ -57,12 +57,22 @@ const renderWithRouter = () =>
 
 describe("App", () => {
   it("renders without crashing", () => {
+    render(
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </BrowserRouter>
+    );
     renderWithRouter();
 
     expect(screen.getByTestId("app-layout")).toBeInTheDocument();
   });
 
   it("renders home page by default", () => {
+    render(
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </BrowserRouter>
+    );
     renderWithRouter();
 
     expect(screen.getByTestId("home-page")).toBeInTheDocument();
