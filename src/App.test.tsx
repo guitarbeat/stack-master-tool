@@ -43,23 +43,27 @@ vi.mock("./pages/NotFound", () => ({
   default: () => <div data-testid="not-found">Not Found</div>,
 }));
 
+const futureConfig = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+} as const;
+
+const renderWithRouter = () =>
+  render(
+    <BrowserRouter future={futureConfig}>
+      <App />
+    </BrowserRouter>
+  );
+
 describe("App", () => {
   it("renders without crashing", () => {
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
+    renderWithRouter();
 
     expect(screen.getByTestId("app-layout")).toBeInTheDocument();
   });
 
   it("renders home page by default", () => {
-    render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
+    renderWithRouter();
 
     expect(screen.getByTestId("home-page")).toBeInTheDocument();
   });
