@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { Users, LogOut } from "lucide-react";
 
 interface MeetingHeaderProps {
@@ -8,7 +9,7 @@ interface MeetingHeaderProps {
   };
   participantCount: number;
   onLeaveMeeting: () => void;
-  additionalBadge?: React.ReactElement;
+  additionalBadge?: ReactElement;
 }
 
 export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, additionalBadge }: MeetingHeaderProps) => {

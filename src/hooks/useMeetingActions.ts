@@ -7,10 +7,9 @@ import { logProduction } from "@/utils/productionLogger";
 interface UseMeetingActionsProps {
   meetingId: string;
   currentParticipantId: string;
-  mode: string | null;
+  serverQueue: SbQueueItem[];
   setLastSpeaker: (speaker: SbQueueItem | null) => void;
   setShowJohnDoe: (show: boolean) => void;
-  setServerParticipants: (fn: (prev: SbQueueItem[]) => SbQueueItem[]) => void;
 }
 
 interface UseMeetingActionsReturn {
@@ -25,7 +24,7 @@ interface UseMeetingActionsReturn {
   handleReorderQueue: (dragIndex: number, targetIndex: number) => Promise<void>;
   
   // * Participant management
-  handleUpdateParticipant: (participantId: string, updates: { name?: string }) => Promise<void>;
+  handleUpdateParticipant: (participantId: string, newName: string) => Promise<void>;
   handleRemoveParticipant: (participantId: string) => Promise<void>;
   handleAddParticipant: (name: string) => Promise<void>;
   handleParticipantNameUpdate: (participantId: string, newName: string) => Promise<void>;
@@ -44,10 +43,9 @@ interface UseMeetingActionsReturn {
 export function useMeetingActions({
   meetingId,
   currentParticipantId,
-  _mode,
+  serverQueue,
   setLastSpeaker,
   setShowJohnDoe,
-  _setServerParticipants,
 }: UseMeetingActionsProps): UseMeetingActionsReturn {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -147,7 +145,7 @@ export function useMeetingActions({
    * * Handles reordering items in the speaking queue
    */
   const handleReorderQueue = async (dragIndex: number, targetIndex: number) => {
-    if (!meetingId || !serverQueue) {
+    if (!meetingId || serverQueue.length === 0) {
       return;
     }
 
@@ -168,7 +166,7 @@ export function useMeetingActions({
 
       await SupabaseMeetingService.reorderQueueItem(
         meetingId,
-        itemToMove.participant_id,
+        itemToMove.participantId,
         newPosition
       );
 
@@ -177,7 +175,7 @@ export function useMeetingActions({
         meetingId,
         dragIndex,
         targetIndex,
-        participantId: itemToMove.participant_id,
+        participantId: itemToMove.participantId,
         newPosition
       });
     } catch (error) {
@@ -194,24 +192,25 @@ export function useMeetingActions({
   /**
    * * Handles updating participant information
    */
-  const handleUpdateParticipant = async (participantId: string, updates: { name?: string }) => {
-    if (!participantId || !updates.name?.trim()) {
+  const handleUpdateParticipant = async (participantId: string, newName: string) => {
+    if (!participantId || !newName.trim()) {
       return;
     }
 
     try {
-      await SupabaseMeetingService.updateParticipantName(participantId, updates.name.trim());
+      const normalizedName = newName.trim();
+      await SupabaseMeetingService.updateParticipantName(participantId, normalizedName);
       showToast({
         type: 'success',
         title: 'Name Updated',
-        message: `Participant name updated to ${updates.name.trim()}`
+        message: `Participant name updated to ${normalizedName}`
       });
       // * Real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
         action: "update_participant",
         participantId,
-        updates,
+        newName,
         error: error instanceof Error ? error.message : String(error)
       });
       showToast({

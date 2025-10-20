@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type MouseEvent, type RefObject } from 'react';
 
 interface UseMouseFollowOptions {
   enabled?: boolean;
@@ -11,10 +11,10 @@ interface MousePosition {
 }
 
 interface UseMouseFollowReturn {
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement>;
   mousePosition: MousePosition;
   isHovering: boolean;
-  handleMouseMove: (e: React.MouseEvent) => void;
+  handleMouseMove: (e: MouseEvent<HTMLDivElement>) => void;
   handleMouseEnter: () => void;
   handleMouseLeave: () => void;
 }
@@ -28,7 +28,7 @@ export function useMouseFollow(options: UseMouseFollowOptions = {}): UseMouseFol
   const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!options.enabled) {
       return;
     }

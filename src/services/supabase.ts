@@ -18,6 +18,7 @@ export interface MeetingData {
   code: string;
   title: string;
   facilitator: string;
+  facilitatorId: string | null;
   createdAt: string;
   isActive: boolean;
 }
@@ -36,6 +37,16 @@ export interface MeetingWithParticipants extends MeetingData {
   participants: Participant[];
   speakingQueue: QueueItem[];
 }
+
+type SpeakingQueueRow = {
+  id: string;
+  participant_id: string;
+  queue_type: string;
+  position: number;
+  joined_queue_at: string;
+  is_speaking: boolean;
+  participants?: { name: string };
+};
 
 // Meeting operations
 export class SupabaseMeetingService {
@@ -125,6 +136,7 @@ export class SupabaseMeetingService {
         code: data.meeting_code,
         title: data.title,
         facilitator: data.facilitator_name,
+        facilitatorId: data.facilitator_id,
         createdAt: data.created_at,
         isActive: data.is_active,
       };
@@ -218,6 +230,18 @@ export class SupabaseMeetingService {
         );
       }
 
+      const participantRows = (participants ?? []) as Array<{
+        id: string;
+        name: string;
+        is_facilitator: boolean;
+        joined_at: string;
+        is_active: boolean;
+      }>;
+
+      const queueRows = (queue ?? []) as Array<SpeakingQueueRow & {
+        participants: { name: string };
+      }>;
+
       return {
         id: meeting.id,
         code: meeting.meeting_code,
@@ -225,7 +249,7 @@ export class SupabaseMeetingService {
         facilitator: meeting.facilitator_name,
         createdAt: meeting.created_at,
         isActive: meeting.is_active,
-        participants: participants.map((p) => ({
+        participants: participantRows.map((p) => ({
           id: p.id,
           name: p.name,
           isFacilitator: p.is_facilitator,
@@ -233,7 +257,7 @@ export class SupabaseMeetingService {
           joinedAt: p.joined_at,
           isActive: p.is_active,
         })),
-        speakingQueue: queue.map((q) => ({
+        speakingQueue: queueRows.map((q) => ({
           id: q.id,
           participantId: q.participant_id,
           participantName: q.participants.name,
@@ -359,8 +383,9 @@ export class SupabaseMeetingService {
         );
       }
 
+      const queuePositions = (currentQueue ?? []) as Array<Pick<SpeakingQueueRow, "position">>;
       const nextPosition =
-        currentQueue.length > 0 ? currentQueue[0].position + 1 : 1;
+        queuePositions.length > 0 ? queuePositions[0].position + 1 : 1;
 
       // Get participant name
       const { data: participant, error: participantError } = await supabase
@@ -472,12 +497,16 @@ export class SupabaseMeetingService {
         );
       }
 
-      if (queue.length === 0) {
+      const queueItems = (queue ?? []) as Array<SpeakingQueueRow & {
+        participants: { name: string };
+      }>;
+
+      if (queueItems.length === 0) {
         return null;
       }
 
       // Remove first speaker
-      const nextSpeaker = queue[0];
+      const [nextSpeaker] = queueItems;
       const { error: deleteError } = await supabase
         .from("speaking_queue")
         .delete()
@@ -549,7 +578,7 @@ export class SupabaseMeetingService {
       // Validate the new code format
       if (!/^[A-Z0-9]{6}$/.test(newCode)) {
         throw new AppError(
-          ErrorCode.VALIDATION_ERROR,
+          ErrorCode.INVALID_MEETING_CODE,
           undefined,
           "Meeting code must be exactly 6 uppercase letters and numbers"
         );
@@ -565,7 +594,7 @@ export class SupabaseMeetingService {
 
       if (existing) {
         throw new AppError(
-          ErrorCode.CONFLICT,
+          ErrorCode.MEETING_CODE_EXISTS,
           undefined,
           "This meeting code is already in use. Please choose a different code."
         );
@@ -631,7 +660,7 @@ export class SupabaseMeetingService {
       // Get current queue to determine how to shift positions
       const { data: currentQueue, error: queueError } = await supabase
         .from("speaking_queue")
-        .select("id, position")
+        .select("id, position, participant_id")
         .eq("meeting_id", meetingId)
         .order("position", { ascending: true });
 
@@ -643,7 +672,13 @@ export class SupabaseMeetingService {
         );
       }
 
-      const currentItemIndex = currentQueue.findIndex(item => item.position === newPosition);
+      const queueItems = (currentQueue ?? []) as Array<Pick<SpeakingQueueRow, "id" | "position" | "participant_id">>;
+
+      if (queueItems.length === 0) {
+        return;
+      }
+
+      const currentItemIndex = queueItems.findIndex(item => item.position === newPosition);
       if (currentItemIndex === -1) {
         throw new AppError(
           ErrorCode.INTERNAL_SERVER_ERROR,
@@ -653,32 +688,41 @@ export class SupabaseMeetingService {
       }
 
       // Shift positions to make room for the new position
-      const updates = [];
-      if (newPosition < currentQueue[currentItemIndex].position) {
+      const updates: Array<{ id: string; position: number }> = [];
+      if (newPosition < queueItems[currentItemIndex].position) {
         // Moving up - shift items down
-        for (let i = newPosition - 1; i < currentQueue.length; i++) {
-          if (currentQueue[i].position >= newPosition) {
+        for (let i = newPosition - 1; i < queueItems.length; i++) {
+          if (queueItems[i].position >= newPosition) {
             updates.push({
-              id: currentQueue[i].id,
-              position: currentQueue[i].position + 1
+              id: queueItems[i].id,
+              position: queueItems[i].position + 1
             });
           }
         }
       } else {
         // Moving down - shift items up
-        for (let i = 0; i < currentQueue.length; i++) {
-          if (currentQueue[i].position > newPosition && currentQueue[i].position <= currentQueue[currentItemIndex].position) {
+        for (let i = 0; i < queueItems.length; i++) {
+          if (queueItems[i].position > newPosition && queueItems[i].position <= queueItems[currentItemIndex].position) {
             updates.push({
-              id: currentQueue[i].id,
-              position: currentQueue[i].position - 1
+              id: queueItems[i].id,
+              position: queueItems[i].position - 1
             });
           }
         }
       }
 
       // Update the target item to new position
+      const targetItem = queueItems.find(item => item.participant_id === participantId);
+      if (!targetItem) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          undefined,
+          "Participant not found in queue",
+        );
+      }
+
       updates.push({
-        id: currentQueue.find(item => item.participant_id === participantId)?.id,
+        id: targetItem.id,
         position: newPosition
       });
 
@@ -872,11 +916,11 @@ export class SupabaseMeetingService {
   /**
    * * Get all active meetings for room browsing
    */
-  static async getActiveMeetings(): Promise<Meeting[]> {
+  static async getActiveMeetings(): Promise<MeetingData[]> {
     try {
       const { data, error } = await supabase
         .from("meetings")
-        .select("*")
+        .select("id, meeting_code, title, facilitator_name, facilitator_id, created_at, is_active")
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
@@ -888,7 +932,25 @@ export class SupabaseMeetingService {
         );
       }
 
-      return data || [];
+      const meetingRows = (data ?? []) as Array<{
+        id: string;
+        meeting_code: string;
+        title: string;
+        facilitator_name: string;
+        facilitator_id: string | null;
+        created_at: string;
+        is_active: boolean;
+      }>;
+
+      return meetingRows.map((row) => ({
+        id: row.id,
+        code: row.meeting_code,
+        title: row.title,
+        facilitator: row.facilitator_name,
+        facilitatorId: row.facilitator_id,
+        createdAt: row.created_at,
+        isActive: row.is_active,
+      }));
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
@@ -933,7 +995,7 @@ export class SupabaseMeetingService {
   /**
    * * Get meetings created by a specific facilitator
    */
-  static async getMeetingsByFacilitator(facilitatorId: string): Promise<Meeting[]> {
+  static async getMeetingsByFacilitator(facilitatorId: string): Promise<MeetingData[]> {
     try {
       const { data, error } = await supabase
         .from("meetings")
@@ -949,7 +1011,7 @@ export class SupabaseMeetingService {
         );
       }
 
-      return data || [];
+      return (data as MeetingData[]) || [];
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
@@ -1068,7 +1130,7 @@ export class SupabaseMeetingService {
 
       if (meeting.facilitator_id !== facilitatorId) {
         throw new AppError(
-          ErrorCode.FORBIDDEN,
+          ErrorCode.INSUFFICIENT_PERMISSIONS,
           undefined,
           "Only the meeting facilitator can delete this room",
         );

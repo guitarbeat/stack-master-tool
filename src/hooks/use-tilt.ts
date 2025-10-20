@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, type MouseEvent } from 'react';
 
 interface TiltOptions {
   maxTilt?: number;
@@ -79,7 +79,7 @@ export default function useTiltEffect(options: TiltOptions = {}) {
     }));
   };
 
-  const handleMouseMove = (index: number) => (e: React.MouseEvent) => {
+  const handleMouseMove = (index: number) => (e: MouseEvent<HTMLDivElement>) => {
     const card = cardsRef.current.get(index);
     if (!card) {
       return;

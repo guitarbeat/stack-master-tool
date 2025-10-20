@@ -29,9 +29,10 @@
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": true,
 
-    "baseUrl": ".",
+    "baseUrl": "..",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@frontend/*": ["./src/frontend/*"]
     }
   },
   "include": ["../src"]

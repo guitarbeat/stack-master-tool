@@ -453,23 +453,30 @@ function getErrorTypeFromCode(code: ErrorCode): ErrorType {
   if (
     code.startsWith("ALREADY") ||
     code.startsWith("DUPLICATE") ||
-    code.startsWith("MEETING_CODE") ||
-    code === "QUEUE_EMPTY" ||
-    code === "PARTICIPANT_ALREADY_EXISTS" ||
-    code === "MEETING_ENDED" ||
-    code === "MEETING_FULL" ||
-    code === "INVALID_OPERATION" ||
-    code === "QUEUE_LIMIT_REACHED"
+    code.startsWith("MEETING_CODE")
   ) {
+    return ErrorType.CONFLICT;
+  }
+
+  const conflictCodes = new Set<ErrorCode>([
+    ErrorCode.QUEUE_EMPTY,
+    ErrorCode.PARTICIPANT_ALREADY_EXISTS,
+    ErrorCode.MEETING_ENDED,
+    ErrorCode.MEETING_FULL,
+    ErrorCode.INVALID_OPERATION,
+    ErrorCode.QUEUE_LIMIT_REACHED,
+  ]);
+
+  if (conflictCodes.has(code)) {
     return ErrorType.CONFLICT;
   }
 
   // Validation errors
   if (
     code.startsWith("INVALID") ||
-    code === "MISSING_REQUIRED_FIELD" ||
+    code === ErrorCode.MISSING_REQUIRED_FIELD ||
     code.startsWith("NAME_") ||
-    code === "INVALID_CHARACTERS"
+    code === ErrorCode.INVALID_CHARACTERS
   ) {
     return ErrorType.VALIDATION;
   }
@@ -477,9 +484,9 @@ function getErrorTypeFromCode(code: ErrorCode): ErrorType {
   // Not found errors
   if (
     code.startsWith("NOT_FOUND") ||
-    code === "MEETING_NOT_FOUND" ||
-    code === "PARTICIPANT_NOT_FOUND" ||
-    code === "QUEUE_ITEM_NOT_FOUND"
+    code === ErrorCode.MEETING_NOT_FOUND ||
+    code === ErrorCode.PARTICIPANT_NOT_FOUND ||
+    code === ErrorCode.QUEUE_ITEM_NOT_FOUND
   ) {
     return ErrorType.NOT_FOUND;
   }
@@ -488,39 +495,30 @@ function getErrorTypeFromCode(code: ErrorCode): ErrorType {
   if (
     code.startsWith("INTERNAL") ||
     code.startsWith("SERVICE") ||
-    code === "DATABASE_ERROR" ||
-    code === "RATE_LIMIT_EXCEEDED"
+    code === ErrorCode.DATABASE_ERROR ||
+    code === ErrorCode.RATE_LIMIT_EXCEEDED
   ) {
     return ErrorType.SERVER;
   }
 
   // Business logic errors (mapped to appropriate types)
-  if (
-    code === "MEETING_ENDED" ||
-    code === "MEETING_FULL" ||
-    code === "INVALID_OPERATION" ||
-    code === "QUEUE_LIMIT_REACHED"
-  ) {
-    return ErrorType.CONFLICT; // These are business logic conflicts
-  }
-
   return ErrorType.UNKNOWN;
 }
 
 function isRetryableError(code: ErrorCode): boolean {
-  const retryableCodes = [
-    "CONNECTION_FAILED",
-    "NETWORK_TIMEOUT",
-    "OFFLINE",
-    "WEBSOCKET_DISCONNECTED",
-    "SERVER_UNREACHABLE",
-    "INTERNAL_SERVER_ERROR",
-    "SERVICE_UNAVAILABLE",
-    "DATABASE_ERROR",
-    "JOIN_TIMEOUT",
-    "SOCKET_TIMEOUT",
-    "REQUEST_TIMEOUT",
-    "RATE_LIMIT_EXCEEDED",
+  const retryableCodes: ErrorCode[] = [
+    ErrorCode.CONNECTION_FAILED,
+    ErrorCode.NETWORK_TIMEOUT,
+    ErrorCode.OFFLINE,
+    ErrorCode.WEBSOCKET_DISCONNECTED,
+    ErrorCode.SERVER_UNREACHABLE,
+    ErrorCode.INTERNAL_SERVER_ERROR,
+    ErrorCode.SERVICE_UNAVAILABLE,
+    ErrorCode.DATABASE_ERROR,
+    ErrorCode.JOIN_TIMEOUT,
+    ErrorCode.SOCKET_TIMEOUT,
+    ErrorCode.REQUEST_TIMEOUT,
+    ErrorCode.RATE_LIMIT_EXCEEDED,
   ];
   return retryableCodes.includes(code);
 }

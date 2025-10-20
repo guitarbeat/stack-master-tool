@@ -25,8 +25,8 @@ export function useMeetingRealtime({
       return;
     }
 
-    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, {
-      onParticipantsUpdated: (participants) => {
+    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, meetingId, {
+      onParticipantsUpdated: (participants: SbParticipant[]) => {
         setServerParticipants(participants);
         // * Hide John Doe when real participants join
         if (participants.length > 0) {
@@ -34,7 +34,7 @@ export function useMeetingRealtime({
         }
       },
       onQueueUpdated: setServerQueue,
-      onMeetingTitleUpdated: (title) =>
+      onMeetingTitleUpdated: (title: string) =>
         setServerMeeting((m) =>
           m ? ({ ...m, title } as MeetingWithParticipants) : m,
         ),

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit2, Check, X } from "lucide-react";
@@ -12,7 +12,7 @@ interface EditableFieldProps<T = string> {
   className?: string;
   maxLength?: number;
   placeholder?: string;
-  displayValue?: (value: T) => React.ReactNode;
+  displayValue?: (value: T) => ReactNode;
   inputClassName?: string;
 }
 
@@ -67,7 +67,7 @@ export function EditableField<T extends string = string>({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       void handleSaveEdit();
     } else if (e.key === "Escape") {
@@ -88,7 +88,9 @@ export function EditableField<T extends string = string>({
       <div className="flex items-center gap-2">
         <Input
           value={editValue}
-          onChange={e => setEditValue(e.target.value as T)}
+          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+            setEditValue(event.target.value as T)
+          }
           onKeyDown={handleKeyDown}
           className={inputClassName}
           maxLength={maxLength}

@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,7 @@ interface SpeakingAnalyticsProps {
   isHostMode?: boolean; // whether this is being displayed in HOST mode
 }
 
-export const SpeakingAnalytics: React.FC<SpeakingAnalyticsProps> = ({
+export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
   speakingDistribution,
   totalSpeakingTime = 0,
   averageSpeakingTime = 0,

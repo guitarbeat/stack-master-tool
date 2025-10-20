@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { User } from "@supabase/supabase-js";
@@ -28,9 +28,11 @@ interface UseMeetingStateReturn {
   
   // * Server state
   serverMeeting: MeetingWithParticipants | null;
+  setServerMeeting: Dispatch<SetStateAction<MeetingWithParticipants | null>>;
   serverParticipants: SbParticipant[];
+  setServerParticipants: Dispatch<SetStateAction<SbParticipant[]>>;
   serverQueue: SbQueueItem[];
-  setServerQueue: (queue: SbQueueItem[]) => void;
+  setServerQueue: Dispatch<SetStateAction<SbQueueItem[]>>;
   currentParticipantId: string;
   setCurrentParticipantId: (id: string) => void;
   
@@ -138,7 +140,7 @@ export function useMeetingState(): UseMeetingStateReturn {
         const currentName = searchParams.get("name");
 
         if (currentMode === "host") {
-          await handleHostMode(user, setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue);
+          await handleHostMode(setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue);
         } else if (currentCode) {
           await handleJoinOrWatchMode(
             currentMode as MeetingMode,
@@ -221,12 +223,11 @@ export function useMeetingState(): UseMeetingStateReturn {
  * Creates a new meeting and sets up initial state
  */
 async function handleHostMode(
-  user: User | null,
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,
-  setServerMeeting: (meeting: MeetingWithParticipants | null) => void,
-  setServerParticipants: (participants: SbParticipant[]) => void,
-  setServerQueue: (queue: SbQueueItem[]) => void
+  setServerMeeting: Dispatch<SetStateAction<MeetingWithParticipants | null>>,
+  setServerParticipants: Dispatch<SetStateAction<SbParticipant[]>>,
+  setServerQueue: Dispatch<SetStateAction<SbQueueItem[]>>
 ) {
   // Don't automatically create a meeting - let the user create one manually
   // This allows users to choose custom room names and only create when ready
@@ -249,9 +250,9 @@ async function handleJoinOrWatchMode(
   setError: (error: AppError | string | null) => void,
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,
-  setServerMeeting: (meeting: MeetingWithParticipants | null) => void,
-  setServerParticipants: (participants: SbParticipant[]) => void,
-  setServerQueue: (queue: SbQueueItem[]) => void,
+  setServerMeeting: Dispatch<SetStateAction<MeetingWithParticipants | null>>,
+  setServerParticipants: Dispatch<SetStateAction<SbParticipant[]>>,
+  setServerQueue: Dispatch<SetStateAction<SbQueueItem[]>>,
   setCurrentParticipantId: (id: string) => void
 ) {
   try {

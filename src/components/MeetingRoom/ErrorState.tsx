@@ -1,8 +1,8 @@
+import { useCallback, useEffect, useState } from "react";
 import { LogOut, RefreshCw, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ErrorDisplay } from "../shared/ErrorDisplay";
 import { AppError, ErrorCode } from "../../utils/errorHandling";
-import React, { useState, useCallback, useEffect } from "react";
 
 interface ErrorStateProps {
   error: string | AppError;
@@ -65,9 +65,13 @@ export const ErrorState = ({
         setNextRetryIn(prev => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (nextRetryIn === 0 && retryCount < maxRetries) {
+    }
+
+    if (nextRetryIn === 0 && retryCount < maxRetries) {
       void handleRetry();
     }
+
+    return undefined;
   }, [nextRetryIn, retryCount, maxRetries, handleRetry]);
 
   return (
@@ -79,10 +83,10 @@ export const ErrorState = ({
         <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-4">Connection Error</h2>
         
         <div className="mb-6">
-          <ErrorDisplay 
+          <ErrorDisplay
             error={appError}
-            onRetry={canRetry ? () => void handleRetry() : undefined}
-            onGoHome={showHomeButton ? handleGoHome : undefined}
+            {...(canRetry ? { onRetry: () => { void handleRetry(); } } : {})}
+            {...(showHomeButton ? { onGoHome: handleGoHome } : {})}
             showDetails={true}
           />
         </div>

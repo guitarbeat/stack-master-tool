@@ -12,12 +12,12 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Room {
   id: string;
-  meeting_code: string;
+  code: string;
   title: string;
-  facilitator_name: string;
-  facilitator_id: string | null;
-  created_at: string;
-  participant_count: number;
+  facilitatorName: string;
+  facilitatorId: string | null;
+  createdAt: string;
+  participantCount: number;
 }
 
 export function RoomBrowser() {
@@ -45,12 +45,12 @@ export function RoomBrowser() {
           const participants = await SupabaseMeetingService.getParticipants(meeting.id);
           return {
             id: meeting.id,
-            meeting_code: meeting.meeting_code,
+            code: meeting.code,
             title: meeting.title,
-            facilitator_name: meeting.facilitator_name,
-            facilitator_id: meeting.facilitator_id,
-            created_at: meeting.created_at,
-            participant_count: participants.length,
+            facilitatorName: meeting.facilitator,
+            facilitatorId: meeting.facilitatorId,
+            createdAt: meeting.createdAt,
+            participantCount: participants.length,
           };
         })
       );
@@ -79,7 +79,7 @@ export function RoomBrowser() {
       showToast({
         title: "Authentication Required",
         message: "You must be logged in to delete rooms",
-        type: "error"
+        type: "error",
       });
       return;
     }
@@ -90,7 +90,7 @@ export function RoomBrowser() {
       showToast({
         title: "Room Deleted",
         message: `Room "${roomTitle}" has been deleted`,
-        type: "success"
+        type: "success",
       });
 
       // Refresh the room list
@@ -105,7 +105,7 @@ export function RoomBrowser() {
       showToast({
         title: "Failed to Delete Room",
         message: error instanceof Error ? error.message : "Please try again",
-        type: "error"
+        type: "error",
       });
     }
   };
@@ -156,11 +156,11 @@ export function RoomBrowser() {
                   <CardTitle className="text-xl">{room.title}</CardTitle>
                   <CardDescription className="flex items-center gap-1 mt-1">
                     <User className="h-3 w-3" />
-                    Facilitated by {room.facilitator_name}
+                    Facilitated by {room.facilitatorName}
                   </CardDescription>
                 </div>
                 <Badge variant="secondary" className="ml-2">
-                  {room.meeting_code}
+                  {room.code}
                 </Badge>
               </div>
             </CardHeader>
@@ -170,7 +170,7 @@ export function RoomBrowser() {
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
-                    <span>{room.participant_count} participants</span>
+                    <span>{room.participantCount} participants</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
@@ -180,20 +180,20 @@ export function RoomBrowser() {
 
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => handleJoinRoom(room.meeting_code)}
+                    onClick={() => handleJoinRoom(room.code)}
                     className="flex-1"
                     size="sm"
                   >
                     Join Discussion
                   </Button>
                   <Button
-                    onClick={() => handleWatchRoom(room.meeting_code)}
+                    onClick={() => handleWatchRoom(room.code)}
                     variant="outline"
                     size="sm"
                   >
                     👁️ Watch
                   </Button>
-                  {user?.id === room.facilitator_id && (
+                  {user?.id === room.facilitatorId && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button

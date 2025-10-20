@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Trash2, User, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EnhancedEditableParticipantName } from './EnhancedEditableParticipantName';
@@ -13,7 +13,7 @@ interface Participant {
 
 interface ParticipantListProps {
   participants: Participant[];
-  onUpdateParticipant: (participantId: string, updates: { name?: string }) => void | Promise<void>;
+  onUpdateParticipant: (participantId: string, newName: string) => void | Promise<void>;
   onRemoveParticipant: (participantId: string) => void | Promise<void>;
   userRole?: string;
   className?: string;

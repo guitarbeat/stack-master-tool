@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 // import { Progress } from "@/components/ui/progress";
@@ -45,7 +45,7 @@ interface DisplayLayoutProps {
   directResponses?: number;
 }
 
-export const DisplayLayout: React.FC<DisplayLayoutProps> = ({
+export const DisplayLayout: FC<DisplayLayoutProps> = ({
   meetingData,
   participants,
   currentSpeaker,
