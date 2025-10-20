@@ -46,7 +46,7 @@ vi.mock("./pages/NotFound", () => ({
 describe("App", () => {
   it("renders without crashing", () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </BrowserRouter>
     );
@@ -56,7 +56,7 @@ describe("App", () => {
 
   it("renders home page by default", () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </BrowserRouter>
     );

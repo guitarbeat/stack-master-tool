@@ -121,7 +121,9 @@ export function AddParticipants({
         )}
       </div>
       <Button
-        onClick={handleAdd}
+        onClick={() => {
+          void handleAdd();
+        }}
         disabled={!inputValue.trim() || isAdding}
         size="sm"
         className="shrink-0 min-h-[44px] text-sm sm:text-xs px-3 sm:px-2"

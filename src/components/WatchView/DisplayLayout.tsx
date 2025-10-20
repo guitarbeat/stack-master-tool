@@ -43,6 +43,7 @@ interface DisplayLayoutProps {
   totalParticipants?: number;
   queueActivity?: number;
   directResponses?: number;
+  showSpeakingAnalytics?: boolean;
 }
 
 export const DisplayLayout: FC<DisplayLayoutProps> = ({
@@ -56,7 +57,8 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
   meetingDuration = 0,
   totalParticipants = 0,
   queueActivity = 0,
-  directResponses = 0
+  directResponses = 0,
+  showSpeakingAnalytics = false
 }) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -168,7 +170,7 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
             </Card>
 
             {/* Speaking Analytics - Hidden in watch mode */}
-            {false && speakingDistribution.length > 0 && (
+            {showSpeakingAnalytics && speakingDistribution.length > 0 && (
               <SpeakingAnalytics
                 speakingDistribution={speakingDistribution}
                 totalSpeakingTime={totalSpeakingTime}

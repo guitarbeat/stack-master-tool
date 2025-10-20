@@ -35,7 +35,7 @@ export const ErrorState = ({
           await result;
         }
         setIsRetrying(false);
-      } catch (_err) {
+      } catch {
         setIsRetrying(false);
         if (retryCount < maxRetries - 1) {
           setNextRetryIn(Math.min(retryDelay / 1000, 10));

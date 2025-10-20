@@ -116,7 +116,9 @@ export function EnhancedEditableParticipantName({
         <Button
           size="sm"
           variant="ghost"
-          onClick={handleSaveEdit}
+          onClick={() => {
+            void handleSaveEdit();
+          }}
           disabled={isUpdating || editName.trim() === ''}
           className="h-8 w-8 p-0 shrink-0"
         >

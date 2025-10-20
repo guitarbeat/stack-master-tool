@@ -159,7 +159,9 @@ export function HostSettingsPanel({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={handleSaveCode}
+                  onClick={() => {
+                    void handleSaveCode();
+                  }}
                   disabled={!codeInput.trim()}
                 >
                   <Check className="w-3 h-3" />
@@ -185,7 +187,9 @@ export function HostSettingsPanel({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={handleRegenerateCode}
+                  onClick={() => {
+                    void handleRegenerateCode();
+                  }}
                   disabled={!onMeetingCodeChange}
                   title="Generate new random code"
                 >
@@ -204,7 +208,9 @@ export function HostSettingsPanel({
             maxLength={6}
             autoFocus
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSaveCode();
+              if (e.key === 'Enter') {
+                void handleSaveCode();
+              }
               if (e.key === 'Escape') handleCancelEditing();
             }}
           />

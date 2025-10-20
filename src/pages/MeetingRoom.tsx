@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
@@ -39,7 +39,6 @@ import {
 
 export default function MeetingRoom() {
   const navigate = useNavigate();
-  const params = useParams();
   const { user } = useAuth();
   const { showToast } = useToast();
 
@@ -50,7 +49,6 @@ export default function MeetingRoom() {
     meetingId,
     setMeetingId,
     mode,
-    setMode,
     isLoading,
     setIsLoading,
     error,
@@ -66,7 +64,6 @@ export default function MeetingRoom() {
     serverQueue,
     setServerQueue,
     currentParticipantId,
-    setCurrentParticipantId,
     isLiveMeeting,
     setIsLiveMeeting,
     showJohnDoe,
@@ -218,8 +215,12 @@ export default function MeetingRoom() {
   };
 
   const { showKeyboardShortcuts: _showKeyboardShortcuts, toggleShortcuts: _toggleShortcuts } = useKeyboardShortcuts({
-    onNextSpeaker: handleNextSpeaker,
-    onUndo: handleUndo,
+    onNextSpeaker: () => {
+      void handleNextSpeaker();
+    },
+    onUndo: () => {
+      void handleUndo();
+    },
     onToggleShortcuts: () => setShowKeyboardShortcutsModal(prev => !prev)
   });
 
@@ -395,7 +396,7 @@ export default function MeetingRoom() {
     return () => {
       unsubscribe?.();
     };
-  }, [meetingId, meetingCode, setShowJohnDoe]);
+  }, [meetingId, meetingCode, setShowJohnDoe, setServerParticipants, setServerQueue, setServerMeeting]);
 
   // Cleanup: Mark participant as inactive when leaving
   useEffect(() => {
@@ -727,13 +728,19 @@ export default function MeetingRoom() {
                   placeholder="e.g. Team Standup, Strategy Session, Open Forum"
                   className="w-full px-3 py-2 border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   value={codeInput}
-                  onChange={(e) => setCodeInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateRoom()}
+                    onChange={(e) => setCodeInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        void handleCreateRoom();
+                      }
+                    }}
                 />
               </div>
 
-              <button
-                onClick={handleCreateRoom}
+                <button
+                  onClick={() => {
+                    void handleCreateRoom();
+                  }}
                 disabled={!codeInput.trim()}
                 className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-md font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -770,8 +777,10 @@ export default function MeetingRoom() {
               setQrOpen(true);
             }}
             onScannerOpen={() => setScannerOpen(true)}
-            onMeetingCodeChange={handleMeetingCodeChange}
-            onEndMeeting={handleEndMeeting}
+              onMeetingCodeChange={handleMeetingCodeChange}
+              onEndMeeting={() => {
+                void handleEndMeeting();
+              }}
             mockParticipants={mockParticipants}
             onAddParticipant={handleAddParticipant}
             onUpdateParticipant={handleUpdateParticipant}
@@ -800,8 +809,12 @@ export default function MeetingRoom() {
                 timestamp: new Date(item.joinedQueueAt).getTime(),
               }))}
               participantName={user?.email ?? "Current User"}
-              onLeaveQueue={handleLeaveQueue}
-              onUpdateParticipantName={handleParticipantNameUpdate}
+              onLeaveQueue={() => {
+                void handleLeaveQueue();
+              }}
+              onUpdateParticipantName={(participantId, newName) => {
+                void handleParticipantNameUpdate(participantId, newName);
+              }}
               currentUserId={currentParticipantId}
             />
           </div>
