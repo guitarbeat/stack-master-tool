@@ -57,95 +57,122 @@ export class SupabaseMeetingService {
     facilitatorId?: string,
   ): Promise<MeetingData> {
     try {
-      // Generate a proper 6-character meeting code using the database function
-      // This ensures consistency with the database schema and validation
-      let meetingCode: string;
-      
-      try {
-        const { data: codeData, error: codeError } = await supabase
-          .rpc('generate_meeting_code');
-        
-        if (codeError) {
-          throw new Error(`Database function failed: ${codeError.message}`);
-        }
+      const maxCreateAttempts = 5;
+      let lastError: AppError | null = null;
 
-        meetingCode = codeData;
-      } catch (dbError) {
-        // Fallback to client-side generation if database function fails
-        logProduction('warn', {
-          action: 'database_meeting_code_generation_failed',
-          error: dbError instanceof Error ? dbError.message : String(dbError)
-        });
-        
-        // Use the same character set as the database function
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let result = '';
-        let codeExists = true;
-        let attempts = 0;
-        const maxAttempts = 10;
-        
-        while (codeExists && attempts < maxAttempts) {
-          result = '';
-          for (let i = 0; i < 6; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-          }
-          
-          // Check if code already exists
-          const { data: existing } = await supabase
-            .from("meetings")
-            .select("meeting_code")
-            .eq("meeting_code", result)
-            .single();
-          
-          codeExists = !!existing;
-          attempts++;
-        }
-        
-        if (codeExists) {
-          throw new AppError(
-            ErrorCode.INTERNAL_SERVER_ERROR,
-            undefined,
-            "Unable to generate unique meeting code after multiple attempts"
-          );
-        }
-        
-        meetingCode = result;
-      }
-      const { data, error } = await supabase
-        .from("meetings")
-        .insert({
-          title: title.trim(),
-          facilitator_name: facilitatorName.trim(),
+      for (let attempt = 0; attempt < maxCreateAttempts; attempt++) {
+        const meetingCode = await this.generateMeetingCodeWithFallback();
+
+        const { data, error } = await supabase
+          .from("meetings")
+          .insert({
+            title: title.trim(),
+            facilitator_name: facilitatorName.trim(),
             facilitator_id: facilitatorId ?? null,
-          meeting_code: meetingCode,
-          is_active: true,
-        })
-        .select()
-        .single();
+            meeting_code: meetingCode,
+            is_active: true,
+          })
+          .select()
+          .single();
 
-      if (error) {
+        if (!error && data) {
+          return {
+            id: data.id,
+            code: data.meeting_code,
+            title: data.title,
+            facilitator: data.facilitator_name,
+            facilitatorId: data.facilitator_id,
+            createdAt: data.created_at,
+            isActive: data.is_active,
+          };
+        }
+
+        if (error?.code === "23505" || error?.message?.includes("duplicate key value")) {
+          // Rare collision on meeting code. Retry with a new code and log for observability.
+          logProduction("warn", {
+            action: "meeting_code_collision",
+            attempt: attempt + 1,
+            error: error.message,
+          });
+          lastError = new AppError(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            error,
+            "Generated meeting code was already in use. Retrying...",
+          );
+          continue;
+        }
+
         throw new AppError(
           ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
+          error ?? undefined,
           "Failed to create meeting",
         );
       }
 
-      return {
-        id: data.id,
-        code: data.meeting_code,
-        title: data.title,
-        facilitator: data.facilitator_name,
-        facilitatorId: data.facilitator_id,
-        createdAt: data.created_at,
-        isActive: data.is_active,
-      };
+      throw (
+        lastError ??
+        new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          undefined,
+          "Unable to create meeting after multiple attempts",
+        )
+      );
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
         ErrorCode.INTERNAL_SERVER_ERROR,
         error as Error,
         "Failed to create meeting",
+      );
+    }
+  }
+
+  private static async generateMeetingCodeWithFallback(): Promise<string> {
+    try {
+      const { data: codeData, error: codeError } = await supabase.rpc(
+        "generate_meeting_code",
+      );
+
+      if (codeError) {
+        throw new Error(`Database function failed: ${codeError.message}`);
+      }
+
+      if (typeof codeData === "string" && codeData.trim().length === 6) {
+        return codeData.trim().toUpperCase();
+      }
+
+      throw new Error("Invalid meeting code generated from database");
+    } catch (dbError) {
+      // Fallback to client-side generation if database function fails
+      logProduction("warn", {
+        action: "database_meeting_code_generation_failed",
+        error: dbError instanceof Error ? dbError.message : String(dbError),
+      });
+
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const maxAttempts = 10;
+
+      for (let attempts = 0; attempts < maxAttempts; attempts++) {
+        let result = "";
+        for (let i = 0; i < 6; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        const { data: existing } = await supabase
+          .from("meetings")
+          .select("meeting_code")
+          .eq("meeting_code", result)
+          .maybeSingle();
+
+        if (!existing) {
+          return result;
+        }
+      }
+
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        undefined,
+        "Unable to generate unique meeting code after multiple attempts",
       );
     }
   }
