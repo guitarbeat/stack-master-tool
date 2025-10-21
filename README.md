@@ -17,6 +17,11 @@ pnpm dev
 pnpm build:prod
 ```
 
+> **Environment variables:** Copy `.env.example` (or create a `.env`) and set
+> `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` before starting the dev
+> server. See [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) for
+> details.
+
 ## 📊 Version Information
 
 The application includes automated version tracking powered by Aaron's Love ❤️
