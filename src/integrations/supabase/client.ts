@@ -2,13 +2,9 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-// Environment variables with fallbacks for production
-const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL ??
-  "https://jectngcrpikxwnjdwana.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ??
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplY3RuZ2NycGlreHduamR3YW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNTI3NTYsImV4cCI6MjA3MzgyODc1Nn0.MsBmQukMgikZxHCqJIjtXxB62Bf9CbEaaOumFEMYYuo";
+// Environment variables must be provided via the environment (e.g. .env)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Validate required environment variables
 if (!SUPABASE_URL) {
