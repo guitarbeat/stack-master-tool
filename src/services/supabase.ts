@@ -13,6 +13,14 @@ export interface Participant {
   isActive: boolean;
 }
 
+export interface ParticipantSnapshot {
+  id: string;
+  meetingId: string;
+  name: string;
+  isFacilitator: boolean;
+  joinedAt: string;
+}
+
 export interface MeetingData {
   id: string;
   code: string;
@@ -821,8 +829,38 @@ export class SupabaseMeetingService {
   }
 
   // Remove participant from meeting (facilitator only)
-  static async removeParticipant(participantId: string): Promise<void> {
+  static async removeParticipant(participantId: string): Promise<ParticipantSnapshot> {
     try {
+      const { data: participantRow, error: participantError } = await supabase
+        .from("participants")
+        .select("id, meeting_id, name, is_facilitator, joined_at")
+        .eq("id", participantId)
+        .maybeSingle();
+
+      if (participantError) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          participantError,
+          "Failed to fetch participant before removal",
+        );
+      }
+
+      if (!participantRow) {
+        throw new AppError(
+          ErrorCode.NOT_FOUND,
+          undefined,
+          "Participant not found",
+        );
+      }
+
+      const participantSnapshot: ParticipantSnapshot = {
+        id: participantRow.id,
+        meetingId: participantRow.meeting_id,
+        name: participantRow.name,
+        isFacilitator: participantRow.is_facilitator,
+        joinedAt: participantRow.joined_at,
+      };
+
       // First, remove from speaking queue if they're in it
       const { error: queueError } = await supabase
         .from("speaking_queue")
@@ -837,10 +875,10 @@ export class SupabaseMeetingService {
         );
       }
 
-      // Then remove the participant
+      // Then mark the participant as inactive to allow undo
       const { error } = await supabase
         .from("participants")
-        .delete()
+        .update({ is_active: false })
         .eq("id", participantId);
 
       if (error) {
@@ -850,12 +888,37 @@ export class SupabaseMeetingService {
           "Failed to remove participant",
         );
       }
+      return participantSnapshot;
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
         ErrorCode.INTERNAL_SERVER_ERROR,
         error as Error,
         "Failed to remove participant",
+      );
+    }
+  }
+
+  static async restoreParticipant(participantId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from("participants")
+        .update({ is_active: true })
+        .eq("id", participantId);
+
+      if (error) {
+        throw new AppError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          error,
+          "Failed to restore participant",
+        );
+      }
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        error as Error,
+        "Failed to restore participant",
       );
     }
   }

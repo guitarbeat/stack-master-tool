@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { SupabaseMeetingService, type QueueItem as SbQueueItem } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
 
@@ -48,7 +49,7 @@ export function useMeetingActions({
   setShowJohnDoe,
 }: UseMeetingActionsProps): UseMeetingActionsReturn {
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showToast, toast: pushToast } = useToast();
   const [lastSpeaker, setLastSpeakerState] = useState<SbQueueItem | null>(null);
 
   // * Update the external lastSpeaker state when internal state changes
@@ -241,11 +242,44 @@ export function useMeetingActions({
     }
 
     try {
-      await SupabaseMeetingService.removeParticipant(participantId);
-      showToast({
-        type: 'success',
+      const removedParticipant = await SupabaseMeetingService.removeParticipant(participantId);
+      const toastHandle = pushToast({
+        variant: 'warning',
         title: 'Participant Removed',
-        message: 'Participant has been removed from the meeting'
+        description: `${removedParticipant.name} has been removed from the meeting`,
+        duration: 7000,
+        action: (
+          <ToastAction
+            altText="Undo removal"
+            onClick={() => {
+              void (async () => {
+                try {
+                  await SupabaseMeetingService.restoreParticipant(removedParticipant.id);
+                  showToast({
+                    type: 'success',
+                    title: 'Participant Restored',
+                    message: `${removedParticipant.name} has been returned to the meeting`
+                  });
+                } catch (restoreError) {
+                  logProduction('error', {
+                    action: 'restore_participant',
+                    participantId: removedParticipant.id,
+                    error: restoreError instanceof Error ? restoreError.message : String(restoreError)
+                  });
+                  showToast({
+                    type: 'error',
+                    title: 'Failed to Restore Participant',
+                    message: 'Please try again or check your connection'
+                  });
+                } finally {
+                  toastHandle.dismiss();
+                }
+              })();
+            }}
+          >
+            Undo
+          </ToastAction>
+        )
       });
       // * Real-time subscription will update the UI
     } catch (error) {

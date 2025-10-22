@@ -11,6 +11,7 @@ import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
 import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 import { CodeInputForm } from "@/components/MeetingRoom/CodeInputForm";
@@ -41,7 +42,7 @@ import {
 export default function MeetingRoom() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { showToast } = useToast();
+  const { showToast, toast: pushToast } = useToast();
 
   // * Use the centralized meeting state hook
   const {
@@ -277,14 +278,70 @@ export default function MeetingRoom() {
       return;
     }
 
+    const existingParticipant = serverParticipants.find(p => p.id === participantId);
+    const originalIndex = serverParticipants.findIndex(p => p.id === participantId);
+
     try {
-      await SupabaseMeetingService.removeParticipant(participantId);
-      showToast({
-        type: 'success',
+      const removedParticipant = await SupabaseMeetingService.removeParticipant(participantId);
+      setServerParticipants(prev => prev.filter(p => p.id !== participantId));
+
+      const toastHandle = pushToast({
+        variant: 'warning',
         title: 'Participant Removed',
-        message: 'Participant has been removed from the meeting'
+        description: `${removedParticipant.name} has been removed from the meeting`,
+        duration: 7000,
+        action: (
+          <ToastAction
+            altText="Undo removal"
+            onClick={() => {
+              void (async () => {
+                try {
+                  await SupabaseMeetingService.restoreParticipant(removedParticipant.id);
+                  const baseParticipant = existingParticipant ?? {
+                    id: removedParticipant.id,
+                    name: removedParticipant.name,
+                    isFacilitator: removedParticipant.isFacilitator,
+                    hasRaisedHand: false,
+                    joinedAt: removedParticipant.joinedAt,
+                    isActive: true,
+                  };
+
+                  setServerParticipants(prev => {
+                    const restoredParticipant = {
+                      ...baseParticipant,
+                      isActive: true,
+                    };
+                    const next = [...prev];
+                    const insertIndex = originalIndex >= 0 ? Math.min(originalIndex, next.length) : next.length;
+                    next.splice(insertIndex, 0, restoredParticipant);
+                    return next;
+                  });
+                  showToast({
+                    type: 'success',
+                    title: 'Participant Restored',
+                    message: `${removedParticipant.name} has been returned to the meeting`
+                  });
+                } catch (restoreError) {
+                  logProduction('error', {
+                    action: 'restore_participant',
+                    participantId: removedParticipant.id,
+                    error: restoreError instanceof Error ? restoreError.message : String(restoreError)
+                  });
+                  showToast({
+                    type: 'error',
+                    title: 'Failed to Restore Participant',
+                    message: 'Please try again or check your connection'
+                  });
+                } finally {
+                  toastHandle.dismiss();
+                }
+              })();
+            }}
+          >
+            Undo
+          </ToastAction>
+        )
       });
-      // Real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
         action: "remove_participant",
