@@ -3,6 +3,104 @@ import { logProduction } from "../utils/productionLogger";
 // Use the single, validated client from integrations to avoid duplicate config
 import { supabase } from "@/integrations/supabase/client";
 
+const SUPABASE_CONNECTION_ERROR_CODES = new Set([
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "ETIMEDOUT",
+  "FETCH_ERROR",
+]);
+
+const SUPABASE_CONNECTION_ERROR_MESSAGES = [
+  "failed to fetch",
+  "fetch failed",
+  "networkerror",
+  "network error",
+  "getaddrinfo",
+  "request to http",
+  "request to https",
+];
+
+const toErrorInstance = (
+  error: unknown,
+  fallbackMessage: string,
+): Error | undefined => {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = String(
+      (error as { message?: unknown }).message ?? fallbackMessage,
+    );
+    return new Error(message);
+  }
+
+  if (typeof error === "string" && error.trim().length > 0) {
+    return new Error(error);
+  }
+
+  return fallbackMessage ? new Error(fallbackMessage) : undefined;
+};
+
+const isSupabaseConnectionError = (error: unknown): boolean => {
+  if (!error) {
+    return false;
+  }
+
+  const code =
+    typeof error === "object" && error !== null && "code" in error
+      ? String((error as { code?: unknown }).code ?? "")
+      : "";
+
+  if (code && SUPABASE_CONNECTION_ERROR_CODES.has(code.toUpperCase())) {
+    return true;
+  }
+
+  const message =
+    typeof error === "object" && error !== null && "message" in error
+      ? String((error as { message?: unknown }).message ?? "")
+      : typeof error === "string"
+        ? error
+        : error instanceof Error
+          ? error.message
+          : "";
+
+  if (message) {
+    const normalized = message.toLowerCase();
+    return SUPABASE_CONNECTION_ERROR_MESSAGES.some((indicator) =>
+      normalized.includes(indicator),
+    );
+  }
+
+  return false;
+};
+
+const mapSupabaseError = (
+  error: unknown,
+  fallbackMessage: string,
+  fallbackCode: ErrorCode = ErrorCode.INTERNAL_SERVER_ERROR,
+): AppError => {
+  if (error instanceof AppError) {
+    return error;
+  }
+
+  if (isSupabaseConnectionError(error)) {
+    return new AppError(
+      ErrorCode.SERVER_UNREACHABLE,
+      toErrorInstance(error, fallbackMessage),
+      "Unable to connect to the Supabase backend. Please verify your Supabase credentials and network connection.",
+    );
+  }
+
+  return new AppError(
+    fallbackCode,
+    toErrorInstance(error, fallbackMessage),
+    fallbackMessage,
+  );
+};
+
 // Types
 export interface Participant {
   id: string;
@@ -95,43 +193,36 @@ export class SupabaseMeetingService {
           };
         }
 
-        if (error?.code === "23505" || error?.message?.includes("duplicate key value")) {
+        if (
+          error?.code === "23505" ||
+          error?.message?.includes("duplicate key value")
+        ) {
           // Rare collision on meeting code. Retry with a new code and log for observability.
           logProduction("warn", {
             action: "meeting_code_collision",
             attempt: attempt + 1,
             error: error.message,
           });
-          lastError = new AppError(
-            ErrorCode.INTERNAL_SERVER_ERROR,
+          lastError = mapSupabaseError(
             error,
             "Generated meeting code was already in use. Retrying...",
           );
           continue;
         }
 
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error ?? undefined,
-          "Failed to create meeting",
-        );
+        throw mapSupabaseError(error ?? undefined, "Failed to create meeting");
       }
 
       throw (
         lastError ??
-        new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        mapSupabaseError(
           undefined,
           "Unable to create meeting after multiple attempts",
         )
       );
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to create meeting",
-      );
+      throw mapSupabaseError(error, "Failed to create meeting");
     }
   }
 
@@ -177,8 +268,7 @@ export class SupabaseMeetingService {
         }
       }
 
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
+      throw mapSupabaseError(
         undefined,
         "Unable to generate unique meeting code after multiple attempts",
       );
@@ -195,18 +285,18 @@ export class SupabaseMeetingService {
         throw new AppError(
           ErrorCode.INVALID_MEETING_CODE,
           undefined,
-          "Meeting code is required"
+          "Meeting code is required",
         );
       }
 
       const normalizedCode = code.toUpperCase().trim();
-      
+
       // Check if code is exactly 6 characters and contains only valid characters
       if (normalizedCode.length !== 6) {
         throw new AppError(
           ErrorCode.INVALID_MEETING_CODE,
           undefined,
-          "Meeting code must be exactly 6 characters"
+          "Meeting code must be exactly 6 characters",
         );
       }
 
@@ -214,7 +304,7 @@ export class SupabaseMeetingService {
         throw new AppError(
           ErrorCode.INVALID_MEETING_CODE,
           undefined,
-          "Meeting code can only contain letters and numbers"
+          "Meeting code can only contain letters and numbers",
         );
       }
 
@@ -238,8 +328,7 @@ export class SupabaseMeetingService {
         .order("joined_at", { ascending: true });
 
       if (participantsError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           participantsError,
           "Failed to fetch participants",
         );
@@ -258,11 +347,7 @@ export class SupabaseMeetingService {
         .order("position", { ascending: true });
 
       if (queueError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          queueError,
-          "Failed to fetch speaking queue",
-        );
+        throw mapSupabaseError(queueError, "Failed to fetch speaking queue");
       }
 
       const participantRows = (participants ?? []) as Array<{
@@ -273,9 +358,11 @@ export class SupabaseMeetingService {
         is_active: boolean;
       }>;
 
-      const queueRows = (queue ?? []) as Array<SpeakingQueueRow & {
-        participants: { name: string };
-      }>;
+      const queueRows = (queue ?? []) as Array<
+        SpeakingQueueRow & {
+          participants: { name: string };
+        }
+      >;
 
       return {
         id: meeting.id,
@@ -304,11 +391,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to fetch meeting",
-      );
+      throw mapSupabaseError(error, "Failed to fetch meeting");
     }
   }
 
@@ -324,17 +407,20 @@ export class SupabaseMeetingService {
         throw new AppError(
           ErrorCode.INVALID_MEETING_CODE,
           undefined,
-          "Meeting code is required"
+          "Meeting code is required",
         );
       }
 
       const normalizedCode = meetingCode.toUpperCase().trim();
-      
-      if (normalizedCode.length !== 6 || !/^[A-Z0-9]{6}$/.test(normalizedCode)) {
+
+      if (
+        normalizedCode.length !== 6 ||
+        !/^[A-Z0-9]{6}$/.test(normalizedCode)
+      ) {
         throw new AppError(
           ErrorCode.INVALID_MEETING_CODE,
           undefined,
-          "Meeting code must be exactly 6 characters and contain only letters and numbers"
+          "Meeting code must be exactly 6 characters and contain only letters and numbers",
         );
       }
 
@@ -370,11 +456,7 @@ export class SupabaseMeetingService {
         .single();
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to join meeting",
-        );
+        throw mapSupabaseError(error, "Failed to join meeting");
       }
 
       return {
@@ -387,11 +469,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to join meeting",
-      );
+      throw mapSupabaseError(error, "Failed to join meeting");
     }
   }
 
@@ -411,14 +489,12 @@ export class SupabaseMeetingService {
         .limit(1);
 
       if (queueError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          queueError,
-          "Failed to fetch queue",
-        );
+        throw mapSupabaseError(queueError, "Failed to fetch queue");
       }
 
-      const queuePositions = (currentQueue ?? []) as Array<Pick<SpeakingQueueRow, "position">>;
+      const queuePositions = (currentQueue ?? []) as Array<
+        Pick<SpeakingQueueRow, "position">
+      >;
       const nextPosition =
         queuePositions.length > 0 ? queuePositions[0].position + 1 : 1;
 
@@ -430,11 +506,7 @@ export class SupabaseMeetingService {
         .single();
 
       if (participantError || !participant) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          participantError,
-          "Participant not found",
-        );
+        throw mapSupabaseError(participantError, "Participant not found");
       }
 
       // Add to queue
@@ -451,11 +523,7 @@ export class SupabaseMeetingService {
         .single();
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to join queue",
-        );
+        throw mapSupabaseError(error, "Failed to join queue");
       }
 
       return {
@@ -469,11 +537,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to join queue",
-      );
+      throw mapSupabaseError(error, "Failed to join queue");
     }
   }
 
@@ -490,22 +554,14 @@ export class SupabaseMeetingService {
         .eq("participant_id", participantId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to leave queue",
-        );
+        throw mapSupabaseError(error, "Failed to leave queue");
       }
 
       // Reorder remaining queue positions
       await this.reorderQueue(meetingId);
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to leave queue",
-      );
+      throw mapSupabaseError(error, "Failed to leave queue");
     }
   }
 
@@ -525,16 +581,14 @@ export class SupabaseMeetingService {
         .order("position", { ascending: true });
 
       if (queueError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          queueError,
-          "Failed to fetch queue",
-        );
+        throw mapSupabaseError(queueError, "Failed to fetch queue");
       }
 
-      const queueItems = (queue ?? []) as Array<SpeakingQueueRow & {
-        participants: { name: string };
-      }>;
+      const queueItems = (queue ?? []) as Array<
+        SpeakingQueueRow & {
+          participants: { name: string };
+        }
+      >;
 
       if (queueItems.length === 0) {
         return null;
@@ -548,11 +602,7 @@ export class SupabaseMeetingService {
         .eq("id", nextSpeaker.id);
 
       if (deleteError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          deleteError,
-          "Failed to remove speaker",
-        );
+        throw mapSupabaseError(deleteError, "Failed to remove speaker");
       }
 
       // Reorder remaining queue
@@ -569,11 +619,7 @@ export class SupabaseMeetingService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to move to next speaker",
-      );
+      throw mapSupabaseError(error, "Failed to move to next speaker");
     }
   }
 
@@ -589,19 +635,11 @@ export class SupabaseMeetingService {
         .eq("id", meetingId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to update meeting title",
-        );
+        throw mapSupabaseError(error, "Failed to update meeting title");
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to update meeting title",
-      );
+      throw mapSupabaseError(error, "Failed to update meeting title");
     }
   }
 
@@ -615,7 +653,7 @@ export class SupabaseMeetingService {
         throw new AppError(
           ErrorCode.INVALID_MEETING_CODE,
           undefined,
-          "Meeting code must be exactly 6 uppercase letters and numbers"
+          "Meeting code must be exactly 6 uppercase letters and numbers",
         );
       }
 
@@ -631,7 +669,7 @@ export class SupabaseMeetingService {
         throw new AppError(
           ErrorCode.MEETING_CODE_EXISTS,
           undefined,
-          "This meeting code is already in use. Please choose a different code."
+          "This meeting code is already in use. Please choose a different code.",
         );
       }
 
@@ -641,19 +679,11 @@ export class SupabaseMeetingService {
         .eq("id", meetingId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to update meeting code",
-        );
+        throw mapSupabaseError(error, "Failed to update meeting code");
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to update meeting code",
-      );
+      throw mapSupabaseError(error, "Failed to update meeting code");
     }
   }
 
@@ -669,19 +699,11 @@ export class SupabaseMeetingService {
         .eq("id", participantId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to update participant name",
-        );
+        throw mapSupabaseError(error, "Failed to update participant name");
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to update participant name",
-      );
+      throw mapSupabaseError(error, "Failed to update participant name");
     }
   }
 
@@ -700,26 +722,25 @@ export class SupabaseMeetingService {
         .order("position", { ascending: true });
 
       if (queueError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           queueError,
           "Failed to fetch queue for reordering",
         );
       }
 
-      const queueItems = (currentQueue ?? []) as Array<Pick<SpeakingQueueRow, "id" | "position" | "participant_id">>;
+      const queueItems = (currentQueue ?? []) as Array<
+        Pick<SpeakingQueueRow, "id" | "position" | "participant_id">
+      >;
 
       if (queueItems.length === 0) {
         return;
       }
 
-      const currentItemIndex = queueItems.findIndex(item => item.position === newPosition);
+      const currentItemIndex = queueItems.findIndex(
+        (item) => item.position === newPosition,
+      );
       if (currentItemIndex === -1) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          undefined,
-          "Invalid position for reordering",
-        );
+        throw mapSupabaseError(undefined, "Invalid position for reordering");
       }
 
       // Shift positions to make room for the new position
@@ -730,35 +751,36 @@ export class SupabaseMeetingService {
           if (queueItems[i].position >= newPosition) {
             updates.push({
               id: queueItems[i].id,
-              position: queueItems[i].position + 1
+              position: queueItems[i].position + 1,
             });
           }
         }
       } else {
         // Moving down - shift items up
         for (let i = 0; i < queueItems.length; i++) {
-          if (queueItems[i].position > newPosition && queueItems[i].position <= queueItems[currentItemIndex].position) {
+          if (
+            queueItems[i].position > newPosition &&
+            queueItems[i].position <= queueItems[currentItemIndex].position
+          ) {
             updates.push({
               id: queueItems[i].id,
-              position: queueItems[i].position - 1
+              position: queueItems[i].position - 1,
             });
           }
         }
       }
 
       // Update the target item to new position
-      const targetItem = queueItems.find(item => item.participant_id === participantId);
+      const targetItem = queueItems.find(
+        (item) => item.participant_id === participantId,
+      );
       if (!targetItem) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          undefined,
-          "Participant not found in queue",
-        );
+        throw mapSupabaseError(undefined, "Participant not found in queue");
       }
 
       updates.push({
         id: targetItem.id,
-        position: newPosition
+        position: newPosition,
       });
 
       // Execute all updates
@@ -769,20 +791,12 @@ export class SupabaseMeetingService {
           .eq("id", update.id);
 
         if (error) {
-          throw new AppError(
-            ErrorCode.INTERNAL_SERVER_ERROR,
-            error,
-            "Failed to update queue position",
-          );
+          throw mapSupabaseError(error, "Failed to update queue position");
         }
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to reorder queue item",
-      );
+      throw mapSupabaseError(error, "Failed to reorder queue item");
     }
   }
 
@@ -796,8 +810,7 @@ export class SupabaseMeetingService {
         .order("position", { ascending: true });
 
       if (queueError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           queueError,
           "Failed to fetch queue for reordering",
         );
@@ -811,25 +824,19 @@ export class SupabaseMeetingService {
           .eq("id", queue[i].id);
 
         if (error) {
-          throw new AppError(
-            ErrorCode.INTERNAL_SERVER_ERROR,
-            error,
-            "Failed to reorder queue",
-          );
+          throw mapSupabaseError(error, "Failed to reorder queue");
         }
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to reorder queue",
-      );
+      throw mapSupabaseError(error, "Failed to reorder queue");
     }
   }
 
   // Remove participant from meeting (facilitator only)
-  static async removeParticipant(participantId: string): Promise<ParticipantSnapshot> {
+  static async removeParticipant(
+    participantId: string,
+  ): Promise<ParticipantSnapshot> {
     try {
       const { data: participantRow, error: participantError } = await supabase
         .from("participants")
@@ -838,8 +845,7 @@ export class SupabaseMeetingService {
         .maybeSingle();
 
       if (participantError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           participantError,
           "Failed to fetch participant before removal",
         );
@@ -868,8 +874,7 @@ export class SupabaseMeetingService {
         .eq("participant_id", participantId);
 
       if (queueError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           queueError,
           "Failed to remove participant from queue",
         );
@@ -882,20 +887,12 @@ export class SupabaseMeetingService {
         .eq("id", participantId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to remove participant",
-        );
+        throw mapSupabaseError(error, "Failed to remove participant");
       }
       return participantSnapshot;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to remove participant",
-      );
+      throw mapSupabaseError(error, "Failed to remove participant");
     }
   }
 
@@ -907,19 +904,11 @@ export class SupabaseMeetingService {
         .eq("id", participantId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to restore participant",
-        );
+        throw mapSupabaseError(error, "Failed to restore participant");
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to restore participant",
-      );
+      throw mapSupabaseError(error, "Failed to restore participant");
     }
   }
 
@@ -932,19 +921,11 @@ export class SupabaseMeetingService {
         .eq("id", participantId);
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to leave meeting",
-        );
+        throw mapSupabaseError(error, "Failed to leave meeting");
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to leave meeting",
-      );
+      throw mapSupabaseError(error, "Failed to leave meeting");
     }
   }
 
@@ -957,11 +938,7 @@ export class SupabaseMeetingService {
         .eq("id", meetingId);
 
       if (meetingError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          meetingError,
-          "Failed to end meeting",
-        );
+        throw mapSupabaseError(meetingError, "Failed to end meeting");
       }
 
       // Mark all participants as inactive
@@ -971,10 +948,10 @@ export class SupabaseMeetingService {
         .eq("meeting_id", meetingId);
 
       if (participantsError) {
-        logProduction('warn', {
-          action: 'failed_to_deactivate_participants',
+        logProduction("warn", {
+          action: "failed_to_deactivate_participants",
           meetingId,
-          error: participantsError.message
+          error: participantsError.message,
         });
         // Don't throw here as the meeting is already ended
       }
@@ -986,20 +963,16 @@ export class SupabaseMeetingService {
         .eq("meeting_id", meetingId);
 
       if (queueError) {
-        logProduction('warn', {
-          action: 'failed_to_clear_speaking_queue',
+        logProduction("warn", {
+          action: "failed_to_clear_speaking_queue",
           meetingId,
-          error: queueError.message
+          error: queueError.message,
         });
         // Don't throw here as the meeting is already ended
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to end meeting",
-      );
+      throw mapSupabaseError(error, "Failed to end meeting");
     }
   }
 
@@ -1010,16 +983,14 @@ export class SupabaseMeetingService {
     try {
       const { data, error } = await supabase
         .from("meetings")
-        .select("id, meeting_code, title, facilitator_name, facilitator_id, created_at, is_active")
+        .select(
+          "id, meeting_code, title, facilitator_name, facilitator_id, created_at, is_active",
+        )
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to get active meetings",
-        );
+        throw mapSupabaseError(error, "Failed to get active meetings");
       }
 
       const meetingRows = (data ?? []) as Array<{
@@ -1043,11 +1014,7 @@ export class SupabaseMeetingService {
       }));
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to get active meetings",
-      );
+      throw mapSupabaseError(error, "Failed to get active meetings");
     }
   }
 
@@ -1064,28 +1031,22 @@ export class SupabaseMeetingService {
         .order("joined_at", { ascending: true });
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to get participants",
-        );
+        throw mapSupabaseError(error, "Failed to get participants");
       }
 
       return data || [];
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to get participants",
-      );
+      throw mapSupabaseError(error, "Failed to get participants");
     }
   }
 
   /**
    * * Get meetings created by a specific facilitator
    */
-  static async getMeetingsByFacilitator(facilitatorId: string): Promise<MeetingData[]> {
+  static async getMeetingsByFacilitator(
+    facilitatorId: string,
+  ): Promise<MeetingData[]> {
     try {
       const { data, error } = await supabase
         .from("meetings")
@@ -1094,21 +1055,13 @@ export class SupabaseMeetingService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          error,
-          "Failed to get facilitator meetings",
-        );
+        throw mapSupabaseError(error, "Failed to get facilitator meetings");
       }
 
       return (data as MeetingData[]) || [];
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to get facilitator meetings",
-      );
+      throw mapSupabaseError(error, "Failed to get facilitator meetings");
     }
   }
 
@@ -1123,18 +1076,19 @@ export class SupabaseMeetingService {
       // 3. Have 0 active participants
       const { data: emptyOldMeetings, error: queryError } = await supabase
         .from("meetings")
-        .select(`
+        .select(
+          `
           id,
           created_at,
           participants!inner(id)
-        `)
+        `,
+        )
         .eq("is_active", true)
         .lt("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString())
         .eq("participants.is_active", false);
 
       if (queryError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           queryError,
           "Failed to query empty old meetings",
         );
@@ -1147,17 +1101,18 @@ export class SupabaseMeetingService {
       // Get meetings with 0 active participants
       const meetingsToDelete = [];
       for (const meeting of emptyOldMeetings) {
-        const { data: activeParticipants, error: participantError } = await supabase
-          .from("participants")
-          .select("id")
-          .eq("meeting_id", meeting.id)
-          .eq("is_active", true);
+        const { data: activeParticipants, error: participantError } =
+          await supabase
+            .from("participants")
+            .select("id")
+            .eq("meeting_id", meeting.id)
+            .eq("is_active", true);
 
         if (participantError) {
           logProduction("warn", {
             action: "check_participants_failed",
             meetingId: meeting.id,
-            error: participantError.message
+            error: participantError.message,
           });
           continue;
         }
@@ -1175,8 +1130,7 @@ export class SupabaseMeetingService {
           .in("id", meetingsToDelete);
 
         if (deleteError) {
-          throw new AppError(
-            ErrorCode.INTERNAL_SERVER_ERROR,
+          throw mapSupabaseError(
             deleteError,
             "Failed to delete empty old meetings",
           );
@@ -1185,23 +1139,22 @@ export class SupabaseMeetingService {
         logProduction("info", {
           action: "deleted_empty_old_rooms",
           count: meetingsToDelete.length,
-          meetingIds: meetingsToDelete
+          meetingIds: meetingsToDelete,
         });
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to delete empty old rooms",
-      );
+      throw mapSupabaseError(error, "Failed to delete empty old rooms");
     }
   }
 
   /**
    * * Delete a meeting (only by facilitator)
    */
-  static async deleteMeeting(meetingId: string, facilitatorId: string): Promise<void> {
+  static async deleteMeeting(
+    meetingId: string,
+    facilitatorId: string,
+  ): Promise<void> {
     try {
       // First check if the user is the facilitator
       const { data: meeting, error: checkError } = await supabase
@@ -1211,8 +1164,7 @@ export class SupabaseMeetingService {
         .single();
 
       if (checkError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+        throw mapSupabaseError(
           checkError,
           "Failed to verify meeting ownership",
         );
@@ -1233,19 +1185,11 @@ export class SupabaseMeetingService {
         .eq("id", meetingId);
 
       if (deleteError) {
-        throw new AppError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
-          deleteError,
-          "Failed to delete meeting",
-        );
+        throw mapSupabaseError(deleteError, "Failed to delete meeting");
       }
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        error as Error,
-        "Failed to delete meeting",
-      );
+      throw mapSupabaseError(error, "Failed to delete meeting");
     }
   }
 }
@@ -1279,15 +1223,22 @@ export class SupabaseRealtimeService {
         (payload) => {
           void (async () => {
             try {
-              const meeting = await SupabaseMeetingService.getMeeting(meetingCode);
+              const meeting =
+                await SupabaseMeetingService.getMeeting(meetingCode);
               if (meeting && callbacks.onParticipantsUpdated) {
                 callbacks.onParticipantsUpdated(meeting.participants);
 
-                if (payload.eventType === "INSERT" && callbacks.onParticipantJoined) {
+                if (
+                  payload.eventType === "INSERT" &&
+                  callbacks.onParticipantJoined
+                ) {
                   callbacks.onParticipantJoined(
                     meeting.participants[meeting.participants.length - 1],
                   );
-                } else if (payload.eventType === "DELETE" && callbacks.onParticipantLeft) {
+                } else if (
+                  payload.eventType === "DELETE" &&
+                  callbacks.onParticipantLeft
+                ) {
                   callbacks.onParticipantLeft(payload.old.id);
                 }
               }
@@ -1300,56 +1251,55 @@ export class SupabaseRealtimeService {
         },
       );
 
-    const queueChannel = supabase
-      .channel(`meeting-${meetingId}-queue`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "speaking_queue",
-          filter: `meeting_id=eq.${meetingId}`,
-        },
-        (_payload) => {
-          void (async () => {
-            try {
-              const meeting = await SupabaseMeetingService.getMeeting(meetingId);
-              if (meeting && callbacks.onQueueUpdated) {
-                callbacks.onQueueUpdated(meeting.speakingQueue);
-              }
-            } catch (error) {
-              if (callbacks.onError) {
-                callbacks.onError(error);
-              }
+    const queueChannel = supabase.channel(`meeting-${meetingId}-queue`).on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "speaking_queue",
+        filter: `meeting_id=eq.${meetingId}`,
+      },
+      (_payload) => {
+        void (async () => {
+          try {
+            const meeting = await SupabaseMeetingService.getMeeting(meetingId);
+            if (meeting && callbacks.onQueueUpdated) {
+              callbacks.onQueueUpdated(meeting.speakingQueue);
             }
-          })();
-        },
-      );
+          } catch (error) {
+            if (callbacks.onError) {
+              callbacks.onError(error);
+            }
+          }
+        })();
+      },
+    );
 
-    const meetingChannel = supabase
-      .channel(`meeting-${meetingId}-meeting`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "meetings",
-          filter: `id=eq.${meetingId}`,
-        },
-        (payload) => {
-          void (async () => {
-            try {
-              if (payload.new.title !== payload.old.title && callbacks.onMeetingTitleUpdated) {
-                callbacks.onMeetingTitleUpdated(payload.new.title);
-              }
-            } catch (error) {
-              if (callbacks.onError) {
-                callbacks.onError(error);
-              }
+    const meetingChannel = supabase.channel(`meeting-${meetingId}-meeting`).on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "meetings",
+        filter: `id=eq.${meetingId}`,
+      },
+      (payload) => {
+        void (async () => {
+          try {
+            if (
+              payload.new.title !== payload.old.title &&
+              callbacks.onMeetingTitleUpdated
+            ) {
+              callbacks.onMeetingTitleUpdated(payload.new.title);
             }
-          })();
-        },
-      );
+          } catch (error) {
+            if (callbacks.onError) {
+              callbacks.onError(error);
+            }
+          }
+        })();
+      },
+    );
 
     // Subscribe to all channels
     void participantsChannel.subscribe();
