@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import App from "./App";
 
@@ -48,14 +48,23 @@ const futureConfig = {
   v7_relativeSplatPath: true,
 } as const;
 
-const renderWithRouter = () =>
+const renderWithRouter = (
+  initialEntries: string[] = ["/"],
+  initialIndex = 0
+) =>
   render(
-    <BrowserRouter future={futureConfig}>
+    <MemoryRouter
+      initialEntries={initialEntries}
+      initialIndex={initialIndex}
+      future={futureConfig}
+    >
       <App />
-    </BrowserRouter>
+    </MemoryRouter>
   );
 
 describe("App", () => {
+  const meetingRoutes = ["/meeting", "/watch/sample"] as const;
+
   it("renders without crashing", () => {
     renderWithRouter();
 
@@ -66,5 +75,23 @@ describe("App", () => {
     renderWithRouter();
 
     expect(screen.getByTestId("home-page")).toBeInTheDocument();
+  });
+
+  it.each(
+    meetingRoutes.map((path, index) => ({ path, initialIndex: index }))
+  )("renders meeting room for %s route", ({ path, initialIndex }) => {
+    const entries = [...meetingRoutes];
+    expect(entries[initialIndex]).toBe(path);
+
+    renderWithRouter(entries, initialIndex);
+
+    expect(screen.getByTestId("meeting-room")).toBeInTheDocument();
+    expect(screen.queryByTestId("not-found")).not.toBeInTheDocument();
+  });
+
+  it("renders not found page for unmatched routes", () => {
+    renderWithRouter(["/does-not-exist"]);
+
+    expect(screen.getByTestId("not-found")).toBeInTheDocument();
   });
 });
