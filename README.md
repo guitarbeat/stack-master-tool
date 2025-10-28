@@ -57,12 +57,13 @@ node scripts/update-version.js 1.1.0
 ```
 📦 Stack Master Tool
 ├── 📂 src/                 # Application source code
-├── 📂 config/              # Configuration files
-├── 📂 docs/                # Documentation
-│   ├── 📄 README.md        # Full documentation
-│   └── 📂 development/     # Development guides
-├── 📂 android/             # Android mobile app
-├── 📂 ios/                 # iOS mobile app
+├── 📂 public/              # Static assets served by Vite
+├── 📂 config/              # Shared configuration files
+├── 📂 docs/                # Documentation and guides
+│   ├── 📄 README.md        # Setup and usage guide
+│   └── 📂 deployment/      # Deployment configuration samples
+├── 📂 scripts/             # Project maintenance utilities
+├── 📂 supabase/            # Supabase migrations and settings
 └── 📄 package.json         # Dependencies and scripts
 ```
 
