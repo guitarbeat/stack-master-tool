@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      participant_join_log: {
+        Row: {
+          id: string
+          ip_address: unknown
+          joined_at: string | null
+          meeting_id: string | null
+          participant_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          ip_address?: unknown
+          joined_at?: string | null
+          meeting_id?: string | null
+          participant_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          ip_address?: unknown
+          joined_at?: string | null
+          meeting_id?: string | null
+          participant_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_join_log_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "participant_join_log_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participants: {
         Row: {
           id: string
@@ -135,9 +177,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_meeting_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
+      generate_meeting_code: { Args: never; Returns: string }
+      validate_participant_join: {
+        Args: { meeting_uuid: string }
+        Returns: boolean
       }
     }
     Enums: {
