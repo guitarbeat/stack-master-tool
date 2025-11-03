@@ -1,33 +1,9 @@
-// Supabase client configuration with environment variable support
+// Supabase client configuration
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-// Environment variables must be provided via the environment (e.g. .env)
-const sanitizeSupabaseUrl = (url: string): string => {
-  const withProtocol = /^https?:\/\//i.test(url)
-    ? url
-    : `https://${url}`;
-
-  return withProtocol.replace(/\/+$/, "");
-};
-
-const requireEnv = (value: string | undefined, name: string): string => {
-  const trimmedValue = value?.trim();
-
-  if (!trimmedValue) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-
-  return trimmedValue;
-};
-
-const SUPABASE_URL = sanitizeSupabaseUrl(
-  requireEnv(import.meta.env.VITE_SUPABASE_URL, "VITE_SUPABASE_URL")
-);
-const SUPABASE_PUBLISHABLE_KEY = requireEnv(
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
-  "VITE_SUPABASE_ANON_KEY"
-);
+const SUPABASE_URL = "https://jectngcrpikxwnjdwana.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplY3RuZ2NycGlreHduamR3YW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNTI3NTYsImV4cCI6MjA3MzgyODc1Nn0.MsBmQukMgikZxHCqJIjtXxB62Bf9CbEaaOumFEMYYuo";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
