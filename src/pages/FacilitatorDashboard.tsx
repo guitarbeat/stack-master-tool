@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { SupabaseMeetingService } from '@/services/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,7 @@ interface MeetingSummary {
 export default function FacilitatorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
   const { showToast } = useToast();
   
   const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
@@ -70,7 +72,7 @@ export default function FacilitatorDashboard() {
 
     setIsCreating(true);
     try {
-      const facilitatorName = user?.email ?? 'Anonymous Facilitator';
+      const facilitatorName = profile?.display_name ?? user?.email ?? 'Anonymous Facilitator';
       const created = await SupabaseMeetingService.createMeeting(
         newRoomTitle.trim(),
         facilitatorName,
@@ -158,7 +160,7 @@ export default function FacilitatorDashboard() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || profileLoading) {
     return <LoadingState message="Loading your meetings..." />;
   }
 
@@ -177,7 +179,7 @@ export default function FacilitatorDashboard() {
             Back to Home
           </Button>
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Facilitator Dashboard
+            Welcome, {profile?.display_name || 'Facilitator'}
           </h1>
           <p className="text-muted-foreground">
             Manage your meetings and create new discussion rooms

@@ -1,8 +1,19 @@
 import { ReactNode, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Plus, UserPlus, Users, Menu, X, MessageSquare } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Plus, UserPlus, Users, Menu, X, MessageSquare, LogOut, User as UserIcon } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
 import { getSimplePoweredByString } from "@/utils/version";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -10,7 +21,15 @@ interface AppLayoutProps {
 
 function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -105,6 +124,40 @@ function AppLayout({ children }: AppLayoutProps) {
               </Link>
             </nav>
             <ThemeToggle />
+            
+            {/* User Menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hidden md:flex">
+                    <UserIcon className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {profile?.display_name || user.email}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/facilitator')}>
+                    My Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => void handleSignOut()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/auth')}
+                className="hidden md:flex"
+              >
+                Sign In
+              </Button>
+            )}
+            
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg dark:text-zinc-200 dark:hover:bg-zinc-800"
