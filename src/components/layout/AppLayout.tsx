@@ -60,9 +60,9 @@ function AppLayout({ children }: AppLayoutProps) {
               aria-label="Main navigation"
             >
               <Link
-                to="/meeting?mode=host"
+                to="/facilitator"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/meeting") && location.search.includes("mode=host")
+                  isActive("/facilitator")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
@@ -136,10 +136,10 @@ function AppLayout({ children }: AppLayoutProps) {
                 Watch Meeting
               </Link>
               <Link
-                to="/meeting?mode=host"
+                to="/facilitator"
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/meeting") && location.search.includes("mode=host")
+                  isActive("/facilitator")
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                 }`}
