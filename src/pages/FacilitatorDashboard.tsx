@@ -8,15 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { LoadingState } from '@/components/shared/LoadingState';
-import { Plus, Users, ExternalLink, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, ExternalLink, Trash2, ArrowLeft } from 'lucide-react';
 import { logProduction } from '@/utils/productionLogger';
 
 interface MeetingSummary {
   id: string;
   code: string;
   title: string;
-  participantCount: number;
-  queueCount: number;
+  facilitator: string;
   createdAt: string;
   isActive: boolean;
 }
@@ -43,16 +42,7 @@ export default function FacilitatorDashboard() {
 
     try {
       const fetchedMeetings = await SupabaseMeetingService.getMeetingsByFacilitator(user.id);
-      const summaries: MeetingSummary[] = fetchedMeetings.map(m => ({
-        id: m.id,
-        code: m.code,
-        title: m.title,
-        participantCount: m.participants.length,
-        queueCount: m.speakingQueue.length,
-        createdAt: m.createdAt,
-        isActive: m.isActive
-      }));
-      setMeetings(summaries);
+      setMeetings(fetchedMeetings);
     } catch (error) {
       logProduction('error', {
         action: 'load_facilitator_meetings',
@@ -111,12 +101,21 @@ export default function FacilitatorDashboard() {
   };
 
   const handleDeleteMeeting = async (meetingId: string, meetingTitle: string) => {
+    if (!user?.id) {
+      showToast({
+        type: 'error',
+        title: 'Authentication Required',
+        message: 'You must be logged in to delete meetings'
+      });
+      return;
+    }
+
     if (!confirm(`Are you sure you want to delete "${meetingTitle}"?`)) {
       return;
     }
 
     try {
-      await SupabaseMeetingService.deleteMeeting(meetingId);
+      await SupabaseMeetingService.deleteMeeting(meetingId, user.id);
       showToast({
         type: 'success',
         title: 'Meeting Deleted',
@@ -254,15 +253,8 @@ export default function FacilitatorDashboard() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <span>{meeting.participantCount} participants</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span>🙋</span>
-                        <span>{meeting.queueCount} in queue</span>
-                      </div>
+                    <div className="text-sm text-muted-foreground mb-4">
+                      Created: {new Date(meeting.createdAt).toLocaleString()}
                     </div>
                     <div className="flex gap-2">
                       <Button
