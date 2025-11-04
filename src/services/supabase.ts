@@ -1058,7 +1058,15 @@ export class SupabaseMeetingService {
         throw mapSupabaseError(error, "Failed to get facilitator meetings");
       }
 
-      return (data as MeetingData[]) || [];
+      return (data || []).map((meeting) => ({
+        id: meeting.id,
+        code: meeting.meeting_code,
+        title: meeting.title,
+        facilitator: meeting.facilitator_name,
+        facilitatorId: meeting.facilitator_id,
+        createdAt: meeting.created_at,
+        isActive: meeting.is_active,
+      }));
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw mapSupabaseError(error, "Failed to get facilitator meetings");
