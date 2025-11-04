@@ -1,0 +1,299 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { SupabaseMeetingService } from '@/services/supabase';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { Plus, Users, ExternalLink, Trash2, ArrowLeft } from 'lucide-react';
+import { logProduction } from '@/utils/productionLogger';
+
+interface MeetingSummary {
+  id: string;
+  code: string;
+  title: string;
+  participantCount: number;
+  queueCount: number;
+  createdAt: string;
+  isActive: boolean;
+}
+
+export default function FacilitatorDashboard() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  
+  const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newRoomTitle, setNewRoomTitle] = useState('');
+
+  useEffect(() => {
+    loadMeetings();
+  }, [user]);
+
+  const loadMeetings = async () => {
+    if (!user?.id) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const fetchedMeetings = await SupabaseMeetingService.getMeetingsByFacilitator(user.id);
+      const summaries: MeetingSummary[] = fetchedMeetings.map(m => ({
+        id: m.id,
+        code: m.code,
+        title: m.title,
+        participantCount: m.participants.length,
+        queueCount: m.speakingQueue.length,
+        createdAt: m.createdAt,
+        isActive: m.isActive
+      }));
+      setMeetings(summaries);
+    } catch (error) {
+      logProduction('error', {
+        action: 'load_facilitator_meetings',
+        error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to load meetings',
+        message: 'Could not fetch your meetings'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateRoom = async () => {
+    if (!newRoomTitle.trim()) {
+      showToast({
+        type: 'error',
+        title: 'Title Required',
+        message: 'Please enter a meeting title'
+      });
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const facilitatorName = user?.email ?? 'Anonymous Facilitator';
+      const created = await SupabaseMeetingService.createMeeting(
+        newRoomTitle.trim(),
+        facilitatorName,
+        user?.id
+      );
+
+      showToast({
+        type: 'success',
+        title: 'Room Created!',
+        message: `Meeting "${created.title}" created with code ${created.code}`
+      });
+
+      setNewRoomTitle('');
+      navigate(`/meeting?mode=host&code=${created.code}`);
+    } catch (error) {
+      logProduction('error', {
+        action: 'create_room_dashboard',
+        error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to create room',
+        message: 'Please try again'
+      });
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleDeleteMeeting = async (meetingId: string, meetingTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${meetingTitle}"?`)) {
+      return;
+    }
+
+    try {
+      await SupabaseMeetingService.deleteMeeting(meetingId);
+      showToast({
+        type: 'success',
+        title: 'Meeting Deleted',
+        message: `"${meetingTitle}" has been deleted`
+      });
+      await loadMeetings();
+    } catch (error) {
+      logProduction('error', {
+        action: 'delete_meeting_dashboard',
+        meetingId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to delete meeting',
+        message: 'Please try again'
+      });
+    }
+  };
+
+  const handleOpenMeeting = (code: string) => {
+    navigate(`/meeting?mode=host&code=${code}`);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please sign in to access the facilitator dashboard</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate('/auth')} className="w-full">
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return <LoadingState message="Loading your meetings..." />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Home
+          </Button>
+          <h1 className="text-4xl font-bold text-foreground mb-2">
+            Facilitator Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Manage your meetings and create new discussion rooms
+          </p>
+        </div>
+
+        {/* Create New Meeting */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Create New Meeting
+            </CardTitle>
+            <CardDescription>
+              Start a new discussion room with a unique code
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-3">
+              <Input
+                placeholder="Enter meeting title..."
+                value={newRoomTitle}
+                onChange={(e) => setNewRoomTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    void handleCreateRoom();
+                  }
+                }}
+                disabled={isCreating}
+              />
+              <Button
+                onClick={() => void handleCreateRoom()}
+                disabled={isCreating || !newRoomTitle.trim()}
+              >
+                {isCreating ? 'Creating...' : 'Create Room'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Active Meetings */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-foreground mb-4">
+            Your Meetings
+          </h2>
+          {meetings.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center text-muted-foreground">
+                <p>No meetings yet. Create your first one above!</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {meetings.map((meeting) => (
+                <Card
+                  key={meeting.id}
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleOpenMeeting(meeting.code)}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-1">
+                          {meeting.title}
+                        </CardTitle>
+                        <CardDescription className="font-mono text-sm">
+                          Code: {meeting.code}
+                        </CardDescription>
+                      </div>
+                      <Badge variant={meeting.isActive ? 'default' : 'secondary'}>
+                        {meeting.isActive ? 'Active' : 'Ended'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <span>{meeting.participantCount} participants</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span>🙋</span>
+                        <span>{meeting.queueCount} in queue</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="flex-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenMeeting(meeting.code);
+                        }}
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Open
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleDeleteMeeting(meeting.id, meeting.title);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

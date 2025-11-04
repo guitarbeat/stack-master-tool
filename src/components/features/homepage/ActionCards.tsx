@@ -10,7 +10,7 @@ export const ActionCards = () => {
         {Object.values(MEETING_MODES).map((mode) => (
           <Link
             key={mode.id}
-            to={`/meeting?mode=${mode.id}`}
+            to={mode.id === 'host' ? '/facilitator' : `/meeting?mode=${mode.id}`}
             className={`group block p-8 bg-card text-card-foreground border-2 ${mode.borderColor} rounded-2xl hover:shadow-xl hover:scale-[1.02] ${mode.hoverColor} transition-all duration-300 relative overflow-hidden`}
           >
             {/* Background gradient blob */}

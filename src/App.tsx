@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage";
 import Auth from "./pages/Auth";
 import MeetingRoom from "./pages/MeetingRoom";
 import Rooms from "./pages/Rooms";
+import FacilitatorDashboard from "./pages/FacilitatorDashboard";
 import AppLayout from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/facilitator" element={<FacilitatorDashboard />} />
               <Route path="/meeting" element={<MeetingRoom />} />
               <Route path="/rooms" element={<Rooms />} />
               <Route path="/watch/:code" element={<MeetingRoom />} />
