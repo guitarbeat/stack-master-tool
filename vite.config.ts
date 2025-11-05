@@ -11,7 +11,9 @@ export default defineConfig(({ mode }) => ({
     hmr: mode === 'development' ? {} : false,
   },
   css: {
-    postcss: './config/postcss.config.js',
+    postcss: {
+      config: './config/postcss.config.js'
+    }
   },
   plugins: [
     react(),
@@ -40,17 +42,7 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
-        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
-      },
-      mangle: {
-        safari10: true,
-      },
-    },
+    minify: 'esbuild',
     sourcemap: mode === 'development',
     chunkSizeWarningLimit: 600,
     reportCompressedSize: false,
