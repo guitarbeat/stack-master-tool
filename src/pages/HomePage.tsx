@@ -1,6 +1,7 @@
 import { ActionCards } from '@/components/features/homepage/ActionCards'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { LogOut } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -28,7 +29,7 @@ function HomePage() {
   return (
     <main className="min-h-screen bg-background" role="main">
       {user && (
-        <div className="border-b">
+        <>
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <Button
@@ -42,7 +43,8 @@ function HomePage() {
               Sign Out
             </Button>
           </div>
-        </div>
+          <Separator />
+        </>
       )}
 
       <div className="container mx-auto px-4 py-12">

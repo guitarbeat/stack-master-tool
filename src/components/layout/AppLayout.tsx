@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -129,8 +130,12 @@ function AppLayout({ children }: AppLayoutProps) {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden md:flex">
-                    <UserIcon className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

@@ -560,37 +560,9 @@
     );
   }
 
-  /* Background Gradients */
+  /* Background Gradients - Keep only actively used */
   .bg-gradient-primary {
     background: var(--gradient-primary);
-  }
-
-  .bg-gradient-secondary {
-    background: var(--gradient-secondary);
-  }
-
-  .bg-gradient-elegant {
-    background: var(--gradient-elegant);
-  }
-
-  .bg-gradient-forest {
-    background: var(--gradient-forest);
-  }
-
-  .bg-gradient-earth {
-    background: var(--gradient-earth);
-  }
-
-  .bg-gradient-sunset {
-    background: var(--gradient-sunset);
-  }
-
-  .bg-gradient-ocean {
-    background: var(--gradient-ocean);
-  }
-
-  .bg-gradient-success {
-    background: var(--gradient-success);
   }
 
   /* Glass Effects */
@@ -600,41 +572,9 @@
     border: 1px solid var(--liquid-border);
   }
 
-  /* Enhanced Card Variants */
+  /* Card Variants - Simplified */
   .card-elevated {
-    @apply shadow-elegant hover:shadow-glow transition-standard;
-  }
-
-  .card-interactive {
-    @apply hover-lift cursor-pointer;
-  }
-
-  .card-primary {
-    @apply bg-primary/5 border border-primary/20 hover:border-primary/30 transition-standard;
-  }
-
-  .card-accent {
-    @apply bg-accent/5 border border-accent/20 hover:border-accent/30 transition-standard;
-  }
-
-  .card-success {
-    @apply bg-success/5 border border-success/20 hover:border-success/30 transition-standard;
-  }
-
-  .card-warning {
-    @apply bg-warning/5 border border-warning/20 hover:border-warning/30 transition-standard;
-  }
-
-  .card-info {
-    @apply bg-info/5 border border-info/20 hover:border-info/30 transition-standard;
-  }
-
-  .card-forest {
-    @apply bg-gradient-forest/10 border border-forest-green/20 hover:border-forest-green/30 transition-standard;
-  }
-
-  .card-earth {
-    @apply bg-gradient-earth/10 border border-earthy-brown/20 hover:border-earthy-brown/30 transition-standard;
+    @apply shadow-lg hover:shadow-xl transition-shadow;
   }
 
   /* Status Indicators */
@@ -658,46 +598,7 @@
     @apply bg-muted text-muted-foreground border border-muted/20;
   }
 
-  /* Enhanced Button Variants */
-  .btn-primary-gradient {
-    @apply bg-gradient-primary text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-secondary-gradient {
-    @apply bg-gradient-secondary text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-forest-gradient {
-    @apply bg-gradient-forest text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-earth-gradient {
-    @apply bg-gradient-earth text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-sunset-gradient {
-    @apply bg-gradient-sunset text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-ocean-gradient {
-    @apply bg-gradient-ocean text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-success-gradient {
-    @apply bg-gradient-success text-white hover:opacity-90 transition-fast;
-  }
-
-  .btn-glass {
-    @apply glass-morphism hover:bg-opacity-20 transition-fast;
-  }
-
-  .btn-outline-primary {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-fast;
-  }
-
-  .btn-outline-accent {
-    @apply border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-fast;
-  }
+  /* Removed unused button gradient variants - use shadcn Button component instead */
 
   .btn-ghost-primary {
     @apply text-primary hover:bg-primary/10 transition-fast;
