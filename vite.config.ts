@@ -10,9 +10,6 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     hmr: mode === 'development' ? {} : false,
   },
-  css: {
-    postcss: './config/postcss.config.js',
-  },
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
