@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { execSync } from "child_process";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -73,21 +72,9 @@ export default defineConfig(({ mode }) => ({
     exclude: ['@vite/client', '@vite/env'],
   },
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    __GIT_COMMIT__: JSON.stringify((() => {
-      try {
-        return execSync('git rev-parse --short HEAD').toString().trim();
-      } catch {
-        return 'unknown';
-      }
-    })()),
-    __GIT_BRANCH__: JSON.stringify((() => {
-      try {
-        return execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-      } catch {
-        return 'main';
-      }
-    })()),
+    __GIT_COMMIT__: JSON.stringify('unknown'),
+    __GIT_BRANCH__: JSON.stringify('main'),
   },
 }));
