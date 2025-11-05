@@ -11,9 +11,7 @@ export default defineConfig(({ mode }) => ({
     hmr: mode === 'development' ? {} : false,
   },
   css: {
-    postcss: {
-      config: './config/postcss.config.js'
-    }
+    postcss: './config/postcss.config.js',
   },
   plugins: [
     react(),
