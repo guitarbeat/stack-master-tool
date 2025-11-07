@@ -1,42 +1,35 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
-const emailSchema = z.string().trim().email({ message: "Invalid email address" }).max(255);
-const passwordSchema = z.string().min(6, { message: "Password must be at least 6 characters" }).max(100);
-const nameSchema = z.string().trim().min(1, { message: "Name is required" }).max(50);
+const nameSchema = z.string().trim().min(2, { message: "Name must be at least 2 characters" }).max(50);
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { signIn, signUp, user } = useAuth();
+  const { signInAnonymously, user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   
-  const [signInEmail, setSignInEmail] = useState("");
-  const [signInPassword, setSignInPassword] = useState("");
-  const [signUpEmail, setSignUpEmail] = useState("");
-  const [signUpPassword, setSignUpPassword] = useState("");
-  const [signUpName, setSignUpName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Redirect if already logged in
-  if (user) {
-    navigate("/");
-    return null;
-  }
+  useEffect(() => {
+    if (user && !authLoading) {
+      navigate("/");
+    }
+  }, [user, authLoading, navigate]);
 
-  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
+  const handleJoin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     try {
-      emailSchema.parse(signInEmail);
-      passwordSchema.parse(signInPassword);
+      nameSchema.parse(displayName);
     } catch (err) {
       if (err instanceof z.ZodError) {
         showToast({
@@ -49,18 +42,18 @@ export default function Auth() {
     }
 
     setLoading(true);
-    const { error } = await signIn(signInEmail, signInPassword);
+    const { error } = await signInAnonymously(displayName);
     
     if (error) {
       showToast({
-        title: "Sign In Failed",
+        title: "Failed to Join",
         description: error.message,
         type: "error",
       });
     } else {
       showToast({
-        title: "Welcome back!",
-        description: "Successfully signed in.",
+        title: `Welcome, ${displayName}!`,
+        description: "You're all set to create and join meetings.",
         type: "success",
       });
       navigate("/");
@@ -68,136 +61,42 @@ export default function Auth() {
     setLoading(false);
   };
 
-  const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    try {
-      emailSchema.parse(signUpEmail);
-      passwordSchema.parse(signUpPassword);
-      nameSchema.parse(signUpName);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        showToast({
-          title: "Validation Error",
-          message: err.errors[0].message,
-          type: "error",
-        });
-        return;
-      }
-    }
-
-    setLoading(true);
-    const { error } = await signUp(signUpEmail, signUpPassword, signUpName);
-    
-    if (error) {
-      showToast({
-        title: "Sign Up Failed",
-        description: error.message,
-        type: "error",
-      });
-    } else {
-      showToast({
-        title: "Account Created!",
-        description: "Please check your email to verify your account.",
-        type: "success",
-      });
-    }
-    setLoading(false);
-  };
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary/20 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Stack Keeper</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Stack Keeper</CardTitle>
           <CardDescription>
-            Sign in to manage your meetings
+            Enter your name to get started - no password required
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin">
-              <form onSubmit={(e) => void handleSignIn(e)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={signInEmail}
-                    onChange={(e) => setSignInEmail(e.target.value)}
-                    required
-                    maxLength={255}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={signInPassword}
-                    onChange={(e) => setSignInPassword(e.target.value)}
-                    required
-                    maxLength={100}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Signing in..." : "Sign In"}
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={(e) => void handleSignUp(e)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Display Name</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="Your Name"
-                    value={signUpName}
-                    onChange={(e) => setSignUpName(e.target.value)}
-                    required
-                    maxLength={50}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={signUpEmail}
-                    onChange={(e) => setSignUpEmail(e.target.value)}
-                    required
-                    maxLength={255}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={signUpPassword}
-                    onChange={(e) => setSignUpPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    maxLength={100}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Creating account..." : "Sign Up"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={(e) => void handleJoin(e)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Your Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required
+                maxLength={50}
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Joining..." : "Continue"}
+            </Button>
+          </form>
           
           <div className="mt-4 text-center">
             <Button
