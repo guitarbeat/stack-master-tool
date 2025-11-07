@@ -96,10 +96,22 @@ export default defineConfig(({ mode }) => ({
   },
   // Define global constants
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    __GIT_COMMIT__: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim()),
-    __GIT_BRANCH__: JSON.stringify(execSync('git rev-parse --abbrev-ref HEAD').toString().trim()),
+    __GIT_COMMIT__: JSON.stringify((() => {
+      try {
+        return execSync('git rev-parse --short HEAD').toString().trim();
+      } catch {
+        return 'unknown';
+      }
+    })()),
+    __GIT_BRANCH__: JSON.stringify((() => {
+      try {
+        return execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+      } catch {
+        return 'main';
+      }
+    })()),
   },
 }));
 
