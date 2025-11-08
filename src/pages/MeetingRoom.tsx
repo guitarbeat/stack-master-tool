@@ -41,7 +41,7 @@ import {
 
 export default function MeetingRoom() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signInAnonymously } = useAuth();
   const { showToast, toast: pushToast } = useToast();
 
   // * Use the centralized meeting state hook
@@ -720,6 +720,71 @@ export default function MeetingRoom() {
 
   // Show room creation interface for host mode when no meeting exists
   if (mode === "host" && !meetingId) {
+    // If user is not authenticated, show inline name prompt first
+    if (!user) {
+      return (
+        <div className="container mx-auto px-4 py-8 max-w-xl">
+          <div className="bg-card text-card-foreground rounded-2xl p-6 sm:p-8 shadow-lg border">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Host a Meeting</h1>
+            <p className="text-base sm:text-sm text-muted-foreground mb-6 sm:mb-8">
+              To host a meeting, we need to save your name as the facilitator.
+            </p>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!participantName.trim()) {
+                  setError(new AppError(ErrorCode.VALIDATION_ERROR, undefined, "Please enter your name"));
+                  return;
+                }
+                try {
+                  setIsLoading(true);
+                  const { error: authError } = await signInAnonymously(participantName.trim());
+                  if (authError) {
+                    setError(new AppError(ErrorCode.AUTH_ERROR, authError, "Failed to authenticate"));
+                  }
+                  // Auth state change will trigger re-render with user set
+                } catch (error) {
+                  setError(new AppError(
+                    ErrorCode.UNKNOWN,
+                    error instanceof Error ? error : undefined,
+                    "An unexpected error occurred"
+                  ));
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              className="space-y-5 sm:space-y-6"
+            >
+              <div className="space-y-2">
+                <label htmlFor="facilitator-name" className="text-sm font-medium text-foreground">
+                  Your Name (Facilitator)
+                </label>
+                <input
+                  id="facilitator-name"
+                  value={participantName}
+                  onChange={(e) => setParticipantName(e.target.value)}
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus-ring text-base sm:text-sm min-h-[48px]"
+                  aria-label="Your name as facilitator"
+                  autoComplete="name"
+                  autoFocus
+                  disabled={isLoading}
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors disabled:opacity-50"
+                disabled={!participantName.trim() || isLoading}
+              >
+                {isLoading ? 'Authenticating...' : 'Continue'}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // User is authenticated, show room creation form
     return (
       <>
         <div className="container mx-auto px-4 py-8 max-w-2xl">

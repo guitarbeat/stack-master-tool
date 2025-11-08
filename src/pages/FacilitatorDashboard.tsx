@@ -145,21 +145,8 @@ export default function FacilitatorDashboard() {
   };
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please sign in to access the facilitator dashboard</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/auth')} className="w-full">
-              Sign In
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    navigate('/meeting?mode=host');
+    return null;
   }
 
   if (isLoading || profileLoading) {

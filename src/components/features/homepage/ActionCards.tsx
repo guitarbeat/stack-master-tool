@@ -11,7 +11,7 @@ export const ActionCards = () => {
         {Object.values(MEETING_MODES).map((mode) => (
           <Link
             key={mode.id}
-            to={mode.id === 'host' ? '/facilitator' : `/meeting?mode=${mode.id}`}
+            to={`/meeting?mode=${mode.id}`}
             className="group block transition-transform hover:scale-[1.02]"
           >
             <Card className={`h-full border-2 ${mode.borderColor} hover:shadow-xl transition-all duration-300`}>

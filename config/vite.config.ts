@@ -56,18 +56,7 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    // Optimize build for better performance
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
-        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
-      },
-      mangle: {
-        safari10: true,
-      },
-    },
+    minify: 'esbuild',
     // Enable source maps only in development
     sourcemap: mode === 'development',
     // Optimize chunk size limits
