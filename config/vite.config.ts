@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { execSync } from "child_process";
 
 // Note: @dyad-sh/react-vite-component-tagger is a development-only dependency
 // It should be installed separately if needed for development collaboration
@@ -87,20 +86,8 @@ export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    __GIT_COMMIT__: JSON.stringify((() => {
-      try {
-        return execSync('git rev-parse --short HEAD').toString().trim();
-      } catch {
-        return 'unknown';
-      }
-    })()),
-    __GIT_BRANCH__: JSON.stringify((() => {
-      try {
-        return execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-      } catch {
-        return 'main';
-      }
-    })()),
+    __GIT_COMMIT__: JSON.stringify('unknown'),
+    __GIT_BRANCH__: JSON.stringify('main'),
   },
 }));
 
