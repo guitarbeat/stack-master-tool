@@ -1,65 +1,89 @@
+import { useState } from 'react'
 import { ActionCards } from '@/components/features/homepage/ActionCards'
 import { useAuth } from '@/hooks/useAuth'
+import { useProfile } from '@/hooks/useProfile'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { LogOut } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 function HomePage() {
-  const { user, signOut } = useAuth()
+  const { user, signInAnonymously } = useAuth()
+  const { profile } = useProfile()
   const { showToast } = useToast()
+  const [name, setName] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSignOut = async () => {
-    const { error } = await signOut()
-    if (error) {
+  const handleNameSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim()) return
+
+    setIsSubmitting(true)
+    try {
+      const { error } = await signInAnonymously(name.trim())
+      if (error) {
+        showToast({
+          type: 'error',
+          title: 'Error',
+          message: 'Failed to save your name',
+        })
+      }
+    } catch (error) {
       showToast({
         type: 'error',
         title: 'Error',
-        message: 'Failed to sign out',
+        message: 'An unexpected error occurred',
       })
-    } else {
-      showToast({
-        type: 'success',
-        title: 'Signed out',
-        message: 'Successfully signed out',
-      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
+  const displayName = profile?.display_name || user?.user_metadata?.display_name
+
   return (
     <main className="min-h-screen bg-background" role="main">
-      {user && (
-        <>
-          <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">{user.email}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                void handleSignOut();
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
-          </div>
-          <Separator />
-        </>
-      )}
-
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
-            Stack Master Tool
-          </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Democratic meeting facilitation with organized speaking queues. 
-            Choose your role to participate in fair, structured discussions.
-          </p>
+          {!user ? (
+            <>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
+                Stack Master Tool
+              </h1>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+                Democratic meeting facilitation with organized speaking queues.
+              </p>
+              
+              <div className="max-w-md mx-auto">
+                <form onSubmit={handleNameSubmit} className="flex gap-3">
+                  <Input
+                    type="text"
+                    placeholder="Enter your name..."
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="flex-1"
+                    disabled={isSubmitting}
+                    autoFocus
+                  />
+                  <Button type="submit" disabled={!name.trim() || isSubmitting}>
+                    {isSubmitting ? 'Saving...' : 'Continue'}
+                  </Button>
+                </form>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
+                Welcome {displayName}
+              </h1>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Choose your role to participate in fair, structured discussions.
+              </p>
+            </>
+          )}
         </div>
 
-        <ActionCards />
+        {user && <ActionCards />}
       </div>
     </main>
   )
