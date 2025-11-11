@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ActionCards } from '@/components/features/homepage/ActionCards'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { LogOut } from 'lucide-react'
+import { LogOut, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { z } from 'zod'
+import Confetti from '@/components/ui/Confetti.jsx'
 
 const nameSchema = z.string().min(1, 'Name is required').max(50, 'Name is too long')
 
@@ -16,6 +17,14 @@ function HomePage() {
   const { toast } = useToast()
   const [displayName, setDisplayName] = useState('')
   const [isJoining, setIsJoining] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
+
+  useEffect(() => {
+    if (user && !showConfetti) {
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 3000)
+    }
+  }, [user])
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,6 +71,7 @@ function HomePage() {
 
   return (
     <main className="min-h-screen bg-background" role="main">
+      {showConfetti && <Confetti />}
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -88,8 +98,16 @@ function HomePage() {
                   <Button 
                     type="submit" 
                     disabled={isJoining || authLoading || !displayName.trim()}
+                    className="relative"
                   >
-                    {isJoining ? 'Joining...' : 'Join'}
+                    {isJoining ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Joining...
+                      </>
+                    ) : (
+                      'Join'
+                    )}
                   </Button>
                 </div>
               </form>
