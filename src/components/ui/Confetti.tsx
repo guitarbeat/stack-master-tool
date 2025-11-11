@@ -6,7 +6,7 @@ const Confetti = () => {
     const duration = 3000;
     const animationEnd = Date.now() + duration;
 
-    const randomInRange = (min, max) => Math.random() * (max - min) + min;
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
     const interval = setInterval(() => {
       const timeLeft = animationEnd - Date.now();
