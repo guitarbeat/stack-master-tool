@@ -8,13 +8,14 @@ export const ActionCards = () => {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="grid gap-8 md:grid-cols-3 mb-16">
-        {Object.values(MEETING_MODES).map((mode) => (
+        {Object.values(MEETING_MODES).map((mode, index) => (
           <Link
             key={mode.id}
             to={`/meeting?mode=${mode.id}`}
-            className="group block transition-transform hover:scale-[1.02]"
+            className="group block transition-all hover:scale-105 hover:-translate-y-1 duration-300"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            <Card className={`h-full border-2 ${mode.borderColor} hover:shadow-xl transition-all duration-300`}>
+            <Card className={`h-full border-2 ${mode.borderColor} hover:shadow-xl transition-all duration-300 animate-fade-in`}>
               <CardHeader className="text-center pb-4">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <span className="text-3xl">{mode.emoji}</span>

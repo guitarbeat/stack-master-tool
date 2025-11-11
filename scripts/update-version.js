@@ -42,7 +42,7 @@ function createGitTag(version) {
 
 function showUsage() {
     console.log(`
-🚀 Stack Master Tool - Version Update Script
+🚀 Speaking Queue - Version Update Script
 
 Usage:
   node scripts/update-version.js [version]

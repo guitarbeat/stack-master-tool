@@ -82,8 +82,8 @@ function HomePage() {
         <div className="text-center mb-12">
           {!user ? (
             <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
-                Stack Master Tool
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6 slide-up">
+                Speaking Queue
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
                 Democratic meeting facilitation with organized speaking queues.
@@ -119,7 +119,7 @@ function HomePage() {
             </div>
           ) : (
             <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6 slide-up">
                 Welcome, {getUserDisplayName()}!
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-4">
