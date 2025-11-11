@@ -18,6 +18,7 @@ function HomePage() {
   const [displayName, setDisplayName] = useState('')
   const [isJoining, setIsJoining] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   useEffect(() => {
     if (user && !showConfetti) {
@@ -53,16 +54,20 @@ function HomePage() {
   }
 
   const handleSignOut = async () => {
-    const { error } = await signOut()
-    if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to sign out',
-      })
-    } else {
-      setDisplayName('')
-    }
+    setIsSigningOut(true)
+    setTimeout(async () => {
+      const { error } = await signOut()
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to sign out',
+        })
+        setIsSigningOut(false)
+      } else {
+        setDisplayName('')
+      }
+    }, 300)
   }
 
   const getUserDisplayName = () => {
@@ -76,7 +81,7 @@ function HomePage() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           {!user ? (
-            <div className="animate-fade-in">
+            <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
                 Stack Master Tool
               </h1>
@@ -98,7 +103,7 @@ function HomePage() {
                   <Button 
                     type="submit" 
                     disabled={isJoining || authLoading || !displayName.trim()}
-                    className="relative"
+                    className={`relative ${!displayName.trim() && !isJoining ? 'animate-pulse' : ''}`}
                   >
                     {isJoining ? (
                       <>
@@ -113,7 +118,7 @@ function HomePage() {
               </form>
             </div>
           ) : (
-            <div className="animate-fade-in">
+            <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6">
                 Welcome, {getUserDisplayName()}!
               </h1>
