@@ -1,4 +1,4 @@
-declare module '@/components/ui/Confetti.jsx' {
+declare module '@/components/ui/Confetti' {
   import { FC } from 'react';
   
   const Confetti: FC;

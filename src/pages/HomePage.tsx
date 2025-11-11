@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { LogOut, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { z } from 'zod'
-import Confetti from '@/components/ui/Confetti.jsx'
+import Confetti from '@/components/ui/Confetti'
 
 const nameSchema = z.string().min(1, 'Name is required').max(50, 'Name is too long')
 
