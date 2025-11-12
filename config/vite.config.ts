@@ -79,11 +79,8 @@ export default defineConfig(({ mode }) => ({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', '@supabase/supabase-js'],
-    exclude: ['@vite/client', '@vite/env'],
-    esbuildOptions: {
-      target: 'es2020',
-    },
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@vite/client', '@vite/env', '@supabase/supabase-js'],
   },
   // Define global constants
   define: {
