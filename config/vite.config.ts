@@ -80,7 +80,6 @@ export default defineConfig(({ mode }) => ({
   // Optimize dependencies
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
-    exclude: ['@vite/client', '@vite/env', '@supabase/supabase-js'],
   },
   // Define global constants
   define: {
