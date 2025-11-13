@@ -1,26 +1,14 @@
 import { AppError, ErrorCode } from "../utils/errorHandling";
 import { logProduction } from "../utils/productionLogger";
 // Use the single, validated client from integrations to avoid duplicate config
-import { supabase } from "@/integrations/supabase/client";
-
-const SUPABASE_CONNECTION_ERROR_CODES = new Set([
-  "ECONNREFUSED",
-  "ECONNRESET",
-  "ENOTFOUND",
-  "EAI_AGAIN",
-  "ETIMEDOUT",
-  "FETCH_ERROR",
-]);
-
-const SUPABASE_CONNECTION_ERROR_MESSAGES = [
-  "failed to fetch",
-  "fetch failed",
-  "networkerror",
-  "network error",
-  "getaddrinfo",
-  "request to http",
-  "request to https",
-];
+import {
+  executeSupabase,
+  isSupabaseConnectionError,
+  SupabaseOfflineError,
+  SupabaseTimeoutError,
+  supabase,
+  type SupabaseRequestOptions,
+} from "@/integrations/supabase/client";
 
 const toErrorInstance = (
   error: unknown,
@@ -44,39 +32,6 @@ const toErrorInstance = (
   return fallbackMessage ? new Error(fallbackMessage) : undefined;
 };
 
-const isSupabaseConnectionError = (error: unknown): boolean => {
-  if (!error) {
-    return false;
-  }
-
-  const code =
-    typeof error === "object" && error !== null && "code" in error
-      ? String((error as { code?: unknown }).code ?? "")
-      : "";
-
-  if (code && SUPABASE_CONNECTION_ERROR_CODES.has(code.toUpperCase())) {
-    return true;
-  }
-
-  const message =
-    typeof error === "object" && error !== null && "message" in error
-      ? String((error as { message?: unknown }).message ?? "")
-      : typeof error === "string"
-        ? error
-        : error instanceof Error
-          ? error.message
-          : "";
-
-  if (message) {
-    const normalized = message.toLowerCase();
-    return SUPABASE_CONNECTION_ERROR_MESSAGES.some((indicator) =>
-      normalized.includes(indicator),
-    );
-  }
-
-  return false;
-};
-
 const mapSupabaseError = (
   error: unknown,
   fallbackMessage: string,
@@ -86,7 +41,11 @@ const mapSupabaseError = (
     return error;
   }
 
-  if (isSupabaseConnectionError(error)) {
+  if (
+    isSupabaseConnectionError(error) ||
+    error instanceof SupabaseTimeoutError ||
+    error instanceof SupabaseOfflineError
+  ) {
     return new AppError(
       ErrorCode.SERVER_UNREACHABLE,
       toErrorInstance(error, fallbackMessage),
@@ -100,6 +59,11 @@ const mapSupabaseError = (
     fallbackMessage,
   );
 };
+
+const withSupabase = async <T>(
+  operation: (client: typeof supabase) => Promise<T>,
+  options?: SupabaseRequestOptions,
+): Promise<T> => executeSupabase(operation, options);
 
 // Types
 export interface Participant {
@@ -169,17 +133,19 @@ export class SupabaseMeetingService {
       for (let attempt = 0; attempt < maxCreateAttempts; attempt++) {
         const meetingCode = await this.generateMeetingCodeWithFallback();
 
-        const { data, error } = await supabase
-          .from("meetings")
-          .insert({
-            title: title.trim(),
-            facilitator_name: facilitatorName.trim(),
-            facilitator_id: facilitatorId ?? null,
-            meeting_code: meetingCode,
-            is_active: true,
-          })
-          .select()
-          .single();
+        const { data, error } = await withSupabase((client) =>
+          client
+            .from("meetings")
+            .insert({
+              title: title.trim(),
+              facilitator_name: facilitatorName.trim(),
+              facilitator_id: facilitatorId ?? null,
+              meeting_code: meetingCode,
+              is_active: true,
+            })
+            .select()
+            .single(),
+        );
 
         if (!error && data) {
           return {
@@ -228,8 +194,8 @@ export class SupabaseMeetingService {
 
   private static async generateMeetingCodeWithFallback(): Promise<string> {
     try {
-      const { data: codeData, error: codeError } = await supabase.rpc(
-        "generate_meeting_code",
+      const { data: codeData, error: codeError } = await withSupabase((client) =>
+        client.rpc("generate_meeting_code"),
       );
 
       if (codeError) {
@@ -257,11 +223,13 @@ export class SupabaseMeetingService {
           result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
 
-        const { data: existing } = await supabase
-          .from("meetings")
-          .select("meeting_code")
-          .eq("meeting_code", result)
-          .maybeSingle();
+        const { data: existing } = await withSupabase((client) =>
+          client
+            .from("meetings")
+            .select("meeting_code")
+            .eq("meeting_code", result)
+            .maybeSingle(),
+        );
 
         if (!existing) {
           return result;
@@ -308,24 +276,30 @@ export class SupabaseMeetingService {
         );
       }
 
-      const { data: meeting, error: meetingError } = await supabase
-        .from("meetings")
-        .select("*")
-        .eq("meeting_code", normalizedCode)
-        .eq("is_active", true)
-        .single();
+      const { data: meeting, error: meetingError } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .select("*")
+          .eq("meeting_code", normalizedCode)
+          .eq("is_active", true)
+          .single(),
+      );
 
       if (meetingError || !meeting) {
         return null;
       }
 
       // Get participants
-      const { data: participants, error: participantsError } = await supabase
-        .from("participants")
-        .select("*")
-        .eq("meeting_id", meeting.id)
-        .eq("is_active", true)
-        .order("joined_at", { ascending: true });
+      const { data: participants, error: participantsError } = await withSupabase(
+        (client) =>
+          client
+            .from("participants")
+            .select("*")
+            .eq("meeting_id", meeting.id)
+            .eq("is_active", true)
+            .order("joined_at", { ascending: true }),
+        { dedupeKey: `participants-${meeting.id}` },
+      );
 
       if (participantsError) {
         throw mapSupabaseError(
@@ -335,16 +309,18 @@ export class SupabaseMeetingService {
       }
 
       // Get speaking queue
-      const { data: queue, error: queueError } = await supabase
-        .from("speaking_queue")
-        .select(
-          `
+      const { data: queue, error: queueError } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .select(
+            `
           *,
           participants!inner(name)
         `,
-        )
-        .eq("meeting_id", meeting.id)
-        .order("position", { ascending: true });
+          )
+          .eq("meeting_id", meeting.id)
+          .order("position", { ascending: true }),
+      );
 
       if (queueError) {
         throw mapSupabaseError(queueError, "Failed to fetch speaking queue");
@@ -444,16 +420,18 @@ export class SupabaseMeetingService {
       }
 
       // Create participant
-      const { data, error } = await supabase
-        .from("participants")
-        .insert({
-          meeting_id: meeting.id,
-          name: participantName.trim(),
-          is_facilitator: isFacilitator,
-          is_active: true,
-        })
-        .select()
-        .single();
+      const { data, error } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .insert({
+            meeting_id: meeting.id,
+            name: participantName.trim(),
+            is_facilitator: isFacilitator,
+            is_active: true,
+          })
+          .select()
+          .single(),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to join meeting");
@@ -481,12 +459,16 @@ export class SupabaseMeetingService {
   ): Promise<QueueItem> {
     try {
       // Get current queue to determine position
-      const { data: currentQueue, error: queueError } = await supabase
-        .from("speaking_queue")
-        .select("position")
-        .eq("meeting_id", meetingId)
-        .order("position", { ascending: false })
-        .limit(1);
+      const { data: currentQueue, error: queueError } = await withSupabase(
+        (client) =>
+          client
+            .from("speaking_queue")
+            .select("position")
+            .eq("meeting_id", meetingId)
+            .order("position", { ascending: false })
+            .limit(1),
+        { dedupeKey: `queue-position-${meetingId}` },
+      );
 
       if (queueError) {
         throw mapSupabaseError(queueError, "Failed to fetch queue");
@@ -499,28 +481,34 @@ export class SupabaseMeetingService {
         queuePositions.length > 0 ? queuePositions[0].position + 1 : 1;
 
       // Get participant name
-      const { data: participant, error: participantError } = await supabase
-        .from("participants")
-        .select("name")
-        .eq("id", participantId)
-        .single();
+      const { data: participant, error: participantError } = await withSupabase(
+        (client) =>
+          client
+            .from("participants")
+            .select("name")
+            .eq("id", participantId)
+            .single(),
+        { dedupeKey: `participant-${participantId}` },
+      );
 
       if (participantError || !participant) {
         throw mapSupabaseError(participantError, "Participant not found");
       }
 
       // Add to queue
-      const { data, error } = await supabase
-        .from("speaking_queue")
-        .insert({
-          meeting_id: meetingId,
-          participant_id: participantId,
-          queue_type: queueType,
-          position: nextPosition,
-          is_speaking: false,
-        })
-        .select()
-        .single();
+      const { data, error } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .insert({
+            meeting_id: meetingId,
+            participant_id: participantId,
+            queue_type: queueType,
+            position: nextPosition,
+            is_speaking: false,
+          })
+          .select()
+          .single(),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to join queue");
@@ -547,11 +535,13 @@ export class SupabaseMeetingService {
     participantId: string,
   ): Promise<void> {
     try {
-      const { error } = await supabase
-        .from("speaking_queue")
-        .delete()
-        .eq("meeting_id", meetingId)
-        .eq("participant_id", participantId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .delete()
+          .eq("meeting_id", meetingId)
+          .eq("participant_id", participantId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to leave queue");
@@ -569,16 +559,18 @@ export class SupabaseMeetingService {
   static async nextSpeaker(meetingId: string): Promise<QueueItem | null> {
     try {
       // Get current queue
-      const { data: queue, error: queueError } = await supabase
-        .from("speaking_queue")
-        .select(
-          `
+      const { data: queue, error: queueError } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .select(
+            `
           *,
           participants!inner(name)
         `,
-        )
-        .eq("meeting_id", meetingId)
-        .order("position", { ascending: true });
+          )
+          .eq("meeting_id", meetingId)
+          .order("position", { ascending: true }),
+      );
 
       if (queueError) {
         throw mapSupabaseError(queueError, "Failed to fetch queue");
@@ -596,10 +588,12 @@ export class SupabaseMeetingService {
 
       // Remove first speaker
       const [nextSpeaker] = queueItems;
-      const { error: deleteError } = await supabase
-        .from("speaking_queue")
-        .delete()
-        .eq("id", nextSpeaker.id);
+      const { error: deleteError } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .delete()
+          .eq("id", nextSpeaker.id),
+      );
 
       if (deleteError) {
         throw mapSupabaseError(deleteError, "Failed to remove speaker");
@@ -629,10 +623,12 @@ export class SupabaseMeetingService {
     newTitle: string,
   ): Promise<void> {
     try {
-      const { error } = await supabase
-        .from("meetings")
-        .update({ title: newTitle.trim() })
-        .eq("id", meetingId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .update({ title: newTitle.trim() })
+          .eq("id", meetingId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to update meeting title");
@@ -658,12 +654,14 @@ export class SupabaseMeetingService {
       }
 
       // Check if the code is already in use by another meeting
-      const { data: existing } = await supabase
-        .from("meetings")
-        .select("id")
-        .eq("meeting_code", newCode)
-        .neq("id", meetingId)
-        .single();
+      const { data: existing } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .select("id")
+          .eq("meeting_code", newCode)
+          .neq("id", meetingId)
+          .single(),
+      );
 
       if (existing) {
         throw new AppError(
@@ -673,10 +671,12 @@ export class SupabaseMeetingService {
         );
       }
 
-      const { error } = await supabase
-        .from("meetings")
-        .update({ meeting_code: newCode })
-        .eq("id", meetingId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .update({ meeting_code: newCode })
+          .eq("id", meetingId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to update meeting code");
@@ -693,10 +693,12 @@ export class SupabaseMeetingService {
     newName: string,
   ): Promise<void> {
     try {
-      const { error } = await supabase
-        .from("participants")
-        .update({ name: newName.trim() })
-        .eq("id", participantId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .update({ name: newName.trim() })
+          .eq("id", participantId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to update participant name");
@@ -715,11 +717,15 @@ export class SupabaseMeetingService {
   ): Promise<void> {
     try {
       // Get current queue to determine how to shift positions
-      const { data: currentQueue, error: queueError } = await supabase
-        .from("speaking_queue")
-        .select("id, position, participant_id")
-        .eq("meeting_id", meetingId)
-        .order("position", { ascending: true });
+      const { data: currentQueue, error: queueError } = await withSupabase(
+        (client) =>
+          client
+            .from("speaking_queue")
+            .select("id, position, participant_id")
+            .eq("meeting_id", meetingId)
+            .order("position", { ascending: true }),
+        { dedupeKey: `queue-${meetingId}` },
+      );
 
       if (queueError) {
         throw mapSupabaseError(
@@ -785,10 +791,12 @@ export class SupabaseMeetingService {
 
       // Execute all updates
       for (const update of updates) {
-        const { error } = await supabase
-          .from("speaking_queue")
-          .update({ position: update.position })
-          .eq("id", update.id);
+        const { error } = await withSupabase((client) =>
+          client
+            .from("speaking_queue")
+            .update({ position: update.position })
+            .eq("id", update.id),
+        );
 
         if (error) {
           throw mapSupabaseError(error, "Failed to update queue position");
@@ -803,11 +811,13 @@ export class SupabaseMeetingService {
   // Helper: Reorder queue positions
   private static async reorderQueue(meetingId: string): Promise<void> {
     try {
-      const { data: queue, error: queueError } = await supabase
-        .from("speaking_queue")
-        .select("id, position")
-        .eq("meeting_id", meetingId)
-        .order("position", { ascending: true });
+      const { data: queue, error: queueError } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .select("id, position")
+          .eq("meeting_id", meetingId)
+          .order("position", { ascending: true }),
+      );
 
       if (queueError) {
         throw mapSupabaseError(
@@ -818,10 +828,12 @@ export class SupabaseMeetingService {
 
       // Update positions sequentially
       for (let i = 0; i < queue.length; i++) {
-        const { error } = await supabase
-          .from("speaking_queue")
-          .update({ position: i + 1 })
-          .eq("id", queue[i].id);
+        const { error } = await withSupabase((client) =>
+          client
+            .from("speaking_queue")
+            .update({ position: i + 1 })
+            .eq("id", queue[i].id),
+        );
 
         if (error) {
           throw mapSupabaseError(error, "Failed to reorder queue");
@@ -838,11 +850,15 @@ export class SupabaseMeetingService {
     participantId: string,
   ): Promise<ParticipantSnapshot> {
     try {
-      const { data: participantRow, error: participantError } = await supabase
-        .from("participants")
-        .select("id, meeting_id, name, is_facilitator, joined_at")
-        .eq("id", participantId)
-        .maybeSingle();
+      const { data: participantRow, error: participantError } = await withSupabase(
+        (client) =>
+          client
+            .from("participants")
+            .select("id, meeting_id, name, is_facilitator, joined_at")
+            .eq("id", participantId)
+            .maybeSingle(),
+        { dedupeKey: `participant-snapshot-${participantId}` },
+      );
 
       if (participantError) {
         throw mapSupabaseError(
@@ -868,10 +884,12 @@ export class SupabaseMeetingService {
       };
 
       // First, remove from speaking queue if they're in it
-      const { error: queueError } = await supabase
-        .from("speaking_queue")
-        .delete()
-        .eq("participant_id", participantId);
+      const { error: queueError } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .delete()
+          .eq("participant_id", participantId),
+      );
 
       if (queueError) {
         throw mapSupabaseError(
@@ -881,10 +899,12 @@ export class SupabaseMeetingService {
       }
 
       // Then mark the participant as inactive to allow undo
-      const { error } = await supabase
-        .from("participants")
-        .update({ is_active: false })
-        .eq("id", participantId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .update({ is_active: false })
+          .eq("id", participantId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to remove participant");
@@ -898,10 +918,12 @@ export class SupabaseMeetingService {
 
   static async restoreParticipant(participantId: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from("participants")
-        .update({ is_active: true })
-        .eq("id", participantId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .update({ is_active: true })
+          .eq("id", participantId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to restore participant");
@@ -915,10 +937,12 @@ export class SupabaseMeetingService {
   // End meeting (mark as inactive and clean up)
   static async leaveMeeting(participantId: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from("participants")
-        .update({ is_active: false })
-        .eq("id", participantId);
+      const { error } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .update({ is_active: false })
+          .eq("id", participantId),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to leave meeting");
@@ -932,20 +956,24 @@ export class SupabaseMeetingService {
   static async endMeeting(meetingId: string): Promise<void> {
     try {
       // Mark meeting as inactive
-      const { error: meetingError } = await supabase
-        .from("meetings")
-        .update({ is_active: false })
-        .eq("id", meetingId);
+      const { error: meetingError } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .update({ is_active: false })
+          .eq("id", meetingId),
+      );
 
       if (meetingError) {
         throw mapSupabaseError(meetingError, "Failed to end meeting");
       }
 
       // Mark all participants as inactive
-      const { error: participantsError } = await supabase
-        .from("participants")
-        .update({ is_active: false })
-        .eq("meeting_id", meetingId);
+      const { error: participantsError } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .update({ is_active: false })
+          .eq("meeting_id", meetingId),
+      );
 
       if (participantsError) {
         logProduction("warn", {
@@ -957,10 +985,12 @@ export class SupabaseMeetingService {
       }
 
       // Clear speaking queue
-      const { error: queueError } = await supabase
-        .from("speaking_queue")
-        .delete()
-        .eq("meeting_id", meetingId);
+      const { error: queueError } = await withSupabase((client) =>
+        client
+          .from("speaking_queue")
+          .delete()
+          .eq("meeting_id", meetingId),
+      );
 
       if (queueError) {
         logProduction("warn", {
@@ -981,13 +1011,15 @@ export class SupabaseMeetingService {
    */
   static async getActiveMeetings(): Promise<MeetingData[]> {
     try {
-      const { data, error } = await supabase
-        .from("meetings")
-        .select(
-          "id, meeting_code, title, facilitator_name, facilitator_id, created_at, is_active",
-        )
-        .eq("is_active", true)
-        .order("created_at", { ascending: false });
+      const { data, error } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .select(
+            "id, meeting_code, title, facilitator_name, facilitator_id, created_at, is_active",
+          )
+          .eq("is_active", true)
+          .order("created_at", { ascending: false }),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to get active meetings");
@@ -1023,12 +1055,14 @@ export class SupabaseMeetingService {
    */
   static async getParticipants(meetingId: string): Promise<Participant[]> {
     try {
-      const { data, error } = await supabase
-        .from("participants")
-        .select("*")
-        .eq("meeting_id", meetingId)
-        .eq("is_active", true)
-        .order("joined_at", { ascending: true });
+      const { data, error } = await withSupabase((client) =>
+        client
+          .from("participants")
+          .select("*")
+          .eq("meeting_id", meetingId)
+          .eq("is_active", true)
+          .order("joined_at", { ascending: true }),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to get participants");
@@ -1048,11 +1082,13 @@ export class SupabaseMeetingService {
     facilitatorId: string,
   ): Promise<MeetingData[]> {
     try {
-      const { data, error } = await supabase
-        .from("meetings")
-        .select("*")
-        .eq("facilitator_id", facilitatorId)
-        .order("created_at", { ascending: false });
+      const { data, error } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .select("*")
+          .eq("facilitator_id", facilitatorId)
+          .order("created_at", { ascending: false }),
+      );
 
       if (error) {
         throw mapSupabaseError(error, "Failed to get facilitator meetings");
@@ -1082,18 +1118,21 @@ export class SupabaseMeetingService {
       // 1. is_active = true
       // 2. created_at < NOW() - INTERVAL '1 hour'
       // 3. Have 0 active participants
-      const { data: emptyOldMeetings, error: queryError } = await supabase
-        .from("meetings")
-        .select(
-          `
+      const { data: emptyOldMeetings, error: queryError } = await withSupabase(
+        (client) =>
+          client
+            .from("meetings")
+            .select(
+              `
           id,
           created_at,
           participants!inner(id)
         `,
-        )
-        .eq("is_active", true)
-        .lt("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString())
-        .eq("participants.is_active", false);
+            )
+            .eq("is_active", true)
+            .lt("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString())
+            .eq("participants.is_active", false),
+      );
 
       if (queryError) {
         throw mapSupabaseError(
@@ -1110,11 +1149,13 @@ export class SupabaseMeetingService {
       const meetingsToDelete = [];
       for (const meeting of emptyOldMeetings) {
         const { data: activeParticipants, error: participantError } =
-          await supabase
-            .from("participants")
-            .select("id")
-            .eq("meeting_id", meeting.id)
-            .eq("is_active", true);
+          await withSupabase((client) =>
+            client
+              .from("participants")
+              .select("id")
+              .eq("meeting_id", meeting.id)
+              .eq("is_active", true),
+          );
 
         if (participantError) {
           logProduction("warn", {
@@ -1132,10 +1173,12 @@ export class SupabaseMeetingService {
 
       // Delete the empty old meetings
       if (meetingsToDelete.length > 0) {
-        const { error: deleteError } = await supabase
-          .from("meetings")
-          .delete()
-          .in("id", meetingsToDelete);
+        const { error: deleteError } = await withSupabase((client) =>
+          client
+            .from("meetings")
+            .delete()
+            .in("id", meetingsToDelete),
+        );
 
         if (deleteError) {
           throw mapSupabaseError(
@@ -1165,11 +1208,13 @@ export class SupabaseMeetingService {
   ): Promise<void> {
     try {
       // First check if the user is the facilitator
-      const { data: meeting, error: checkError } = await supabase
-        .from("meetings")
-        .select("facilitator_id")
-        .eq("id", meetingId)
-        .single();
+      const { data: meeting, error: checkError } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .select("facilitator_id")
+          .eq("id", meetingId)
+          .single(),
+      );
 
       if (checkError) {
         throw mapSupabaseError(
@@ -1187,10 +1232,12 @@ export class SupabaseMeetingService {
       }
 
       // Delete the meeting (this will cascade to participants and speaking queue)
-      const { error: deleteError } = await supabase
-        .from("meetings")
-        .delete()
-        .eq("id", meetingId);
+      const { error: deleteError } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .delete()
+          .eq("id", meetingId),
+      );
 
       if (deleteError) {
         throw mapSupabaseError(deleteError, "Failed to delete meeting");

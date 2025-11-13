@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import ConnectionStatusBanner from "@/components/shared/ConnectionStatusBanner";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -233,6 +234,7 @@ function AppLayout({ children }: AppLayoutProps) {
           </div>
         )}
       </header>
+      <ConnectionStatusBanner />
       <main id="main-content" className="flex-grow" role="main">
         {children}
       </main>

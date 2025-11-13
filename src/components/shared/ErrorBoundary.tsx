@@ -1,9 +1,15 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode, type ContextType } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { getErrorDisplayInfo, logError } from '../../utils/errorHandling';
 import { logProduction } from '@/utils/productionLogger';
+import { SupabaseConnectionContext } from '@/integrations/supabase/connection-context';
+import {
+  isSupabaseConnectionError,
+  SupabaseOfflineError,
+  SupabaseTimeoutError,
+} from '@/integrations/supabase/client';
 
 interface Props {
   children: ReactNode;
@@ -15,9 +21,12 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
+  public static override contextType = SupabaseConnectionContext;
   public override state: State = {
     hasError: false
   };
+
+  declare context: ContextType<typeof SupabaseConnectionContext>;
 
   public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
@@ -43,7 +52,53 @@ class ErrorBoundary extends Component<Props, State> {
 
   public override render() {
     if (this.state.hasError) {
-      const errorInfo = getErrorDisplayInfo(this.state.error ?? new Error('Unknown error'));
+      const error = this.state.error ?? new Error('Unknown error');
+      const connectionContext = this.context;
+      const isSupabaseError =
+        isSupabaseConnectionError(error) ||
+        error instanceof SupabaseOfflineError ||
+        error instanceof SupabaseTimeoutError;
+
+      if (isSupabaseError && connectionContext) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <Card className="w-full max-w-md">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                  <AlertTriangle className="h-6 w-6 text-destructive" />
+                </div>
+                <CardTitle className="text-xl">Connection issue</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-center text-muted-foreground">
+                  We lost contact with the meeting service. We are retrying automatically.
+                </p>
+                {connectionContext.lastError && (
+                  <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                    Technical details: {connectionContext.lastError.message}
+                  </p>
+                )}
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={() => {
+                      void connectionContext.retry();
+                    }}
+                    disabled={connectionContext.isChecking}
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {connectionContext.isChecking ? 'Reconnecting…' : 'Retry connection'}
+                  </Button>
+                  <Button onClick={this.handleGoHome} variant="outline">
+                    Go Home
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+      }
+
+      const errorInfo = getErrorDisplayInfo(error);
       
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
