@@ -10,6 +10,7 @@ import MeetingRoom from "./pages/MeetingRoom";
 import Rooms from "./pages/Rooms";
 import FacilitatorDashboard from "./pages/FacilitatorDashboard";
 import AppLayout from "./components/layout/AppLayout";
+import { SupabaseConnectionProvider } from "@/integrations/supabase/connection-context";
 
 const queryClient = new QueryClient();
 
@@ -18,8 +19,9 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <UnifiedToastProvider>
-          <AppLayout>
-            <Routes>
+          <SupabaseConnectionProvider>
+            <AppLayout>
+              <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/facilitator" element={<FacilitatorDashboard />} />
@@ -28,8 +30,9 @@ const App = () => {
               <Route path="/watch/:code" element={<MeetingRoom />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AppLayout>
+              </Routes>
+            </AppLayout>
+          </SupabaseConnectionProvider>
           <Analytics />
         </UnifiedToastProvider>
       </TooltipProvider>
