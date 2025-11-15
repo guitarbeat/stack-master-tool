@@ -144,10 +144,10 @@ export default function FacilitatorDashboard() {
     navigate(`/meeting?mode=host&code=${code}`);
   };
 
-  if (!user) {
-    navigate('/meeting?mode=host');
-    return null;
-  }
+  // if (!user) {
+  //   navigate('/meeting?mode=host');
+  //   return null;
+  // }
 
   if (isLoading || profileLoading) {
     return (
