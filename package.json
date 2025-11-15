@@ -78,6 +78,7 @@
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jscpd": "^4.0.5",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
     "qrcode": "^1.5.4",

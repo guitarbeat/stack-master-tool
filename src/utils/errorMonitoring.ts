@@ -26,21 +26,24 @@ interface ErrorMetrics {
   };
 }
 
+// Helper function to provide the initial state for metrics
+const getInitialMetrics = (): ErrorMetrics => ({
+  totalErrors: 0,
+  errorsByType: {} as Record<ErrorType, number>,
+  errorsByCode: {} as Record<ErrorCode, number>,
+  errorsByContext: {},
+  errorsBySeverity: { low: 0, medium: 0, high: 0 },
+  errorsByHour: {},
+  recentErrors: [],
+  errorTrends: {
+    last24Hours: 0,
+    lastHour: 0,
+    lastMinute: 0
+  }
+});
+
 class ErrorMonitor {
-  private metrics: ErrorMetrics = {
-    totalErrors: 0,
-    errorsByType: {} as Record<ErrorType, number>,
-    errorsByCode: {} as Record<ErrorCode, number>,
-    errorsByContext: {},
-    errorsBySeverity: { low: 0, medium: 0, high: 0 },
-    errorsByHour: {},
-    recentErrors: [],
-    errorTrends: {
-      last24Hours: 0,
-      lastHour: 0,
-      lastMinute: 0
-    }
-  };
+  private metrics: ErrorMetrics = getInitialMetrics();
 
   private maxRecentErrors = 50;
 
@@ -182,20 +185,7 @@ class ErrorMonitor {
 
   // Clear metrics (useful for testing)
   clearMetrics() {
-    this.metrics = {
-      totalErrors: 0,
-      errorsByType: {} as Record<ErrorType, number>,
-      errorsByCode: {} as Record<ErrorCode, number>,
-      errorsByContext: {},
-      errorsBySeverity: { low: 0, medium: 0, high: 0 },
-      errorsByHour: {},
-      recentErrors: [],
-      errorTrends: {
-        last24Hours: 0,
-        lastHour: 0,
-        lastMinute: 0
-      }
-    };
+    this.metrics = getInitialMetrics();
   }
 
   // Send error to external monitoring service

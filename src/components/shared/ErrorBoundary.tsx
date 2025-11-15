@@ -59,16 +59,20 @@ class ErrorBoundary extends Component<Props, State> {
         error instanceof SupabaseOfflineError ||
         error instanceof SupabaseTimeoutError;
 
+const ErrorHeader = ({ title }: { title: string }) => (
+  <CardHeader className="text-center">
+    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+      <AlertTriangle className="h-6 w-6 text-destructive" />
+    </div>
+    <CardTitle className="text-xl">{title}</CardTitle>
+  </CardHeader>
+);
+
       if (isSupabaseError && connectionContext) {
         return (
           <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md">
-              <CardHeader className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                  <AlertTriangle className="h-6 w-6 text-destructive" />
-                </div>
-                <CardTitle className="text-xl">Connection issue</CardTitle>
-              </CardHeader>
+              <ErrorHeader title="Connection issue" />
               <CardContent className="space-y-4">
                 <p className="text-center text-muted-foreground">
                   We lost contact with the meeting service. We are retrying automatically.
@@ -103,12 +107,7 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
           <Card className="w-full max-w-md">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-              </div>
-              <CardTitle className="text-xl">{errorInfo.title}</CardTitle>
-            </CardHeader>
+            <ErrorHeader title={errorInfo.title} />
             <CardContent className="space-y-4">
               <p className="text-center text-muted-foreground">
                 {errorInfo.description}

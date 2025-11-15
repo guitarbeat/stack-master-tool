@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 // import { Progress } from "@/components/ui/progress";
 import { SpeakingAnalytics } from "./SpeakingAnalytics";
@@ -8,31 +9,18 @@ import {
   MessageCircle,
   Timer
 } from "lucide-react";
+import type {
+  MeetingData,
+  Participant,
+  SpeakingQueue,
+  CurrentSpeaker,
+} from "@/types/meeting";
 
 interface DisplayLayoutProps {
-  meetingData: {
-    title: string;
-    code: string;
-    facilitator: string;
-    createdAt?: Date;
-  };
-  participants: Array<{
-    id: string;
-    name: string;
-    isFacilitator: boolean;
-    hasRaisedHand: boolean;
-    joinedAt?: Date;
-  }>;
-  currentSpeaker?: {
-    participantName: string;
-    startedSpeakingAt?: Date;
-  };
-  speakingQueue: Array<{
-    id: string;
-    participantName: string;
-    type: string;
-    timestamp: number;
-  }>;
+  meetingData: MeetingData;
+  participants: Participant[];
+  currentSpeaker?: CurrentSpeaker;
+  speakingQueue: SpeakingQueue[];
   speakingDistribution?: Array<{
     name: string;
     value: number; // in seconds
@@ -60,12 +48,6 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
   directResponses = 0,
   showSpeakingAnalytics = false
 }) => {
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const getCurrentSpeakingTime = () => {
     if (!currentSpeaker?.startedSpeakingAt) return 0;
     return Math.floor((Date.now() - currentSpeaker.startedSpeakingAt.getTime()) / 1000);
