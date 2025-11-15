@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatTime } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Clock, TrendingUp, Users, Timer, Target, Activity, Zap } from "lucide-react";
@@ -31,12 +32,6 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
   currentSpeaker,
   isHostMode = false
 }) => {
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const formatLongTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);

@@ -1,29 +1,16 @@
 import React from "react";
+import type {
+  MeetingData,
+  Participant,
+  SpeakingQueue,
+  CurrentSpeaker,
+} from "@/types/meeting";
 
 interface MeetingContextProps {
-  meetingData: {
-    title: string;
-    code: string;
-    facilitator: string;
-    createdAt?: Date;
-  };
-  participants: Array<{
-    id: string;
-    name: string;
-    isFacilitator: boolean;
-    hasRaisedHand: boolean;
-    joinedAt?: Date;
-  }>;
-  speakingQueue: Array<{
-    id: string;
-    participantName: string;
-    type: string;
-    timestamp: number;
-  }>;
-  currentSpeaker?: {
-    participantName: string;
-    startedSpeakingAt?: Date;
-  };
+  meetingData: MeetingData;
+  participants: Participant[];
+  speakingQueue: SpeakingQueue[];
+  currentSpeaker?: CurrentSpeaker;
   totalSpeakingTime?: number; // in seconds
   isWatching?: boolean;
   userRole?: string;
