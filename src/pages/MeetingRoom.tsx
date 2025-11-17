@@ -736,13 +736,19 @@ export default function MeetingRoom() {
                   setError(new AppError(ErrorCode.VALIDATION_ERROR, undefined, "Please enter your name"));
                   return;
                 }
+                if (!codeInput.trim()) {
+                  setError(new AppError(ErrorCode.VALIDATION_ERROR, undefined, "Please enter a meeting name"));
+                  return;
+                }
                 try {
                   setIsLoading(true);
-                  const { error: authError } = await signInAnonymously(participantName.trim());
+                  const { data, error: authError } = await signInAnonymously(participantName.trim());
                   if (authError) {
                     setError(new AppError(ErrorCode.AUTH_ERROR, authError, "Failed to authenticate"));
+                    return;
                   }
-                  // Auth state change will trigger re-render with user set
+                  // Immediately create the meeting after successful sign in
+                  await handleCreateRoom();
                 } catch (error) {
                   setError(new AppError(
                     ErrorCode.UNKNOWN,
@@ -768,6 +774,21 @@ export default function MeetingRoom() {
                   aria-label="Your name as facilitator"
                   autoComplete="name"
                   autoFocus
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="meeting-name" className="text-sm font-medium text-foreground">
+                  Meeting Name
+                </label>
+                <input
+                  id="meeting-name"
+                  value={codeInput}
+                  onChange={(e) => setCodeInput(e.target.value)}
+                  placeholder="Enter meeting name"
+                  className="w-full px-4 py-4 sm:py-3 rounded-lg bg-transparent border border-border focus-ring text-base sm:text-sm min-h-[48px]"
+                  aria-label="Meeting name"
+                  autoComplete="off"
                   disabled={isLoading}
                 />
               </div>
