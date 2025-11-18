@@ -140,16 +140,16 @@ function HomePage() {
         <div className="text-center mb-12">
           {!user ? (
             <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6 slide-up">
+              <h1 className="text-4xl sm:text-5xl font-bold text-foreground leading-tight mb-4">
                 Speaking Queue
               </h1>
-              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
                 Fair, structured discussions for any meeting.
               </p>
               
               <Card className="max-w-md mx-auto bg-card/50 backdrop-blur-sm border-border/50">
                 <CardHeader>
-                  <CardTitle className="text-2xl">Get Started</CardTitle>
+                  <CardTitle className="text-xl sm:text-2xl">Get Started</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="join" className="w-full">
@@ -165,7 +165,7 @@ function HomePage() {
                           value={displayName}
                           onChange={(e) => setDisplayName(e.target.value)}
                           disabled={isJoining || authLoading}
-                          className="flex-1"
+                          className="flex-1 h-12 text-base"
                           autoFocus
                         />
                         <Input
@@ -174,17 +174,17 @@ function HomePage() {
                           value={roomCode}
                           onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                           disabled={isJoining || authLoading}
-                          className="flex-1"
+                          className="flex-1 h-12 text-base"
                         />
                         <Button
                           type="submit"
                           disabled={isJoining || authLoading || !displayName.trim() || !roomCode.trim()}
-                          className="w-full"
+                          className="w-full h-12 text-base"
                         >
                           {isJoining ? (
                             <>
                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Joining Meeting...
+                              Joining...
                             </>
                           ) : (
                             'Join Meeting'
@@ -200,10 +200,10 @@ function HomePage() {
                           value={roomCode}
                           onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                           disabled={authLoading}
-                          className="flex-1"
+                          className="flex-1 h-12 text-base"
                           autoFocus
                         />
-                        <Button type="submit" className="w-full">
+                        <Button type="submit" className="w-full h-12 text-base">
                           Watch Meeting
                         </Button>
                       </form>
@@ -215,7 +215,7 @@ function HomePage() {
                       <span className="w-full border-t" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">
+                      <span className="bg-card px-2 text-muted-foreground">
                         Or
                       </span>
                     </div>
@@ -235,12 +235,13 @@ function HomePage() {
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         disabled={isJoining || authLoading}
-                        className="flex-1"
+                        className="flex-1 h-12 text-base"
                       />
                       <Button
                         type="submit"
                         variant="secondary"
                         disabled={isJoining || authLoading || !displayName.trim()}
+                        className="h-12"
                       >
                         {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : <ChevronsRight className="h-4 w-4" />}
                       </Button>
@@ -251,15 +252,15 @@ function HomePage() {
             </div>
           ) : (
             <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight mb-6 slide-up">
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight mb-4">
                 Welcome, {getUserDisplayName()}!
               </h1>
-              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-4">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-4">
                 Ready to start?
               </p>
               <Button
                 variant="ghost"
-                size="sm"
+                size="lg"
                 onClick={handleSignOut}
                 className="mx-auto"
               >
