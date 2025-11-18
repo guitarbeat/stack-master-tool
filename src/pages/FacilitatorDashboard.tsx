@@ -13,6 +13,17 @@ import { useToast } from '@/hooks/use-toast';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { Plus, ExternalLink, Trash2, ArrowLeft } from 'lucide-react';
 import { logProduction } from '@/utils/productionLogger';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface MeetingSummary {
   id: string;
@@ -33,6 +44,8 @@ export default function FacilitatorDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [newRoomTitle, setNewRoomTitle] = useState('');
+  const [facilitatorName, setFacilitatorName] = useState('');
+  const [isNameDialogVisible, setIsNameDialogVisible] = useState(false);
 
   useEffect(() => {
     loadMeetings();
@@ -63,6 +76,14 @@ export default function FacilitatorDashboard() {
   };
 
   const handleCreateRoom = async () => {
+    if (!user) {
+      setIsNameDialogVisible(true);
+    } else {
+      await createRoom();
+    }
+  };
+
+  const createRoom = async () => {
     if (!newRoomTitle.trim()) {
       showToast({
         type: 'error',
@@ -74,10 +95,10 @@ export default function FacilitatorDashboard() {
 
     setIsCreating(true);
     try {
-      const facilitatorName = profile?.display_name ?? user?.email ?? 'Anonymous Facilitator';
+      const name = user ? profile?.display_name ?? user?.email : facilitatorName;
       const created = await SupabaseMeetingService.createMeeting(
         newRoomTitle.trim(),
-        facilitatorName,
+        name ?? 'Anonymous Facilitator',
         user?.id
       );
 
@@ -144,10 +165,10 @@ export default function FacilitatorDashboard() {
     navigate(`/meeting?mode=host&code=${code}`);
   };
 
-  if (!user) {
-    navigate('/meeting?mode=host');
-    return null;
-  }
+  // if (!user) {
+  //   navigate('/meeting?mode=host');
+  //   return null;
+  // }
 
   if (isLoading || profileLoading) {
     return (
@@ -199,7 +220,7 @@ export default function FacilitatorDashboard() {
             Back to Home
           </Button>
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Welcome, {profile?.display_name || 'Facilitator'}
+            Welcome, Facilitator
           </h1>
           <p className="text-muted-foreground">
             Manage your meetings and create new discussion rooms
@@ -208,6 +229,25 @@ export default function FacilitatorDashboard() {
 
         {/* Create New Meeting */}
         <Card className="mb-8">
+          <AlertDialog open={isNameDialogVisible} onOpenChange={setIsNameDialogVisible}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Enter Your Name</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Please enter your name to be used as the facilitator for this meeting.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <Input
+                placeholder="Your name"
+                value={facilitatorName}
+                onChange={(e) => setFacilitatorName(e.target.value)}
+              />
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => createRoom()}>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Plus className="h-5 w-5" />
