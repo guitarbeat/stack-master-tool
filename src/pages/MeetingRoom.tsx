@@ -893,9 +893,9 @@ export default function MeetingRoom() {
         />
 
         {/* Main Content - Speaking Queue and Analytics Side by Side */}
-        <div className={`grid gap-6 mb-6 ${mode === "host" ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}>
+        <div className={`grid gap-4 sm:gap-6 mb-6 ${mode === "host" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
           {/* Speaking Queue */}
-          <div>
+          <div className={mode === "host" ? "md:col-span-1" : ""}>
             <SpeakingQueue
               speakingQueue={serverQueue.map((item, _index) => ({
                 id: item.id,
