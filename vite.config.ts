@@ -24,16 +24,32 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    target: "es2020",
-    outDir: "./.build/dist",
+    target: 'es2020',
+    outDir: './.build/dist',
     cssCodeSplit: true,
-    minify: "esbuild",
-    sourcemap: mode === "development",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['lucide-react', '@radix-ui/react-toast', '@radix-ui/react-tooltip', '@radix-ui/react-dialog'],
+          state: ['@tanstack/react-query', '@supabase/supabase-js', 'zod'],
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
+    minify: 'esbuild',
+    sourcemap: mode === 'development',
     chunkSizeWarningLimit: 600,
     reportCompressedSize: false,
     commonjsOptions: {
       include: [/node_modules/],
     },
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
   preview: {
     port: 4173,
