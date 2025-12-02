@@ -1,22 +1,31 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "earth"
-}
+const cardVariants = cva(
+  "rounded-lg border transition-all",
+  {
+    variants: {
+      variant: {
+        default: "bg-card text-card-foreground border-border shadow-sm",
+        elevated: "bg-card text-card-foreground border-border shadow-elegant hover:shadow-glow",
+        glass: "bg-card/70 text-card-foreground border-border/50 backdrop-blur-xl shadow-elegant",
+        interactive: "bg-card text-card-foreground border-border shadow-sm hover:shadow-elegant hover:-translate-y-1 cursor-pointer",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+interface CardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = "default", ...props }, ref) => (
+  ({ className, variant, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(
-        "rounded-lg border shadow-sm",
-        variant === "earth"
-          ? "bg-[hsl(var(--earthy-brown))] text-[hsl(var(--sage-green))]"
-          : "bg-card text-card-foreground",
-        className
-      )}
+      className={cn(cardVariants({ variant }), className)}
       {...props}
     />
   )

@@ -53,9 +53,9 @@ function AppLayout({ children }: AppLayoutProps) {
       >
         Skip to main content
       </a>
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-zinc-950 dark:to-zinc-900 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
       <header
-        className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800"
+        className="sticky top-0 z-50 bg-card/70 backdrop-blur border-b border-border"
         role="banner"
       >
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -70,7 +70,7 @@ function AppLayout({ children }: AppLayoutProps) {
               alt="ICC Austin logo"
               className="w-6 h-6 object-contain drop-shadow-sm dark:brightness-110"
             />
-            <span className="font-semibold text-gray-900 dark:text-zinc-100">
+            <span className="font-semibold text-foreground">
               ICC Austin Stack
             </span>
           </Link>
@@ -84,8 +84,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/facilitator"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
                   isActive("/facilitator")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <Plus className="w-4 h-4 mr-1" />
@@ -95,8 +95,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/meeting?mode=join"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
                   isActive("/meeting") && location.search.includes("mode=join")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <UserPlus className="w-4 h-4 mr-1" />
@@ -106,8 +106,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/meeting?mode=watch"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive("/meeting") && location.search.includes("mode=watch")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <Users className="w-4 h-4 mr-1 inline" />
@@ -117,8 +117,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 to="/rooms"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
                   isActive("/rooms")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <MessageSquare className="w-4 h-4 mr-1" />
@@ -166,7 +166,7 @@ function AppLayout({ children }: AppLayoutProps) {
             
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg dark:text-zinc-200 dark:hover:bg-zinc-800"
+              className="md:hidden p-2 text-foreground hover:bg-muted rounded-lg"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? (
@@ -180,15 +180,15 @@ function AppLayout({ children }: AppLayoutProps) {
         
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+          <div className="md:hidden border-t border-border bg-card">
             <nav className="container mx-auto px-4 py-4 space-y-2">
               <Link
                 to="/meeting?mode=watch"
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive("/meeting") && location.search.includes("mode=watch")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <Users className="w-4 h-4 mr-2" />
@@ -199,8 +199,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive("/facilitator")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -211,8 +211,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive("/meeting") && location.search.includes("mode=join")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <UserPlus className="w-4 h-4 mr-2" />
@@ -223,8 +223,8 @@ function AppLayout({ children }: AppLayoutProps) {
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive("/rooms")
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                 }`}
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
@@ -239,7 +239,7 @@ function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
       <footer
-        className="bg-white/70 backdrop-blur border-t border-gray-200 dark:bg-zinc-950/70 dark:border-zinc-800 mt-auto"
+        className="bg-card/70 backdrop-blur border-t border-border mt-auto"
         role="contentinfo"
       >
         <div className="container mx-auto px-4 py-6 flex flex-col items-center justify-center space-y-4">
@@ -249,7 +249,7 @@ function AppLayout({ children }: AppLayoutProps) {
             className="h-12 w-auto object-contain drop-shadow-sm dark:brightness-110"
           />
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               {getSimplePoweredByString()}
             </p>
           </div>

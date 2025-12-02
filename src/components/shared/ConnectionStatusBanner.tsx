@@ -18,8 +18,8 @@ const ConnectionStatusBanner = () => {
   return (
     <div
       role="status"
-      className={`flex flex-col gap-2 px-4 py-3 text-sm text-white md:flex-row md:items-center md:justify-between ${
-        isOffline ? 'bg-destructive' : 'bg-amber-600'
+      className={`flex flex-col gap-2 px-4 py-3 text-sm md:flex-row md:items-center md:justify-between ${
+        isOffline ? 'bg-destructive text-destructive-foreground' : 'bg-warning text-warning-foreground'
       }`}
     >
       <div className="flex items-start gap-3">
