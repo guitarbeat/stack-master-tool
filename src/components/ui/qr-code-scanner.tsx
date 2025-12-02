@@ -60,9 +60,9 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex flex-col">
+    <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-black/80 text-white">
+      <div className="flex items-center justify-between p-4 bg-card/80 backdrop-blur border-b border-border text-foreground">
         <div className="flex items-center gap-2">
           <QrCode className="w-5 h-5" />
           <span className="font-medium">Scan QR Code</span>
@@ -71,7 +71,7 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
           variant="ghost"
           size="sm"
           onClick={handleManualEntry}
-          className="text-white hover:bg-white/20"
+          className="hover:bg-muted"
         >
           <X className="w-4 h-4" />
         </Button>
@@ -91,7 +91,7 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
         {/* Scanning overlay */}
         {isScanning && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center text-white p-6 max-w-sm bg-black/70 rounded-lg">
+            <div className="text-center text-foreground p-6 max-w-sm bg-card/90 backdrop-blur rounded-lg border border-border">
               <QrCode className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">QR Code Scanner</h3>
               <p className="text-sm mb-4">
@@ -99,7 +99,7 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
               </p>
               <Button
                 onClick={handleManualEntry}
-                className="w-full bg-white text-black hover:bg-gray-200"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Enter Code Manually
               </Button>

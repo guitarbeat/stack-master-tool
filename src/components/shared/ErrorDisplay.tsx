@@ -33,27 +33,18 @@ const getErrorIcon = (errorType: ErrorType, severity?: 'low' | 'medium' | 'high'
 
 const getErrorColor = (errorType: ErrorType, severity?: 'low' | 'medium' | 'high') => {
   const baseColors = {
-    [ErrorType.NETWORK]: 'text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-900/20 dark:border-orange-900/40',
-    [ErrorType.TIMEOUT]: 'text-yellow-600 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-900/40',
-    [ErrorType.AUTHENTICATION]: 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-900/40',
-    [ErrorType.AUTHORIZATION]: 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-900/40',
-    [ErrorType.VALIDATION]: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-900/20 dark:border-blue-900/40',
-    [ErrorType.SERVER]: 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-900/40',
-    [ErrorType.NOT_FOUND]: 'text-purple-600 bg-purple-50 border-purple-200 dark:text-purple-400 dark:bg-purple-900/20 dark:border-purple-900/40',
-    [ErrorType.CONFLICT]: 'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-900/40',
-    [ErrorType.UNKNOWN]: 'text-gray-600 bg-gray-50 border-gray-200 dark:text-gray-400 dark:bg-gray-900/20 dark:border-gray-900/40'
+    [ErrorType.NETWORK]: 'text-warning bg-warning-light border-warning',
+    [ErrorType.TIMEOUT]: 'text-warning bg-warning-light border-warning',
+    [ErrorType.AUTHENTICATION]: 'text-destructive bg-destructive-light border-destructive',
+    [ErrorType.AUTHORIZATION]: 'text-destructive bg-destructive-light border-destructive',
+    [ErrorType.VALIDATION]: 'text-info bg-info-light border-info',
+    [ErrorType.SERVER]: 'text-destructive bg-destructive-light border-destructive',
+    [ErrorType.NOT_FOUND]: 'text-accent bg-accent-light border-accent',
+    [ErrorType.CONFLICT]: 'text-warning bg-warning-light border-warning',
+    [ErrorType.UNKNOWN]: 'text-muted-foreground bg-muted border-border'
   };
 
-  let colorClass = baseColors[errorType] || baseColors[ErrorType.UNKNOWN];
-
-  // Adjust intensity based on severity
-  if (severity === 'high') {
-    colorClass = colorClass.replace('50', '100').replace('200', '300');
-  } else if (severity === 'low') {
-    colorClass = colorClass.replace('50', '25').replace('200', '100');
-  }
-
-  return colorClass;
+  return baseColors[errorType] || baseColors[ErrorType.UNKNOWN];
 };
 
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
@@ -81,9 +72,9 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             </h3>
             {severity && (
               <span className={`text-xs px-2 py-1 rounded-full ${
-                severity === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' :
-                severity === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' :
-                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                severity === 'high' ? 'bg-destructive text-destructive-foreground' :
+                severity === 'medium' ? 'bg-warning text-warning-foreground' :
+                'bg-info text-info-foreground'
               }`}>
                 {severity.toUpperCase()}
               </span>
@@ -108,7 +99,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                 <span>Technical Details</span>
                 <span className="ml-1 text-xs">▼</span>
               </summary>
-              <div className="mt-2 space-y-1 bg-black/5 dark:bg-white/5 p-2 rounded">
+              <div className="mt-2 space-y-1 bg-muted/50 p-2 rounded">
                 {error instanceof AppError && (
                   <>
                     <div><strong>Code:</strong> {error.details.code}</div>
@@ -119,7 +110,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                     {error.details.originalError && (
                       <div><strong>Original Error:</strong> {error.details.originalError.message}</div>
                     )}
-                    <hr className="my-2 border-gray-300 dark:border-gray-600" />
+                    <hr className="my-2 border-border" />
                   </>
                 )}
                 {/* Version and build information */}
@@ -150,7 +141,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             {isRetryable && onRetry && (
               <button
                 onClick={onRetry}
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white/50 hover:bg-white/70 transition-colors border border-white/20"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-card/50 hover:bg-card/70 transition-colors border border-border"
               >
                 <RefreshCw className="w-3 h-3 mr-1" />
                 Try Again
@@ -159,7 +150,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             {onGoHome && (
               <button
                 onClick={onGoHome}
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-white/50 hover:bg-white/70 transition-colors border border-white/20"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-card/50 hover:bg-card/70 transition-colors border border-border"
               >
                 Go Home
               </button>

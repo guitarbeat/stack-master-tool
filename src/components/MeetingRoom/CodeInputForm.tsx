@@ -35,9 +35,9 @@ export function CodeInputForm({ mode, onError }: CodeInputFormProps) {
   const placeholder = "e.g. 54ANDG";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl border-0">
+        <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-elegant border border-border">
           <div className="text-center mb-6 sm:mb-8">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@ export function CodeInputForm({ mode, onError }: CodeInputFormProps) {
               />
               <button
                 type="submit"
-                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
+                className="w-full py-4 sm:py-3 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 active:bg-primary/80 min-h-[48px] text-base sm:text-sm transition-colors"
                 disabled={!codeInput.trim()}
               >
                 {buttonText}

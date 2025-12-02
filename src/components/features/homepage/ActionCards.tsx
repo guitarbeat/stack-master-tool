@@ -15,7 +15,7 @@ export const ActionCards = () => {
           to={`/meeting?mode=${hostMode.id}`}
           className="group block transition-all hover:scale-105 hover:-translate-y-1 duration-300"
         >
-          <Card className={`h-full border-2 ${hostMode.borderColor} hover:shadow-xl transition-all duration-300 animate-fade-in`}>
+          <Card className={`h-full border-2 ${hostMode.borderColor} hover:shadow-glow transition-all duration-300 animate-fade-in`} variant="interactive">
             <CardHeader className="text-center pb-4">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <span className="text-3xl">{hostMode.emoji}</span>

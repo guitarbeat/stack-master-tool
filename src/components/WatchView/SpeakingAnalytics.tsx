@@ -53,9 +53,9 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
   const participationRate = totalParticipants > 0 ? (activeSpeakers / totalParticipants) * 100 : 0;
 
   return (
-    <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+    <Card variant="elevated" className="border-border">
       <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <CardTitle className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
           <BarChart3 className="w-6 h-6" />
           {isHostMode ? "Meeting Analytics" : "Speaking Analytics"}
           {currentSpeaker && (
