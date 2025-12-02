@@ -5,41 +5,41 @@
 @layer base {
   :root {
     color-scheme: light;
-    /* Core Colors - Daylight earthy palette */
-    --background: 45 43% 96%;
-    --foreground: 30 25% 18%;
-    --card: 45 38% 98%;
-    --card-foreground: 30 25% 18%;
-    --border: 120 18% 78%;
-    --input: 120 18% 88%;
-    --ring: 100 45% 38%;
+    /* Core Colors - Warm earthy palette */
+    --background: 30 28% 96%;
+    --foreground: 2 30% 20%;
+    --card: 30 28% 98%;
+    --card-foreground: 2 30% 20%;
+    --border: 30 14% 78%;
+    --input: 30 14% 88%;
+    --ring: 2 60% 30%;
 
-    /* Primary Colors - Rich forest green */
-    --primary: 100 45% 35%;
-    --primary-foreground: 60 8% 98%;
-    --primary-hover: 100 45% 32%;
-    --primary-light: 100 45% 55%;
-    --primary-dark: 100 45% 28%;
+    /* Primary Colors - Deep maroon */
+    --primary: 2 60% 30%;
+    --primary-foreground: 30 28% 95%;
+    --primary-hover: 2 60% 25%;
+    --primary-light: 2 60% 45%;
+    --primary-dark: 2 60% 22%;
 
-    /* Secondary Colors - Warm earth tone */
-    --secondary: 30 35% 82%;
-    --secondary-foreground: 30 25% 24%;
-    --secondary-hover: 30 35% 78%;
-    --secondary-light: 30 35% 88%;
-    --secondary-dark: 30 35% 70%;
+    /* Secondary Colors - Warm beige */
+    --secondary: 30 28% 81%;
+    --secondary-foreground: 2 30% 20%;
+    --secondary-hover: 30 28% 75%;
+    --secondary-light: 30 28% 88%;
+    --secondary-dark: 30 28% 68%;
 
-    /* Accent Colors - Sage green */
-    --accent: 120 32% 55%;
-    --accent-foreground: 30 25% 20%;
-    --accent-hover: 120 32% 50%;
-    --accent-light: 120 32% 68%;
-    --accent-dark: 120 32% 42%;
+    /* Accent Colors - Gray beige */
+    --accent: 30 14% 71%;
+    --accent-foreground: 2 30% 15%;
+    --accent-hover: 30 14% 65%;
+    --accent-light: 30 14% 82%;
+    --accent-dark: 30 14% 58%;
 
     /* Muted Colors */
-    --muted: 120 20% 92%;
-    --muted-foreground: 120 15% 32%;
-    --muted-light: 120 20% 96%;
-    --muted-dark: 120 20% 78%;
+    --muted: 30 14% 92%;
+    --muted-foreground: 30 14% 35%;
+    --muted-light: 30 14% 96%;
+    --muted-dark: 30 14% 78%;
 
     /* Status Colors - Enhanced for better contrast */
     --success: 120 50% 42%;
@@ -62,13 +62,13 @@
     --info-hover: 200 80% 50%;
     --info-light: 200 80% 70%;
 
-    /* Theme Colors - Refined earthy palette */
-    --earthy-brown: 30 25% 40%;
-    --moss-green: 100 40% 35%;
-    --sage-green: 120 30% 65%;
-    --forest-green: 100 50% 30%;
-    --warm-beige: 45 35% 90%;
-    --deep-forest: 100 30% 22%;
+    /* Theme Colors - Refined maroon palette */
+    --earthy-brown: 2 50% 35%;
+    --moss-green: 30 20% 55%;
+    --sage-green: 30 14% 71%;
+    --forest-green: 2 60% 25%;
+    --warm-beige: 30 28% 81%;
+    --deep-forest: 2 60% 18%;
 
     /* Design Tokens */
     --radius: 1.2rem;
@@ -164,40 +164,40 @@
   .dark {
     color-scheme: dark;
     /* Core Colors - Enhanced dark mode */
-    --background: 30 15% 8%;
-    --foreground: 60 8% 98%;
-    --card: 30 15% 10%;
-    --card-foreground: 60 8% 98%;
-    --border: 120 12% 18%;
-    --input: 120 12% 12%;
-    --ring: 100 45% 35%;
+    --background: 2 25% 8%;
+    --foreground: 30 28% 95%;
+    --card: 2 25% 10%;
+    --card-foreground: 30 28% 95%;
+    --border: 30 14% 18%;
+    --input: 30 14% 12%;
+    --ring: 2 60% 40%;
 
-    /* Primary Colors - Vibrant in dark mode */
-    --primary: 100 45% 35%;
-    --primary-foreground: 30 15% 8%;
-    --primary-hover: 100 45% 40%;
-    --primary-light: 100 45% 50%;
-    --primary-dark: 100 45% 25%;
+    /* Primary Colors - Vibrant maroon in dark mode */
+    --primary: 2 60% 40%;
+    --primary-foreground: 30 28% 95%;
+    --primary-hover: 2 60% 45%;
+    --primary-light: 2 60% 55%;
+    --primary-dark: 2 60% 30%;
 
     /* Secondary Colors */
     --secondary: 30 20% 15%;
-    --secondary-foreground: 60 8% 95%;
+    --secondary-foreground: 30 28% 90%;
     --secondary-hover: 30 20% 20%;
     --secondary-light: 30 20% 25%;
     --secondary-dark: 30 20% 12%;
 
     /* Accent Colors */
-    --accent: 120 35% 55%;
-    --accent-foreground: 30 15% 8%;
-    --accent-hover: 120 35% 60%;
-    --accent-light: 120 35% 70%;
-    --accent-dark: 120 35% 45%;
+    --accent: 30 14% 60%;
+    --accent-foreground: 2 25% 8%;
+    --accent-hover: 30 14% 65%;
+    --accent-light: 30 14% 75%;
+    --accent-dark: 30 14% 50%;
 
     /* Muted Colors */
-    --muted: 120 12% 12%;
-    --muted-foreground: 120 8% 70%;
-    --muted-light: 120 12% 18%;
-    --muted-dark: 120 12% 8%;
+    --muted: 30 14% 12%;
+    --muted-foreground: 30 14% 70%;
+    --muted-light: 30 14% 18%;
+    --muted-dark: 30 14% 8%;
 
     /* Status Colors - Enhanced for dark mode */
     --success: 120 55% 50%;
