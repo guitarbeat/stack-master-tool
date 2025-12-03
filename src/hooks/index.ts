@@ -1,0 +1,24 @@
+// Physics-based interaction hooks
+export { 
+  useOverscroll, 
+  useSnapDetent, 
+  useDragPhysics, 
+  useMinimize,
+  Detent,
+  PHYSICS_CONSTANTS 
+} from './usePhysicsInteraction';
+
+// Re-export other hooks
+export { useToast, toast } from './use-toast';
+export { useTilt } from './use-tilt';
+export { useMouseFollow } from './use-mouse-follow';
+export { useAuth } from './useAuth';
+export { useDragAndDrop } from './useDragAndDrop';
+export { useKeyboardShortcuts } from './useKeyboardShortcuts';
+export { useMeetingActions } from './useMeetingActions';
+export { useMeetingCleanup } from './useMeetingCleanup';
+export { useMeetingRealtime } from './useMeetingRealtime';
+export { useMeetingState } from './useMeetingState';
+export { useProfile } from './useProfile';
+export { useSpeakerTimer } from './useSpeakerTimer';
+export { useSpeakingHistory } from './useSpeakingHistory';
