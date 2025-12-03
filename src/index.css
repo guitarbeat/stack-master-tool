@@ -720,7 +720,9 @@
 
   /* Combined Interaction Pattern for Buttons */
   .interaction-button {
-    @apply interaction-base;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-standard);
+    transition-timing-function: var(--interaction-easing);
   }
 
   .interaction-button:hover:not(:disabled) {
@@ -740,7 +742,9 @@
 
   /* Combined Interaction Pattern for Cards */
   .interaction-card {
-    @apply interaction-emphasis;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-emphasis);
+    transition-timing-function: var(--interaction-easing-smooth);
   }
 
   .interaction-card:hover {
@@ -750,7 +754,9 @@
 
   /* Combined Interaction Pattern for Inputs */
   .interaction-input {
-    @apply interaction-fast;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-fast);
+    transition-timing-function: var(--interaction-easing);
   }
 
   .interaction-input:focus {
@@ -760,7 +766,9 @@
 
   /* Combined Interaction Pattern for Toggle/Switch */
   .interaction-toggle {
-    @apply interaction-base;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-standard);
+    transition-timing-function: var(--interaction-easing);
   }
 
   .interaction-toggle:hover:not(:disabled) {
@@ -781,7 +789,9 @@
 
   /* Combined Interaction Pattern for Tabs */
   .interaction-tab {
-    @apply interaction-fast;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-fast);
+    transition-timing-function: var(--interaction-easing);
   }
 
   .interaction-tab:hover:not([data-state="active"]):not(:disabled) {
@@ -793,17 +803,109 @@
     transition-duration: var(--interaction-duration-instant);
   }
 
+  /* Physics-Based Interaction Utilities */
+  
+  /* Overscroll / Rubber Band Effect */
+  .physics-overscroll {
+    --overscroll-resistance: 0.5;
+    --overscroll-amount: 0px;
+    transform: translateY(calc(var(--overscroll-amount) * var(--overscroll-resistance)));
+    transition: transform var(--interaction-duration-emphasis) var(--interaction-easing-bounce);
+  }
+
+  .physics-overscroll.dragging {
+    transition: none;
+  }
+
+  /* Snap Detent States */
+  .physics-snap {
+    transition: all var(--interaction-duration-emphasis) var(--interaction-easing-bounce);
+  }
+
+  .physics-snap.dragging {
+    transition: none;
+  }
+
+  /* Minimization Transform */
+  .physics-minimize {
+    --minimize-factor: 0;
+    transform: scale(calc(1 - var(--minimize-factor) * 0.1));
+    opacity: calc(1 - var(--minimize-factor) * 0.3);
+    transition: transform var(--interaction-duration-emphasis) var(--interaction-easing-smooth),
+                opacity var(--interaction-duration-emphasis) var(--interaction-easing-smooth);
+  }
+
+  /* Spring Animation */
+  .physics-spring {
+    transition-timing-function: var(--interaction-easing-bounce);
+    transition-duration: var(--interaction-duration-emphasis);
+  }
+
+  /* Drag Handle Styling */
+  .drag-handle {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .drag-handle:active,
+  .drag-handle.dragging {
+    cursor: grabbing;
+  }
+
+  .drag-handle-pill {
+    width: 36px;
+    height: 5px;
+    border-radius: 2.5px;
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    transition: all var(--interaction-duration-fast) var(--interaction-easing);
+  }
+
+  .drag-handle-pill:hover,
+  .drag-handle-pill.active {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+    transform: scaleX(1.1);
+  }
+
+  /* Collapsible Panel Transitions */
+  .panel-collapsible {
+    transition: height var(--interaction-duration-emphasis) var(--interaction-easing-smooth),
+                opacity var(--interaction-duration-standard) var(--interaction-easing);
+    overflow: hidden;
+  }
+
+  .panel-collapsible[data-state="collapsed"] {
+    height: 0;
+    opacity: 0;
+  }
+
+  .panel-collapsible[data-state="half"] {
+    height: 50%;
+    opacity: 1;
+  }
+
+  .panel-collapsible[data-state="full"] {
+    height: 100%;
+    opacity: 1;
+  }
+
   /* Legacy Transition Utilities (for backwards compatibility) */
   .transition-standard {
-    @apply interaction-base;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-standard);
+    transition-timing-function: var(--interaction-easing);
   }
 
   .transition-fast {
-    @apply interaction-fast;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-fast);
+    transition-timing-function: var(--interaction-easing);
   }
 
   .transition-slow {
-    @apply interaction-emphasis;
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-emphasis);
+    transition-timing-function: var(--interaction-easing-smooth);
   }
 
   /* Keyframes */
