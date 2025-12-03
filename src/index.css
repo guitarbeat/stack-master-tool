@@ -79,6 +79,22 @@
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
 
+    /* Unified Interaction System */
+    --interaction-duration-instant: 100ms;
+    --interaction-duration-fast: 150ms;
+    --interaction-duration-standard: 200ms;
+    --interaction-duration-emphasis: 300ms;
+    --interaction-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --interaction-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --interaction-easing-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    
+    /* Unified Hover/Active States */
+    --interaction-hover-lift: -2px;
+    --interaction-hover-scale: 1.02;
+    --interaction-active-scale: 0.98;
+    --interaction-focus-ring-width: 2px;
+    --interaction-focus-ring-offset: 2px;
+
     /* Enhanced Gradients */
     --gradient-primary: linear-gradient(
       135deg,
@@ -661,17 +677,133 @@
     background-clip: text;
   }
 
-  /* Transition Utilities */
+  /* Unified Interaction Feedback System */
+  .interaction-base {
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-standard);
+    transition-timing-function: var(--interaction-easing);
+  }
+
+  .interaction-fast {
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-fast);
+    transition-timing-function: var(--interaction-easing);
+  }
+
+  .interaction-emphasis {
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: var(--interaction-duration-emphasis);
+    transition-timing-function: var(--interaction-easing-smooth);
+  }
+
+  /* Unified Hover States */
+  .interaction-hover:hover:not(:disabled) {
+    transform: translateY(var(--interaction-hover-lift));
+  }
+
+  .interaction-hover-scale:hover:not(:disabled) {
+    transform: scale(var(--interaction-hover-scale));
+  }
+
+  /* Unified Active States */
+  .interaction-active:active:not(:disabled) {
+    transform: scale(var(--interaction-active-scale));
+    transition-duration: var(--interaction-duration-instant);
+  }
+
+  /* Unified Focus States */
+  .interaction-focus:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--interaction-focus-ring-width) hsl(var(--ring) / 0.5);
+    outline-offset: var(--interaction-focus-ring-offset);
+  }
+
+  /* Combined Interaction Pattern for Buttons */
+  .interaction-button {
+    @apply interaction-base;
+  }
+
+  .interaction-button:hover:not(:disabled) {
+    transform: translateY(var(--interaction-hover-lift));
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .interaction-button:active:not(:disabled) {
+    transform: scale(var(--interaction-active-scale)) translateY(0);
+    transition-duration: var(--interaction-duration-instant);
+  }
+
+  .interaction-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--interaction-focus-ring-width) hsl(var(--ring) / 0.5);
+  }
+
+  /* Combined Interaction Pattern for Cards */
+  .interaction-card {
+    @apply interaction-emphasis;
+  }
+
+  .interaction-card:hover {
+    transform: translateY(var(--interaction-hover-lift));
+    box-shadow: var(--shadow-elegant);
+  }
+
+  /* Combined Interaction Pattern for Inputs */
+  .interaction-input {
+    @apply interaction-fast;
+  }
+
+  .interaction-input:focus {
+    box-shadow: 0 0 0 var(--interaction-focus-ring-width) hsl(var(--ring) / 0.35),
+                inset 0 1px 1px hsl(var(--background) / 0.2);
+  }
+
+  /* Combined Interaction Pattern for Toggle/Switch */
+  .interaction-toggle {
+    @apply interaction-base;
+  }
+
+  .interaction-toggle:hover:not(:disabled) {
+    box-shadow: var(--shadow-card);
+  }
+
+  .interaction-toggle:active:not(:disabled) {
+    transform: scale(var(--interaction-active-scale));
+    transition-duration: var(--interaction-duration-instant);
+  }
+
+  /* Toggle Thumb Animation */
+  .interaction-toggle-thumb {
+    transition-property: transform, box-shadow;
+    transition-duration: var(--interaction-duration-standard);
+    transition-timing-function: var(--interaction-easing-bounce);
+  }
+
+  /* Combined Interaction Pattern for Tabs */
+  .interaction-tab {
+    @apply interaction-fast;
+  }
+
+  .interaction-tab:hover:not([data-state="active"]):not(:disabled) {
+    background-color: hsl(var(--muted) / 0.5);
+  }
+
+  .interaction-tab:active:not(:disabled) {
+    transform: scale(var(--interaction-active-scale));
+    transition-duration: var(--interaction-duration-instant);
+  }
+
+  /* Legacy Transition Utilities (for backwards compatibility) */
   .transition-standard {
-    @apply transition-all duration-300 ease-out;
+    @apply interaction-base;
   }
 
   .transition-fast {
-    @apply transition-all duration-200 ease-out;
+    @apply interaction-fast;
   }
 
   .transition-slow {
-    @apply transition-all duration-500 ease-out;
+    @apply interaction-emphasis;
   }
 
   /* Keyframes */

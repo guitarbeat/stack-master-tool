@@ -168,6 +168,17 @@ export default {
                                 'fade-in': 'fade-in 0.3s ease-out',
                                 'slide-up': 'slide-up 0.4s ease-out'
                         },
+                        transitionDuration: {
+                                'instant': 'var(--interaction-duration-instant)',
+                                'fast': 'var(--interaction-duration-fast)',
+                                'standard': 'var(--interaction-duration-standard)',
+                                'emphasis': 'var(--interaction-duration-emphasis)',
+                        },
+                        transitionTimingFunction: {
+                                'interaction': 'var(--interaction-easing)',
+                                'bounce': 'var(--interaction-easing-bounce)',
+                                'smooth': 'var(--interaction-easing-smooth)',
+                        },
                         typography: {
                                 DEFAULT: {
                                         css: {
