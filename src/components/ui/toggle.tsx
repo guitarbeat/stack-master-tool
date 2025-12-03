@@ -50,7 +50,7 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         ref={ref}
         onClick={handleClick}
         className={cn(
-          "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+          "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 interaction-toggle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
           sizeClasses[size],
           variantClasses[variant],
           className
@@ -59,7 +59,7 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       >
         <span
           className={cn(
-            "pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-transform",
+            "pointer-events-none block rounded-full bg-background shadow-lg ring-0 interaction-toggle-thumb",
             thumbSizeClasses[size],
             translateClasses[size]
           )}
