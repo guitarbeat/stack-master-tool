@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { LoadingState } from '@/components/shared/LoadingState';
-import { Plus, ExternalLink, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, ExternalLink, Trash2, ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { logProduction } from '@/utils/productionLogger';
 import {
   AlertDialog,
@@ -43,6 +43,7 @@ export default function FacilitatorDashboard() {
   const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [newRoomTitle, setNewRoomTitle] = useState('');
   const [facilitatorName, setFacilitatorName] = useState('');
   const [isNameDialogVisible, setIsNameDialogVisible] = useState(false);
@@ -84,7 +85,11 @@ export default function FacilitatorDashboard() {
   };
 
   const createRoom = async () => {
+    // Clear previous errors
+    setCreateError(null);
+
     if (!newRoomTitle.trim()) {
+      setCreateError('Please enter a meeting title');
       showToast({
         type: 'error',
         title: 'Title Required',
@@ -93,12 +98,34 @@ export default function FacilitatorDashboard() {
       return;
     }
 
+    if (newRoomTitle.trim().length < 3) {
+      setCreateError('Meeting title must be at least 3 characters');
+      showToast({
+        type: 'error',
+        title: 'Title Too Short',
+        message: 'Meeting title must be at least 3 characters'
+      });
+      return;
+    }
+
     setIsCreating(true);
     try {
       const name = user ? profile?.display_name ?? user?.email : facilitatorName;
+      
+      if (!name || name.trim().length === 0) {
+        setCreateError('Facilitator name is required');
+        showToast({
+          type: 'error',
+          title: 'Name Required',
+          message: 'Please provide a facilitator name'
+        });
+        setIsCreating(false);
+        return;
+      }
+
       const created = await SupabaseMeetingService.createMeeting(
         newRoomTitle.trim(),
-        name ?? 'Anonymous Facilitator',
+        name.trim(),
         user?.id
       );
 
@@ -109,16 +136,32 @@ export default function FacilitatorDashboard() {
       });
 
       setNewRoomTitle('');
+      setCreateError(null);
       navigate(`/meeting?mode=host&code=${created.code}`);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      
+      // Provide more specific error messages
+      let userFriendlyMessage = 'Please try again';
+      if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+        userFriendlyMessage = 'Network error. Please check your connection and try again.';
+      } else if (errorMessage.includes('duplicate')) {
+        userFriendlyMessage = 'A meeting with this code already exists. Please try again.';
+      } else if (errorMessage.includes('permission') || errorMessage.includes('policy')) {
+        userFriendlyMessage = 'You don\'t have permission to create meetings. Please sign in or contact support.';
+      }
+
+      setCreateError(userFriendlyMessage);
+      
       logProduction('error', {
         action: 'create_room_dashboard',
-        error: error instanceof Error ? error.message : String(error)
+        error: errorMessage
       });
+      
       showToast({
         type: 'error',
-        title: 'Failed to create room',
-        message: 'Please try again'
+        title: 'Failed to Create Room',
+        message: userFriendlyMessage
       });
     } finally {
       setIsCreating(false);
@@ -257,26 +300,65 @@ export default function FacilitatorDashboard() {
               Start a new discussion room with a unique code
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex gap-3">
-              <Input
-                placeholder="Enter meeting title..."
-                value={newRoomTitle}
-                onChange={(e) => setNewRoomTitle(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    void handleCreateRoom();
-                  }
-                }}
-                disabled={isCreating}
-              />
+              <div className="flex-1 space-y-2">
+                <Input
+                  placeholder="Enter meeting title..."
+                  value={newRoomTitle}
+                  onChange={(e) => {
+                    setNewRoomTitle(e.target.value);
+                    if (createError) setCreateError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isCreating) {
+                      void handleCreateRoom();
+                    }
+                  }}
+                  disabled={isCreating}
+                  className={createError ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  aria-invalid={!!createError}
+                  aria-describedby={createError ? 'create-error' : undefined}
+                />
+              </div>
               <Button
                 onClick={() => void handleCreateRoom()}
                 disabled={isCreating || !newRoomTitle.trim()}
+                className="min-w-[120px]"
               >
-                {isCreating ? 'Creating...' : 'Create Room'}
+                {isCreating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Room
+                  </>
+                )}
               </Button>
             </div>
+            
+            {/* Error message display */}
+            {createError && (
+              <div 
+                id="create-error"
+                className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md"
+                role="alert"
+              >
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span>{createError}</span>
+              </div>
+            )}
+            
+            {/* Creating state overlay */}
+            {isCreating && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Setting up your meeting room...</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 
