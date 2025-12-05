@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Plus, UserPlus, Users, Menu, X, MessageSquare, LogOut, User as UserIcon } from "lucide-react";
+import { Plus, UserPlus, Eye, Menu, X, MessageSquare, LogOut, User as UserIcon } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
 import { getSimplePoweredByString } from "@/utils/version";
 import { useAuth } from "@/hooks/useAuth";
@@ -71,7 +71,7 @@ function AppLayout({ children }: AppLayoutProps) {
               className="w-6 h-6 object-contain drop-shadow-sm dark:brightness-110"
             />
             <span className="font-semibold text-foreground">
-              ICC Austin Stack
+              Speaking Queue
             </span>
           </Link>
           <div className="flex items-center space-x-3">
@@ -104,13 +104,13 @@ function AppLayout({ children }: AppLayoutProps) {
               </Link>
               <Link
                 to="/meeting?mode=watch"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
                   isActive("/meeting") && location.search.includes("mode=watch")
                     ? "bg-primary text-primary-foreground"
                     : "text-foreground hover:bg-muted"
                 }`}
               >
-                <Users className="w-4 h-4 mr-1 inline" />
+                <Eye className="w-4 h-4 mr-1" />
                 Watch
               </Link>
               <Link
@@ -183,18 +183,6 @@ function AppLayout({ children }: AppLayoutProps) {
           <div className="md:hidden border-t border-border bg-card">
             <nav className="container mx-auto px-4 py-4 space-y-2">
               <Link
-                to="/meeting?mode=watch"
-                onClick={closeMobileMenu}
-                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/meeting") && location.search.includes("mode=watch")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Watch Meeting
-              </Link>
-              <Link
                 to="/facilitator"
                 onClick={closeMobileMenu}
                 className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
@@ -204,7 +192,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 }`}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Host Meeting
+                Host
               </Link>
               <Link
                 to="/meeting?mode=join"
@@ -216,7 +204,19 @@ function AppLayout({ children }: AppLayoutProps) {
                 }`}
               >
                 <UserPlus className="w-4 h-4 mr-2" />
-                Join Meeting
+                Join
+              </Link>
+              <Link
+                to="/meeting?mode=watch"
+                onClick={closeMobileMenu}
+                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/meeting") && location.search.includes("mode=watch")
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Watch
               </Link>
               <Link
                 to="/rooms"
@@ -228,7 +228,7 @@ function AppLayout({ children }: AppLayoutProps) {
                 }`}
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Browse Rooms
+                Rooms
               </Link>
             </nav>
           </div>
