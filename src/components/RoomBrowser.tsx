@@ -5,7 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Users, MessageCircle, Clock, User, Trash2, Eye } from "lucide-react";
+import { Users, MessageCircle, Clock, User, Trash2, Eye, Plus } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { SupabaseMeetingService } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
 import { useAuth } from "@/hooks/useAuth";
@@ -151,18 +152,16 @@ export function RoomBrowser() {
 
   if (rooms.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">No Active Rooms</h2>
-          <p className="text-muted-foreground mb-6">
-            There are currently no active meeting rooms. Anyone can create a new room to get started!
-          </p>
-          <Button onClick={() => navigate("/meeting?mode=host")} size="lg">
-            🚀 Create Your First Room
-          </Button>
-        </div>
-      </div>
+      <EmptyState
+        illustration="rooms"
+        title="No Active Rooms"
+        description="There are currently no active meeting rooms. Be the first to create one and start a discussion!"
+        action={{
+          label: "Create Your First Room",
+          onClick: () => navigate("/facilitator"),
+          icon: Plus,
+        }}
+      />
     );
   }
 

@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { LoadingState } from '@/components/shared/LoadingState';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Plus, ExternalLink, Trash2, ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { logProduction } from '@/utils/productionLogger';
 import {
@@ -368,11 +368,11 @@ export default function FacilitatorDashboard() {
             Your Meetings
           </h2>
           {meetings.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6 text-center text-muted-foreground">
-                <p>No meetings yet. Create your first one above!</p>
-              </CardContent>
-            </Card>
+            <EmptyState
+              illustration="meetings"
+              title="No Meetings Yet"
+              description="Create your first meeting room above to get started. Share the code with participants to begin your discussion."
+            />
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {meetings.map((meeting) => (
