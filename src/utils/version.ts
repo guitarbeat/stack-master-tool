@@ -109,17 +109,5 @@ export function isProduction(): boolean {
  * Get a simple powered-by string without version info for clean footer display
  */
 export function getSimplePoweredByString(): string {
-  // Fun messages without version details
-  const messages = [
-    "🚀 Powered by Aaron's Love",
-    "💖 Built with Aaron's Love", 
-    "🌟 Aaron's Love Production",
-    "✨ Crafted with Aaron's Love",
-    "💝 Made with Aaron's Love",
-    "🎯 Aaron's Love Magic",
-    "⚡ Aaron's Love Energy",
-    "🎨 Aaron's Love Artistry"
-  ];
-
-  return messages[Math.floor(Math.random() * messages.length)];
+  return "💖 Built with Aaron's Love";
 }

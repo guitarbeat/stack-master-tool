@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Users, MessageCircle, Clock, User, Trash2 } from "lucide-react";
+import { Users, MessageCircle, Clock, User, Trash2, Eye } from "lucide-react";
 import { SupabaseMeetingService } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
 import { useAuth } from "@/hooks/useAuth";
@@ -191,7 +191,8 @@ export function RoomBrowser() {
                     variant="outline"
                     size="sm"
                   >
-                    👁️ Watch
+                    <Eye className="h-4 w-4 mr-1" />
+                    Watch
                   </Button>
                   {user?.id === room.facilitatorId && (
                     <AlertDialog>
