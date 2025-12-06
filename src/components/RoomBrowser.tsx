@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Users, MessageCircle, Clock, User, Trash2, Eye, Plus } from "lucide-react";
+import { Users, Clock, User, Trash2, Eye, Plus } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SupabaseMeetingService } from "@/services/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { logProduction } from "@/utils/productionLogger";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -29,11 +30,7 @@ export function RoomBrowser() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    void loadActiveRooms();
-  }, []);
-
-  const loadActiveRooms = async () => {
+  const loadActiveRooms = useCallback(async () => {
     try {
       // Clean up empty old rooms first
       await SupabaseMeetingService.deleteEmptyOldRooms();
@@ -66,7 +63,52 @@ export function RoomBrowser() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    void loadActiveRooms();
+  }, [loadActiveRooms]);
+
+  // Real-time subscriptions for meetings and participants
+  useEffect(() => {
+    const meetingsChannel = supabase
+      .channel('rooms-meetings-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'meetings'
+        },
+        () => {
+          // Reload rooms when any meeting changes
+          void loadActiveRooms();
+        }
+      )
+      .subscribe();
+
+    const participantsChannel = supabase
+      .channel('rooms-participants-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'participants'
+        },
+        () => {
+          // Reload rooms when participant count changes
+          void loadActiveRooms();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(meetingsChannel);
+      supabase.removeChannel(participantsChannel);
+    };
+  }, [loadActiveRooms]);
 
   const handleJoinRoom = (meetingCode: string) => {
     navigate(`/meeting?mode=join&code=${meetingCode}`);
