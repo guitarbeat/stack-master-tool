@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Plus, UserPlus, Eye, Menu, X, MessageSquare, LogOut, User as UserIcon } from "lucide-react";
+import { Plus, UserPlus, Eye, Menu, X, MessageSquare, LogOut } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
 import { getSimplePoweredByString } from "@/utils/version";
 import { useAuth } from "@/hooks/useAuth";
@@ -43,6 +43,12 @@ function AppLayout({ children }: AppLayoutProps) {
   };
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  const getUserInitial = () => {
+    if (profile?.display_name) return profile.display_name[0].toUpperCase();
+    if (user?.email) return user.email[0].toUpperCase();
+    return 'U';
+  };
 
   return (
     <>
@@ -127,21 +133,19 @@ function AppLayout({ children }: AppLayoutProps) {
             </nav>
             <ThemeToggle />
             
-            {/* User Menu */}
-            {user ? (
+            {/* User Menu - only show when logged in */}
+            {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="hidden md:flex h-9 w-9">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>
-                        {profile?.display_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
-                      </AvatarFallback>
+                      <AvatarFallback>{getUserInitial()}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>
-                    {profile?.display_name || user.email}
+                    {profile?.display_name || user.email || 'User'}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/facilitator')}>
@@ -153,15 +157,6 @@ function AppLayout({ children }: AppLayoutProps) {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/auth')}
-                className="hidden md:flex"
-              >
-                Sign In
-              </Button>
             )}
             
             <button

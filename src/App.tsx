@@ -5,7 +5,6 @@ import { Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
-import Auth from "./pages/Auth";
 import MeetingRoom from "./pages/MeetingRoom";
 import Rooms from "./pages/Rooms";
 import FacilitatorDashboard from "./pages/FacilitatorDashboard";
@@ -23,7 +22,6 @@ const App = () => {
             <AppLayout>
               <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/auth" element={<Auth />} />
               <Route path="/facilitator" element={<FacilitatorDashboard />} />
               <Route path="/meeting" element={<MeetingRoom />} />
               <Route path="/rooms" element={<Rooms />} />
