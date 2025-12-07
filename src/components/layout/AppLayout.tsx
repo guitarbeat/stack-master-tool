@@ -77,7 +77,7 @@ function AppLayout({ children }: AppLayoutProps) {
               aria-label="Main navigation"
             >
               <NavLink to="/facilitator" icon={Plus}>Host</NavLink>
-              <NavLink to="/meeting" icon={DoorOpen}>Enter Room</NavLink>
+              <NavLink to="/enter" icon={DoorOpen}>Enter Room</NavLink>
               <NavLink to="/rooms" icon={MessageSquare}>Rooms</NavLink>
             </nav>
             <ThemeToggle />
@@ -129,7 +129,7 @@ function AppLayout({ children }: AppLayoutProps) {
               <NavLink to="/facilitator" icon={Plus} variant="mobile" onClick={closeMobileMenu}>
                 Host
               </NavLink>
-              <NavLink to="/meeting" icon={DoorOpen} variant="mobile" onClick={closeMobileMenu}>
+              <NavLink to="/enter" icon={DoorOpen} variant="mobile" onClick={closeMobileMenu}>
                 Enter Room
               </NavLink>
               <NavLink to="/rooms" icon={MessageSquare} variant="mobile" onClick={closeMobileMenu}>
