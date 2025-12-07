@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Plus, UserPlus, Eye, Menu, X, MessageSquare, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Plus, DoorOpen, Menu, X, MessageSquare, LogOut } from "lucide-react";
+import { NavLink } from "@/components/ui/nav-link";
 import ThemeToggle from "../ui/ThemeToggle";
 import { getSimplePoweredByString } from "@/utils/version";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,7 +23,6 @@ interface AppLayoutProps {
 }
 
 function AppLayout({ children }: AppLayoutProps) {
-  const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
@@ -31,15 +31,6 @@ function AppLayout({ children }: AppLayoutProps) {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
-  };
-
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/";
-    }
-    return (
-      location.pathname === path || location.pathname.startsWith(`${path}/`)
-    );
   };
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -67,7 +58,6 @@ function AppLayout({ children }: AppLayoutProps) {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link
             to="/"
-            aria-current={isActive("/") ? "page" : undefined}
             aria-label="Home"
             className="flex items-center space-x-2"
           >
@@ -86,50 +76,9 @@ function AppLayout({ children }: AppLayoutProps) {
               role="navigation"
               aria-label="Main navigation"
             >
-              <Link
-                to="/facilitator"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/facilitator")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Host
-              </Link>
-              <Link
-                to="/meeting?mode=join"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/meeting") && location.search.includes("mode=join")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <UserPlus className="w-4 h-4 mr-1" />
-                Join
-              </Link>
-              <Link
-                to="/meeting?mode=watch"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/meeting") && location.search.includes("mode=watch")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Eye className="w-4 h-4 mr-1" />
-                Watch
-              </Link>
-              <Link
-                to="/rooms"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center ${
-                  isActive("/rooms")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <MessageSquare className="w-4 h-4 mr-1" />
-                Rooms
-              </Link>
+              <NavLink to="/facilitator" icon={Plus}>Host</NavLink>
+              <NavLink to="/meeting" icon={DoorOpen}>Enter Room</NavLink>
+              <NavLink to="/rooms" icon={MessageSquare}>Rooms</NavLink>
             </nav>
             <ThemeToggle />
             
@@ -177,54 +126,15 @@ function AppLayout({ children }: AppLayoutProps) {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card">
             <nav className="container mx-auto px-4 py-4 space-y-2">
-              <Link
-                to="/facilitator"
-                onClick={closeMobileMenu}
-                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/facilitator")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Plus className="w-4 h-4 mr-2" />
+              <NavLink to="/facilitator" icon={Plus} variant="mobile" onClick={closeMobileMenu}>
                 Host
-              </Link>
-              <Link
-                to="/meeting?mode=join"
-                onClick={closeMobileMenu}
-                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/meeting") && location.search.includes("mode=join")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Join
-              </Link>
-              <Link
-                to="/meeting?mode=watch"
-                onClick={closeMobileMenu}
-                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/meeting") && location.search.includes("mode=watch")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                Watch
-              </Link>
-              <Link
-                to="/rooms"
-                onClick={closeMobileMenu}
-                className={`flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/rooms")
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
+              </NavLink>
+              <NavLink to="/meeting" icon={DoorOpen} variant="mobile" onClick={closeMobileMenu}>
+                Enter Room
+              </NavLink>
+              <NavLink to="/rooms" icon={MessageSquare} variant="mobile" onClick={closeMobileMenu}>
                 Rooms
-              </Link>
+              </NavLink>
             </nav>
           </div>
         )}
