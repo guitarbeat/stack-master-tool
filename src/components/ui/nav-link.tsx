@@ -22,27 +22,30 @@ export function NavLink({
   const location = useLocation();
   
   const isActive = () => {
-    const pathMatch = location.pathname === to || location.pathname.startsWith(`${to}/`);
+    const basePath = to.split('?')[0];
+    const pathMatch = location.pathname === basePath || location.pathname.startsWith(`${basePath}/`);
     if (matchSearch) {
       return pathMatch && location.search.includes(matchSearch);
     }
     return pathMatch;
   };
 
-  const baseStyles = "font-medium transition-colors flex items-center";
+  const active = isActive();
+
+  const baseStyles = "font-medium transition-all duration-200 flex items-center relative";
   
   const variantStyles = {
     desktop: cn(
       "px-4 py-2 rounded-lg text-sm",
-      isActive()
-        ? "bg-primary text-primary-foreground"
-        : "text-foreground hover:bg-muted"
+      active
+        ? "bg-primary text-primary-foreground shadow-sm"
+        : "text-foreground hover:bg-muted hover:scale-[1.02] active:scale-[0.98]"
     ),
     mobile: cn(
       "w-full px-4 py-3 rounded-lg text-sm",
-      isActive()
-        ? "bg-primary text-primary-foreground"
-        : "text-foreground hover:bg-muted"
+      active
+        ? "bg-primary text-primary-foreground shadow-sm"
+        : "text-foreground hover:bg-muted active:scale-[0.99]"
     )
   };
 
@@ -53,9 +56,26 @@ export function NavLink({
       to={to}
       onClick={onClick}
       className={cn(baseStyles, variantStyles[variant])}
+      aria-current={active ? "page" : undefined}
     >
-      {Icon && <Icon className={cn("w-4 h-4", iconMargin)} />}
-      {children}
+      {Icon && (
+        <Icon 
+          className={cn(
+            "w-4 h-4 transition-transform duration-200", 
+            iconMargin,
+            active && "scale-110"
+          )} 
+        />
+      )}
+      <span className="relative">
+        {children}
+        {/* Active indicator underline for desktop */}
+        {variant === "desktop" && active && (
+          <span 
+            className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-primary-foreground/30 rounded-full animate-scale-in"
+          />
+        )}
+      </span>
     </Link>
   );
 }
