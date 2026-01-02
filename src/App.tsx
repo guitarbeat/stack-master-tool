@@ -9,6 +9,7 @@ import MeetingRoom from "./pages/MeetingRoom";
 import EnterRoom from "./pages/EnterRoom";
 import Rooms from "./pages/Rooms";
 import FacilitatorDashboard from "./pages/FacilitatorDashboard";
+import Health from "./pages/Health";
 import AppLayout from "./components/layout/AppLayout";
 import { SupabaseConnectionProvider } from "@/integrations/supabase/connection-context";
 
@@ -27,6 +28,7 @@ const App = () => {
               <Route path="/enter" element={<EnterRoom />} />
               <Route path="/meeting" element={<MeetingRoom />} />
               <Route path="/rooms" element={<Rooms />} />
+              <Route path="/health" element={<Health />} />
               <Route path="/watch/:code" element={<MeetingRoom />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

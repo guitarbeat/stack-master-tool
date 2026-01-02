@@ -1,17 +1,11 @@
 // Physics-based interaction hooks
 export { 
-  useOverscroll, 
   useSnapDetent, 
-  useDragPhysics, 
-  useMinimize,
-  Detent,
-  PHYSICS_CONSTANTS 
+  Detent 
 } from './usePhysicsInteraction';
 
 // Re-export other hooks
 export { useToast, toast } from './use-toast';
-export { useTilt } from './use-tilt';
-export { useMouseFollow } from './use-mouse-follow';
 export { useAuth } from './useAuth';
 export { useDragAndDrop } from './useDragAndDrop';
 export { useKeyboardShortcuts } from './useKeyboardShortcuts';
