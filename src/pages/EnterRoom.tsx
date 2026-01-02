@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -80,7 +80,7 @@ export default function EnterRoom() {
     }
   };
 
-  const handleJoin = async (e: React.FormEvent) => {
+  const handleJoin = async (e: FormEvent) => {
     e.preventDefault();
     
     const nameValidation = nameSchema.safeParse(displayName.trim());
@@ -109,7 +109,7 @@ export default function EnterRoom() {
     }
   };
 
-  const handleWatch = (e: React.FormEvent) => {
+  const handleWatch = (e: FormEvent) => {
     e.preventDefault();
     
     const codeValidation = roomCodeSchema.safeParse(roomCode.trim());
