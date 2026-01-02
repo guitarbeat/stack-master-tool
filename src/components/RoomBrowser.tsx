@@ -111,11 +111,12 @@ export function RoomBrowser() {
   }, [loadActiveRooms]);
 
   const handleJoinRoom = (meetingCode: string) => {
-    navigate(`/meeting?mode=join&code=${meetingCode}`);
+    // Navigate to Enter Room page with pre-filled code
+    navigate(`/enter?mode=join&code=${meetingCode}`);
   };
 
   const handleWatchRoom = (meetingCode: string) => {
-    navigate(`/meeting?mode=watch&code=${meetingCode}`);
+    navigate(`/enter?mode=watch&code=${meetingCode}`);
   };
 
   const handleDeleteRoom = async (roomId: string, roomTitle: string) => {
@@ -306,7 +307,7 @@ export function RoomBrowser() {
         <p className="text-sm text-muted-foreground mb-4">
           Know a meeting code? You can still join directly.
         </p>
-        <Button variant="outline" onClick={() => navigate("/meeting?mode=join")}>
+        <Button variant="outline" onClick={() => navigate("/enter")}>
           Join with Code
         </Button>
       </div>

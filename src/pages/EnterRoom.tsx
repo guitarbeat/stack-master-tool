@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Eye, UserPlus, Loader2, DoorOpen } from 'lucide-react';
+import { Eye, UserPlus, Loader2, DoorOpen, QrCode } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { QrCodeScanner } from '@/components/ui/qr-code-scanner';
 import { z } from 'zod';
 
 const NAME_MAX_LENGTH = 50;
@@ -19,18 +20,40 @@ export default function EnterRoom() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get('mode') === 'watch' ? 'watch' : 'join';
+  const prefillCode = searchParams.get('code') || '';
   
   const { signInAnonymously, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState(initialMode);
   const [displayName, setDisplayName] = useState('');
-  const [roomCode, setRoomCode] = useState('');
+  const [roomCode, setRoomCode] = useState(prefillCode.toUpperCase());
   const [isJoining, setIsJoining] = useState(false);
+  const [showQrScanner, setShowQrScanner] = useState(false);
   
   // Real-time validation states
   const [nameError, setNameError] = useState<string | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
+
+  // Update room code if prefill changes
+  useEffect(() => {
+    if (prefillCode) {
+      setRoomCode(prefillCode.toUpperCase());
+    }
+  }, [prefillCode]);
+
+  // Handle QR scan result
+  const handleQrScan = (data: string) => {
+    setShowQrScanner(false);
+    // Extract code from URL or use raw code
+    const urlMatch = data.match(/[?&]code=([A-Za-z0-9]+)/);
+    const code = urlMatch ? urlMatch[1].toUpperCase() : data.toUpperCase().slice(0, CODE_LENGTH);
+    if (code.length === CODE_LENGTH) {
+      setRoomCode(code);
+      setCodeError(null);
+      toast({ title: 'Code scanned!', description: `Room code: ${code}` });
+    }
+  };
 
   // Real-time name validation
   const handleNameChange = (value: string) => {
@@ -154,17 +177,29 @@ export default function EnterRoom() {
                 </div>
                 
                 <div className="space-y-1.5">
-                  <Input
-                    type="text"
-                    placeholder="Meeting code (e.g. ABC123)"
-                    value={roomCode}
-                    onChange={(e) => handleCodeChange(e.target.value)}
-                    disabled={isJoining || authLoading}
-                    className={`h-12 text-base font-mono tracking-wider ${codeError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                    aria-invalid={!!codeError}
-                    aria-describedby={codeError ? 'code-error' : undefined}
-                    maxLength={CODE_LENGTH + 2}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Meeting code (e.g. ABC123)"
+                      value={roomCode}
+                      onChange={(e) => handleCodeChange(e.target.value)}
+                      disabled={isJoining || authLoading}
+                      className={`h-12 text-base font-mono tracking-wider flex-1 ${codeError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      aria-invalid={!!codeError}
+                      aria-describedby={codeError ? 'code-error' : undefined}
+                      maxLength={CODE_LENGTH + 2}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-12 w-12 shrink-0"
+                      onClick={() => setShowQrScanner(true)}
+                      title="Scan QR code"
+                    >
+                      <QrCode className="h-5 w-5" />
+                    </Button>
+                  </div>
                   <div className="flex justify-between text-xs px-1">
                     {codeError ? (
                       <span id="code-error" className="text-destructive">{codeError}</span>
@@ -200,18 +235,30 @@ export default function EnterRoom() {
             <TabsContent value="watch" className="mt-0">
               <form onSubmit={handleWatch} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Input
-                    type="text"
-                    placeholder="Meeting code (e.g. ABC123)"
-                    value={roomCode}
-                    onChange={(e) => handleCodeChange(e.target.value)}
-                    disabled={authLoading}
-                    className={`h-12 text-base font-mono tracking-wider ${codeError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                    aria-invalid={!!codeError}
-                    aria-describedby={codeError ? 'watch-code-error' : undefined}
-                    maxLength={CODE_LENGTH + 2}
-                    autoFocus
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Meeting code (e.g. ABC123)"
+                      value={roomCode}
+                      onChange={(e) => handleCodeChange(e.target.value)}
+                      disabled={authLoading}
+                      className={`h-12 text-base font-mono tracking-wider flex-1 ${codeError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      aria-invalid={!!codeError}
+                      aria-describedby={codeError ? 'watch-code-error' : undefined}
+                      maxLength={CODE_LENGTH + 2}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-12 w-12 shrink-0"
+                      onClick={() => setShowQrScanner(true)}
+                      title="Scan QR code"
+                    >
+                      <QrCode className="h-5 w-5" />
+                    </Button>
+                  </div>
                   <div className="flex justify-between text-xs px-1">
                     {codeError ? (
                       <span id="watch-code-error" className="text-destructive">{codeError}</span>
@@ -241,6 +288,14 @@ export default function EnterRoom() {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* QR Code Scanner Modal */}
+      {showQrScanner && (
+        <QrCodeScanner
+          onScan={handleQrScan}
+          onClose={() => setShowQrScanner(false)}
+        />
+      )}
     </main>
   );
 }
