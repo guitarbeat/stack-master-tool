@@ -2,10 +2,18 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { BrowserQRCodeReader } from '@zxing/library';
 import { Button } from './button';
 import { Camera, X, QrCode, Loader2 } from 'lucide-react';
+import { playBeep } from '@/utils/sound';
 
 interface QrCodeScannerProps {
   onScan: (data: string) => void;
   onClose: () => void;
+}
+
+/** Trigger haptic feedback on supported devices */
+function triggerHaptic() {
+  if ('vibrate' in navigator) {
+    navigator.vibrate([50, 30, 50]); // Short double-pulse pattern
+  }
 }
 
 export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
@@ -39,6 +47,9 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
         (result, err) => {
           if (result) {
             const scannedText = result.getText();
+            // Feedback on successful scan
+            triggerHaptic();
+            playBeep(1200, 100, 0.08); // Higher pitch, short confirmation beep
             stopScanning();
             onScan(scannedText);
           }
