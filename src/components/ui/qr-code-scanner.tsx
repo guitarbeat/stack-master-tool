@@ -1,51 +1,59 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { BrowserQRCodeReader } from '@zxing/library';
 import { Button } from './button';
-import { Camera, X, QrCode } from 'lucide-react';
+import { Camera, X, QrCode, Loader2 } from 'lucide-react';
 
 interface QrCodeScannerProps {
   onScan: (data: string) => void;
   onClose: () => void;
 }
 
-export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) {
+export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const readerRef = useRef<BrowserQRCodeReader | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+
+  const stopScanning = useCallback(() => {
+    if (readerRef.current) {
+      readerRef.current.reset();
+      readerRef.current = null;
+    }
+    setIsScanning(false);
+  }, []);
 
   const startScanning = useCallback(async () => {
     try {
       setError(null);
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Use back camera on mobile
-      });
+      const reader = new BrowserQRCodeReader();
+      readerRef.current = reader;
 
-      setStream(mediaStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        setIsScanning(true);
-        scanForQrCode();
-      }
-    } catch {
+      if (!videoRef.current) return;
+
+      setIsScanning(true);
+
+      // Start continuous scanning
+      await reader.decodeFromVideoDevice(
+        undefined, // Use default camera (back camera on mobile)
+        videoRef.current,
+        (result, err) => {
+          if (result) {
+            const scannedText = result.getText();
+            stopScanning();
+            onScan(scannedText);
+          }
+          // Ignore errors during scanning - they occur on each failed frame
+          if (err && err.name !== 'NotFoundException') {
+            console.debug('QR scan attempt:', err.message);
+          }
+        }
+      );
+    } catch (err) {
+      console.error('Failed to start QR scanner:', err);
       setError('Camera access denied or not available. Please enter the meeting code manually.');
       setIsScanning(false);
     }
-  }, []);
-
-  const stopScanning = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-    }
-    setIsScanning(false);
-  }, [stream]);
-
-  const scanForQrCode = () => {
-    // For now, we'll show the camera interface but note that full QR scanning
-    // would require additional libraries like @zxing/library or react-qr-reader
-    // This provides the UI framework for when a proper scanning library is added
-  };
+  }, [onScan, stopScanning]);
 
   useEffect(() => {
     void startScanning();
@@ -78,31 +86,28 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
       </div>
 
       {/* Camera View */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative bg-black">
         <video
           ref={videoRef}
-          autoPlay
-          playsInline
-          muted
           className="w-full h-full object-cover"
         />
-        <canvas ref={canvasRef} className="hidden" />
 
-        {/* Scanning overlay */}
+        {/* Scanning overlay with viewfinder */}
         {isScanning && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center text-foreground p-6 max-w-sm bg-card/90 backdrop-blur rounded-lg border border-border">
-              <QrCode className="w-16 h-16 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">QR Code Scanner</h3>
-              <p className="text-sm mb-4">
-                QR scanning functionality is coming soon! For now, please use the manual entry option.
-              </p>
-              <Button
-                onClick={handleManualEntry}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Enter Code Manually
-              </Button>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {/* Darkened corners with transparent center */}
+            <div className="relative w-64 h-64">
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-l-4 border-t-4 border-primary rounded-tl-lg" />
+              <div className="absolute top-0 right-0 w-8 h-8 border-r-4 border-t-4 border-primary rounded-tr-lg" />
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-primary rounded-bl-lg" />
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-r-4 border-b-4 border-primary rounded-br-lg" />
+              
+              {/* Scanning indicator */}
+              <div className="absolute -bottom-12 left-0 right-0 flex items-center justify-center gap-2 text-white">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Scanning...</span>
+              </div>
             </div>
           </div>
         )}
@@ -120,6 +125,17 @@ export function QrCodeScanner({ onScan: _onScan, onClose }: QrCodeScannerProps) 
             </div>
           </div>
         )}
+      </div>
+
+      {/* Footer with manual entry option */}
+      <div className="p-4 bg-card/80 backdrop-blur border-t border-border">
+        <Button
+          variant="outline"
+          onClick={handleManualEntry}
+          className="w-full"
+        >
+          Enter Code Manually
+        </Button>
       </div>
     </div>
   );
