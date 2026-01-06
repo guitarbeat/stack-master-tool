@@ -126,7 +126,7 @@ class ProductionLogger {
       if (import.meta.env.VITE_SENTRY_DSN) {
         // Sentry integration
         // * Log analytics event for debugging in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           logProduction('info', {
             action: 'analytics_event',
             entry
@@ -143,7 +143,7 @@ class ProductionLogger {
     } catch (error) {
       // Don't log analytics errors to avoid infinite loops
       // * Log analytics error for debugging in development
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         logProduction('error', {
           action: 'analytics_send_failed',
           error: error instanceof Error ? error.message : String(error)

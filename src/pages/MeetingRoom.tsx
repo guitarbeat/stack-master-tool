@@ -141,7 +141,7 @@ export default function MeetingRoom() {
     // For now, QR scanning is not fully implemented
     // This function provides the framework for when proper QR scanning is added
     // * Log QR scan for debugging in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       logProduction('info', {
         action: 'qr_scan_attempted',
         scannedUrl
@@ -464,7 +464,7 @@ export default function MeetingRoom() {
           await SupabaseMeetingService.leaveMeeting(currentParticipantId);
         } catch (error) {
           // * Log warning for debugging in development
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             logProduction('warn', {
               action: 'mark_participant_inactive',
               participantId: currentParticipantId,
@@ -489,7 +489,7 @@ export default function MeetingRoom() {
       if (currentParticipantId && mode === "join") {
         void SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
           // * Log warning for debugging in development
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             logProduction('warn', {
               action: 'mark_participant_inactive_unmount',
               participantId: currentParticipantId,

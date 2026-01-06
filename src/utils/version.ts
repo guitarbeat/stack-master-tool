@@ -27,8 +27,8 @@ export function getVersionInfo(): VersionInfo {
     buildTime: __BUILD_TIME__ || new Date().toISOString(),
     gitCommit: __GIT_COMMIT__ || 'unknown',
     gitBranch: __GIT_BRANCH__ || 'unknown',
-    isProduction: process.env.NODE_ENV === 'production',
-    environment: process.env.NODE_ENV ?? 'development',
+    isProduction: import.meta.env.PROD,
+    environment: import.meta.env.MODE,
   };
 }
 
