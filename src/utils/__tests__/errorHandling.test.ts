@@ -8,11 +8,6 @@ import {
   logError,
 } from "../errorHandling";
 
-// Mock the error monitoring module
-vi.mock("../errorMonitoring", () => ({
-  trackAndLogError: vi.fn(),
-}));
-
 describe("AppError", () => {
   it("should create an error with correct details", () => {
     const error = new AppError(ErrorCode.CONNECTION_FAILED);
