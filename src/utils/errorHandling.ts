@@ -558,12 +558,6 @@ export const logError = (error: AppError | Error, context?: string) => {
     timestamp,
   });
 
-  // Track error for monitoring and analytics
-  if (typeof window !== "undefined") {
-    void import("./errorMonitoring").then(({ trackAndLogError }) => {
-      trackAndLogError(error, context);
-    });
-  }
 };
 
 // Error boundary helper
