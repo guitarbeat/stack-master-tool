@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Users, Clock, User, Trash2, Eye, Plus } from "lucide-react";
+import { Users, Clock, User, Trash2, Eye, Plus, Copy, Check } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SupabaseMeetingService } from "@/services/supabase";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +29,19 @@ export function RoomBrowser() {
   const { showToast } = useToast();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  const handleCopyLink = async (code: string) => {
+    const link = `${window.location.origin}/meeting?mode=join&code=${code}`;
+    await navigator.clipboard.writeText(link);
+    setCopiedCode(code);
+    showToast({
+      title: "Copied!",
+      message: "Invite link copied to clipboard",
+      type: "success",
+    });
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
 
   const loadActiveRooms = useCallback(async () => {
     try {
@@ -263,6 +276,18 @@ export function RoomBrowser() {
                   >
                     <Eye className="h-4 w-4 mr-1" />
                     Watch
+                  </Button>
+                  <Button
+                    onClick={() => void handleCopyLink(room.code)}
+                    variant="outline"
+                    size="sm"
+                    title="Copy invite link"
+                  >
+                    {copiedCode === room.code ? (
+                      <Check className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </Button>
                   {user?.id === room.facilitatorId && (
                     <AlertDialog>

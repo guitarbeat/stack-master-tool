@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AddParticipants } from "@/components/features/meeting/AddParticipants";
 import { ParticipantList } from "@/components/features/meeting/ParticipantList";
+import { useToast } from "@/hooks/use-toast";
 import QRCode from "qrcode";
-import { RefreshCw, Edit3, Check, X, AlertTriangle } from "lucide-react";
+import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,12 +54,28 @@ export function HostSettingsPanel({
   onRemoveParticipant,
   userRole,
 }: HostSettingsPanelProps) {
+  const { toast } = useToast();
   const [isEditingCode, setIsEditingCode] = useState(false);
   const [codeInput, setCodeInput] = useState(meetingCode);
+  const [copiedJoin, setCopiedJoin] = useState(false);
+  const [copiedWatch, setCopiedWatch] = useState(false);
 
   const handleCopyLink = async (type: 'join' | 'watch') => {
     const link = `${window.location.origin}/meeting?mode=${type}&code=${meetingCode}`;
     await navigator.clipboard.writeText(link);
+    
+    if (type === 'join') {
+      setCopiedJoin(true);
+      setTimeout(() => setCopiedJoin(false), 2000);
+    } else {
+      setCopiedWatch(true);
+      setTimeout(() => setCopiedWatch(false), 2000);
+    }
+    
+    toast({
+      title: "Copied!",
+      description: `${type === 'join' ? 'Join' : 'Watch'} link copied to clipboard`,
+    });
   };
 
   const handleStartEditing = () => {
@@ -237,11 +254,12 @@ export function HostSettingsPanel({
           <div className="flex items-center justify-between">
             <span className="text-slate-600 dark:text-slate-400">Join link</span>
             <button
-              className="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100"
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 transition-colors"
               aria-label="Copy join link to clipboard"
               onClick={() => void handleCopyLink('join')}
             >
-              Copy
+              {copiedJoin ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+              {copiedJoin ? 'Copied!' : 'Copy'}
             </button>
           </div>
           <code className="block break-all p-2 rounded bg-slate-100 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-100">
@@ -251,11 +269,12 @@ export function HostSettingsPanel({
           <div className="flex items-center justify-between">
             <span className="text-slate-600 dark:text-slate-400">Watch link</span>
             <button
-              className="px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100"
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 transition-colors"
               aria-label="Copy watch link to clipboard"
               onClick={() => void handleCopyLink('watch')}
             >
-              Copy
+              {copiedWatch ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+              {copiedWatch ? 'Copied!' : 'Copy'}
             </button>
           </div>
           <code className="block break-all p-2 rounded bg-slate-100 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-100">

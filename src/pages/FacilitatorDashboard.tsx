@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Plus, ExternalLink, Trash2, ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Plus, ExternalLink, Trash2, ArrowLeft, Loader2, AlertCircle, Copy, Check } from 'lucide-react';
 import { logProduction } from '@/utils/productionLogger';
 import {
   AlertDialog,
@@ -47,6 +47,19 @@ export default function FacilitatorDashboard() {
   const [newRoomTitle, setNewRoomTitle] = useState('');
   const [facilitatorName, setFacilitatorName] = useState('');
   const [isNameDialogVisible, setIsNameDialogVisible] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  const handleCopyLink = async (code: string) => {
+    const link = `${window.location.origin}/meeting?mode=join&code=${code}`;
+    await navigator.clipboard.writeText(link);
+    setCopiedCode(code);
+    showToast({
+      type: 'success',
+      title: 'Copied!',
+      message: 'Invite link copied to clipboard'
+    });
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
 
   useEffect(() => {
     loadMeetings();
@@ -411,6 +424,21 @@ export default function FacilitatorDashboard() {
                       >
                         <ExternalLink className="mr-2 h-4 w-4" />
                         Open
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleCopyLink(meeting.code);
+                        }}
+                        title="Copy invite link"
+                      >
+                        {copiedCode === meeting.code ? (
+                          <Check className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
                       </Button>
                       <Button
                         size="sm"
