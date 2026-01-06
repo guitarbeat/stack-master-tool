@@ -1,11 +1,11 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { SupabaseMeetingService } from '@/services/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { LogOut, Loader2, Eye, UserPlus, Plus, Sparkles } from 'lucide-react'
+import { LogOut, Loader2, Eye, UserPlus, Plus, Sparkles, Check } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { z } from 'zod'
 import Confetti from '@/components/ui/Confetti'
@@ -38,6 +38,13 @@ function HomePage() {
   const [nameError, setNameError] = useState<string | null>(null)
   const [codeError, setCodeError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<string | null>(null)
+  const [codeComplete, setCodeComplete] = useState(false)
+
+  // Refs for auto-focus
+  const codeInputRef = useRef<HTMLInputElement>(null)
+  const titleInputRef = useRef<HTMLInputElement>(null)
+  const joinSubmitRef = useRef<HTMLButtonElement>(null)
+  const watchSubmitRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (user && !showConfetti) {
@@ -58,16 +65,31 @@ function HomePage() {
     }
   }
 
-  // Real-time code validation
+  // Real-time code validation with auto-advance
   const handleCodeChange = (value: string) => {
     const upperValue = value.toUpperCase()
     setRoomCode(upperValue)
+    
     if (upperValue.length > 0 && upperValue.length !== CODE_LENGTH) {
       setCodeError(`Code must be ${CODE_LENGTH} characters`)
+      setCodeComplete(false)
     } else if (upperValue.length === CODE_LENGTH && !/^[a-zA-Z0-9]+$/.test(upperValue)) {
       setCodeError('Code must be alphanumeric')
+      setCodeComplete(false)
     } else {
       setCodeError(null)
+      // Auto-advance when code is complete
+      if (upperValue.length === CODE_LENGTH && /^[a-zA-Z0-9]+$/.test(upperValue)) {
+        setCodeComplete(true)
+        // Focus submit button after brief delay for visual feedback
+        setTimeout(() => {
+          if (activeTab === 'watch') {
+            watchSubmitRef.current?.focus()
+          } else if (activeTab === 'join' && displayName.trim()) {
+            joinSubmitRef.current?.focus()
+          }
+        }, 150)
+      }
     }
   }
 
@@ -295,29 +317,41 @@ function HomePage() {
                   </div>
                   
                   <div className="space-y-1.5">
-                    <Input
-                      type="text"
-                      placeholder="Meeting code (e.g. ABC123)"
-                      value={roomCode}
-                      onChange={(e) => handleCodeChange(e.target.value)}
-                      disabled={isJoining || authLoading}
-                      className={`h-12 text-base font-mono tracking-wider ${codeError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      aria-invalid={!!codeError}
-                      maxLength={CODE_LENGTH + 2}
-                    />
+                    <div className="relative">
+                      <Input
+                        ref={codeInputRef}
+                        type="text"
+                        placeholder="Meeting code (e.g. ABC123)"
+                        value={roomCode}
+                        onChange={(e) => handleCodeChange(e.target.value)}
+                        disabled={isJoining || authLoading}
+                        className={`h-12 text-base font-mono tracking-wider pr-10 ${
+                          codeError ? 'border-destructive focus-visible:ring-destructive' : 
+                          codeComplete ? 'border-green-500 focus-visible:ring-green-500' : ''
+                        }`}
+                        aria-invalid={!!codeError}
+                        maxLength={CODE_LENGTH + 2}
+                      />
+                      {codeComplete && !codeError && (
+                        <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500 animate-scale-in" />
+                      )}
+                    </div>
                     <div className="flex justify-between text-xs px-1">
                       {codeError ? (
                         <span className="text-destructive">{codeError}</span>
+                      ) : codeComplete ? (
+                        <span className="text-green-600 dark:text-green-400">Ready to join!</span>
                       ) : (
                         <span className="text-muted-foreground">6-character code from host</span>
                       )}
-                      <span className={`font-mono ${roomCode.length !== CODE_LENGTH && roomCode.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      <span className={`font-mono ${roomCode.length !== CODE_LENGTH && roomCode.length > 0 ? 'text-destructive' : codeComplete ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
                         {roomCode.length}/{CODE_LENGTH}
                       </span>
                     </div>
                   </div>
                   
                   <Button
+                    ref={joinSubmitRef}
                     type="submit"
                     disabled={isJoining || authLoading || !isJoinFormValid}
                     className="w-full h-12 text-base"
@@ -331,6 +365,11 @@ function HomePage() {
                       'Join Meeting'
                     )}
                   </Button>
+                  {isJoinFormValid && (
+                    <p className="text-xs text-center text-green-600 dark:text-green-400 animate-fade-in">
+                      Press Enter to join
+                    </p>
+                  )}
                 </form>
               </TabsContent>
               
@@ -338,30 +377,41 @@ function HomePage() {
               <TabsContent value="watch">
                 <form onSubmit={(e) => { e.preventDefault(); handleSpectate(); }} className="space-y-4 pt-4">
                   <div className="space-y-1.5">
-                    <Input
-                      type="text"
-                      placeholder="Meeting code (e.g. ABC123)"
-                      value={roomCode}
-                      onChange={(e) => handleCodeChange(e.target.value)}
-                      disabled={authLoading}
-                      className={`h-12 text-base font-mono tracking-wider ${codeError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      aria-invalid={!!codeError}
-                      maxLength={CODE_LENGTH + 2}
-                      autoFocus
-                    />
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Meeting code (e.g. ABC123)"
+                        value={roomCode}
+                        onChange={(e) => handleCodeChange(e.target.value)}
+                        disabled={authLoading}
+                        className={`h-12 text-base font-mono tracking-wider pr-10 ${
+                          codeError ? 'border-destructive focus-visible:ring-destructive' : 
+                          codeComplete ? 'border-green-500 focus-visible:ring-green-500' : ''
+                        }`}
+                        aria-invalid={!!codeError}
+                        maxLength={CODE_LENGTH + 2}
+                        autoFocus
+                      />
+                      {codeComplete && !codeError && (
+                        <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500 animate-scale-in" />
+                      )}
+                    </div>
                     <div className="flex justify-between text-xs px-1">
                       {codeError ? (
                         <span className="text-destructive">{codeError}</span>
+                      ) : codeComplete ? (
+                        <span className="text-green-600 dark:text-green-400">Ready to watch!</span>
                       ) : (
                         <span className="text-muted-foreground">No sign-in required</span>
                       )}
-                      <span className={`font-mono ${roomCode.length !== CODE_LENGTH && roomCode.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      <span className={`font-mono ${roomCode.length !== CODE_LENGTH && roomCode.length > 0 ? 'text-destructive' : codeComplete ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
                         {roomCode.length}/{CODE_LENGTH}
                       </span>
                     </div>
                   </div>
                   
                   <Button 
+                    ref={watchSubmitRef}
                     type="submit" 
                     className="w-full h-12 text-base"
                     disabled={!isWatchFormValid}
@@ -369,6 +419,12 @@ function HomePage() {
                     <Eye className="mr-2 h-4 w-4" />
                     Watch Meeting
                   </Button>
+                  
+                  {isWatchFormValid && (
+                    <p className="text-xs text-center text-green-600 dark:text-green-400 animate-fade-in">
+                      Press Enter to watch
+                    </p>
+                  )}
                   
                   <p className="text-xs text-center text-muted-foreground">
                     View the queue without joining as participant
