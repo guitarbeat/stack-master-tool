@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
@@ -83,7 +83,7 @@ function HomePage() {
     }
   }
 
-  const handleJoin = async (e: React.FormEvent) => {
+  const handleJoin = async (e: FormEvent) => {
     e.preventDefault()
     
     const nameValidation = nameSchema.safeParse(displayName.trim())
@@ -121,7 +121,7 @@ function HomePage() {
     navigate(`/meeting?mode=watch&code=${roomCode.trim()}`)
   }
 
-  const handleCreateRoom = async (e: React.FormEvent) => {
+  const handleCreateRoom = async (e: FormEvent) => {
     e.preventDefault()
 
     const nameValidation = nameSchema.safeParse(displayName.trim())
