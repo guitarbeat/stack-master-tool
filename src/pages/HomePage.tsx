@@ -1,516 +1,520 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
-import { useProfile } from '@/hooks/useProfile'
-import { SupabaseMeetingService } from '@/services/supabase'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { LogOut, Loader2, Eye, UserPlus, Plus, Sparkles, Check } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
-import { z } from 'zod'
-import Confetti from '@/components/ui/Confetti'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { logProduction } from '@/utils/productionLogger'
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { InlineRoomBrowser } from "@/components/InlineRoomBrowser";
+import Confetti from "@/components/ui/Confetti";
+import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
+import { useAuth } from "@/hooks/useAuth";
+import { SupabaseMeetingService } from "@/services/supabase";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Users, 
+  Eye, 
+  Plus, 
+  Loader2, 
+  QrCode, 
+  Check,
+  ArrowRight
+} from "lucide-react";
 
-const NAME_MAX_LENGTH = 50
-const CODE_LENGTH = 6
+// Validation schemas
+const nameSchema = z
+  .string()
+  .min(1, "Name is required")
+  .max(50, "Name must be 50 characters or less")
+  .regex(/^[a-zA-Z0-9\s\-']+$/, "Only letters, numbers, spaces, hyphens, and apostrophes");
 
-const nameSchema = z.string().min(1, 'Name is required').max(NAME_MAX_LENGTH, `Name must be ${NAME_MAX_LENGTH} characters or less`)
-const roomCodeSchema = z.string().length(CODE_LENGTH, `Code must be ${CODE_LENGTH} characters`).regex(/^[a-zA-Z0-9]+$/, 'Code must be alphanumeric')
-const titleSchema = z.string().min(3, 'Title must be at least 3 characters').max(100, 'Title must be 100 characters or less')
+const roomCodeSchema = z
+  .string()
+  .length(6, "Room code must be 6 characters")
+  .regex(/^[A-Za-z0-9]+$/, "Only letters and numbers");
 
-function HomePage() {
-  const { user, signInAnonymously, signOut, loading: authLoading } = useAuth()
-  const navigate = useNavigate()
-  const { profile } = useProfile()
-  const { toast, showToast } = useToast()
-  const [displayName, setDisplayName] = useState('')
-  const [roomCode, setRoomCode] = useState('')
-  const [meetingTitle, setMeetingTitle] = useState('')
-  const [isJoining, setIsJoining] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
-  const [showConfetti, setShowConfetti] = useState(false)
-  const [isSigningOut, setIsSigningOut] = useState(false)
-  const [activeTab, setActiveTab] = useState('join')
+const titleSchema = z
+  .string()
+  .min(3, "Title must be at least 3 characters")
+  .max(100, "Title must be 100 characters or less");
+
+export default function HomePage() {
+  const navigate = useNavigate();
+  const { user, signInAnonymously } = useAuth();
+  const { toast } = useToast();
+
+  // Form state
+  const [displayName, setDisplayName] = useState("");
+  const [roomCode, setRoomCode] = useState("");
+  const [meetingTitle, setMeetingTitle] = useState("");
   
-  // Real-time validation states
-  const [nameError, setNameError] = useState<string | null>(null)
-  const [codeError, setCodeError] = useState<string | null>(null)
-  const [titleError, setTitleError] = useState<string | null>(null)
-  const [codeComplete, setCodeComplete] = useState(false)
+  // Error state
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  
+  // UI state
+  const [isJoining, setIsJoining] = useState(false);
+  const [isWatching, setIsWatching] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showQrScanner, setShowQrScanner] = useState(false);
+  const [codeComplete, setCodeComplete] = useState(false);
 
-  // Refs for auto-focus
-  const codeInputRef = useRef<HTMLInputElement>(null)
-  const titleInputRef = useRef<HTMLInputElement>(null)
-  const joinSubmitRef = useRef<HTMLButtonElement>(null)
-  const watchSubmitRef = useRef<HTMLButtonElement>(null)
+  // Refs
+  const joinSubmitRef = useRef<HTMLButtonElement>(null);
+  const watchSubmitRef = useRef<HTMLButtonElement>(null);
 
+  // Load saved name from localStorage
   useEffect(() => {
-    if (user && !showConfetti) {
-      setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), 3000)
+    const savedName = localStorage.getItem("user_display_name");
+    if (savedName) {
+      setDisplayName(savedName);
     }
-  }, [user])
+  }, []);
 
-  // Real-time name validation
+  // Handlers
   const handleNameChange = (value: string) => {
-    setDisplayName(value)
-    if (value.length > NAME_MAX_LENGTH) {
-      setNameError(`Name must be ${NAME_MAX_LENGTH} characters or less`)
-    } else if (value.trim().length === 0 && value.length > 0) {
-      setNameError('Name cannot be empty')
+    setDisplayName(value);
+    if (value.length > 0) {
+      const result = nameSchema.safeParse(value);
+      setNameError(result.success ? null : result.error.errors[0].message);
     } else {
-      setNameError(null)
+      setNameError(null);
     }
-  }
+  };
 
-  // Real-time code validation with auto-advance
-  const handleCodeChange = (value: string) => {
-    const upperValue = value.toUpperCase()
-    setRoomCode(upperValue)
+  const handleCodeChange = (value: string, targetRef?: React.RefObject<HTMLButtonElement | null>) => {
+    const normalized = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    setRoomCode(normalized);
     
-    if (upperValue.length > 0 && upperValue.length !== CODE_LENGTH) {
-      setCodeError(`Code must be ${CODE_LENGTH} characters`)
-      setCodeComplete(false)
-    } else if (upperValue.length === CODE_LENGTH && !/^[a-zA-Z0-9]+$/.test(upperValue)) {
-      setCodeError('Code must be alphanumeric')
-      setCodeComplete(false)
-    } else {
-      setCodeError(null)
-      // Auto-advance when code is complete
-      if (upperValue.length === CODE_LENGTH && /^[a-zA-Z0-9]+$/.test(upperValue)) {
-        setCodeComplete(true)
-        // Focus submit button after brief delay for visual feedback
-        setTimeout(() => {
-          if (activeTab === 'watch') {
-            watchSubmitRef.current?.focus()
-          } else if (activeTab === 'join' && displayName.trim()) {
-            joinSubmitRef.current?.focus()
-          }
-        }, 150)
+    if (normalized.length === 6) {
+      const result = roomCodeSchema.safeParse(normalized);
+      if (result.success) {
+        setCodeError(null);
+        setCodeComplete(true);
+        // Auto-focus submit button
+        setTimeout(() => targetRef?.current?.focus(), 100);
+      } else {
+        setCodeError(result.error.errors[0].message);
+        setCodeComplete(false);
       }
+    } else {
+      setCodeError(null);
+      setCodeComplete(false);
     }
-  }
+  };
 
-  // Real-time title validation
   const handleTitleChange = (value: string) => {
-    setMeetingTitle(value)
-    if (value.length > 0 && value.length < 3) {
-      setTitleError('Title must be at least 3 characters')
-    } else if (value.length > 100) {
-      setTitleError('Title must be 100 characters or less')
+    setMeetingTitle(value);
+    if (value.length > 0) {
+      const result = titleSchema.safeParse(value);
+      setTitleError(result.success ? null : result.error.errors[0].message);
     } else {
-      setTitleError(null)
+      setTitleError(null);
     }
-  }
+  };
 
-  const handleJoin = async (e: FormEvent) => {
-    e.preventDefault()
+  const handleQrScan = (data: string) => {
+    // Extract code from URL or use directly
+    const urlMatch = data.match(/[?&]code=([A-Za-z0-9]{6})/i);
+    const watchMatch = data.match(/\/watch\/([A-Za-z0-9]{6})/i);
+    const code = urlMatch?.[1] || watchMatch?.[1] || data;
     
-    const nameValidation = nameSchema.safeParse(displayName.trim())
-    if (!nameValidation.success) {
-      setNameError(nameValidation.error.errors[0].message)
-      return
-    }
-
-    const codeValidation = roomCodeSchema.safeParse(roomCode.trim())
-    if (!codeValidation.success) {
-      setCodeError(codeValidation.error.errors[0].message)
-      return
-    }
-
-    setIsJoining(true)
-    const { error } = await signInAnonymously(displayName.trim())
-    if (error) {
+    if (code && /^[A-Za-z0-9]{6}$/.test(code)) {
+      handleCodeChange(code.toUpperCase());
+      setShowQrScanner(false);
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to sign in. Please try again.',
-      })
-      setIsJoining(false)
-    } else {
-      navigate(`/meeting?mode=join&code=${roomCode.trim()}&name=${encodeURIComponent(displayName.trim())}`)
+        title: "Code scanned",
+        description: `Room code: ${code.toUpperCase()}`,
+      });
     }
-  }
+  };
 
-  const handleSpectate = () => {
-    const codeValidation = roomCodeSchema.safeParse(roomCode.trim())
-    if (!codeValidation.success) {
-      setCodeError(codeValidation.error.errors[0].message)
-      return
-    }
-    navigate(`/meeting?mode=watch&code=${roomCode.trim()}`)
-  }
-
-  const handleCreateRoom = async (e: FormEvent) => {
-    e.preventDefault()
-
-    const nameValidation = nameSchema.safeParse(displayName.trim())
-    if (!nameValidation.success) {
-      setNameError(nameValidation.error.errors[0].message)
-      return
-    }
-
-    const titleValidation = titleSchema.safeParse(meetingTitle.trim())
-    if (!titleValidation.success) {
-      setTitleError(titleValidation.error.errors[0].message)
-      return
-    }
-
-    setIsCreating(true)
+  const handleJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Sign in first if not already
-    if (!user) {
-      const { error } = await signInAnonymously(displayName.trim())
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Failed to sign in. Please try again.',
-        })
-        setIsCreating(false)
-        return
-      }
+    const nameResult = nameSchema.safeParse(displayName);
+    const codeResult = roomCodeSchema.safeParse(roomCode);
+    
+    if (!nameResult.success) {
+      setNameError(nameResult.error.errors[0].message);
+      return;
     }
+    if (!codeResult.success) {
+      setCodeError(codeResult.error.errors[0].message);
+      return;
+    }
+
+    setIsJoining(true);
 
     try {
-      const created = await SupabaseMeetingService.createMeeting(
+      if (!user) {
+        await signInAnonymously();
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
+
+      localStorage.setItem("user_display_name", displayName.trim());
+      await SupabaseMeetingService.joinMeeting(roomCode, displayName.trim());
+
+      toast({
+        title: "Joined meeting",
+        description: "You're now in the discussion",
+      });
+
+      navigate(`/meeting?code=${roomCode}&mode=join`);
+    } catch (error) {
+      toast({
+        title: "Failed to join",
+        description: error instanceof Error ? error.message : "Could not join meeting",
+        variant: "destructive",
+      });
+    } finally {
+      setIsJoining(false);
+    }
+  };
+
+  const handleWatch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const codeResult = roomCodeSchema.safeParse(roomCode);
+    if (!codeResult.success) {
+      setCodeError(codeResult.error.errors[0].message);
+      return;
+    }
+
+    setIsWatching(true);
+
+    try {
+      navigate(`/watch/${roomCode}`);
+    } finally {
+      setIsWatching(false);
+    }
+  };
+
+  const handleCreateRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const nameResult = nameSchema.safeParse(displayName);
+    const titleResult = titleSchema.safeParse(meetingTitle);
+    
+    if (!nameResult.success) {
+      setNameError(nameResult.error.errors[0].message);
+      return;
+    }
+    if (!titleResult.success) {
+      setTitleError(titleResult.error.errors[0].message);
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      if (!user) {
+        await signInAnonymously();
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
+
+      localStorage.setItem("user_display_name", displayName.trim());
+
+      const meeting = await SupabaseMeetingService.createMeeting(
         meetingTitle.trim(),
         displayName.trim(),
         user?.id
-      )
+      );
 
-      showToast({
-        type: 'success',
-        title: 'Room Created!',
-        message: `Meeting "${created.title}" is live with code ${created.code}`
-      })
-
-      navigate(`/meeting?mode=host&code=${created.code}`)
-    } catch (error) {
-      logProduction('error', {
-        action: 'create_room_homepage',
-        error: error instanceof Error ? error.message : String(error)
-      })
-      
       toast({
-        variant: 'destructive',
-        title: 'Failed to create room',
-        description: 'Please try again.',
-      })
+        title: "Room created",
+        description: `Your room code is ${meeting.code}`,
+      });
+
+      navigate(`/meeting?code=${meeting.code}&mode=host`);
+    } catch (error) {
+      toast({
+        title: "Failed to create room",
+        description: error instanceof Error ? error.message : "Could not create room",
+        variant: "destructive",
+      });
     } finally {
-      setIsCreating(false)
+      setIsCreating(false);
     }
-  }
+  };
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true)
-    setTimeout(async () => {
-      const { error } = await signOut()
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Failed to sign out',
-        })
-        setIsSigningOut(false)
-      } else {
-        setDisplayName('')
-        setRoomCode('')
-        setMeetingTitle('')
-        setNameError(null)
-        setCodeError(null)
-        setTitleError(null)
-      }
-    }, 300)
-  }
-
-  const getUserDisplayName = () => {
-    return profile?.display_name || user?.user_metadata?.display_name || 'there'
-  }
-
-  const isJoinFormValid = displayName.trim().length > 0 && roomCode.trim().length === CODE_LENGTH && !nameError && !codeError
-  const isWatchFormValid = roomCode.trim().length === CODE_LENGTH && !codeError
-  const isHostFormValid = displayName.trim().length > 0 && meetingTitle.trim().length >= 3 && !nameError && !titleError
+  const isJoinValid = displayName.length > 0 && !nameError && roomCode.length === 6 && !codeError;
+  const isWatchValid = roomCode.length === 6 && !codeError;
+  const isHostValid = displayName.length > 0 && !nameError && meetingTitle.length >= 3 && !titleError;
 
   return (
-    <main className="min-h-screen bg-background" role="main">
+    <div className="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-background to-muted/30">
       {showConfetti && <Confetti />}
-      <div className="container mx-auto px-4 py-12">
-        {/* Hero Section */}
+      
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="text-center mb-8">
-          <div className={isSigningOut ? "animate-fade-out" : "animate-fade-in"}>
-            <h1 className="text-4xl sm:text-5xl font-bold text-foreground leading-tight mb-4">
-              Speaking Queue
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-2">
-              Fair, structured discussions for any meeting.
-            </p>
-            {user && (
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span>Welcome back, {getUserDisplayName()}!</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSignOut}
-                  className="h-7 px-2"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            )}
-          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+            Speaking Queue
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Manage discussions with fair, orderly participation
+          </p>
         </div>
 
-        {/* Main Action Card - All flows in one place */}
-        <Card className="max-w-md mx-auto bg-card/50 backdrop-blur-sm border-border/50 animate-fade-in">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl sm:text-2xl text-center">Get Started</CardTitle>
-            <CardDescription className="text-center">
-              Join, watch, or host a meeting
+        {/* Main Action Cards */}
+        <div className="grid md:grid-cols-2 gap-6 mb-10">
+          {/* Join Card */}
+          <Card className="border-2 hover:border-primary/50 transition-all">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Join Discussion
+              </CardTitle>
+              <CardDescription>
+                Enter a room code to participate in the conversation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleJoin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="join-name">Your Name</Label>
+                  <Input
+                    id="join-name"
+                    value={displayName}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    placeholder="Enter your name"
+                    maxLength={50}
+                    className={nameError ? "border-destructive" : ""}
+                  />
+                  <div className="flex justify-between text-xs">
+                    <span className={nameError ? "text-destructive" : "text-muted-foreground"}>
+                      {nameError || ""}
+                    </span>
+                    <span className="text-muted-foreground">{displayName.length}/50</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="join-code">Room Code</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="join-code"
+                      value={roomCode}
+                      onChange={(e) => handleCodeChange(e.target.value, joinSubmitRef)}
+                      placeholder="ABCD12"
+                      maxLength={6}
+                      className={`font-mono uppercase ${
+                        codeComplete && !codeError
+                          ? "border-green-500 bg-green-500/5"
+                          : codeError
+                          ? "border-destructive"
+                          : ""
+                      }`}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setShowQrScanner(true)}
+                      title="Scan QR Code"
+                    >
+                      <QrCode className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className={codeError ? "text-destructive" : codeComplete ? "text-green-600" : "text-muted-foreground"}>
+                      {codeError || (codeComplete ? "Press Enter to join" : "")}
+                    </span>
+                    <span className="text-muted-foreground">{roomCode.length}/6</span>
+                  </div>
+                </div>
+
+                <Button 
+                  ref={joinSubmitRef}
+                  type="submit" 
+                  disabled={!isJoinValid || isJoining} 
+                  className="w-full"
+                >
+                  {isJoining ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Joining...
+                    </>
+                  ) : codeComplete && isJoinValid ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Join Now
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Join Discussion
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Watch Card */}
+          <Card className="border-2 hover:border-primary/50 transition-all">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-primary" />
+                Watch Meeting
+              </CardTitle>
+              <CardDescription>
+                View a meeting without participating in the queue
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleWatch} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="watch-code">Room Code</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="watch-code"
+                      value={roomCode}
+                      onChange={(e) => handleCodeChange(e.target.value, watchSubmitRef)}
+                      placeholder="ABCD12"
+                      maxLength={6}
+                      className={`font-mono uppercase ${
+                        codeComplete && !codeError
+                          ? "border-green-500 bg-green-500/5"
+                          : codeError
+                          ? "border-destructive"
+                          : ""
+                      }`}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setShowQrScanner(true)}
+                      title="Scan QR Code"
+                    >
+                      <QrCode className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className={codeError ? "text-destructive" : codeComplete ? "text-green-600" : "text-muted-foreground"}>
+                      {codeError || (codeComplete ? "Press Enter to watch" : "")}
+                    </span>
+                    <span className="text-muted-foreground">{roomCode.length}/6</span>
+                  </div>
+                </div>
+
+                {/* Spacer to align with Join card */}
+                <div className="h-[76px]" />
+
+                <Button 
+                  ref={watchSubmitRef}
+                  type="submit" 
+                  disabled={!isWatchValid || isWatching}
+                  variant="secondary"
+                  className="w-full"
+                >
+                  {isWatching ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : codeComplete && isWatchValid ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Start Watching
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="mr-2 h-4 w-4" />
+                      Watch Meeting
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Host Section */}
+        <Card className="mb-10 border-dashed">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-primary" />
+              Host a New Meeting
+            </CardTitle>
+            <CardDescription>
+              Create a room and manage the speaking queue as facilitator
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="join" className="text-xs sm:text-sm">
-                  <UserPlus className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Join
-                </TabsTrigger>
-                <TabsTrigger value="watch" className="text-xs sm:text-sm">
-                  <Eye className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Watch
-                </TabsTrigger>
-                <TabsTrigger value="host" className="text-xs sm:text-sm">
-                  <Plus className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Host
-                </TabsTrigger>
-              </TabsList>
-              
-              {/* JOIN TAB */}
-              <TabsContent value="join">
-                <form onSubmit={handleJoin} className="space-y-4 pt-4">
-                  <div className="space-y-1.5">
-                    <Input
-                      type="text"
-                      placeholder="Your name"
-                      value={displayName}
-                      onChange={(e) => handleNameChange(e.target.value)}
-                      disabled={isJoining || authLoading}
-                      className={`h-12 text-base ${nameError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      aria-invalid={!!nameError}
-                      maxLength={NAME_MAX_LENGTH + 5}
-                      autoFocus
-                    />
-                    <div className="flex justify-between text-xs px-1">
-                      {nameError ? (
-                        <span className="text-destructive">{nameError}</span>
-                      ) : (
-                        <span className="text-muted-foreground">Required to join</span>
-                      )}
-                      <span className={`${displayName.length > NAME_MAX_LENGTH ? 'text-destructive' : 'text-muted-foreground'}`}>
-                        {displayName.length}/{NAME_MAX_LENGTH}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    <div className="relative">
-                      <Input
-                        ref={codeInputRef}
-                        type="text"
-                        placeholder="Meeting code (e.g. ABC123)"
-                        value={roomCode}
-                        onChange={(e) => handleCodeChange(e.target.value)}
-                        disabled={isJoining || authLoading}
-                        className={`h-12 text-base font-mono tracking-wider pr-10 ${
-                          codeError ? 'border-destructive focus-visible:ring-destructive' : 
-                          codeComplete ? 'border-green-500 focus-visible:ring-green-500' : ''
-                        }`}
-                        aria-invalid={!!codeError}
-                        maxLength={CODE_LENGTH + 2}
-                      />
-                      {codeComplete && !codeError && (
-                        <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500 animate-scale-in" />
-                      )}
-                    </div>
-                    <div className="flex justify-between text-xs px-1">
-                      {codeError ? (
-                        <span className="text-destructive">{codeError}</span>
-                      ) : codeComplete ? (
-                        <span className="text-green-600 dark:text-green-400">Ready to join!</span>
-                      ) : (
-                        <span className="text-muted-foreground">6-character code from host</span>
-                      )}
-                      <span className={`font-mono ${roomCode.length !== CODE_LENGTH && roomCode.length > 0 ? 'text-destructive' : codeComplete ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
-                        {roomCode.length}/{CODE_LENGTH}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <Button
-                    ref={joinSubmitRef}
-                    type="submit"
-                    disabled={isJoining || authLoading || !isJoinFormValid}
-                    className="w-full h-12 text-base"
-                  >
-                    {isJoining ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Joining...
-                      </>
-                    ) : (
-                      'Join Meeting'
-                    )}
-                  </Button>
-                  {isJoinFormValid && (
-                    <p className="text-xs text-center text-green-600 dark:text-green-400 animate-fade-in">
-                      Press Enter to join
-                    </p>
+            <form onSubmit={handleCreateRoom} className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="host-name">Your Name</Label>
+                  <Input
+                    id="host-name"
+                    value={displayName}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    placeholder="Enter your name"
+                    maxLength={50}
+                    className={nameError ? "border-destructive" : ""}
+                  />
+                  {nameError && (
+                    <p className="text-xs text-destructive">{nameError}</p>
                   )}
-                </form>
-              </TabsContent>
-              
-              {/* WATCH TAB */}
-              <TabsContent value="watch">
-                <form onSubmit={(e) => { e.preventDefault(); handleSpectate(); }} className="space-y-4 pt-4">
-                  <div className="space-y-1.5">
-                    <div className="relative">
-                      <Input
-                        type="text"
-                        placeholder="Meeting code (e.g. ABC123)"
-                        value={roomCode}
-                        onChange={(e) => handleCodeChange(e.target.value)}
-                        disabled={authLoading}
-                        className={`h-12 text-base font-mono tracking-wider pr-10 ${
-                          codeError ? 'border-destructive focus-visible:ring-destructive' : 
-                          codeComplete ? 'border-green-500 focus-visible:ring-green-500' : ''
-                        }`}
-                        aria-invalid={!!codeError}
-                        maxLength={CODE_LENGTH + 2}
-                        autoFocus
-                      />
-                      {codeComplete && !codeError && (
-                        <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500 animate-scale-in" />
-                      )}
-                    </div>
-                    <div className="flex justify-between text-xs px-1">
-                      {codeError ? (
-                        <span className="text-destructive">{codeError}</span>
-                      ) : codeComplete ? (
-                        <span className="text-green-600 dark:text-green-400">Ready to watch!</span>
-                      ) : (
-                        <span className="text-muted-foreground">No sign-in required</span>
-                      )}
-                      <span className={`font-mono ${roomCode.length !== CODE_LENGTH && roomCode.length > 0 ? 'text-destructive' : codeComplete ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
-                        {roomCode.length}/{CODE_LENGTH}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    ref={watchSubmitRef}
-                    type="submit" 
-                    className="w-full h-12 text-base"
-                    disabled={!isWatchFormValid}
-                  >
-                    <Eye className="mr-2 h-4 w-4" />
-                    Watch Meeting
-                  </Button>
-                  
-                  {isWatchFormValid && (
-                    <p className="text-xs text-center text-green-600 dark:text-green-400 animate-fade-in">
-                      Press Enter to watch
-                    </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="host-title">Meeting Title</Label>
+                  <Input
+                    id="host-title"
+                    value={meetingTitle}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    placeholder="e.g., Team Standup"
+                    maxLength={100}
+                    className={titleError ? "border-destructive" : ""}
+                  />
+                  {titleError && (
+                    <p className="text-xs text-destructive">{titleError}</p>
                   )}
-                  
-                  <p className="text-xs text-center text-muted-foreground">
-                    View the queue without joining as participant
-                  </p>
-                </form>
-              </TabsContent>
+                </div>
+              </div>
 
-              {/* HOST TAB - Direct room creation */}
-              <TabsContent value="host">
-                <form onSubmit={handleCreateRoom} className="space-y-4 pt-4">
-                  <div className="space-y-1.5">
-                    <Input
-                      type="text"
-                      placeholder="Your name (facilitator)"
-                      value={displayName}
-                      onChange={(e) => handleNameChange(e.target.value)}
-                      disabled={isCreating || authLoading}
-                      className={`h-12 text-base ${nameError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      aria-invalid={!!nameError}
-                      maxLength={NAME_MAX_LENGTH + 5}
-                      autoFocus
-                    />
-                    <div className="flex justify-between text-xs px-1">
-                      {nameError ? (
-                        <span className="text-destructive">{nameError}</span>
-                      ) : (
-                        <span className="text-muted-foreground">Shown as facilitator</span>
-                      )}
-                      <span className={`${displayName.length > NAME_MAX_LENGTH ? 'text-destructive' : 'text-muted-foreground'}`}>
-                        {displayName.length}/{NAME_MAX_LENGTH}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    <Input
-                      type="text"
-                      placeholder="Meeting title"
-                      value={meetingTitle}
-                      onChange={(e) => handleTitleChange(e.target.value)}
-                      disabled={isCreating || authLoading}
-                      className={`h-12 text-base ${titleError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      aria-invalid={!!titleError}
-                      maxLength={105}
-                    />
-                    <div className="flex justify-between text-xs px-1">
-                      {titleError ? (
-                        <span className="text-destructive">{titleError}</span>
-                      ) : (
-                        <span className="text-muted-foreground">e.g. "Team Standup" or "Board Meeting"</span>
-                      )}
-                      <span className={`${meetingTitle.length > 100 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                        {meetingTitle.length}/100
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <Button
-                    type="submit"
-                    disabled={isCreating || authLoading || !isHostFormValid}
-                    className="w-full h-12 text-base"
-                  >
-                    {isCreating ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create & Start
-                      </>
-                    )}
-                  </Button>
-
-                  <p className="text-xs text-center text-muted-foreground">
-                    A unique code will be generated for participants
-                  </p>
-                </form>
-              </TabsContent>
-            </Tabs>
+              <Button 
+                type="submit" 
+                disabled={!isHostValid || isCreating}
+                className="w-full md:w-auto"
+              >
+                {isCreating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Room
+                  </>
+                )}
+              </Button>
+            </form>
           </CardContent>
         </Card>
-      </div>
-    </main>
-  )
-}
 
-export default HomePage
+        {/* Active Rooms Section */}
+        <Separator className="my-8" />
+        <InlineRoomBrowser />
+      </div>
+
+      {/* QR Scanner Modal */}
+      {showQrScanner && (
+        <QrCodeScanner
+          onScan={handleQrScan}
+          onClose={() => setShowQrScanner(false)}
+        />
+      )}
+    </div>
+  );
+}

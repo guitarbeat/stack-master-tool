@@ -1,13 +1,11 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { UnifiedToastProvider } from "@/components/shared/UnifiedToastProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
 import MeetingRoom from "./pages/MeetingRoom";
-import EnterRoom from "./pages/EnterRoom";
-import Rooms from "./pages/Rooms";
 import FacilitatorDashboard from "./pages/FacilitatorDashboard";
 import Health from "./pages/Health";
 import AppLayout from "./components/layout/AppLayout";
@@ -23,15 +21,16 @@ const App = () => {
           <SupabaseConnectionProvider>
             <AppLayout>
               <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/facilitator" element={<FacilitatorDashboard />} />
-              <Route path="/enter" element={<EnterRoom />} />
-              <Route path="/meeting" element={<MeetingRoom />} />
-              <Route path="/rooms" element={<Rooms />} />
-              <Route path="/health" element={<Health />} />
-              <Route path="/watch/:code" element={<MeetingRoom />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+                <Route path="/" element={<HomePage />} />
+                <Route path="/facilitator" element={<FacilitatorDashboard />} />
+                <Route path="/meeting" element={<MeetingRoom />} />
+                <Route path="/health" element={<Health />} />
+                <Route path="/watch/:code" element={<MeetingRoom />} />
+                {/* Redirects for removed routes */}
+                <Route path="/enter" element={<Navigate to="/" replace />} />
+                <Route path="/rooms" element={<Navigate to="/" replace />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </AppLayout>
           </SupabaseConnectionProvider>
