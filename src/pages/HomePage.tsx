@@ -39,7 +39,7 @@ const titleSchema = z
   .min(3, "Title must be at least 3 characters")
   .max(100, "Title must be 100 characters or less");
 
-export default function HomePage() {
+export default function HomePage() { 
   const navigate = useNavigate();
   const { user, signInAnonymously } = useAuth();
   const { toast } = useToast();
