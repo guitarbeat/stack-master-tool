@@ -170,16 +170,11 @@ export function InlineRoomBrowser() {
             ({rooms.length} live)
           </span>
         </h3>
-        {rooms.length > 6 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/rooms")}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            View all
-            <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
+        {/* Show count badge when there are many rooms */}
+        {rooms.length >= 6 && (
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+            Showing first 6
+          </span>
         )}
       </div>
 
