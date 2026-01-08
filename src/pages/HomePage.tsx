@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type RefObject, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -85,7 +85,7 @@ export default function HomePage() {
     }
   };
 
-  const handleCodeChange = (value: string, targetRef?: React.RefObject<HTMLButtonElement | null>) => {
+  const handleCodeChange = (value: string, targetRef?: RefObject<HTMLButtonElement | null>) => {
     const normalized = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
     setRoomCode(normalized);
     
@@ -132,7 +132,7 @@ export default function HomePage() {
     }
   };
 
-  const handleJoin = async (e: React.FormEvent) => {
+  const handleJoin = async (e: FormEvent) => {
     e.preventDefault();
     
     const nameResult = nameSchema.safeParse(displayName);
@@ -176,7 +176,7 @@ export default function HomePage() {
     }
   };
 
-  const handleWatch = async (e: React.FormEvent) => {
+  const handleWatch = async (e: FormEvent) => {
     e.preventDefault();
     
     const codeResult = roomCodeSchema.safeParse(roomCode);
@@ -194,7 +194,7 @@ export default function HomePage() {
     }
   };
 
-  const handleCreateRoom = async (e: React.FormEvent) => {
+  const handleCreateRoom = async (e: FormEvent) => {
     e.preventDefault();
     
     const nameResult = nameSchema.safeParse(displayName);
