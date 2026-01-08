@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { QuickJoinModal } from "./QuickJoinModal";
-import { Users, Eye, Clock, MessageSquare } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Users, Eye, Clock, MessageSquare, ChevronDown } from "lucide-react";
 
 interface Room {
   id: string;
@@ -24,6 +25,14 @@ export function InlineRoomBrowser() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [joinMode, setJoinMode] = useState<"join" | "watch">("join");
   const [showModal, setShowModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    const saved = localStorage.getItem("rooms_section_open");
+    return saved !== "false";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("rooms_section_open", String(isOpen));
+  }, [isOpen]);
 
   const loadActiveRooms = useCallback(async () => {
     try {
@@ -121,113 +130,111 @@ export function InlineRoomBrowser() {
     return `${Math.floor(diffHours / 24)}d ago`;
   };
 
+  const header = (
+    <CollapsibleTrigger asChild>
+      <button className="flex items-center justify-between w-full group">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <MessageSquare className="h-5 w-5 text-primary" />
+          Active Rooms
+          {!loading && rooms.length > 0 && (
+            <span className="text-sm font-normal text-muted-foreground">
+              ({rooms.length} live)
+            </span>
+          )}
+        </h3>
+        <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+    </CollapsibleTrigger>
+  );
+
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" />
-            Active Rooms
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32 rounded-lg" />
-          ))}
-        </div>
-      </div>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        {header}
+        <CollapsibleContent className="pt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-28 rounded-lg" />
+            ))}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     );
   }
 
   if (rooms.length === 0) {
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" />
-            Active Rooms
-          </h3>
-        </div>
-        <EmptyState
-          illustration="rooms"
-          title="No active rooms"
-          description="Be the first to host a meeting! Create one using the form above."
-          className="py-8"
-        />
-      </div>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        {header}
+        <CollapsibleContent className="pt-4">
+          <EmptyState
+            illustration="rooms"
+            title="No active rooms"
+            description="Be the first to host a meeting!"
+            className="py-6"
+          />
+        </CollapsibleContent>
+      </Collapsible>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-primary" />
-          Active Rooms
-          <span className="text-sm font-normal text-muted-foreground">
-            ({rooms.length} live)
-          </span>
-        </h3>
-        {/* Show count badge when there are many rooms */}
-        {rooms.length >= 6 && (
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-            Showing first 6
-          </span>
-        )}
-      </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      {header}
+      <CollapsibleContent className="pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {rooms.map((room) => (
+            <Card
+              key={room.id}
+              className="group hover:border-primary/50 transition-all duration-200 hover:shadow-md"
+            >
+              <CardContent className="p-3">
+                <div className="space-y-2">
+                  <div>
+                    <h4 className="font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors text-sm">
+                      {room.title}
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      by {room.facilitator}
+                    </p>
+                  </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {rooms.map((room) => (
-          <Card
-            key={room.id}
-            className="group hover:border-primary/50 transition-all duration-200 hover:shadow-md"
-          >
-            <CardContent className="p-4">
-              <div className="space-y-3">
-                <div>
-                  <h4 className="font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                    {room.title}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    by {room.facilitator}
-                  </p>
-                </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {room.participantCount}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {formatTimeAgo(room.createdAt)}
+                    </span>
+                  </div>
 
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Users className="h-3.5 w-3.5" />
-                    {room.participantCount}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" />
-                    {formatTimeAgo(room.createdAt)}
-                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleQuickJoin(room, "join")}
+                      className="flex-1 h-8 text-xs"
+                    >
+                      <Users className="h-3 w-3 mr-1" />
+                      Join
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleQuickJoin(room, "watch")}
+                      className="flex-1 h-8 text-xs"
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      Watch
+                    </Button>
+                  </div>
                 </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleQuickJoin(room, "join")}
-                    className="flex-1"
-                  >
-                    <Users className="h-3.5 w-3.5 mr-1.5" />
-                    Join
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleQuickJoin(room, "watch")}
-                    className="flex-1"
-                  >
-                    <Eye className="h-3.5 w-3.5 mr-1.5" />
-                    Watch
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CollapsibleContent>
 
       {selectedRoom && (
         <QuickJoinModal
@@ -238,6 +245,6 @@ export function InlineRoomBrowser() {
           mode={joinMode}
         />
       )}
-    </div>
+    </Collapsible>
   );
 }
