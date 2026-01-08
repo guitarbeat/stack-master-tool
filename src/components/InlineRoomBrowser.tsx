@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { QuickJoinModal } from "./QuickJoinModal";
-import { Users, Eye, Clock, MessageSquare, ArrowRight } from "lucide-react";
+import { Users, Eye, Clock, MessageSquare } from "lucide-react";
 
 interface Room {
   id: string;
@@ -19,7 +18,6 @@ interface Room {
 }
 
 export function InlineRoomBrowser() {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
