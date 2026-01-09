@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +11,7 @@ import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 import { useAuth } from "@/hooks/useAuth";
 import { SupabaseMeetingService } from "@/services/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { nameSchema, roomCodeSchema, titleSchema } from "@/utils/schemas";
 import { 
   Users, 
   Eye, 
@@ -21,23 +21,6 @@ import {
   Check,
   User
 } from "lucide-react";
-
-// Validation schemas
-const nameSchema = z
-  .string()
-  .min(1, "Name is required")
-  .max(50, "Name must be 50 characters or less")
-  .regex(/^[a-zA-Z0-9\s\-']+$/, "Only letters, numbers, spaces, hyphens, and apostrophes");
-
-const roomCodeSchema = z
-  .string()
-  .length(6, "Room code must be 6 characters")
-  .regex(/^[A-Za-z0-9]+$/, "Only letters and numbers");
-
-const titleSchema = z
-  .string()
-  .min(3, "Title must be at least 3 characters")
-  .max(100, "Title must be 100 characters or less");
 
 export default function HomePage() { 
   const navigate = useNavigate();
