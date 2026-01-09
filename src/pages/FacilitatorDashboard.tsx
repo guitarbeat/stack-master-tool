@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Plus, ExternalLink, Trash2, ArrowLeft, Loader2, AlertCircle, Copy, Check } from 'lucide-react';
 import { logProduction } from '@/utils/productionLogger';
+import { copyMeetingLink } from '@/utils/clipboard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,8 +50,7 @@ export default function FacilitatorDashboard() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const handleCopyLink = async (code: string) => {
-    const link = `${window.location.origin}/meeting?mode=join&code=${code}`;
-    await navigator.clipboard.writeText(link);
+    await copyMeetingLink(code, 'join');
     setCopiedCode(code);
     showToast({
       type: 'success',

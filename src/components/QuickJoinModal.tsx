@@ -1,6 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -15,12 +14,7 @@ import { Loader2, Users, Eye } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { SupabaseMeetingService } from "@/services/supabase";
 import { useToast } from "@/hooks/use-toast";
-
-const nameSchema = z
-  .string()
-  .min(1, "Name is required")
-  .max(50, "Name must be 50 characters or less")
-  .regex(/^[a-zA-Z0-9\s\-']+$/, "Only letters, numbers, spaces, hyphens, and apostrophes");
+import { nameSchema } from "@/utils/schemas";
 
 interface QuickJoinModalProps {
   open: boolean;

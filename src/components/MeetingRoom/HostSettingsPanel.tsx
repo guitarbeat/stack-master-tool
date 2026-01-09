@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { AddParticipants } from "@/components/features/meeting/AddParticipants";
 import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { useToast } from "@/hooks/use-toast";
+import { copyMeetingLink } from "@/utils/clipboard";
 import QRCode from "qrcode";
 import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy } from "lucide-react";
 import {
@@ -61,8 +62,7 @@ export function HostSettingsPanel({
   const [copiedWatch, setCopiedWatch] = useState(false);
 
   const handleCopyLink = async (type: 'join' | 'watch') => {
-    const link = `${window.location.origin}/meeting?mode=${type}&code=${meetingCode}`;
-    await navigator.clipboard.writeText(link);
+    await copyMeetingLink(meetingCode, type);
     
     if (type === 'join') {
       setCopiedJoin(true);
