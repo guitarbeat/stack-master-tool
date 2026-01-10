@@ -1010,13 +1010,13 @@ export default function MeetingRoom() {
 
       {/* Keyboard Shortcuts Modal */}
       {showKeyboardShortcutsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl border-0">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card rounded-2xl p-6 max-w-md w-full mx-4 shadow-elegant border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Keyboard Shortcuts</h3>
+              <h3 className="text-lg font-semibold text-foreground">Keyboard Shortcuts</h3>
               <button
                 onClick={() => setShowKeyboardShortcutsModal(false)}
-                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 ✕
               </button>
@@ -1025,18 +1025,18 @@ export default function MeetingRoom() {
               {mode === "host" && (
                 <>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-slate-900 dark:text-slate-100">Next Speaker</span>
-                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-700 dark:text-slate-100">Enter</kbd>
+                    <span className="text-sm text-foreground">Next Speaker</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-xs text-muted-foreground">Enter</kbd>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-slate-900 dark:text-slate-100">Undo Last Action</span>
-                    <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-700 dark:text-slate-100">Ctrl+Z</kbd>
+                    <span className="text-sm text-foreground">Undo Last Action</span>
+                    <kbd className="px-2 py-1 bg-muted rounded text-xs text-muted-foreground">Ctrl+Z</kbd>
                   </div>
                 </>
               )}
               <div className="flex justify-between items-center py-2">
-                <span className="text-sm text-slate-900 dark:text-slate-100">Show/Hide Shortcuts</span>
-                <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-700 dark:text-slate-100">?</kbd>
+                <span className="text-sm text-foreground">Show/Hide Shortcuts</span>
+                <kbd className="px-2 py-1 bg-muted rounded text-xs text-muted-foreground">?</kbd>
               </div>
             </div>
           </div>
@@ -1045,12 +1045,12 @@ export default function MeetingRoom() {
 
       {/* QR Code Dialog */}
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
-        <DialogContent className="max-w-md bg-white dark:bg-slate-800 border-0">
+        <DialogContent className="max-w-md bg-card border border-border">
           <DialogHeader>
-            <DialogTitle className="text-slate-900 dark:text-slate-100">
+            <DialogTitle className="text-foreground">
               {qrType === 'join' ? 'Join via QR code' : 'Watch via QR code'}
             </DialogTitle>
-            <DialogDescription className="text-slate-600 dark:text-slate-400">
+            <DialogDescription className="text-muted-foreground">
               {qrType === 'join'
                 ? 'Scan this QR code with your phone to join the meeting as a participant.'
                 : 'Scan this QR code with your phone to observe the meeting remotely.'
@@ -1059,7 +1059,7 @@ export default function MeetingRoom() {
           </DialogHeader>
           <div className="flex items-center justify-center py-4">
             {qrUrl && (
-              <div className="bg-white dark:bg-slate-700 p-4 rounded-lg shadow-sm">
+              <div className="bg-card p-4 rounded-lg shadow-sm border border-border">
                 <img
                   src={qrUrl}
                   alt={`${qrType === 'join' ? 'Join' : 'Watch'} QR Code`}
@@ -1068,7 +1068,7 @@ export default function MeetingRoom() {
               </div>
             )}
           </div>
-          <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+          <div className="text-center text-sm text-muted-foreground">
             {qrType === 'join'
               ? 'Participants can scan this code to join the speaking queue.'
               : 'Observers can scan this code to watch the meeting remotely.'
