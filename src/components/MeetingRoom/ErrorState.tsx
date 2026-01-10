@@ -76,11 +76,11 @@ export const ErrorState = ({
 
   return (
     <div className="container mx-auto px-4 py-8 sm:py-16">
-      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg text-center max-w-md mx-auto dark:bg-zinc-900 dark:border dark:border-zinc-800">
-        <div className="bg-red-100 p-4 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
-          <LogOut className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 mx-auto" />
+      <div className="bg-card rounded-2xl p-6 sm:p-8 shadow-lg text-center max-w-md mx-auto border border-border">
+        <div className="bg-destructive/10 p-4 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4">
+          <LogOut className="w-6 h-6 sm:w-8 sm:h-8 text-destructive mx-auto" />
         </div>
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-zinc-100 mb-4">Connection Error</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Connection Error</h2>
         
         <div className="mb-6">
           <ErrorDisplay
@@ -98,7 +98,7 @@ export const ErrorState = ({
               <button
                 onClick={() => void handleRetry()}
                 disabled={isRetrying}
-                className="w-full py-3 sm:py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px] text-base sm:text-sm transition-colors"
+                className="w-full py-3 sm:py-2 px-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px] text-base sm:text-sm transition-colors"
               >
                 {isRetrying ? (
                   <>
@@ -121,7 +121,7 @@ export const ErrorState = ({
             )}
 
             {!canRetry && retryCount >= maxRetries && (
-              <div className="text-sm sm:text-xs text-orange-600 bg-orange-50 p-3 rounded-lg">
+              <div className="text-sm sm:text-xs text-warning bg-warning/10 p-3 rounded-lg">
                 <AlertTriangle className="w-4 h-4 inline mr-1" />
                 Max retries reached. Please check your connection.
               </div>
