@@ -124,9 +124,9 @@ export const QueuePositionFeedback = ({
   }, [queuePosition, averageSpeakingTime, queueHistory]);
 
   const getPositionColor = () => {
-    if (queuePosition === 1) return 'text-green-600 bg-green-50 dark:bg-green-900/20';
-    if (queuePosition <= 3) return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20';
-    return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20';
+    if (queuePosition === 1) return 'text-success bg-success/10';
+    if (queuePosition <= 3) return 'text-warning bg-warning/10';
+    return 'text-info bg-info/10';
   };
 
   const getPositionIcon = () => {
@@ -231,10 +231,10 @@ export const QueuePositionFeedback = ({
         )}
 
         {/* Tips */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+        <div className="bg-info/10 rounded-lg p-3">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-blue-700 dark:text-blue-300">
+            <AlertCircle className="w-4 h-4 text-info mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-info">
               <div className="font-medium mb-1">Tips while waiting:</div>
               <ul className="text-xs space-y-1">
                 <li>• Keep this tab open to maintain your position</li>
