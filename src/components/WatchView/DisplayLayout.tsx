@@ -2,7 +2,6 @@ import type { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-// import { Progress } from "@/components/ui/progress";
 import { SpeakingAnalytics } from "./SpeakingAnalytics";
 import { 
   Users, 
@@ -54,26 +53,26 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-slate-100">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground">
             {meetingData.title}
           </h1>
-          <div className="flex justify-center items-center gap-4 text-lg sm:text-xl text-slate-600 dark:text-slate-400">
-            <span>Code: <strong className="text-slate-900 dark:text-slate-100">{meetingData.code}</strong></span>
+          <div className="flex justify-center items-center gap-4 text-lg sm:text-xl text-muted-foreground">
+            <span>Code: <strong className="text-foreground">{meetingData.code}</strong></span>
             <span>•</span>
-            <span>Facilitated by: <strong className="text-slate-900 dark:text-slate-100">{meetingData.facilitator}</strong></span>
+            <span>Facilitated by: <strong className="text-foreground">{meetingData.facilitator}</strong></span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Current Speaker - Large Display */}
           <div className="lg:col-span-2">
-            <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+            <Card variant="elevated">
               <CardHeader className="text-center pb-4">
-                <CardTitle className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">
                   Currently Speaking
                 </CardTitle>
               </CardHeader>
@@ -82,12 +81,12 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
                   <>
                     <div className="space-y-4">
                       <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                        <MessageCircle className="w-12 h-12 text-white" />
+                        <MessageCircle className="w-12 h-12 text-primary-foreground" />
                       </div>
-                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100">
+                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
                         {currentSpeaker.participantName}
                       </h2>
-                      <div className="flex items-center justify-center gap-2 text-xl sm:text-2xl text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center justify-center gap-2 text-xl sm:text-2xl text-muted-foreground">
                         <Timer className="w-6 h-6" />
                         <span className="font-mono font-bold">
                           {formatTime(getCurrentSpeakingTime())}
@@ -97,13 +96,13 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
                   </>
                 ) : (
                   <div className="space-y-4">
-                    <div className="w-24 h-24 mx-auto bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
-                      <Users className="w-12 h-12 text-slate-400" />
+                    <div className="w-24 h-24 mx-auto bg-muted rounded-full flex items-center justify-center">
+                      <Users className="w-12 h-12 text-muted-foreground" />
                     </div>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-500 dark:text-slate-400">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-muted-foreground">
                       No Current Speaker
                     </h2>
-                    <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400">
+                    <p className="text-lg sm:text-xl text-muted-foreground">
                       Waiting for someone to speak
                     </p>
                   </div>
@@ -114,9 +113,9 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
 
           {/* Speaking Queue */}
           <div className="space-y-6">
-            <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+            <Card variant="elevated">
               <CardHeader>
-                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <CardTitle className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
                   <Users className="w-6 h-6" />
                   Speaking Queue
                 </CardTitle>
@@ -129,7 +128,7 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
                       className={`p-4 rounded-lg border-2 transition-all ${
                         index === 0
                           ? 'bg-primary/10 border-primary text-primary'
-                          : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600'
+                          : 'bg-muted border-border'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -143,7 +142,7 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                  <div className="text-center py-8 text-muted-foreground">
                     <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p className="text-lg">No one in queue</p>
                   </div>
@@ -170,9 +169,9 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
 
         {/* Participants Count */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 px-6 py-3 rounded-full shadow-lg">
-            <Users className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <div className="inline-flex items-center gap-2 bg-card px-6 py-3 rounded-full shadow-lg">
+            <Users className="w-5 h-5 text-muted-foreground" />
+            <span className="text-lg font-semibold text-foreground">
               {participants.length} {participants.length === 1 ? 'Participant' : 'Participants'}
             </span>
           </div>
