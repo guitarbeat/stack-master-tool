@@ -35,25 +35,25 @@ export const SpeakingQueue = ({
   const { dragIndex, handleDragStart, handleDragOver, handleDragLeave, handleDrop, handleDragEnd, isDragOver } = useDragAndDrop({ isFacilitator });
   if (speakingQueue.length === 0) {
     return (
-      <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+      <Card variant="elevated">
         <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
             <Hand className="w-6 h-6" />
             Speaking Queue
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <div className="bg-slate-50 dark:bg-slate-700 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <Hand className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+            <div className="bg-muted rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <Hand className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Ready for discussion
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm mx-auto">
+            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
               No one is currently in the speaking queue. Participants can raise their hand to join the discussion.
             </p>
-            <div className="text-xs text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2 inline-block">
+            <div className="text-xs text-muted-foreground bg-muted rounded-lg px-3 py-2 inline-block">
               💡 Tip: Use keyboard shortcuts for faster facilitation
             </div>
           </div>
@@ -63,9 +63,9 @@ export const SpeakingQueue = ({
   }
 
   return (
-    <Card className="bg-white dark:bg-slate-800 shadow-xl border-0">
+    <Card variant="elevated">
       <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <CardTitle className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
           <Hand className="w-6 h-6" />
           Speaking Queue
         </CardTitle>
@@ -95,12 +95,12 @@ export const SpeakingQueue = ({
                 isCurrentSpeaker
                   ? 'bg-primary/5 border-primary shadow-sm'
                   : isDirect
-                  ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-400'
+                  ? 'bg-warning/10 border-warning'
                   : isPointInfo
-                  ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-400'
+                  ? 'bg-info/10 border-info'
                   : isClarify
-                  ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-400'
-                  : 'bg-slate-50 dark:bg-slate-700 border-slate-300'
+                  ? 'bg-accent/10 border-accent'
+                  : 'bg-muted border-border'
               } ${isSelf ? 'ring-2 ring-primary/20 bg-primary/5' : ''} ${
                 canDrag ? 'draggable-item cursor-grab' : ''
               } ${isDragging ? 'dragging opacity-50 cursor-grabbing' : ''} ${
@@ -112,8 +112,8 @@ export const SpeakingQueue = ({
                   {/* Position/Speaker indicator */}
                   <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
                     isCurrentSpeaker
-                      ? 'bg-primary text-white animate-pulse'
-                      : 'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300'
+                      ? 'bg-primary text-primary-foreground animate-pulse'
+                      : 'bg-muted text-muted-foreground'
                   }`}>
                     {isCurrentSpeaker ? '🎤' : index + 1}
                   </div>
@@ -132,7 +132,7 @@ export const SpeakingQueue = ({
                             ? 'text-primary'
                             : isSelf
                             ? 'text-primary font-bold'
-                            : 'text-slate-900 dark:text-slate-100'
+                            : 'text-foreground'
                         }`}
                       />
                     ) : (
@@ -141,7 +141,7 @@ export const SpeakingQueue = ({
                           ? 'text-primary'
                           : isSelf
                           ? 'text-primary font-bold'
-                          : 'text-slate-900 dark:text-slate-100'
+                          : 'text-foreground'
                       }`}>
                         {entryName}
                       </span>
@@ -150,10 +150,10 @@ export const SpeakingQueue = ({
                     {/* Compact type indicator */}
                     {type !== 'speak' && (
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        isDirect ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
-                        isPointInfo ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
-                        isClarify ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
-                        'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                        isDirect ? 'bg-warning/20 text-warning-foreground' :
+                        isPointInfo ? 'bg-info/20 text-info-foreground' :
+                        isClarify ? 'bg-accent/20 text-accent-foreground' :
+                        'bg-muted text-muted-foreground'
                       }`}>
                         {type === 'direct-response' ? 'Direct' :
                          type === 'point-of-info' ? 'Info' :

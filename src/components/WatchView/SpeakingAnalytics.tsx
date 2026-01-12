@@ -69,42 +69,42 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
       <CardContent className="space-y-6">
         {/* Primary Stats - 4 columns */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <Clock className="w-6 h-6 mx-auto mb-2 text-slate-600 dark:text-slate-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-4 bg-muted rounded-lg">
+            <Clock className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+            <div className="text-lg font-bold text-foreground">
               {formatTime(totalSpeakingTime)}
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Total Speaking Time
             </div>
           </div>
 
-          <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-slate-600 dark:text-slate-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-4 bg-muted rounded-lg">
+            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+            <div className="text-lg font-bold text-foreground">
               {formatTime(averageSpeakingTime)}
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Average per Person
             </div>
           </div>
 
-          <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <Timer className="w-6 h-6 mx-auto mb-2 text-slate-600 dark:text-slate-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-4 bg-muted rounded-lg">
+            <Timer className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+            <div className="text-lg font-bold text-foreground">
               {formatLongTime(meetingDuration)}
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Meeting Duration
             </div>
           </div>
 
-          <div className="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <Target className="w-6 h-6 mx-auto mb-2 text-slate-600 dark:text-slate-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-4 bg-muted rounded-lg">
+            <Target className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+            <div className="text-lg font-bold text-foreground">
               {participationRate.toFixed(0)}%
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Participation Rate
             </div>
           </div>
@@ -112,32 +112,32 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
 
         {/* Engagement Stats - 3 columns */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <Users className="w-5 h-5 mx-auto mb-1 text-blue-600 dark:text-blue-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-3 bg-info/10 rounded-lg">
+            <Users className="w-5 h-5 mx-auto mb-1 text-info" />
+            <div className="text-lg font-bold text-foreground">
               {activeSpeakers}/{totalParticipants}
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Active Speakers
             </div>
           </div>
 
-          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <Activity className="w-5 h-5 mx-auto mb-1 text-green-600 dark:text-green-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-3 bg-success/10 rounded-lg">
+            <Activity className="w-5 h-5 mx-auto mb-1 text-success" />
+            <div className="text-lg font-bold text-foreground">
               {queueActivity}
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Queue Actions
             </div>
           </div>
 
-          <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <Zap className="w-5 h-5 mx-auto mb-1 text-purple-600 dark:text-purple-400" />
-            <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-center p-3 bg-accent/10 rounded-lg">
+            <Zap className="w-5 h-5 mx-auto mb-1 text-accent" />
+            <div className="text-lg font-bold text-foreground">
               {directResponses}
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400">
+            <div className="text-xs text-muted-foreground">
               Direct Responses
             </div>
           </div>
@@ -145,17 +145,17 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
 
         {/* Speaking Ratio Indicator */}
         {meetingDuration > 0 && (
-          <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg">
+          <div className="p-4 bg-gradient-to-r from-info/10 to-accent/10 rounded-lg">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-medium text-foreground">
                 Speaking vs Meeting Time
               </span>
-              <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              <span className="text-sm font-bold text-foreground">
                 {speakingRatio.toFixed(1)}%
               </span>
             </div>
             <Progress value={Math.min(speakingRatio, 100)} className="h-2" />
-            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               {formatTime(totalSpeakingTime)} speaking of {formatLongTime(meetingDuration)} total
             </div>
           </div>
@@ -163,7 +163,7 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
 
         {/* Speaking Distribution */}
         <div className="space-y-4">
-          <h4 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <h4 className="text-lg font-semibold text-foreground">
             Speaking Time Distribution
           </h4>
           {sortedDistribution.length > 0 ? (
@@ -180,15 +180,15 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
                         <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
                           {index + 1}
                         </div>
-                        <span className="font-medium text-slate-900 dark:text-slate-100">
+                        <span className="font-medium text-foreground">
                           {participant.name}
                         </span>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold text-slate-900 dark:text-slate-100">
+                        <div className="font-semibold text-foreground">
                           {formatTime(participant.value)}
                         </div>
-                        <div className="text-xs text-slate-600 dark:text-slate-400">
+                        <div className="text-xs text-muted-foreground">
                           {sharePercentage.toFixed(1)}% of total
                         </div>
                       </div>
@@ -202,7 +202,7 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
               })}
             </div>
           ) : (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-muted-foreground">
               <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg">No speaking data available yet</p>
             </div>
