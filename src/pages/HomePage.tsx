@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { InlineRoomBrowser } from "@/components/InlineRoomBrowser";
 import Confetti from "@/components/ui/Confetti";
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
@@ -18,8 +17,9 @@ import {
   Plus, 
   Loader2, 
   QrCode, 
-  Check,
-  User
+  ArrowRight,
+  Sparkles,
+  Hand
 } from "lucide-react";
 
 export default function HomePage() { 
@@ -48,6 +48,7 @@ export default function HomePage() {
 
   // Refs
   const joinButtonRef = useRef<HTMLButtonElement>(null);
+  const codeInputRef = useRef<HTMLInputElement>(null);
 
   // Load saved name from localStorage
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function HomePage() {
       handleCodeChange(code.toUpperCase());
       setShowQrScanner(false);
       toast({
-        title: "Code scanned",
+        title: "Code scanned!",
         description: `Room code: ${code.toUpperCase()}`,
       });
     }
@@ -210,7 +211,7 @@ export default function HomePage() {
       );
 
       toast({
-        title: "Room created",
+        title: "Room created!",
         description: `Your room code is ${meeting.code}`,
       });
 
@@ -231,48 +232,58 @@ export default function HomePage() {
   const isHostValid = displayName.length > 0 && !nameError && meetingTitle.length >= 3 && !titleError;
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-background to-muted/30">
+    <div className="min-h-[calc(100vh-8rem)] bg-gradient-to-b from-background via-background to-muted/20">
       {showConfetti && <Confetti />}
       
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Hero */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+      <div className="container mx-auto px-4 py-6 sm:py-10 max-w-3xl">
+        {/* Hero Section */}
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+            <Hand className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 tracking-tight">
             Speaking Queue
           </h1>
-          <p className="text-muted-foreground">
-            Manage discussions with fair, orderly participation
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            Fair, orderly discussions for meetings of any size
           </p>
         </div>
 
         <div className="space-y-6">
-          {/* Shared Name Input */}
-          <Card>
-            <CardContent className="pt-6">
+          {/* Step 1: Your Identity */}
+          <Card className="shadow-card border-border/50 overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary text-primary-foreground text-sm font-bold">
+                  1
+                </span>
+                <div>
+                  <CardTitle className="text-lg">Who are you?</CardTitle>
+                  <CardDescription>Your name appears when you speak</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4">
               <div className="space-y-3">
-                <Label htmlFor="name" className="flex items-center gap-2 text-base">
-                  <User className="h-4 w-4 text-primary" />
-                  Your Name
-                </Label>
                 <Input
                   id="name"
                   value={displayName}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder="Enter your name..."
                   maxLength={50}
-                  className={nameError ? "border-destructive" : ""}
+                  className={`text-base h-12 ${nameError ? "border-destructive focus-visible:ring-destructive" : ""}`}
                 />
-                <div className="flex justify-between items-center">
-                  <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                <div className="flex justify-between items-center text-sm">
+                  <label className="flex items-center gap-2 text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors">
                     <input
                       type="checkbox"
                       checked={rememberName}
                       onChange={(e) => setRememberName(e.target.checked)}
-                      className="rounded border-muted-foreground/50"
+                      className="rounded border-border accent-primary"
                     />
                     Remember me
                   </label>
-                  <span className={`text-xs ${nameError ? "text-destructive" : "text-muted-foreground"}`}>
+                  <span className={nameError ? "text-destructive" : "text-muted-foreground"}>
                     {nameError || `${displayName.length}/50`}
                   </span>
                 </div>
@@ -280,127 +291,162 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Separator />
-
-          {/* Unified Code Entry */}
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <div className="space-y-3">
-                <Label htmlFor="code" className="text-base">Room Code</Label>
-                <div className="flex gap-2">
+          {/* Step 2: Join or Watch */}
+          <Card className="shadow-card border-border/50 overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary text-primary-foreground text-sm font-bold">
+                  2
+                </span>
+                <div>
+                  <CardTitle className="text-lg">Join a meeting</CardTitle>
+                  <CardDescription>Enter a room code or scan QR</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-4">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
                   <Input
+                    ref={codeInputRef}
                     id="code"
                     value={roomCode}
                     onChange={(e) => handleCodeChange(e.target.value)}
                     placeholder="ABCD12"
                     maxLength={6}
-                    className={`font-mono text-center text-lg uppercase tracking-widest ${
+                    className={`font-mono text-center text-xl sm:text-2xl uppercase tracking-[0.3em] h-14 pr-10 ${
                       codeComplete && !codeError
-                        ? "border-green-500 bg-green-500/5"
+                        ? "border-success bg-success/5 focus-visible:ring-success"
                         : codeError
-                        ? "border-destructive"
+                        ? "border-destructive focus-visible:ring-destructive"
                         : ""
                     }`}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setShowQrScanner(true)}
-                    title="Scan QR Code"
-                  >
-                    <QrCode className="h-4 w-4" />
-                  </Button>
+                  {codeComplete && !codeError && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-success">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                  )}
                 </div>
-                <p className={`text-xs ${codeError ? "text-destructive" : codeComplete ? "text-green-600" : "text-muted-foreground"}`}>
-                  {codeError || (codeComplete ? "Ready! Choose an action below" : "Enter a 6-character room code")}
-                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setShowQrScanner(true)}
+                  className="h-14 w-14 shrink-0"
+                  title="Scan QR Code"
+                >
+                  <QrCode className="h-5 w-5" />
+                </Button>
               </div>
+              
+              <p className={`text-sm text-center ${
+                codeError ? "text-destructive" : 
+                codeComplete ? "text-success font-medium" : 
+                "text-muted-foreground"
+              }`}>
+                {codeError || (codeComplete ? "✓ Ready to join!" : "6-character room code")}
+              </p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 pt-2">
                 <Button
                   ref={joinButtonRef}
                   onClick={handleJoin}
                   disabled={!isJoinValid || isJoining}
-                  className="w-full"
+                  size="lg"
+                  className="w-full h-12 text-base font-semibold"
                 >
                   {isJoining ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   ) : (
-                    <Users className="mr-2 h-4 w-4" />
+                    <Users className="mr-2 h-5 w-5" />
                   )}
-                  {isJoining ? "Joining..." : "Join"}
+                  {isJoining ? "Joining..." : "Join & Speak"}
                 </Button>
                 <Button
                   onClick={handleWatch}
                   disabled={!isWatchValid || isWatching}
                   variant="secondary"
-                  className="w-full"
+                  size="lg"
+                  className="w-full h-12 text-base font-semibold"
                 >
                   {isWatching ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   ) : (
-                    <Eye className="mr-2 h-4 w-4" />
+                    <Eye className="mr-2 h-5 w-5" />
                   )}
-                  {isWatching ? "Loading..." : "Watch"}
+                  {isWatching ? "Loading..." : "Watch Only"}
                 </Button>
               </div>
               
               {!displayName && roomCode.length === 6 && (
-                <p className="text-xs text-amber-600 text-center">
-                  Enter your name above to join as a participant
+                <p className="text-sm text-warning text-center bg-warning/10 py-2 px-3 rounded-lg">
+                  ↑ Enter your name above to join as a participant
                 </p>
               )}
             </CardContent>
           </Card>
 
-          <Separator />
-
-          {/* Quick Host */}
-          <Card className="border-dashed">
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Plus className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Host a New Meeting</span>
+          {/* Step 3: Create a Room */}
+          <Card className="shadow-card border-dashed border-2 border-border/50 overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-accent text-accent-foreground text-sm font-bold">
+                  <Plus className="w-4 h-4" />
+                </span>
+                <div>
+                  <CardTitle className="text-lg">Or start your own</CardTitle>
+                  <CardDescription>Create a meeting and invite others</CardDescription>
                 </div>
-                
-                <div className="flex gap-2">
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <form onSubmit={handleCreateRoom} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-sm font-medium">
+                    Meeting Title
+                  </Label>
                   <Input
+                    id="title"
                     value={meetingTitle}
                     onChange={(e) => handleTitleChange(e.target.value)}
-                    placeholder="Meeting title..."
+                    placeholder="e.g., Team Standup, Board Meeting..."
                     maxLength={100}
-                    className={titleError ? "border-destructive" : ""}
+                    className={`h-12 text-base ${titleError ? "border-destructive focus-visible:ring-destructive" : ""}`}
                   />
-                  <Button
-                    onClick={handleCreateRoom}
-                    disabled={!isHostValid || isCreating}
-                  >
-                    {isCreating ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Check className="h-4 w-4" />
-                    )}
-                  </Button>
+                  {titleError && (
+                    <p className="text-sm text-destructive">{titleError}</p>
+                  )}
                 </div>
                 
-                {titleError && (
-                  <p className="text-xs text-destructive">{titleError}</p>
-                )}
+                <Button
+                  type="submit"
+                  disabled={!isHostValid || isCreating}
+                  size="lg"
+                  className="w-full h-12 text-base font-semibold"
+                  variant="default"
+                >
+                  {isCreating ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <ArrowRight className="mr-2 h-5 w-5" />
+                  )}
+                  {isCreating ? "Creating..." : "Create & Host"}
+                </Button>
+                
                 {!displayName && meetingTitle.length > 0 && (
-                  <p className="text-xs text-amber-600">
-                    Enter your name above to host
+                  <p className="text-sm text-warning text-center bg-warning/10 py-2 px-3 rounded-lg">
+                    ↑ Enter your name above to host this meeting
                   </p>
                 )}
-              </div>
+              </form>
             </CardContent>
           </Card>
 
-          <Separator />
-
-          {/* Active Rooms */}
-          <InlineRoomBrowser />
+          {/* Active Rooms Browser */}
+          <div className="pt-2">
+            <InlineRoomBrowser />
+          </div>
         </div>
       </div>
 
