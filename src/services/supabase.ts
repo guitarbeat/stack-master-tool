@@ -371,6 +371,34 @@ export class SupabaseMeetingService {
     }
   }
 
+  // Check if a user can rejoin as facilitator (name matches original facilitator)
+  static async canRejoinAsFacilitator(
+    meetingCode: string,
+    participantName: string,
+  ): Promise<boolean> {
+    try {
+      const normalizedCode = meetingCode.toUpperCase().trim();
+      const normalizedName = participantName.trim().toLowerCase();
+
+      const { data: meeting, error } = await withSupabase((client) =>
+        client
+          .from("meetings")
+          .select("facilitator_name")
+          .eq("meeting_code", normalizedCode)
+          .eq("is_active", true)
+          .single(),
+      );
+
+      if (error || !meeting) {
+        return false;
+      }
+
+      return meeting.facilitator_name.toLowerCase() === normalizedName;
+    } catch {
+      return false;
+    }
+  }
+
   // Join meeting as participant
   static async joinMeeting(
     meetingCode: string,
@@ -410,14 +438,9 @@ export class SupabaseMeetingService {
         );
       }
 
-      // Check if facilitator authorization is required
-      if (isFacilitator && meeting.facilitator !== participantName) {
-        throw new AppError(
-          ErrorCode.UNAUTHORIZED_FACILITATOR,
-          undefined,
-          "Only the meeting creator can join as facilitator",
-        );
-      }
+      // Auto-detect facilitator status: if name matches original facilitator, allow rejoining as facilitator
+      const nameMatchesFacilitator = meeting.facilitator.toLowerCase() === participantName.trim().toLowerCase();
+      const shouldBeFacilitator = isFacilitator || nameMatchesFacilitator;
 
       // Create participant
       const { data, error } = await withSupabase((client) =>
@@ -426,7 +449,7 @@ export class SupabaseMeetingService {
           .insert({
             meeting_id: meeting.id,
             name: participantName.trim(),
-            is_facilitator: isFacilitator,
+            is_facilitator: shouldBeFacilitator,
             is_active: true,
           })
           .select()

@@ -294,15 +294,35 @@ async function handleJoinOrWatchMode(
         const finalParticipantName = trimmedParticipantName && trimmedParticipantName.length > 0
           ? trimmedParticipantName
           : user?.email ?? `Participant-${Date.now()}`;
+        
+        // joinMeeting auto-detects facilitator status based on name match
         const participant = await SupabaseMeetingService.joinMeeting(
           validation.normalizedCode,
           finalParticipantName,
-          false // not facilitator
+          false // Let the service auto-detect facilitator status
         );
+        
         // * Store the current participant ID for queue operations
         setCurrentParticipantId(participant.id);
         // * Add the new participant to the list
         setServerParticipants(prev => [...prev, participant]);
+        
+        // * If user rejoined as facilitator (name matched), redirect to host mode
+        if (participant.isFacilitator) {
+          logProduction("info", {
+            action: "facilitator_rejoin_detected",
+            meetingCode: validation.normalizedCode,
+            participantName: finalParticipantName,
+          });
+          // Redirect to host mode by updating URL
+          window.history.replaceState(
+            null, 
+            "", 
+            `/meeting?code=${validation.normalizedCode}&mode=host`
+          );
+          // Force page reload to reinitialize with host mode
+          window.location.reload();
+        }
       } catch (joinError) {
         logProduction("error", {
           action: "join_meeting_participant",
