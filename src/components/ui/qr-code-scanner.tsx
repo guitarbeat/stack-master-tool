@@ -97,7 +97,7 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
       </div>
 
       {/* Camera View */}
-      <div className="flex-1 relative bg-black">
+      <div className="flex-1 relative bg-foreground">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -115,7 +115,7 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
               <div className="absolute bottom-0 right-0 w-8 h-8 border-r-4 border-b-4 border-primary rounded-br-lg" />
               
               {/* Scanning indicator */}
-              <div className="absolute -bottom-12 left-0 right-0 flex items-center justify-center gap-2 text-white">
+              <div className="absolute -bottom-12 left-0 right-0 flex items-center justify-center gap-2 text-background">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span className="text-sm">Scanning...</span>
               </div>
@@ -125,8 +125,8 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
 
         {/* Error state */}
         {error && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-            <div className="text-center text-white p-6 max-w-sm">
+          <div className="absolute inset-0 flex items-center justify-center bg-foreground/90">
+            <div className="text-center text-background p-6 max-w-sm">
               <Camera className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium mb-2">Camera Not Available</p>
               <p className="text-sm opacity-80 mb-4">{error}</p>
