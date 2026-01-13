@@ -76,7 +76,13 @@ export function useMeetingState(): UseMeetingStateReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<AppError | string | null>(null);
   const [codeInput, setCodeInput] = useState<string>("");
-  const [participantName, setParticipantName] = useState<string>("");
+  // Load saved name from localStorage if available
+  const [participantName, setParticipantName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("user_display_name") ?? "";
+    }
+    return "";
+  });
   
   // * Server state
   const [serverMeeting, setServerMeeting] = useState<MeetingWithParticipants | null>(null);

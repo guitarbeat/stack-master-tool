@@ -97,7 +97,8 @@ export default function MeetingRoom() {
 
     try {
       setIsLoading(true);
-      const facilitatorName = user?.email ?? "Anonymous Facilitator";
+      // Use participantName from state (loaded from localStorage) or fallback
+      const facilitatorName = participantName.trim() || user?.email || "Anonymous Facilitator";
       const created = await SupabaseMeetingService.createMeeting(
         codeInput.trim(),
         facilitatorName,
