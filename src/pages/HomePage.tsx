@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type FormEvent } from "react";
+import { useState, useRef, useEffect, type SyntheticEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -124,9 +124,9 @@ export default function HomePage() {
 
   // Removed duplicate handleJoin - now using unified handleEnterRoom
 
-  const handleEnterRoom = async (e: FormEvent) => {
-    e.preventDefault();
-    
+  const handleEnterRoom = async (e?: SyntheticEvent) => {
+    e?.preventDefault();
+
     const codeResult = roomCodeSchema.safeParse(roomCode);
     if (!codeResult.success) {
       setCodeError(codeResult.error.errors[0].message);
@@ -374,7 +374,7 @@ export default function HomePage() {
               {/* Single Enter Button */}
               <Button
                 ref={joinButtonRef}
-                onClick={handleEnterRoom}
+                onClick={(e) => void handleEnterRoom(e)}
                 disabled={!isEnterValid || isJoining}
                 size="lg"
                 className="w-full h-12 text-base font-semibold"
