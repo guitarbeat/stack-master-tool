@@ -1,12 +1,12 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { validateMeetingCode } from "@/utils/meetingValidation";
 import { SupabaseMeetingService, type MeetingWithParticipants, type Participant as SbParticipant, type QueueItem as SbQueueItem } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
-
 type MeetingMode = "host" | "join" | "watch";
 
 interface UseMeetingStateReturn {
@@ -68,6 +68,7 @@ export function useMeetingState(): UseMeetingStateReturn {
   const [searchParams] = useSearchParams();
   const params = useParams();
   const { user } = useAuth();
+  const { toast } = useToast();
   
   // * Core meeting state
   const [meetingCode, setMeetingCode] = useState<string>("");
@@ -139,6 +140,17 @@ export function useMeetingState(): UseMeetingStateReturn {
       }
     }
 
+    // * Check for facilitator rejoin toast on mount
+    const shouldShowRejoinToast = sessionStorage.getItem("facilitator_rejoin_toast");
+    if (shouldShowRejoinToast) {
+      sessionStorage.removeItem("facilitator_rejoin_toast");
+      toast({
+        title: "Welcome back, facilitator!",
+        description: "You've been restored as the meeting host.",
+        variant: "success",
+      });
+    }
+
     // * Bootstrap meeting based on mode
     const bootstrap = async () => {
       try {
@@ -175,7 +187,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     };
 
     void bootstrap();
-  }, [searchParams, user?.email, params.code, user]);
+  }, [searchParams, user?.email, params.code, user, toast]);
 
   return {
     // * Core meeting state
@@ -314,6 +326,11 @@ async function handleJoinOrWatchMode(
             meetingCode: validation.normalizedCode,
             participantName: finalParticipantName,
           });
+          
+          // Show toast notification about facilitator upgrade
+          // Store in sessionStorage so it shows after reload
+          sessionStorage.setItem("facilitator_rejoin_toast", "true");
+          
           // Redirect to host mode by updating URL
           window.history.replaceState(
             null, 

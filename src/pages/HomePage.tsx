@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InlineRoomBrowser } from "@/components/InlineRoomBrowser";
 import Confetti from "@/components/ui/Confetti";
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
@@ -19,7 +20,8 @@ import {
   QrCode, 
   ArrowRight,
   Sparkles,
-  Hand
+  Hand,
+  DoorOpen
 } from "lucide-react";
 
 export default function HomePage() { 
@@ -40,11 +42,11 @@ export default function HomePage() {
   
   // UI state
   const [isJoining, setIsJoining] = useState(false);
-  const [isWatching, setIsWatching] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showQrScanner, setShowQrScanner] = useState(false);
   const [codeComplete, setCodeComplete] = useState(false);
+  const [enterMode, setEnterMode] = useState<"join" | "watch">("join");
 
   // Refs
   const joinButtonRef = useRef<HTMLButtonElement>(null);
@@ -120,18 +122,26 @@ export default function HomePage() {
     }
   };
 
-  const handleJoin = async (e: FormEvent) => {
+  // Removed duplicate handleJoin - now using unified handleEnterRoom
+
+  const handleEnterRoom = async (e: FormEvent) => {
     e.preventDefault();
     
-    const nameResult = nameSchema.safeParse(displayName);
     const codeResult = roomCodeSchema.safeParse(roomCode);
-    
-    if (!nameResult.success) {
-      setNameError(nameResult.error.errors[0].message);
-      return;
-    }
     if (!codeResult.success) {
       setCodeError(codeResult.error.errors[0].message);
+      return;
+    }
+
+    if (enterMode === "watch") {
+      navigate(`/watch/${roomCode}`);
+      return;
+    }
+
+    // Join mode - need name validation
+    const nameResult = nameSchema.safeParse(displayName);
+    if (!nameResult.success) {
+      setNameError(nameResult.error.errors[0].message);
       return;
     }
 
@@ -162,20 +172,6 @@ export default function HomePage() {
     } finally {
       setIsJoining(false);
     }
-  };
-
-  const handleWatch = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    const codeResult = roomCodeSchema.safeParse(roomCode);
-    if (!codeResult.success) {
-      setCodeError(codeResult.error.errors[0].message);
-      return;
-    }
-
-    setIsWatching(true);
-    navigate(`/watch/${roomCode}`);
-    setIsWatching(false);
   };
 
   const handleCreateRoom = async (e: FormEvent) => {
@@ -227,8 +223,9 @@ export default function HomePage() {
     }
   };
 
-  const isJoinValid = displayName.length > 0 && !nameError && roomCode.length === 6 && !codeError;
-  const isWatchValid = roomCode.length === 6 && !codeError;
+  const isEnterValid = enterMode === "watch" 
+    ? (roomCode.length === 6 && !codeError)
+    : (displayName.length > 0 && !nameError && roomCode.length === 6 && !codeError);
   const isHostValid = displayName.length > 0 && !nameError && meetingTitle.length >= 3 && !titleError;
 
   return (
@@ -291,7 +288,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          {/* Step 2: Join or Watch */}
+          {/* Step 2: Enter Room */}
           <Card className="shadow-card border-border/50 overflow-hidden">
             <CardHeader className="pb-3 bg-muted/30">
               <div className="flex items-center gap-3">
@@ -299,12 +296,38 @@ export default function HomePage() {
                   2
                 </span>
                 <div>
-                  <CardTitle className="text-lg">Join a meeting</CardTitle>
-                  <CardDescription>Enter a room code or scan QR</CardDescription>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <DoorOpen className="w-5 h-5" />
+                    Enter a room
+                  </CardTitle>
+                  <CardDescription>Choose how you want to participate</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="pt-4 space-y-4">
+              {/* Mode Selection Tabs */}
+              <Tabs value={enterMode} onValueChange={(v) => setEnterMode(v as "join" | "watch")} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="join" className="gap-2">
+                    <Users className="w-4 h-4" />
+                    Join & Speak
+                  </TabsTrigger>
+                  <TabsTrigger value="watch" className="gap-2">
+                    <Eye className="w-4 h-4" />
+                    Watch Only
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              {/* Mode description */}
+              <p className="text-xs text-muted-foreground text-center">
+                {enterMode === "join" 
+                  ? "Join as a participant who can raise hand and speak"
+                  : "View the queue without participating"
+                }
+              </p>
+
+              {/* Room Code Input */}
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
@@ -345,41 +368,34 @@ export default function HomePage() {
                 codeComplete ? "text-success font-medium" : 
                 "text-muted-foreground"
               }`}>
-                {codeError || (codeComplete ? "✓ Ready to join!" : "6-character room code")}
+                {codeError || (codeComplete ? "✓ Ready!" : "6-character room code")}
               </p>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <Button
-                  ref={joinButtonRef}
-                  onClick={handleJoin}
-                  disabled={!isJoinValid || isJoining}
-                  size="lg"
-                  className="w-full h-12 text-base font-semibold"
-                >
-                  {isJoining ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  ) : (
-                    <Users className="mr-2 h-5 w-5" />
-                  )}
-                  {isJoining ? "Joining..." : "Join & Speak"}
-                </Button>
-                <Button
-                  onClick={handleWatch}
-                  disabled={!isWatchValid || isWatching}
-                  variant="secondary"
-                  size="lg"
-                  className="w-full h-12 text-base font-semibold"
-                >
-                  {isWatching ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  ) : (
-                    <Eye className="mr-2 h-5 w-5" />
-                  )}
-                  {isWatching ? "Loading..." : "Watch Only"}
-                </Button>
-              </div>
+              {/* Single Enter Button */}
+              <Button
+                ref={joinButtonRef}
+                onClick={handleEnterRoom}
+                disabled={!isEnterValid || isJoining}
+                size="lg"
+                className="w-full h-12 text-base font-semibold"
+                variant={enterMode === "watch" ? "secondary" : "default"}
+              >
+                {isJoining ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : enterMode === "join" ? (
+                  <Users className="mr-2 h-5 w-5" />
+                ) : (
+                  <Eye className="mr-2 h-5 w-5" />
+                )}
+                {isJoining 
+                  ? "Entering..." 
+                  : enterMode === "join" 
+                    ? "Join & Speak" 
+                    : "Watch Only"
+                }
+              </Button>
               
-              {!displayName && roomCode.length === 6 && (
+              {enterMode === "join" && !displayName && roomCode.length === 6 && (
                 <p className="text-sm text-warning text-center bg-warning/10 py-2 px-3 rounded-lg">
                   ↑ Enter your name above to join as a participant
                 </p>
