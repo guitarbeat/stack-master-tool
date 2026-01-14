@@ -252,39 +252,39 @@ export function HostSettingsPanel({
       {isLiveMeeting && (
         <div className="space-y-2 text-xs">
           <div className="flex items-center justify-between">
-            <span className="text-slate-600 dark:text-slate-400">Join link</span>
+            <span className="text-muted-foreground">Join link</span>
             <button
-              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80 text-foreground transition-colors"
               aria-label="Copy join link to clipboard"
               onClick={() => void handleCopyLink('join')}
             >
-              {copiedJoin ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+              {copiedJoin ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
               {copiedJoin ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <code className="block break-all p-2 rounded bg-slate-100 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-100">
+          <code className="block break-all p-2 rounded bg-muted text-xs text-foreground">
             {`${window.location.origin}/meeting?mode=join&code=${meetingCode}`}
           </code>
           
           <div className="flex items-center justify-between">
-            <span className="text-slate-600 dark:text-slate-400">Watch link</span>
+            <span className="text-muted-foreground">Watch link</span>
             <button
-              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-muted hover:bg-muted/80 text-foreground transition-colors"
               aria-label="Copy watch link to clipboard"
               onClick={() => void handleCopyLink('watch')}
             >
-              {copiedWatch ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+              {copiedWatch ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
               {copiedWatch ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <code className="block break-all p-2 rounded bg-slate-100 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-100">
+          <code className="block break-all p-2 rounded bg-muted text-xs text-foreground">
             {`${window.location.origin}/meeting?mode=watch&code=${meetingCode}`}
           </code>
           
           <div className="pt-2 space-y-2">
             <div className="flex gap-2">
               <button
-                className="flex-1 py-1.5 px-2 rounded bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-xs font-medium transition-colors"
+                className="flex-1 py-1.5 px-2 rounded bg-muted hover:bg-muted/80 text-foreground text-xs font-medium transition-colors"
                 disabled={!meetingCode}
                 aria-label="Generate QR code for joining this meeting"
                 onClick={() => void handleGenerateQr('join')}
@@ -292,7 +292,7 @@ export function HostSettingsPanel({
                 📱 Join QR
               </button>
               <button
-                className="flex-1 py-1.5 px-2 rounded bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-xs font-medium transition-colors"
+                className="flex-1 py-1.5 px-2 rounded bg-muted hover:bg-muted/80 text-foreground text-xs font-medium transition-colors"
                 disabled={!meetingCode}
                 aria-label="Generate QR code for watching this meeting"
                 onClick={() => void handleGenerateQr('watch')}
@@ -305,7 +305,7 @@ export function HostSettingsPanel({
       )}
       
       {!isLiveMeeting && (
-        <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 p-3 rounded">
+        <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
           <p><strong>Local Meeting Mode:</strong> This meeting is set to local/manual mode. Enable "Live Meeting" to allow remote participants to join.</p>
         </div>
       )}
