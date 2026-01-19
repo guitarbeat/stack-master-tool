@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
-import { validateMeetingCode } from "@/utils/meetingValidation";
-import { roomCodeSchema } from "@/utils/schemas";
+import { roomCodeSchema, validateMeetingCode } from "@/utils/schemas";
 import { Users, Eye, Sparkles, Loader2 } from "lucide-react";
 
 interface CodeInputFormProps {
