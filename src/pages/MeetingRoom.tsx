@@ -29,7 +29,7 @@ import {
   SupabaseRealtimeService,
   type MeetingWithParticipants,
 } from "@/services/supabase";
-import { validateMeetingCode } from "@/utils/meetingValidation";
+import { validateMeetingCode } from "@/utils/schemas";
 import { logProduction } from "@/utils/productionLogger";
 import {
   Dialog,
