@@ -16,3 +16,30 @@ export const titleSchema = z
   .string()
   .min(3, "Title must be at least 3 characters")
   .max(100, "Title must be 100 characters or less");
+
+/**
+ * Validates and normalizes a meeting code using roomCodeSchema.
+ * Drop-in replacement for legacy validateMeetingCode.
+ */
+export function validateMeetingCode(code: string): {
+  isValid: boolean;
+  normalizedCode: string;
+  error: string | null;
+} {
+  if (!code || typeof code !== "string") {
+    return { isValid: false, normalizedCode: "", error: "Meeting code is required" };
+  }
+
+  const normalizedCode = code.toUpperCase().trim();
+  const result = roomCodeSchema.safeParse(normalizedCode);
+
+  if (!result.success) {
+    return {
+      isValid: false,
+      normalizedCode,
+      error: result.error.errors[0]?.message ?? "Invalid meeting code",
+    };
+  }
+
+  return { isValid: true, normalizedCode, error: null };
+}

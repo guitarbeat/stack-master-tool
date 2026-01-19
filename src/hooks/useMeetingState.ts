@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
-import { validateMeetingCode } from "@/utils/meetingValidation";
+import { validateMeetingCode } from "@/utils/schemas";
 import { SupabaseMeetingService, type MeetingWithParticipants, type Participant as SbParticipant, type QueueItem as SbQueueItem } from "@/services/supabase";
 import { logProduction } from "@/utils/productionLogger";
 type MeetingMode = "host" | "join" | "watch";
