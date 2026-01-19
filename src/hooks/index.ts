@@ -1,8 +1,8 @@
 // Physics-based interaction hooks
-export { 
-  useSnapDetent, 
-  Detent 
-} from './usePhysicsInteraction';
+export {
+  useSnapDetent,
+  Detent,
+} from "./useSnapDetent";
 
 // Re-export other hooks
 export { useToast, toast } from './use-toast';
