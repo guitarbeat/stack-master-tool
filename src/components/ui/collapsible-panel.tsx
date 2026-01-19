@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { DragHandle } from "./drag-handle"
-import { useSnapDetent, Detent } from "@/hooks/usePhysicsInteraction"
+import { useSnapDetent, Detent } from "@/hooks/useSnapDetent"
 
 interface CollapsiblePanelProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultDetent?: Detent;
