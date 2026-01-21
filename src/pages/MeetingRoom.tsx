@@ -5,6 +5,7 @@ import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { HostSettingsPanel } from "@/components/MeetingRoom/HostSettingsPanel";
+import { KeyboardShortcutsModal } from "@/components/MeetingRoom/KeyboardShortcutsModal";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
 import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
@@ -1010,39 +1011,11 @@ export default function MeetingRoom() {
       )}
 
       {/* Keyboard Shortcuts Modal */}
-      {showKeyboardShortcutsModal && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card rounded-2xl p-6 max-w-md w-full mx-4 shadow-elegant border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">Keyboard Shortcuts</h3>
-              <button
-                onClick={() => setShowKeyboardShortcutsModal(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-3">
-              {mode === "host" && (
-                <>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-foreground">Next Speaker</span>
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs text-muted-foreground">Enter</kbd>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-foreground">Undo Last Action</span>
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs text-muted-foreground">Ctrl+Z</kbd>
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between items-center py-2">
-                <span className="text-sm text-foreground">Show/Hide Shortcuts</span>
-                <kbd className="px-2 py-1 bg-muted rounded text-xs text-muted-foreground">?</kbd>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <KeyboardShortcutsModal
+        isOpen={showKeyboardShortcutsModal}
+        onClose={() => setShowKeyboardShortcutsModal(false)}
+        isHost={mode === "host"}
+      />
 
       {/* QR Code Dialog */}
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
