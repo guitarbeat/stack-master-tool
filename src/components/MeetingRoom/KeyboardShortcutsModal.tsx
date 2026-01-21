@@ -1,3 +1,5 @@
+import React from "react";
+
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
   onClose: () => void;
