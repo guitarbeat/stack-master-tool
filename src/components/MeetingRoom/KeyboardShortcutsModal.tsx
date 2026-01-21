@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
@@ -7,6 +7,19 @@ interface KeyboardShortcutsModalProps {
 }
 
 export function KeyboardShortcutsModal({ isOpen, onClose, isHost }: KeyboardShortcutsModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (

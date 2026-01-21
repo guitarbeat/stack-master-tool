@@ -506,7 +506,7 @@ export default function MeetingRoom() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-xl border-0 text-center">
+        <div className="bg-card rounded-2xl p-6 shadow-xl border border-border text-center">
           <LoadingState 
             message="Loading meeting..." 
             size="lg"
