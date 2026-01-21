@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Trash2, User, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EnhancedEditableParticipantName } from './EnhancedEditableParticipantName';
 
 interface Participant {
   id: string;
@@ -66,14 +65,9 @@ export function ParticipantList({
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <EnhancedEditableParticipantName
-                    participantId={participant.id}
-                    currentName={participant.name}
-                    isFacilitator={userRole === 'facilitator'}
-                    onNameUpdate={onUpdateParticipant}
-                    disabled={removingId === participant.id}
-                    className="text-sm font-medium"
-                  />
+                  <span className="text-sm font-medium text-foreground truncate block">
+                    {participant.name}
+                  </span>
                   
                   {participant.hasRaisedHand && (
                     <div className="text-xs text-primary mt-1">
