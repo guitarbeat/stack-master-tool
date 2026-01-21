@@ -37,12 +37,15 @@ export function QuickJoinModal({
   const [displayName, setDisplayName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
   const [isJoining, setIsJoining] = useState(false);
+  const [hasExistingName, setHasExistingName] = useState(false);
 
-  // Load saved name from localStorage
+  // Load saved name from localStorage and auto-join if valid
   useEffect(() => {
     const savedName = localStorage.getItem("user_display_name");
     if (savedName) {
       setDisplayName(savedName);
+      const result = nameSchema.safeParse(savedName);
+      setHasExistingName(result.success);
     }
   }, []);
 
@@ -107,6 +110,9 @@ export function QuickJoinModal({
 
   const isValid = mode === "watch" || (displayName.length > 0 && !nameError);
 
+  // Skip the modal entirely if we have a valid name - just join directly
+  const showNameInput = mode === "join" && !hasExistingName;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -120,14 +126,16 @@ export function QuickJoinModal({
             {mode === "join" ? "Join Discussion" : "Watch Meeting"}
           </DialogTitle>
           <DialogDescription>
-            {mode === "join"
+            {showNameInput
               ? `Enter your name to join "${roomTitle}"`
+              : mode === "join"
+              ? `Join "${roomTitle}" as ${displayName}`
               : `You're about to watch "${roomTitle}"`}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === "join" && (
+          {showNameInput && (
             <div className="space-y-2">
               <Label htmlFor="quick-join-name">Your Name</Label>
               <Input
