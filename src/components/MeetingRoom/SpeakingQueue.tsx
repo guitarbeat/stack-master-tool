@@ -1,7 +1,6 @@
 import { Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 
 interface QueueItem {
@@ -120,32 +119,15 @@ export const SpeakingQueue = ({
 
                   {/* Name and type indicator */}
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {onUpdateParticipantName ? (
-                      <EnhancedEditableParticipantName
-                        participantId={participantId}
-                        currentName={entryName}
-                        isFacilitator={isFacilitator}
-                        onNameUpdate={onUpdateParticipantName}
-                        disabled={!isFacilitator && participantId !== currentUserId}
-                        className={`font-semibold text-lg truncate ${
-                          isCurrentSpeaker
-                            ? 'text-primary'
-                            : isSelf
-                            ? 'text-primary font-bold'
-                            : 'text-foreground'
-                        }`}
-                      />
-                    ) : (
-                      <span className={`font-semibold text-lg truncate ${
-                        isCurrentSpeaker
-                          ? 'text-primary'
-                          : isSelf
-                          ? 'text-primary font-bold'
-                          : 'text-foreground'
-                      }`}>
-                        {entryName}
-                      </span>
-                    )}
+                    <span className={`font-semibold text-lg truncate ${
+                      isCurrentSpeaker
+                        ? 'text-primary'
+                        : isSelf
+                        ? 'text-primary font-bold'
+                        : 'text-foreground'
+                    }`}>
+                      {entryName}
+                    </span>
 
                     {/* Compact type indicator */}
                     {type !== 'speak' && (
