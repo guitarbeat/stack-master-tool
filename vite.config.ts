@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
       "@frontend": path.resolve(__dirname, "./src/frontend"),
     },
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
   build: {
     target: 'es2020',
