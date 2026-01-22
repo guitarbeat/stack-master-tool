@@ -17,7 +17,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@frontend": path.resolve(__dirname, "./src/frontend"),
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
