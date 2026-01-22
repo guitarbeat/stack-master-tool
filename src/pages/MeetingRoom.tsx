@@ -944,7 +944,7 @@ export default function MeetingRoom() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <SpeakingQueue
-                speakingQueue={serverQueue.map((item, _index) => ({
+                speakingQueue={serverQueue.map((item) => ({
                   id: item.id,
                   participantName: item.participantName,
                   participantId: item.participantId,
@@ -954,10 +954,8 @@ export default function MeetingRoom() {
                 }))}
                 participantName={user?.email ?? "Observer"}
                 onLeaveQueue={() => {}}
-                onUpdateParticipantName={() => {}}
-                currentUserId={null}
+                currentUserId={undefined}
                 isFacilitator={false}
-                onReorderQueue={() => {}}
               />
             </div>
             <div>
