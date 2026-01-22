@@ -28,7 +28,6 @@ interface UseMeetingActionsReturn {
   handleUpdateParticipant: (participantId: string, newName: string) => Promise<void>;
   handleRemoveParticipant: (participantId: string) => Promise<void>;
   handleAddParticipant: (name: string) => Promise<void>;
-  handleParticipantNameUpdate: (participantId: string, newName: string) => Promise<void>;
   
   // * Meeting management
   handleEndMeeting: () => Promise<void>;
@@ -329,23 +328,6 @@ export function useMeetingActions({
     }
   };
 
-  /**
-   * * Handles updating participant name (alternative handler)
-   */
-  const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
-    try {
-      await SupabaseMeetingService.updateParticipantName(participantId, newName);
-      // * Real-time subscription will update the UI
-    } catch (error) {
-      logProduction("error", {
-        action: "update_participant_name",
-        participantId,
-        newName,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      // TODO: Show user-friendly error toast
-    }
-  };
 
   /**
    * * Handles ending the meeting
@@ -397,7 +379,6 @@ export function useMeetingActions({
     handleUpdateParticipant,
     handleRemoveParticipant,
     handleAddParticipant,
-    handleParticipantNameUpdate,
     
     // * Meeting management
     handleEndMeeting,

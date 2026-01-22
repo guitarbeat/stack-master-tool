@@ -16,7 +16,6 @@ interface SpeakingQueueProps {
   speakingQueue: QueueItem[];
   participantName: string;
   onLeaveQueue: () => void;
-  onUpdateParticipantName?: (participantId: string, newName: string) => void;
   currentUserId?: string;
   isFacilitator?: boolean;
   onReorderQueue?: (dragIndex: number, targetIndex: number) => void;
@@ -26,7 +25,6 @@ export const SpeakingQueue = ({
   speakingQueue,
   participantName,
   onLeaveQueue,
-  onUpdateParticipantName,
   currentUserId,
   isFacilitator = false,
   onReorderQueue
