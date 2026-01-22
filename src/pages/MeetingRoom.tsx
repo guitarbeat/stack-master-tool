@@ -16,8 +16,6 @@ import { ToastAction } from "@/components/ui/toast";
 
 import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 import { CodeInputForm } from "@/components/MeetingRoom/CodeInputForm";
-
-// import { EnhancedEditableParticipantName } from "@/components/features/meeting/EnhancedEditableParticipantName";
 import { useAuth } from "@/hooks/useAuth";
 import { useMeetingState } from "@/hooks/useMeetingState";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -390,21 +388,6 @@ export default function MeetingRoom() {
     }
   };
 
-  // Handler for EnhancedEditableParticipantName component
-  const handleParticipantNameUpdate = async (participantId: string, newName: string) => {
-    try {
-      await SupabaseMeetingService.updateParticipantName(participantId, newName);
-      // Real-time subscription will update the UI
-    } catch (error) {
-      logProduction("error", {
-        action: "update_participant_name",
-        participantId,
-        newName,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      // TODO: Show user-friendly error toast
-    }
-  };
 
   const handleMeetingCodeChange = async (newCode: string) => {
     if (!meetingId) return;
@@ -910,9 +893,6 @@ export default function MeetingRoom() {
               participantName={user?.email ?? "Current User"}
               onLeaveQueue={() => {
                 void handleLeaveQueue();
-              }}
-              onUpdateParticipantName={(participantId, newName) => {
-                void handleParticipantNameUpdate(participantId, newName);
               }}
               currentUserId={currentParticipantId}
             />
