@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { SupabaseRealtimeService, type MeetingWithParticipants, type Participant as SbParticipant, type QueueItem as SbQueueItem } from "@/services/supabase";
+import { SupabaseRealtimeService } from "@/services/supabase";
+import type { MeetingWithParticipants, Participant, QueueItem } from "@/types/meeting";
 
 interface UseMeetingRealtimeProps {
   meetingId: string;
-  setServerParticipants: (participants: SbParticipant[]) => void;
-  setServerQueue: (queue: SbQueueItem[]) => void;
+  setServerParticipants: (participants: Participant[]) => void;
+  setServerQueue: (queue: QueueItem[]) => void;
   setServerMeeting: (fn: (m: MeetingWithParticipants | null) => MeetingWithParticipants | null) => void;
   setShowJohnDoe: (show: boolean) => void;
 }

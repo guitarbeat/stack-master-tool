@@ -2,7 +2,7 @@ import { Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
-import type { QueueItem } from "@/services/supabase";
+import type { QueueItem } from "@/types/meeting";
 
 interface SpeakingQueueProps {
   speakingQueue: QueueItem[];

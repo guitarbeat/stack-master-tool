@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { Trash2, User, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-interface Participant {
-  id: string;
-  name: string;
-  isFacilitator: boolean;
-  hasRaisedHand: boolean;
-  joinedAt?: Date;
-}
+import type { Participant } from '@/types/meeting';
 
 interface ParticipantListProps {
   participants: Participant[];
