@@ -97,10 +97,11 @@ export interface QueueItem {
   id: string;
   participantId: string;
   participantName: string;
-  queueType: string;
+  type: string;
   position: number;
-  joinedQueueAt: string;
+  timestamp: number;
   isSpeaking: boolean;
+  isFacilitator: boolean;
 }
 
 export interface MeetingWithParticipants extends MeetingData {
@@ -359,10 +360,11 @@ export class SupabaseMeetingService {
           id: q.id,
           participantId: q.participant_id,
           participantName: q.participants.name,
-          queueType: q.queue_type,
+          type: q.queue_type,
           position: q.position,
-          joinedQueueAt: q.joined_queue_at,
+          timestamp: new Date(q.joined_queue_at).getTime(),
           isSpeaking: q.is_speaking,
+          isFacilitator: false, // Queue items don't track facilitator status directly
         })),
       };
     } catch (error) {
@@ -541,10 +543,11 @@ export class SupabaseMeetingService {
         id: data.id,
         participantId: data.participant_id,
         participantName: participant.name,
-        queueType: data.queue_type,
+        type: data.queue_type,
         position: data.position,
-        joinedQueueAt: data.joined_queue_at,
+        timestamp: new Date(data.joined_queue_at).getTime(),
         isSpeaking: data.is_speaking,
+        isFacilitator: participant.is_facilitator,
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -629,10 +632,11 @@ export class SupabaseMeetingService {
         id: nextSpeaker.id,
         participantId: nextSpeaker.participant_id,
         participantName: nextSpeaker.participants.name,
-        queueType: nextSpeaker.queue_type,
+        type: nextSpeaker.queue_type,
         position: nextSpeaker.position,
-        joinedQueueAt: nextSpeaker.joined_queue_at,
+        timestamp: new Date(nextSpeaker.joined_queue_at).getTime(),
         isSpeaking: nextSpeaker.is_speaking,
+        isFacilitator: false,
       };
     } catch (error) {
       if (error instanceof AppError) throw error;

@@ -2,15 +2,7 @@ import { Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
-
-interface QueueItem {
-  id: string;
-  participantName: string;
-  participantId: string;
-  isFacilitator: boolean;
-  type: string;
-  timestamp: number;
-}
+import type { QueueItem } from "@/services/supabase";
 
 interface SpeakingQueueProps {
   speakingQueue: QueueItem[];

@@ -882,14 +882,7 @@ export default function MeetingRoom() {
           {/* Speaking Queue */}
           <div className={mode === "host" ? "md:col-span-1" : ""}>
             <SpeakingQueue
-              speakingQueue={serverQueue.map((item) => ({
-                id: item.id,
-                participantName: item.participantName,
-                participantId: item.participantId,
-                isFacilitator: item.isFacilitator,
-                type: item.queueType,
-                timestamp: new Date(item.joinedQueueAt).getTime(),
-              }))}
+              speakingQueue={serverQueue}
               participantName={user?.email ?? "Current User"}
               onLeaveQueue={() => {
                 void handleLeaveQueue();
@@ -946,14 +939,7 @@ export default function MeetingRoom() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <SpeakingQueue
-                speakingQueue={serverQueue.map((item) => ({
-                  id: item.id,
-                  participantName: item.participantName,
-                  participantId: item.participantId,
-                  isFacilitator: item.isFacilitator,
-                  type: item.queueType,
-                  timestamp: new Date(item.joinedQueueAt).getTime(),
-                }))}
+                speakingQueue={serverQueue}
                 participantName={user?.email ?? "Observer"}
                 onLeaveQueue={() => {}}
                 currentUserId={undefined}
