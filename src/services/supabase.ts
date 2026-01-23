@@ -65,49 +65,25 @@ const withSupabase = async <T>(
   options?: SupabaseRequestOptions,
 ): Promise<T> => executeSupabase(operation, options);
 
-// Types
-export interface Participant {
-  id: string;
-  name: string;
-  isFacilitator: boolean;
-  hasRaisedHand: boolean;
-  joinedAt: string;
-  isActive: boolean;
-}
+// Re-export types from centralized location
+export type {
+  Participant,
+  ParticipantSnapshot,
+  MeetingData,
+  QueueItem,
+  MeetingWithParticipants,
+  CurrentSpeaker,
+  SpeakingQueue,
+  MeetingMode,
+} from "@/types/meeting";
 
-export interface ParticipantSnapshot {
-  id: string;
-  meetingId: string;
-  name: string;
-  isFacilitator: boolean;
-  joinedAt: string;
-}
-
-export interface MeetingData {
-  id: string;
-  code: string;
-  title: string;
-  facilitator: string;
-  facilitatorId: string | null;
-  createdAt: string;
-  isActive: boolean;
-}
-
-export interface QueueItem {
-  id: string;
-  participantId: string;
-  participantName: string;
-  type: string;
-  position: number;
-  timestamp: number;
-  isSpeaking: boolean;
-  isFacilitator: boolean;
-}
-
-export interface MeetingWithParticipants extends MeetingData {
-  participants: Participant[];
-  speakingQueue: QueueItem[];
-}
+import type {
+  Participant,
+  ParticipantSnapshot,
+  MeetingData,
+  QueueItem,
+  MeetingWithParticipants,
+} from "@/types/meeting";
 
 type SpeakingQueueRow = {
   id: string;

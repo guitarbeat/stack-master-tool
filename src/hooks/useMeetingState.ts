@@ -5,9 +5,9 @@ import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { validateMeetingCode } from "@/utils/schemas";
-import { SupabaseMeetingService, type MeetingWithParticipants, type Participant as SbParticipant, type QueueItem as SbQueueItem } from "@/services/supabase";
+import { SupabaseMeetingService } from "@/services/supabase";
+import type { MeetingWithParticipants, Participant, QueueItem, MeetingMode } from "@/types/meeting";
 import { logProduction } from "@/utils/productionLogger";
-type MeetingMode = "host" | "join" | "watch";
 
 interface UseMeetingStateReturn {
   // * Core meeting state
@@ -29,10 +29,10 @@ interface UseMeetingStateReturn {
   // * Server state
   serverMeeting: MeetingWithParticipants | null;
   setServerMeeting: Dispatch<SetStateAction<MeetingWithParticipants | null>>;
-  serverParticipants: SbParticipant[];
-  setServerParticipants: Dispatch<SetStateAction<SbParticipant[]>>;
-  serverQueue: SbQueueItem[];
-  setServerQueue: Dispatch<SetStateAction<SbQueueItem[]>>;
+  serverParticipants: Participant[];
+  setServerParticipants: Dispatch<SetStateAction<Participant[]>>;
+  serverQueue: QueueItem[];
+  setServerQueue: Dispatch<SetStateAction<QueueItem[]>>;
   currentParticipantId: string;
   setCurrentParticipantId: (id: string) => void;
   
@@ -43,8 +43,8 @@ interface UseMeetingStateReturn {
   setShowJohnDoe: (show: boolean) => void;
   
   // * Speaker management
-  lastSpeaker: SbQueueItem | null;
-  setLastSpeaker: (speaker: SbQueueItem | null) => void;
+  lastSpeaker: QueueItem | null;
+  setLastSpeaker: (speaker: QueueItem | null) => void;
   
   // * QR/Scanner state
   qrOpen: boolean;
@@ -88,8 +88,8 @@ export function useMeetingState(): UseMeetingStateReturn {
   
   // * Server state
   const [serverMeeting, setServerMeeting] = useState<MeetingWithParticipants | null>(null);
-  const [serverParticipants, setServerParticipants] = useState<SbParticipant[]>([]);
-  const [serverQueue, setServerQueue] = useState<SbQueueItem[]>([]);
+  const [serverParticipants, setServerParticipants] = useState<Participant[]>([]);
+  const [serverQueue, setServerQueue] = useState<QueueItem[]>([]);
   const [currentParticipantId, setCurrentParticipantId] = useState<string>("");
   
   // * UI state
@@ -97,7 +97,7 @@ export function useMeetingState(): UseMeetingStateReturn {
   const [showJohnDoe, setShowJohnDoe] = useState(true);
   
   // * Speaker management
-  const [lastSpeaker, setLastSpeaker] = useState<SbQueueItem | null>(null);
+  const [lastSpeaker, setLastSpeaker] = useState<QueueItem | null>(null);
   
   // * QR/Scanner state
   const [qrOpen, setQrOpen] = useState(false);

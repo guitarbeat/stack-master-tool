@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { SupabaseMeetingService, type QueueItem as SbQueueItem } from "@/services/supabase";
+import { SupabaseMeetingService } from "@/services/supabase";
+import type { QueueItem } from "@/types/meeting";
 import { logProduction } from "@/utils/productionLogger";
 
 interface UseMeetingActionsProps {
   meetingId: string;
   currentParticipantId: string;
-  serverQueue: SbQueueItem[];
-  setLastSpeaker: (speaker: SbQueueItem | null) => void;
+  serverQueue: QueueItem[];
+  setLastSpeaker: (speaker: QueueItem | null) => void;
   setShowJohnDoe: (show: boolean) => void;
 }
 
@@ -17,7 +18,7 @@ interface UseMeetingActionsReturn {
   // * Speaker management
   handleNextSpeaker: () => Promise<void>;
   handleUndo: () => Promise<void>;
-  lastSpeaker: SbQueueItem | null;
+  lastSpeaker: QueueItem | null;
   
   // * Queue management
   handleJoinQueue: () => Promise<void>;
@@ -49,10 +50,10 @@ export function useMeetingActions({
 }: UseMeetingActionsProps): UseMeetingActionsReturn {
   const navigate = useNavigate();
   const { showToast, toast: pushToast } = useToast();
-  const [lastSpeaker, setLastSpeakerState] = useState<SbQueueItem | null>(null);
+  const [lastSpeaker, setLastSpeakerState] = useState<QueueItem | null>(null);
 
   // * Update the external lastSpeaker state when internal state changes
-  const updateLastSpeaker = (speaker: SbQueueItem | null) => {
+  const updateLastSpeaker = (speaker: QueueItem | null) => {
     setLastSpeakerState(speaker);
     setLastSpeaker(speaker);
   };
