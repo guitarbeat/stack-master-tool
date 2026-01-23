@@ -83,7 +83,7 @@ export default function MeetingRoom() {
   } = useMeetingState();
 
   // * Meeting actions hook for host functionality
-  const { handleEndMeeting } = useMeetingActions({
+  const { handleEndMeeting, handleReorderQueue } = useMeetingActions({
     meetingId,
     currentParticipantId,
     serverQueue,
@@ -882,7 +882,7 @@ export default function MeetingRoom() {
           {/* Speaking Queue */}
           <div className={mode === "host" ? "md:col-span-1" : ""}>
             <SpeakingQueue
-              speakingQueue={serverQueue.map((item, _index) => ({
+              speakingQueue={serverQueue.map((item) => ({
                 id: item.id,
                 participantName: item.participantName,
                 participantId: item.participantId,
@@ -895,6 +895,8 @@ export default function MeetingRoom() {
                 void handleLeaveQueue();
               }}
               currentUserId={currentParticipantId}
+              isFacilitator={mode === "host"}
+              onReorderQueue={handleReorderQueue}
             />
           </div>
 
