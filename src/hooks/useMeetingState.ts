@@ -249,8 +249,8 @@ async function handleHostMode(
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,
   setServerMeeting: Dispatch<SetStateAction<MeetingWithParticipants | null>>,
-  setServerParticipants: Dispatch<SetStateAction<SbParticipant[]>>,
-  setServerQueue: Dispatch<SetStateAction<SbQueueItem[]>>
+  setServerParticipants: Dispatch<SetStateAction<Participant[]>>,
+  setServerQueue: Dispatch<SetStateAction<QueueItem[]>>
 ) {
   // Don't automatically create a meeting - let the user create one manually
   // This allows users to choose custom room names and only create when ready
@@ -274,8 +274,8 @@ async function handleJoinOrWatchMode(
   setMeetingId: (id: string) => void,
   setMeetingCode: (code: string) => void,
   setServerMeeting: Dispatch<SetStateAction<MeetingWithParticipants | null>>,
-  setServerParticipants: Dispatch<SetStateAction<SbParticipant[]>>,
-  setServerQueue: Dispatch<SetStateAction<SbQueueItem[]>>,
+  setServerParticipants: Dispatch<SetStateAction<Participant[]>>,
+  setServerQueue: Dispatch<SetStateAction<QueueItem[]>>,
   setCurrentParticipantId: (id: string) => void
 ) {
   try {
