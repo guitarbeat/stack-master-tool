@@ -88,6 +88,8 @@
     "react-router-dom": "^6.30.1",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
+    "y-webrtc": "^10.3.0",
+    "yjs": "^13.6.29",
     "zod": "^3.25.76"
   },
   "devDependencies": {
