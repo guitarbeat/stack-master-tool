@@ -5,7 +5,9 @@ import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { validateMeetingCode } from "@/utils/schemas";
-import { SupabaseMeetingService } from "@/services/supabase";
+import { SupabaseMeetingService, SupabaseRealtimeService } from "@/services/supabase";
+import { P2PMeetingService, P2PRealtimeService } from "@/services/p2p/p2p-meeting-service";
+import type { IMeetingService, IMeetingRealtime } from "@/services/meeting-service";
 import type { MeetingWithParticipants, Participant, QueueItem, MeetingMode } from "@/types/meeting";
 import { logProduction } from "@/utils/productionLogger";
 
@@ -58,6 +60,12 @@ interface UseMeetingStateReturn {
   
   // * Computed values
   userRole: string;
+
+  // * Backend selection
+  backend: 'supabase' | 'p2p';
+  setBackend: (backend: 'supabase' | 'p2p') => void;
+  meetingService: IMeetingService;
+  realtimeService: IMeetingRealtime;
 }
 
 /**
@@ -85,6 +93,23 @@ export function useMeetingState(): UseMeetingStateReturn {
       return "";
     }
   });
+
+  // * Backend state
+  const [backend, setBackend] = useState<'supabase' | 'p2p'>(() => {
+    try {
+      return (localStorage.getItem("meeting_backend") as 'p2p' | 'supabase') || 'supabase';
+    } catch {
+      return 'supabase';
+    }
+  });
+
+  const [meetingService, setMeetingService] = useState<IMeetingService>(() =>
+    backend === 'p2p' ? P2PMeetingService : SupabaseMeetingService
+  );
+
+  const [realtimeService, setRealtimeService] = useState<IMeetingRealtime>(() =>
+    backend === 'p2p' ? P2PRealtimeService : SupabaseRealtimeService
+  );
   
   // * Server state
   const [serverMeeting, setServerMeeting] = useState<MeetingWithParticipants | null>(null);
@@ -107,6 +132,13 @@ export function useMeetingState(): UseMeetingStateReturn {
 
   // * Determine user role based on mode
   const userRole = mode === "host" ? "facilitator" : mode === "watch" ? "observer" : "participant";
+
+  // Effect to update services when backend changes
+  useEffect(() => {
+    localStorage.setItem("meeting_backend", backend);
+    setMeetingService(backend === 'p2p' ? P2PMeetingService : SupabaseMeetingService);
+    setRealtimeService(backend === 'p2p' ? P2PRealtimeService : SupabaseRealtimeService);
+  }, [backend]);
 
   // * Initialize meeting based on URL parameters
   useEffect(() => {
@@ -162,6 +194,7 @@ export function useMeetingState(): UseMeetingStateReturn {
           await handleHostMode(setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue);
         } else if (currentCode) {
           await handleJoinOrWatchMode(
+            meetingService, // Pass selected service
             currentMode as MeetingMode,
             currentCode,
             currentName ? decodeURIComponent(currentName) : "",
@@ -187,7 +220,7 @@ export function useMeetingState(): UseMeetingStateReturn {
     };
 
     void bootstrap();
-  }, [searchParams, user?.email, params.code, user, toast]);
+  }, [searchParams, user?.email, params.code, user, toast, meetingService]); // Depend on meetingService
 
   return {
     // * Core meeting state
@@ -238,6 +271,12 @@ export function useMeetingState(): UseMeetingStateReturn {
     
     // * Computed values
     userRole,
+
+    // * Backend
+    backend,
+    setBackend,
+    meetingService,
+    realtimeService,
   };
 }
 
@@ -266,6 +305,7 @@ async function handleHostMode(
  * Validates meeting code and joins meeting if in join mode
  */
 async function handleJoinOrWatchMode(
+  meetingService: IMeetingService,
   currentMode: MeetingMode,
   currentCode: string,
   participantName: string,
@@ -286,7 +326,7 @@ async function handleJoinOrWatchMode(
       return;
     }
 
-    const full = await SupabaseMeetingService.getMeeting(validation.normalizedCode);
+    const full = await meetingService.getMeeting(validation.normalizedCode);
     if (!full) {
       setError(new AppError(ErrorCode.MEETING_NOT_FOUND, undefined, `Meeting "${validation.normalizedCode}" not found or inactive. Please check the code and try again.`));
       return;
@@ -308,7 +348,7 @@ async function handleJoinOrWatchMode(
           : user?.email ?? `Participant-${Date.now()}`;
         
         // joinMeeting auto-detects facilitator status based on name match
-        const participant = await SupabaseMeetingService.joinMeeting(
+        const participant = await meetingService.joinMeeting(
           validation.normalizedCode,
           finalParticipantName,
           false // Let the service auto-detect facilitator status

@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { SupabaseRealtimeService } from "@/services/supabase";
 import type { MeetingWithParticipants, Participant, QueueItem } from "@/types/meeting";
+import type { IMeetingRealtime } from "@/services/meeting-service";
 
 interface UseMeetingRealtimeProps {
   meetingId: string;
+  meetingCode: string;
+  realtimeService: IMeetingRealtime;
   setServerParticipants: (participants: Participant[]) => void;
   setServerQueue: (queue: QueueItem[]) => void;
   setServerMeeting: (fn: (m: MeetingWithParticipants | null) => MeetingWithParticipants | null) => void;
@@ -16,17 +18,19 @@ interface UseMeetingRealtimeProps {
  */
 export function useMeetingRealtime({
   meetingId,
+  meetingCode,
+  realtimeService,
   setServerParticipants,
   setServerQueue,
   setServerMeeting,
   setShowJohnDoe,
 }: UseMeetingRealtimeProps) {
   useEffect(() => {
-    if (!meetingId) {
+    if (!meetingId || !meetingCode) {
       return;
     }
 
-    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, meetingId, {
+    const unsubscribe = realtimeService.subscribeToMeeting(meetingId, meetingCode, {
       onParticipantsUpdated: (participants: Participant[]) => {
         setServerParticipants(participants);
         // * Hide John Doe when real participants join
@@ -48,5 +52,5 @@ export function useMeetingRealtime({
     return () => {
       unsubscribe?.();
     };
-  }, [meetingId, setServerParticipants, setServerQueue, setServerMeeting, setShowJohnDoe]);
+  }, [meetingId, meetingCode, realtimeService, setServerParticipants, setServerQueue, setServerMeeting, setShowJohnDoe]);
 }

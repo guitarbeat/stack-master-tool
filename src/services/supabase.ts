@@ -9,6 +9,7 @@ import {
   supabase,
   type SupabaseRequestOptions,
 } from "@/integrations/supabase/client";
+import type { IMeetingService, IMeetingRealtime, RealtimeCallbacks } from "./meeting-service";
 
 const toErrorInstance = (
   error: unknown,
@@ -96,9 +97,9 @@ type SpeakingQueueRow = {
 };
 
 // Meeting operations
-export class SupabaseMeetingService {
+export class SupabaseService implements IMeetingService {
   // Create a new meeting
-  static async createMeeting(
+  async createMeeting(
     title: string,
     facilitatorName: string,
     facilitatorId?: string,
@@ -169,7 +170,7 @@ export class SupabaseMeetingService {
     }
   }
 
-  private static async generateMeetingCodeWithFallback(): Promise<string> {
+  private async generateMeetingCodeWithFallback(): Promise<string> {
     try {
       const { data: codeData, error: codeError } = await withSupabase((client) =>
         client.rpc("generate_meeting_code"),
@@ -221,7 +222,7 @@ export class SupabaseMeetingService {
   }
 
   // Get meeting by code
-  static async getMeeting(
+  async getMeeting(
     code: string,
   ): Promise<MeetingWithParticipants | null> {
     try {
@@ -350,7 +351,7 @@ export class SupabaseMeetingService {
   }
 
   // Check if a user can rejoin as facilitator (name matches original facilitator)
-  static async canRejoinAsFacilitator(
+  async canRejoinAsFacilitator(
     meetingCode: string,
     participantName: string,
   ): Promise<boolean> {
@@ -378,7 +379,7 @@ export class SupabaseMeetingService {
   }
 
   // Join meeting as participant
-  static async joinMeeting(
+  async joinMeeting(
     meetingCode: string,
     participantName: string,
     isFacilitator: boolean = false,
@@ -453,7 +454,7 @@ export class SupabaseMeetingService {
   }
 
   // Join speaking queue
-  static async joinQueue(
+  async joinQueue(
     meetingId: string,
     participantId: string,
     queueType: string = "speak",
@@ -532,7 +533,7 @@ export class SupabaseMeetingService {
   }
 
   // Leave speaking queue
-  static async leaveQueue(
+  async leaveQueue(
     meetingId: string,
     participantId: string,
   ): Promise<void> {
@@ -558,7 +559,7 @@ export class SupabaseMeetingService {
   }
 
   // Move to next speaker (facilitator only)
-  static async nextSpeaker(meetingId: string): Promise<QueueItem | null> {
+  async nextSpeaker(meetingId: string): Promise<QueueItem | null> {
     try {
       // Get current queue
       const { data: queue, error: queueError } = await withSupabase((client) =>
@@ -621,7 +622,7 @@ export class SupabaseMeetingService {
   }
 
   // Update meeting title (facilitator only)
-  static async updateMeetingTitle(
+  async updateMeetingTitle(
     meetingId: string,
     newTitle: string,
   ): Promise<void> {
@@ -642,7 +643,7 @@ export class SupabaseMeetingService {
     }
   }
 
-  static async updateMeetingCode(
+  async updateMeetingCode(
     meetingId: string,
     newCode: string,
   ): Promise<void> {
@@ -691,7 +692,7 @@ export class SupabaseMeetingService {
   }
 
   // Update participant name (facilitator only)
-  static async updateParticipantName(
+  async updateParticipantName(
     participantId: string,
     newName: string,
   ): Promise<void> {
@@ -713,7 +714,7 @@ export class SupabaseMeetingService {
   }
 
   // Reorder queue item to new position
-  static async reorderQueueItem(
+  async reorderQueueItem(
     meetingId: string,
     participantId: string,
     newPosition: number,
@@ -812,7 +813,7 @@ export class SupabaseMeetingService {
   }
 
   // Helper: Reorder queue positions
-  private static async reorderQueue(meetingId: string): Promise<void> {
+  private async reorderQueue(meetingId: string): Promise<void> {
     try {
       const { data: queue, error: queueError } = await withSupabase((client) =>
         client
@@ -849,7 +850,7 @@ export class SupabaseMeetingService {
   }
 
   // Remove participant from meeting (facilitator only)
-  static async removeParticipant(
+  async removeParticipant(
     participantId: string,
   ): Promise<ParticipantSnapshot> {
     try {
@@ -919,7 +920,7 @@ export class SupabaseMeetingService {
     }
   }
 
-  static async restoreParticipant(participantId: string): Promise<void> {
+  async restoreParticipant(participantId: string): Promise<void> {
     try {
       const { error } = await withSupabase((client) =>
         client
@@ -938,7 +939,7 @@ export class SupabaseMeetingService {
   }
 
   // End meeting (mark as inactive and clean up)
-  static async leaveMeeting(participantId: string): Promise<void> {
+  async leaveMeeting(participantId: string): Promise<void> {
     try {
       const { error } = await withSupabase((client) =>
         client
@@ -956,7 +957,7 @@ export class SupabaseMeetingService {
     }
   }
 
-  static async endMeeting(meetingId: string): Promise<void> {
+  async endMeeting(meetingId: string): Promise<void> {
     try {
       // Mark meeting as inactive
       const { error: meetingError } = await withSupabase((client) =>
@@ -1012,7 +1013,7 @@ export class SupabaseMeetingService {
   /**
    * * Get all active meetings for room browsing
    */
-  static async getActiveMeetings(): Promise<MeetingData[]> {
+  async getActiveMeetings(): Promise<MeetingData[]> {
     try {
       const { data, error } = await withSupabase((client) =>
         client
@@ -1056,7 +1057,7 @@ export class SupabaseMeetingService {
   /**
    * * Get active participants count for a meeting
    */
-  static async getParticipants(meetingId: string): Promise<Participant[]> {
+  async getParticipants(meetingId: string): Promise<Participant[]> {
     try {
       const { data, error } = await withSupabase((client) =>
         client
@@ -1081,7 +1082,7 @@ export class SupabaseMeetingService {
   /**
    * * Get meetings created by a specific facilitator
    */
-  static async getMeetingsByFacilitator(
+  async getMeetingsByFacilitator(
     facilitatorId: string,
   ): Promise<MeetingData[]> {
     try {
@@ -1115,7 +1116,7 @@ export class SupabaseMeetingService {
   /**
    * * Delete empty rooms older than 1 hour
    */
-  static async deleteEmptyOldRooms(): Promise<void> {
+  async deleteEmptyOldRooms(): Promise<void> {
     try {
       // Get meetings that are:
       // 1. is_active = true
@@ -1205,7 +1206,7 @@ export class SupabaseMeetingService {
   /**
    * * Delete a meeting (only by facilitator)
    */
-  static async deleteMeeting(
+  async deleteMeeting(
     meetingId: string,
     facilitatorId: string,
   ): Promise<void> {
@@ -1252,21 +1253,15 @@ export class SupabaseMeetingService {
   }
 }
 
+export const SupabaseMeetingService = new SupabaseService();
+
 // Real-time subscription helpers
-export class SupabaseRealtimeService {
+export const SupabaseRealtimeService: IMeetingRealtime = {
   // Subscribe to meeting changes
-  static subscribeToMeeting(
+  subscribeToMeeting(
     meetingId: string,
     meetingCode: string,
-    callbacks: {
-      onParticipantsUpdated: (participants: Participant[]) => void;
-      onQueueUpdated: (queue: QueueItem[]) => void;
-      onMeetingTitleUpdated: (title: string) => void;
-      onParticipantJoined: (participant: Participant) => void;
-      onParticipantLeft: (participantId: string) => void;
-      onNextSpeaker: (speaker: QueueItem) => void;
-      onError: (error: Error | unknown) => void;
-    },
+    callbacks: RealtimeCallbacks,
   ) {
     const participantsChannel = supabase
       .channel(`meeting-${meetingId}-participants`)
@@ -1320,7 +1315,7 @@ export class SupabaseRealtimeService {
       (_payload) => {
         void (async () => {
           try {
-            const meeting = await SupabaseMeetingService.getMeeting(meetingId);
+            const meeting = await SupabaseMeetingService.getMeeting(meetingCode);
             if (meeting && callbacks.onQueueUpdated) {
               callbacks.onQueueUpdated(meeting.speakingQueue);
             }

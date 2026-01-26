@@ -18,16 +18,12 @@ import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 import { CodeInputForm } from "@/components/MeetingRoom/CodeInputForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useMeetingState } from "@/hooks/useMeetingState";
+import { useMeetingRealtime } from "@/hooks/useMeetingRealtime";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useSpeakerTimer } from "@/hooks/useSpeakerTimer";
 import { useSpeakingHistory } from "@/hooks/useSpeakingHistory";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import { useMeetingActions } from "@/hooks/useMeetingActions";
-import {
-  SupabaseMeetingService,
-  SupabaseRealtimeService,
-  type MeetingWithParticipants,
-} from "@/services/supabase";
 import { validateMeetingCode } from "@/utils/schemas";
 import { logProduction } from "@/utils/productionLogger";
 import {
@@ -80,11 +76,28 @@ export default function MeetingRoom() {
     scannerOpen,
     setScannerOpen,
     userRole,
+    backend,
+    setBackend,
+    meetingService,
+    realtimeService,
   } = useMeetingState();
 
   // * Meeting actions hook for host functionality
-  const { handleEndMeeting, handleReorderQueue } = useMeetingActions({
+  const {
+    handleEndMeeting,
+    handleReorderQueue,
+    handleNextSpeaker,
+    handleUndo,
+    handleJoinQueue,
+    handleLeaveQueue,
+    handleUpdateParticipant,
+    handleRemoveParticipant,
+    handleAddParticipant,
+    handleQrScan
+  } = useMeetingActions({
     meetingId,
+    meetingCode,
+    meetingService,
     currentParticipantId,
     serverQueue,
     setLastSpeaker,
@@ -98,7 +111,7 @@ export default function MeetingRoom() {
       setIsLoading(true);
       // Use participantName from state (loaded from localStorage) or fallback
       const facilitatorName = participantName.trim() || user?.email || "Anonymous Facilitator";
-      const created = await SupabaseMeetingService.createMeeting(
+      const created = await meetingService.createMeeting(
         codeInput.trim(),
         facilitatorName,
         user?.id,
@@ -109,7 +122,7 @@ export default function MeetingRoom() {
       setMeetingCode(created.code);
 
       // Load the full meeting data
-      const full = await SupabaseMeetingService.getMeeting(created.code);
+      const full = await meetingService.getMeeting(created.code);
       if (full) {
         setServerMeeting(full);
         setServerParticipants(full.participants);
@@ -137,85 +150,6 @@ export default function MeetingRoom() {
     }
   };
 
-  const handleQrScan = (scannedUrl: string) => {
-    // For now, QR scanning is not fully implemented
-    // This function provides the framework for when proper QR scanning is added
-    // * Log QR scan for debugging in development
-    if (import.meta.env.DEV) {
-      logProduction('info', {
-        action: 'qr_scan_attempted',
-        scannedUrl
-      });
-    }
-    setScannerOpen(false);
-  };
-
-  // Advanced features hooks
-
-  const handleNextSpeaker = async () => {
-    if (!meetingId) {
-      return;
-    }
-    try {
-      const removedSpeaker = await SupabaseMeetingService.nextSpeaker(meetingId);
-      setLastSpeaker(removedSpeaker);
-    } catch (error) {
-      logProduction("error", {
-        action: "next_speaker",
-        meetingId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      // TODO: Show user-friendly error toast
-    }
-  };
-
-  const handleUndo = async () => {
-    if (!meetingId || !lastSpeaker) {
-      return;
-    }
-    try {
-      await SupabaseMeetingService.joinQueue(
-        meetingId,
-        lastSpeaker.participantId,
-      );
-      setLastSpeaker(null); // Clear the last speaker after undoing
-    } catch (error) {
-      logProduction("error", {
-        action: "undo_speaker",
-        meetingId,
-        lastSpeaker: lastSpeaker?.participantId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      // TODO: Show user-friendly error toast
-    }
-  };
-
-  const handleLeaveQueue = async () => {
-    if (!meetingId || !currentParticipantId) {
-      return;
-    }
-    try {
-      await SupabaseMeetingService.leaveQueue(meetingId, currentParticipantId);
-      showToast({
-        type: 'success',
-        title: 'Left Queue',
-        message: 'You have been removed from the speaking queue.'
-      });
-    } catch (error) {
-      logProduction('error', {
-        action: 'leave_queue',
-        meetingId,
-        participantId: currentParticipantId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      showToast({
-        type: 'error',
-        title: 'Failed to Leave Queue',
-        message: 'There was an error removing you from the queue. Please try again.'
-      });
-    }
-  };
-
   const { showKeyboardShortcuts: _showKeyboardShortcuts, toggleShortcuts: _toggleShortcuts } = useKeyboardShortcuts({
     onNextSpeaker: () => {
       void handleNextSpeaker();
@@ -232,168 +166,11 @@ export default function MeetingRoom() {
   const { speakingHistory, addSpeakingSegment: _addSpeakingSegment, getTotalSpeakingTime: _getTotalSpeakingTime, getSpeakingDistribution } = useSpeakingHistory();
   const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop({ isFacilitator: mode === 'host' });
 
-
-  const handleUpdateParticipant = async (participantId: string, newName: string) => {
-    if (!participantId || !newName.trim()) {
-      return;
-    }
-
-    try {
-      const normalizedName = newName.trim();
-      await SupabaseMeetingService.updateParticipantName(participantId, normalizedName);
-      showToast({
-        type: 'success',
-        title: 'Name Updated',
-        message: `Participant name updated to ${normalizedName}`
-      });
-      // Real-time subscription will update the UI
-    } catch (error) {
-      logProduction("error", {
-        action: "update_participant",
-        participantId,
-        newName,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      showToast({
-        type: 'error',
-        title: 'Failed to Update Name',
-        message: 'Please try again or check your connection'
-      });
-    }
-  };
-
-  const handleRemoveParticipant = async (participantId: string) => {
-    if (!participantId) {
-      return;
-    }
-
-    // * Handle fake John Doe participant (ID "1")
-    if (participantId === "1") {
-      setShowJohnDoe(false);
-      showToast({
-        type: 'success',
-        title: 'Participant Removed',
-        message: 'John Doe has been removed from the meeting'
-      });
-      return;
-    }
-
-    const existingParticipant = serverParticipants.find(p => p.id === participantId);
-    const originalIndex = serverParticipants.findIndex(p => p.id === participantId);
-
-    try {
-      const removedParticipant = await SupabaseMeetingService.removeParticipant(participantId);
-      setServerParticipants(prev => prev.filter(p => p.id !== participantId));
-
-      const toastHandle = pushToast({
-        variant: 'warning',
-        title: 'Participant Removed',
-        description: `${removedParticipant.name} has been removed from the meeting`,
-        duration: 7000,
-        action: (
-          <ToastAction
-            altText="Undo removal"
-            onClick={() => {
-              void (async () => {
-                try {
-                  await SupabaseMeetingService.restoreParticipant(removedParticipant.id);
-                  const baseParticipant = existingParticipant ?? {
-                    id: removedParticipant.id,
-                    name: removedParticipant.name,
-                    isFacilitator: removedParticipant.isFacilitator,
-                    hasRaisedHand: false,
-                    joinedAt: removedParticipant.joinedAt,
-                    isActive: true,
-                  };
-
-                  setServerParticipants(prev => {
-                    const restoredParticipant = {
-                      ...baseParticipant,
-                      isActive: true,
-                    };
-                    const next = [...prev];
-                    const insertIndex = originalIndex >= 0 ? Math.min(originalIndex, next.length) : next.length;
-                    next.splice(insertIndex, 0, restoredParticipant);
-                    return next;
-                  });
-                  showToast({
-                    type: 'success',
-                    title: 'Participant Restored',
-                    message: `${removedParticipant.name} has been returned to the meeting`
-                  });
-                } catch (restoreError) {
-                  logProduction('error', {
-                    action: 'restore_participant',
-                    participantId: removedParticipant.id,
-                    error: restoreError instanceof Error ? restoreError.message : String(restoreError)
-                  });
-                  showToast({
-                    type: 'error',
-                    title: 'Failed to Restore Participant',
-                    message: 'Please try again or check your connection'
-                  });
-                } finally {
-                  toastHandle.dismiss();
-                }
-              })();
-            }}
-          >
-            Undo
-          </ToastAction>
-        )
-      });
-    } catch (error) {
-      logProduction("error", {
-        action: "remove_participant",
-        participantId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      showToast({
-        type: 'error',
-        title: 'Failed to Remove Participant',
-        message: 'Please try again or check your connection'
-      });
-    }
-  };
-
-
-  // Handler for AddParticipants component
-  const handleAddParticipant = async (name: string) => {
-    if (!meetingCode) {
-      return Promise.resolve();
-    }
-
-    try {
-      await SupabaseMeetingService.joinMeeting(meetingCode, name, false);
-      showToast({
-        type: 'success',
-        title: 'Participant Added',
-        message: `${name} has been added to the meeting`
-      });
-      // Real-time subscription will update the UI
-      return Promise.resolve();
-    } catch (error) {
-      logProduction("error", {
-        action: "add_participant",
-        meetingId,
-        participantName: name,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      showToast({
-        type: 'error',
-        title: 'Failed to Add Participant',
-        message: 'Please try again or check your connection'
-      });
-      return Promise.reject(error);
-    }
-  };
-
-
   const handleMeetingCodeChange = async (newCode: string) => {
     if (!meetingId) return;
 
     try {
-      await SupabaseMeetingService.updateMeetingCode(meetingId, newCode);
+      await meetingService.updateMeetingCode(meetingId, newCode);
       // Update local state
       setMeetingCode(newCode);
       showToast({
@@ -414,39 +191,22 @@ export default function MeetingRoom() {
   // Meeting initialization is handled by useMeetingState hook
 
   // Realtime subscriptions
-  useEffect(() => {
-    if (!meetingId || !meetingCode) {
-      return;
-    }
-    const unsubscribe = SupabaseRealtimeService.subscribeToMeeting(meetingId, meetingCode, {
-      onParticipantsUpdated: (participants) => {
-        setServerParticipants(participants);
-        // * Hide John Doe when real participants join
-        if (participants.length > 0) {
-          setShowJohnDoe(false);
-        }
-      },
-      onQueueUpdated: setServerQueue,
-      onMeetingTitleUpdated: (title) =>
-        setServerMeeting((m) =>
-          m ? ({ ...m, title } as MeetingWithParticipants) : m,
-        ),
-      onParticipantJoined: () => void 0,
-      onParticipantLeft: () => void 0,
-      onNextSpeaker: () => void 0,
-      onError: () => void 0,
-    });
-    return () => {
-      unsubscribe?.();
-    };
-  }, [meetingId, meetingCode, setShowJohnDoe, setServerParticipants, setServerQueue, setServerMeeting]);
+  useMeetingRealtime({
+    meetingId,
+    meetingCode,
+    realtimeService,
+    setServerParticipants,
+    setServerQueue,
+    setServerMeeting,
+    setShowJohnDoe,
+  });
 
   // Cleanup: Mark participant as inactive when leaving
   useEffect(() => {
     const handleBeforeUnload = async () => {
       if (currentParticipantId && mode === "join") {
         try {
-          await SupabaseMeetingService.leaveMeeting(currentParticipantId);
+          await meetingService.leaveMeeting(currentParticipantId);
         } catch (error) {
           // * Log warning for debugging in development
           if (import.meta.env.DEV) {
@@ -472,7 +232,7 @@ export default function MeetingRoom() {
       window.removeEventListener("unload", handleUnload);
       // Mark as inactive when component unmounts (navigating away)
       if (currentParticipantId && mode === "join") {
-        void SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
+        void meetingService.leaveMeeting(currentParticipantId).catch(error => {
           // * Log warning for debugging in development
           if (import.meta.env.DEV) {
             logProduction('warn', {
@@ -484,7 +244,7 @@ export default function MeetingRoom() {
         });
       }
     };
-  }, [currentParticipantId, mode, setShowJohnDoe]);
+  }, [currentParticipantId, mode, meetingService]);
 
   if (isLoading) {
     return (
@@ -639,8 +399,39 @@ export default function MeetingRoom() {
   // Determine current speaker from the actual queue (first person in queue)
   const currentSpeakerFromQueue = serverQueue.length > 0 ? {
     participantName: serverQueue[0].participantName,
-    startedSpeakingAt: new Date(serverQueue[0].joinedQueueAt), // Use when they joined queue as approximation
+    startedSpeakingAt: new Date(serverQueue[0].joinedQueueAt || Date.now()), // Handle missing timestamp in QueueItem if undefined (QueueItem defines timestamp as number, but logic might use joinedQueueAt string in some places?)
+    // Note: QueueItem interface has timestamp: number. But speaking_queue DB has joined_queue_at string.
+    // SupabaseService maps it.
+    // P2PService maps it.
+    // DisplayLayout expects Date.
+    // QueueItem has timestamp (number).
+    // I should convert timestamp to Date.
   } : null;
+  // Correction: QueueItem interface in src/types/meeting.ts has timestamp: number.
+  // In `serverQueue`, items are QueueItem.
+  // So serverQueue[0].timestamp should be used.
+  // But wait, existing code used `serverQueue[0].joinedQueueAt`.
+  // Does QueueItem have `joinedQueueAt`?
+  // In `src/types/meeting.ts`:
+  // export interface QueueItem { ... timestamp: number; ... }
+  // There is NO `joinedQueueAt` in interface.
+  // But `SupabaseService.getMeeting` returns items with `timestamp: new Date(q.joined_queue_at).getTime()`.
+  // So `serverQueue` items have `timestamp`.
+  // The existing code I read earlier had:
+  // startedSpeakingAt: new Date(serverQueue[0].joinedQueueAt),
+  // This implies `QueueItem` might have had `joinedQueueAt` or TS was loose?
+  // Or I misread.
+  // Let's use `serverQueue[0].timestamp`.
+  // Wait, `SupabaseService` mapping:
+  /*
+        speakingQueue: queueRows.map((q) => ({
+          // ...
+          timestamp: new Date(q.joined_queue_at).getTime(),
+          // ...
+        })),
+  */
+  // So the object has `timestamp`.
+  // I will correct `currentSpeakerFromQueue` logic.
 
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
@@ -686,7 +477,10 @@ export default function MeetingRoom() {
       <DisplayLayout
         meetingData={mockMeetingData}
         participants={mockParticipants}
-        currentSpeaker={currentSpeakerFromQueue}
+        currentSpeaker={currentSpeakerFromQueue ? {
+            participantName: currentSpeakerFromQueue.participantName,
+            startedSpeakingAt: new Date(serverQueue[0].timestamp) // Corrected
+        } : null}
         speakingQueue={serverQueue}
         speakingDistribution={speakingDistribution.length > 0 ? speakingDistribution : fallbackDistribution}
         totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
@@ -868,6 +662,8 @@ export default function MeetingRoom() {
             onUpdateParticipant={handleUpdateParticipant}
             onRemoveParticipant={handleRemoveParticipant}
             userRole={userRole}
+            backend={backend}
+            setBackend={setBackend}
           />
         )}
 
@@ -908,7 +704,10 @@ export default function MeetingRoom() {
                 totalParticipants={mockParticipants.length}
                 queueActivity={speakingHistory.length}
                 directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue}
+                currentSpeaker={currentSpeakerFromQueue ? {
+                    participantName: currentSpeakerFromQueue.participantName,
+                    startedSpeakingAt: new Date(serverQueue[0].timestamp)
+                } : null}
                 isHostMode={mode === "host"}
               />
             </div>
@@ -922,14 +721,17 @@ export default function MeetingRoom() {
             <QueuePositionFeedback
               queuePosition={1}
               joinedAt={new Date()}
-              currentSpeaker={currentSpeakerFromQueue}
+              currentSpeaker={currentSpeakerFromQueue ? {
+                  participantName: currentSpeakerFromQueue.participantName,
+                  startedSpeakingAt: new Date(serverQueue[0].timestamp)
+              } : null}
               queueHistory={[]}
             />
             <ActionsPanel
-              isInQueue={false}
-              onJoinQueue={() => {}}
-              onLeaveQueue={() => {}}
-              participantName="Current User"
+              isInQueue={serverQueue.some(q => q.participantId === currentParticipantId)} // Corrected: Check queue
+              onJoinQueue={() => void handleJoinQueue()}
+              onLeaveQueue={() => void handleLeaveQueue()}
+              participantName={participantName || "Current User"}
             />
           </>
         )}
@@ -959,7 +761,10 @@ export default function MeetingRoom() {
                 totalParticipants={mockParticipants.length}
                 queueActivity={speakingHistory.length}
                 directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue}
+                currentSpeaker={currentSpeakerFromQueue ? {
+                    participantName: currentSpeakerFromQueue.participantName,
+                    startedSpeakingAt: new Date(serverQueue[0].timestamp)
+                } : null}
                 isHostMode={false}
               />
             </div>
