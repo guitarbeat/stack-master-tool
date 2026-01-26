@@ -5,6 +5,7 @@
 
 export { MeetingSync } from "./meeting-sync";
 export { SignalingManager, createP2PSession } from "./signaling";
+export { P2PMeetingService } from "./p2p-meeting-service";
 export type {
   P2PCallbacks,
   P2PConfig,
