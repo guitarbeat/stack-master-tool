@@ -7,7 +7,7 @@ import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { useToast } from "@/hooks/use-toast";
 import { copyMeetingLink } from "@/utils/clipboard";
 import QRCode from "qrcode";
-import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy } from "lucide-react";
+import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy, Wifi, WifiOff } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,17 +23,21 @@ import {
 interface HostSettingsPanelProps {
   isLiveMeeting: boolean;
   setIsLiveMeeting: (live: boolean) => void;
-  meetingCode: string;
-  onQrGenerate: (url: string, type: 'join' | 'watch') => void;
+  meetingCode?: string;
+  onQrGenerate?: (url: string, type: 'join' | 'watch') => void;
   onScannerOpen?: () => void;
   onMeetingCodeChange?: (newCode: string) => Promise<void>;
   onEndMeeting?: () => void;
   // * Participant management props
-  mockParticipants: Array<{ id: string; name: string; isFacilitator: boolean; hasRaisedHand: boolean; joinedAt: Date; isActive: boolean }>;
-  onAddParticipant: (name: string) => Promise<void>;
-  onUpdateParticipant: (participantId: string, newName: string) => Promise<void>;
-  onRemoveParticipant: (participantId: string) => Promise<void>;
-  userRole: string;
+  mockParticipants?: Array<{ id: string; name: string; isFacilitator: boolean; hasRaisedHand: boolean; joinedAt: Date; isActive: boolean }>;
+  onAddParticipant?: (name: string) => Promise<void>;
+  onUpdateParticipant?: (participantId: string, newName: string) => Promise<void>;
+  onRemoveParticipant?: (participantId: string) => Promise<void>;
+  userRole?: string;
+  // * P2P props
+  isP2P?: boolean;
+  setIsP2P?: (isP2P: boolean) => void;
+  isCreationMode?: boolean;
 }
 
 /**
@@ -43,17 +47,21 @@ interface HostSettingsPanelProps {
 export function HostSettingsPanel({
   isLiveMeeting,
   setIsLiveMeeting,
-  meetingCode,
+  meetingCode = "",
   onQrGenerate,
   onScannerOpen: _onScannerOpen,
   onMeetingCodeChange,
   onEndMeeting,
   // * Participant management props
-  mockParticipants,
+  mockParticipants = [],
   onAddParticipant,
   onUpdateParticipant,
   onRemoveParticipant,
   userRole,
+  // * P2P props
+  isP2P = false,
+  setIsP2P,
+  isCreationMode = false,
 }: HostSettingsPanelProps) {
   const { toast } = useToast();
   const [isEditingCode, setIsEditingCode] = useState(false);
@@ -62,6 +70,7 @@ export function HostSettingsPanel({
   const [copiedWatch, setCopiedWatch] = useState(false);
 
   const handleCopyLink = async (type: 'join' | 'watch') => {
+    if (!meetingCode) return;
     await copyMeetingLink(meetingCode, type);
     
     if (type === 'join') {
@@ -105,7 +114,7 @@ export function HostSettingsPanel({
   };
 
   const handleGenerateQr = async (type: 'join' | 'watch') => {
-    if (!meetingCode) return;
+    if (!meetingCode || !onQrGenerate) return;
     
     const link = `${window.location.origin}/meeting?mode=${type}&code=${meetingCode}`;
     const dataUrl = await QRCode.toDataURL(link, {
@@ -117,21 +126,40 @@ export function HostSettingsPanel({
 
   return (
     <div className="bg-muted/30 text-muted-foreground rounded-lg p-3 border border-border/50 mb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
-        <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
-        <div className="flex items-center gap-3">
-          <Toggle
-            checked={isLiveMeeting}
-            onCheckedChange={setIsLiveMeeting}
-            size="sm"
-            aria-label="Toggle live meeting mode"
-          />
-          <span className="text-sm font-medium">Live Meeting</span>
+        <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 className="text-sm font-medium text-foreground">Meeting Settings</h3>
+          <div className="flex items-center gap-3 flex-wrap">
+            {setIsP2P && (
+              <div className="flex items-center gap-3">
+                <Toggle
+                  checked={isP2P}
+                  onCheckedChange={setIsP2P}
+                  size="sm"
+                  aria-label="Toggle P2P mode"
+                />
+                <span className="text-sm font-medium flex items-center gap-2">
+                   {isP2P ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                   P2P Mode
+                </span>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              <Toggle
+                checked={isLiveMeeting}
+                onCheckedChange={setIsLiveMeeting}
+                size="sm"
+                aria-label="Toggle live meeting mode"
+              />
+              <span className="text-sm font-medium">Live Meeting</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* End Meeting Button */}
-      {onEndMeeting && (
+      {!isCreationMode && onEndMeeting && (
         <div className="mb-4 pt-2 border-t border-border/50">
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -167,6 +195,7 @@ export function HostSettingsPanel({
       )}
 
       {/* Meeting Code Display and Editing */}
+      {!isCreationMode && (
       <div className="mt-4 pt-4 border-t border-border/50">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
           <label className="text-sm font-medium text-foreground">Meeting Code</label>
@@ -243,13 +272,26 @@ export function HostSettingsPanel({
           Share this code with participants to join your meeting
         </p>
       </div>
+      )}
 
       <div className="text-xs text-muted-foreground mt-4">
-        <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
-        <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
+        {isCreationMode ? (
+           <>
+             {isP2P ? (
+                <p><strong>P2P Mode:</strong> Meeting data is synced directly between peers (no central server).</p>
+             ) : (
+                <p><strong>Supabase Mode:</strong> Meeting data is stored on a central server.</p>
+             )}
+           </>
+        ) : (
+           <>
+            <p><strong>Live Meeting:</strong> Meeting is active and participants can join remotely</p>
+            <p><strong>Local/Manual:</strong> Meeting is for in-person facilitation only</p>
+           </>
+        )}
       </div>
       
-      {isLiveMeeting && (
+      {!isCreationMode && isLiveMeeting && (
         <div className="space-y-2 text-xs">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Join link</span>
@@ -304,13 +346,14 @@ export function HostSettingsPanel({
         </div>
       )}
       
-      {!isLiveMeeting && (
+      {!isCreationMode && !isLiveMeeting && (
         <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
           <p><strong>Local Meeting Mode:</strong> This meeting is set to local/manual mode. Enable "Live Meeting" to allow remote participants to join.</p>
         </div>
       )}
 
       {/* Participant Management Section */}
+      {!isCreationMode && onAddParticipant && onUpdateParticipant && onRemoveParticipant && (
       <div className="bg-card text-card-foreground rounded-xl p-4 shadow-lg border mt-4">
         <div className="mb-4">
           <h2 className="text-base font-semibold">Participant Management</h2>
@@ -339,6 +382,7 @@ export function HostSettingsPanel({
           />
         </div>
       </div>
+      )}
     </div>
   );
 }
