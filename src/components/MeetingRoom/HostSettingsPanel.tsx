@@ -7,7 +7,7 @@ import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { useToast } from "@/hooks/use-toast";
 import { copyMeetingLink } from "@/utils/clipboard";
 import QRCode from "qrcode";
-import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy } from "lucide-react";
+import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy, Wifi, Database } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +19,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface HostSettingsPanelProps {
   isLiveMeeting: boolean;
@@ -34,6 +36,9 @@ interface HostSettingsPanelProps {
   onUpdateParticipant: (participantId: string, newName: string) => Promise<void>;
   onRemoveParticipant: (participantId: string) => Promise<void>;
   userRole: string;
+  // * Backend selection
+  backend: 'supabase' | 'p2p';
+  setBackend: (backend: 'supabase' | 'p2p') => void;
 }
 
 /**
@@ -54,6 +59,8 @@ export function HostSettingsPanel({
   onUpdateParticipant,
   onRemoveParticipant,
   userRole,
+  backend,
+  setBackend,
 }: HostSettingsPanelProps) {
   const { toast } = useToast();
   const [isEditingCode, setIsEditingCode] = useState(false);
@@ -129,6 +136,26 @@ export function HostSettingsPanel({
           <span className="text-sm font-medium">Live Meeting</span>
         </div>
       </div>
+
+      {/* Backend Selection Toggle */}
+      <div className="flex items-center justify-between py-2 border-t border-border/50">
+        <div className="flex items-center space-x-2">
+          {backend === 'supabase' ? <Database className="w-4 h-4" /> : <Wifi className="w-4 h-4" />}
+          <Label htmlFor="backend-mode" className="text-xs font-medium">
+            {backend === 'supabase' ? 'Cloud Mode (Supabase)' : 'P2P Mode (Experimental)'}
+          </Label>
+        </div>
+        <Switch
+          id="backend-mode"
+          checked={backend === 'p2p'}
+          onCheckedChange={(checked) => setBackend(checked ? 'p2p' : 'supabase')}
+        />
+      </div>
+      {backend === 'p2p' && (
+        <div className="mb-2 text-[10px] text-amber-500 bg-amber-500/10 p-1.5 rounded">
+          Warning: P2P mode relies on peer connections. Data is stored locally and syncs directly between users.
+        </div>
+      )}
 
       {/* End Meeting Button */}
       {onEndMeeting && (

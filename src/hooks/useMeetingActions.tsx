@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { SupabaseMeetingService } from "@/services/supabase";
+import type { IMeetingService } from "@/services/meeting-service";
 import type { QueueItem } from "@/types/meeting";
 import { logProduction } from "@/utils/productionLogger";
 
 interface UseMeetingActionsProps {
   meetingId: string;
+  meetingCode: string;
+  meetingService: IMeetingService;
   currentParticipantId: string;
   serverQueue: QueueItem[];
   setLastSpeaker: (speaker: QueueItem | null) => void;
@@ -43,6 +45,8 @@ interface UseMeetingActionsReturn {
  */
 export function useMeetingActions({
   meetingId,
+  meetingCode,
+  meetingService,
   currentParticipantId,
   serverQueue,
   setLastSpeaker,
@@ -66,7 +70,7 @@ export function useMeetingActions({
       return;
     }
     try {
-      const removedSpeaker = await SupabaseMeetingService.nextSpeaker(meetingId);
+      const removedSpeaker = await meetingService.nextSpeaker(meetingId);
       updateLastSpeaker(removedSpeaker);
     } catch (error) {
       logProduction("error", {
@@ -86,7 +90,7 @@ export function useMeetingActions({
       return;
     }
     try {
-      await SupabaseMeetingService.joinQueue(
+      await meetingService.joinQueue(
         meetingId,
         lastSpeaker.participantId,
       );
@@ -110,7 +114,7 @@ export function useMeetingActions({
       return;
     }
     try {
-      await SupabaseMeetingService.joinQueue(meetingId, currentParticipantId);
+      await meetingService.joinQueue(meetingId, currentParticipantId);
       // * The real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
@@ -130,7 +134,7 @@ export function useMeetingActions({
       return;
     }
     try {
-      await SupabaseMeetingService.leaveQueue(meetingId, currentParticipantId);
+      await meetingService.leaveQueue(meetingId, currentParticipantId);
       // * The real-time subscription will update the UI
     } catch (error) {
       logProduction("error", {
@@ -165,7 +169,7 @@ export function useMeetingActions({
       // Calculate new position based on target index
       const newPosition = targetIndex + 1; // positions are 1-based in DB
 
-      await SupabaseMeetingService.reorderQueueItem(
+      await meetingService.reorderQueueItem(
         meetingId,
         itemToMove.participantId,
         newPosition
@@ -200,7 +204,7 @@ export function useMeetingActions({
 
     try {
       const normalizedName = newName.trim();
-      await SupabaseMeetingService.updateParticipantName(participantId, normalizedName);
+      await meetingService.updateParticipantName(participantId, normalizedName);
       showToast({
         type: 'success',
         title: 'Name Updated',
@@ -242,7 +246,7 @@ export function useMeetingActions({
     }
 
     try {
-      const removedParticipant = await SupabaseMeetingService.removeParticipant(participantId);
+      const removedParticipant = await meetingService.removeParticipant(participantId);
       const toastHandle = pushToast({
         variant: 'warning',
         title: 'Participant Removed',
@@ -254,7 +258,7 @@ export function useMeetingActions({
             onClick={() => {
               void (async () => {
                 try {
-                  await SupabaseMeetingService.restoreParticipant(removedParticipant.id);
+                  await meetingService.restoreParticipant(removedParticipant.id);
                   showToast({
                     type: 'success',
                     title: 'Participant Restored',
@@ -300,12 +304,12 @@ export function useMeetingActions({
    * * Handles adding a new participant to the meeting
    */
   const handleAddParticipant = async (name: string) => {
-    if (!meetingId) {
+    if (!meetingCode) { // Changed check from meetingId to meetingCode as we use code for joining
       return Promise.resolve();
     }
 
     try {
-      await SupabaseMeetingService.joinMeeting(meetingId, name, false);
+      await meetingService.joinMeeting(meetingCode, name, false); // Use meetingCode
       showToast({
         type: 'success',
         title: 'Participant Added',
@@ -339,7 +343,7 @@ export function useMeetingActions({
     }
 
     try {
-      await SupabaseMeetingService.endMeeting(meetingId);
+      await meetingService.endMeeting(meetingId);
       // * Navigate back to home after ending meeting
       navigate("/");
     } catch (error) {
