@@ -46,6 +46,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
+    // NOTE: Avoid pre-bundling @supabase/supabase-js in Lovable/Vite preview;
+    // it has historically triggered "invalid or unexpected token" / preview generation failures.
+    exclude: ['@supabase/supabase-js'],
     include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc'],
     esbuildOptions: {
       // Node.js global to browser globalThis
