@@ -3,7 +3,7 @@
  * Uses Yjs for conflict-free distributed state
  */
 
-import * as Y from "yjs";
+import { Doc, Map as YMap, Array as YArray } from "yjs";
 import type { Participant, QueueItem } from "@/types/meeting";
 import type { 
   P2PCallbacks, 
@@ -17,15 +17,15 @@ import type {
  * Handles local mutations and observes remote changes
  */
 export class MeetingSync {
-  private doc: Y.Doc;
-  private participants: Y.Map<SerializedParticipant>;
-  private queue: Y.Array<SerializedQueueItem>;
-  private metadata: Y.Map<string | number | boolean>;
+  private doc: Doc;
+  private participants: YMap<SerializedParticipant>;
+  private queue: YArray<SerializedQueueItem>;
+  private metadata: YMap<string | number | boolean>;
   private callbacks: Partial<P2PCallbacks> = {};
   private _status: P2PConnectionStatus = "disconnected";
 
   constructor(roomCode: string) {
-    this.doc = new Y.Doc();
+    this.doc = new Doc();
     
     // Initialize shared types with room-specific names
     this.participants = this.doc.getMap<SerializedParticipant>(`participants-${roomCode}`);
@@ -37,7 +37,7 @@ export class MeetingSync {
   }
 
   /** Get the underlying Yjs document for provider attachment */
-  getDoc(): Y.Doc {
+  getDoc(): Doc {
     return this.doc;
   }
 
