@@ -62,5 +62,8 @@ export default defineConfig(({ mode }) => ({
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     __GIT_COMMIT__: JSON.stringify('unknown'),
     __GIT_BRANCH__: JSON.stringify('main'),
+    // Required for y-webrtc's simple-peer dependency
+    'process.env': {},
+    global: 'globalThis',
   },
 }));
