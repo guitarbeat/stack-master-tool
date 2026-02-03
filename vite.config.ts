@@ -3,7 +3,14 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// Vite configuration - https://vitejs.dev/config/
+/**
+ * Vite Configuration
+ * 
+ * SUPABASE COMPATIBILITY NOTES:
+ * - @supabase/postgrest-js ships an ESM wrapper that imports from CJS expecting a default export.
+ * - We alias it directly to the CJS entry so Vite's pre-bundler can convert CJS → ESM properly.
+ * - @supabase/supabase-js must NOT be pre-bundled (causes "invalid token" in Lovable preview).
+ */
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -16,15 +23,9 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: [
-      {
-        find: "@",
-        replacement: path.resolve(__dirname, "./src"),
-      },
-      // Force postgrest-js to use CJS entry; Vite will convert it to ESM with proper default export
-      {
-        find: "@supabase/postgrest-js",
-        replacement: path.resolve(__dirname, "node_modules/@supabase/postgrest-js/dist/cjs/index.js"),
-      },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+      // Bypass broken ESM wrapper → use CJS directly (Vite converts to ESM with default export)
+      { find: "@supabase/postgrest-js", replacement: path.resolve(__dirname, "node_modules/@supabase/postgrest-js/dist/cjs/index.js") },
     ],
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
@@ -49,21 +50,13 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development',
     chunkSizeWarningLimit: 600,
     reportCompressedSize: false,
-    commonjsOptions: {
-      include: [/node_modules/],
-    },
+    commonjsOptions: { include: [/node_modules/] },
   },
   optimizeDeps: {
-    // NOTE: Exclude @supabase/supabase-js to avoid "invalid or unexpected token" preview failures.
-    // Include postgrest-js so Vite converts its CJS exports to ESM (fixes "does not provide export named 'default'").
+    // CRITICAL: Exclude supabase-js (preview failures); include postgrest-js for CJS→ESM conversion
     exclude: ['@supabase/supabase-js'],
     include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/postgrest-js'],
-    esbuildOptions: {
-      // Node.js global to browser globalThis
-      define: {
-        global: 'globalThis',
-      },
-    },
+    esbuildOptions: { define: { global: 'globalThis' } },
   },
   preview: {
     port: 4173,
@@ -79,7 +72,6 @@ export default defineConfig(({ mode }) => ({
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     __GIT_COMMIT__: JSON.stringify('unknown'),
     __GIT_BRANCH__: JSON.stringify('main'),
-    // Required for y-webrtc's simple-peer dependency
     'process.env': {},
     global: 'globalThis',
   },
