@@ -49,8 +49,10 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    // Include Supabase packages so Vite pre-bundles and converts CJS to ESM properly.
-    include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/supabase-js', '@supabase/postgrest-js'],
+    // NOTE: Exclude @supabase/supabase-js to avoid "invalid or unexpected token" preview failures.
+    // Include postgrest-js so Vite converts its CJS exports to ESM (fixes "does not provide export named 'default'").
+    exclude: ['@supabase/supabase-js'],
+    include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/postgrest-js'],
     esbuildOptions: {
       // Node.js global to browser globalThis
       define: {
