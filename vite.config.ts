@@ -24,8 +24,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: [
       { find: "@", replacement: path.resolve(__dirname, "./src") },
-      // Bypass broken ESM wrapper → use CJS directly (Vite converts to ESM with default export)
-      { find: "@supabase/postgrest-js", replacement: path.resolve(__dirname, "node_modules/@supabase/postgrest-js/dist/cjs/index.js") },
     ],
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
@@ -53,9 +51,8 @@ export default defineConfig(({ mode }) => ({
     commonjsOptions: { include: [/node_modules/] },
   },
   optimizeDeps: {
-    // CRITICAL: Exclude supabase-js (preview failures); include postgrest-js for CJS→ESM conversion
-    exclude: ['@supabase/supabase-js'],
-    include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/postgrest-js'],
+    // Include both Supabase packages so Vite properly converts CJS to ESM
+    include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/supabase-js', '@supabase/postgrest-js'],
     esbuildOptions: { define: { global: 'globalThis' } },
   },
   preview: {
