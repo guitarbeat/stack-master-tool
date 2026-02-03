@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Trash2, User, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { EditableField } from "@/components/ui/editable-field";
 import type { Participant } from '@/types/meeting';
 
 interface ParticipantListProps {
@@ -58,9 +59,12 @@ export function ParticipantList({
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-foreground truncate block">
-                    {participant.name}
-                  </span>
+                  <EditableField
+                    value={participant.name}
+                    onUpdate={(newName) => onUpdateParticipant(participant.id, newName)}
+                    canEdit={userRole === 'facilitator'}
+                    className="text-sm font-medium text-foreground truncate block"
+                  />
                   
                   {participant.hasRaisedHand && (
                     <div className="text-xs text-primary mt-1">
