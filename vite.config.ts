@@ -20,6 +20,11 @@ export default defineConfig(({ mode }) => ({
         find: "@",
         replacement: path.resolve(__dirname, "./src"),
       },
+      // Force postgrest-js to use CJS entry; Vite will convert it to ESM with proper default export
+      {
+        find: "@supabase/postgrest-js",
+        replacement: path.resolve(__dirname, "node_modules/@supabase/postgrest-js/dist/cjs/index.js"),
+      },
     ],
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
