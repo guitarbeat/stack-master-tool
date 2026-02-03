@@ -49,11 +49,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    // NOTE: Avoid pre-bundling @supabase/supabase-js in Lovable/Vite preview;
-    // it has historically triggered "invalid or unexpected token" / preview generation failures.
-    exclude: ['@supabase/supabase-js'],
-    // Include postgrest-js so Vite converts its CJS exports to ESM (fixes "does not provide export named 'default'").
-    include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/postgrest-js'],
+    // Include Supabase packages so Vite pre-bundles and converts CJS to ESM properly.
+    include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc', '@supabase/supabase-js', '@supabase/postgrest-js'],
     esbuildOptions: {
       // Node.js global to browser globalThis
       define: {
