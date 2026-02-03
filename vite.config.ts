@@ -16,22 +16,6 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: [
-      // Force package-level PostgREST to ESM to avoid default-export mismatch.
-      {
-        find: "@supabase/postgrest-js",
-        replacement: "@supabase/postgrest-js/dist/esm/index.js",
-      },
-      // Fix Supabase PostgREST ESM/CJS interop in Vite dev/preview.
-      // The wrapper module expects ESM exports, but Vite can end up serving the CJS build directly
-      // which triggers: "does not provide an export named 'default'".
-      // Force the ESM entry.
-      {
-        // Vite sometimes resolves this import to a served path like:
-        //   /node_modules/@supabase/postgrest-js/dist/cjs/index.js?v=...
-        // so we match with a broad regex and force the ESM build.
-        find: /@supabase\/postgrest-js\/dist\/cjs\/index\.js(?:\?.*)?$/,
-        replacement: "@supabase/postgrest-js/dist/esm/index.js",
-      },
       {
         find: "@",
         replacement: path.resolve(__dirname, "./src"),
