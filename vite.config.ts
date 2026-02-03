@@ -15,9 +15,28 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      // Force package-level PostgREST to ESM to avoid default-export mismatch.
+      {
+        find: "@supabase/postgrest-js",
+        replacement: "@supabase/postgrest-js/dist/esm/index.js",
+      },
+      // Fix Supabase PostgREST ESM/CJS interop in Vite dev/preview.
+      // The wrapper module expects ESM exports, but Vite can end up serving the CJS build directly
+      // which triggers: "does not provide an export named 'default'".
+      // Force the ESM entry.
+      {
+        // Vite sometimes resolves this import to a served path like:
+        //   /node_modules/@supabase/postgrest-js/dist/cjs/index.js?v=...
+        // so we match with a broad regex and force the ESM build.
+        find: /@supabase\/postgrest-js\/dist\/cjs\/index\.js(?:\?.*)?$/,
+        replacement: "@supabase/postgrest-js/dist/esm/index.js",
+      },
+      {
+        find: "@",
+        replacement: path.resolve(__dirname, "./src"),
+      },
+    ],
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
   build: {
@@ -48,7 +67,8 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     // NOTE: Avoid pre-bundling @supabase/supabase-js in Lovable/Vite preview;
     // it has historically triggered "invalid or unexpected token" / preview generation failures.
-    exclude: ['@supabase/supabase-js'],
+    // Also exclude postgrest-js to avoid CJS/ESM interop issues in preview.
+    exclude: ['@supabase/supabase-js', '@supabase/postgrest-js'],
     include: ['react', 'react-dom', 'react-router-dom', 'yjs', 'y-webrtc'],
     esbuildOptions: {
       // Node.js global to browser globalThis
