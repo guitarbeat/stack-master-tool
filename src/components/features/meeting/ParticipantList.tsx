@@ -1,11 +1,15 @@
-import { useState } from 'react';
-import { Trash2, User, Crown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import type { Participant } from '@/types/meeting';
+import { useState } from "react";
+import { Trash2, User, Crown, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EditableField } from "@/components/ui/editable-field";
+import type { Participant } from "@/types/meeting";
 
 interface ParticipantListProps {
   participants: Participant[];
-  onUpdateParticipant: (participantId: string, newName: string) => void | Promise<void>;
+  onUpdateParticipant: (
+    participantId: string,
+    newName: string,
+  ) => void | Promise<void>;
   onRemoveParticipant: (participantId: string) => void | Promise<void>;
   userRole?: string;
   className?: string;
@@ -15,8 +19,8 @@ export function ParticipantList({
   participants,
   onUpdateParticipant,
   onRemoveParticipant,
-  userRole = 'participant',
-  className = ''
+  userRole = "participant",
+  className = "",
 }: ParticipantListProps) {
   const [removingId, setRemovingId] = useState<string | null>(null);
 
@@ -29,17 +33,18 @@ export function ParticipantList({
     }
   };
 
-  const canRemove = userRole === 'facilitator';
+  const isFacilitator = userRole === "facilitator";
 
   return (
     <div className={`space-y-2 ${className}`}>
       <h3 className="text-sm font-medium text-foreground mb-3">
         Participants ({participants.length})
       </h3>
-      
+
       {participants.length === 0 ? (
-        <div className="text-sm text-muted-foreground text-center py-4">
-          No participants yet
+        <div className="flex flex-col items-center justify-center text-sm text-muted-foreground py-8 border border-dashed rounded-lg bg-muted/20">
+          <Users className="w-8 h-8 mb-2 opacity-40" />
+          <p>No participants yet</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -56,12 +61,22 @@ export function ParticipantList({
                     <User className="w-4 h-4 text-muted-foreground" />
                   )}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-foreground truncate block">
-                    {participant.name}
-                  </span>
-                  
+                  <EditableField
+                    value={participant.name}
+                    onUpdate={(newName) =>
+                      onUpdateParticipant(participant.id, newName)
+                    }
+                    canEdit={isFacilitator}
+                    className={`text-sm font-medium text-foreground truncate block ${
+                      isFacilitator
+                        ? "cursor-pointer hover:underline decoration-dashed decoration-muted-foreground/50 underline-offset-4"
+                        : ""
+                    }`}
+                    inputClassName="h-7 text-sm"
+                  />
+
                   {participant.hasRaisedHand && (
                     <div className="text-xs text-primary mt-1">
                       ✋ Raised hand
@@ -70,7 +85,7 @@ export function ParticipantList({
                 </div>
               </div>
 
-              {canRemove && !participant.isFacilitator && (
+              {isFacilitator && !participant.isFacilitator && (
                 <Button
                   variant="ghost"
                   size="sm"

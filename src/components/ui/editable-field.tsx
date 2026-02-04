@@ -1,4 +1,9 @@
-import { useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit2, Check, X } from "lucide-react";
@@ -50,15 +55,15 @@ export function EditableField<T extends string = string>({
     setIsUpdating(true);
     try {
       const result = onUpdate(editValue.trim() as T);
-      if (result && typeof result.then === 'function') {
+      if (result && typeof result.then === "function") {
         await result;
       }
       setIsEditing(false);
     } catch (error) {
-      logProduction('error', {
-        action: 'update_field_value',
+      logProduction("error", {
+        action: "update_field_value",
         value: editValue,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
       // Reset to original value on error
       setEditValue(value);
@@ -106,6 +111,7 @@ export function EditableField<T extends string = string>({
           }}
           disabled={isUpdating || editValue.trim() === ""}
           className="h-8 w-8 p-0"
+          aria-label="Save"
         >
           <Check className="h-4 w-4 text-green-600" />
         </Button>
@@ -115,6 +121,7 @@ export function EditableField<T extends string = string>({
           onClick={handleCancelEdit}
           disabled={isUpdating}
           className="h-8 w-8 p-0"
+          aria-label="Cancel"
         >
           <X className="h-4 w-4 text-red-600" />
         </Button>
@@ -131,7 +138,8 @@ export function EditableField<T extends string = string>({
         size="sm"
         variant="ghost"
         onClick={handleStartEdit}
-        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+        aria-label="Edit"
       >
         <Edit2 className="h-3 w-3" />
       </Button>
