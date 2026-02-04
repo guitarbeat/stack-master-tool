@@ -91,8 +91,23 @@ export default function MeetingRoom() {
     setShowJohnDoe,
   });
 
+  const [isP2P, setIsP2P] = useState(false);
+
   const handleCreateRoom = async () => {
     if (!codeInput.trim()) return;
+
+    if (isP2P) {
+      logProduction("info", {
+        action: "create_p2p_room",
+        name: codeInput
+      });
+      showToast({
+        title: "P2P Mode",
+        description: "P2P room creation is not yet fully implemented. Please use Supabase mode.",
+        variant: "default",
+      });
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -732,8 +747,7 @@ export default function MeetingRoom() {
                     setError(new AppError(ErrorCode.AUTH_ERROR, authError, "Failed to authenticate"));
                     return;
                   }
-                  // Immediately create the meeting after successful sign in
-                  await handleCreateRoom();
+                  // * User is now authenticated, will show creation form on next render
                 } catch (error) {
                   setError(new AppError(
                     ErrorCode.UNKNOWN,
@@ -818,6 +832,14 @@ export default function MeetingRoom() {
                     }}
                 />
               </div>
+
+              <HostSettingsPanel
+                isCreationMode={true}
+                isLiveMeeting={false}
+                setIsLiveMeeting={() => {}}
+                isP2P={isP2P}
+                setIsP2P={setIsP2P}
+              />
 
                 <button
                   onClick={() => {
