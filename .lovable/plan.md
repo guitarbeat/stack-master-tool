@@ -1,222 +1,100 @@
 
-# Hybrid P2P Architecture Migration Plan
+# Consolidate Config Directories to Root-Level Strategy
 
-## Phase 0: Fix Build Error (Immediate)
+## Overview
 
-The current build is broken due to a stale type reference in `src/hooks/useMeetingRealtime.ts`.
+The project has config files scattered across three locations:
+- **`config/`** - Contains `vite.config.ts` (wrapper that re-exports root)
+- **`.config/`** - Contains `eslint.config.js`, `tailwind.config.ts`, `.gitignore`
+- **Root** - Contains `eslint.config.js` (wrapper), `vite.config.ts` (actual), `vitest.config.ts`
 
-### File: src/hooks/useMeetingRealtime.ts
-**Line 30**: Replace `SbParticipant[]` with `Participant[]`
-
-```typescript
-// Before
-onParticipantsUpdated: (participants: SbParticipant[]) => {
-
-// After
-onParticipantsUpdated: (participants: Participant[]) => {
-```
+This creates unnecessary indirection and confusion. We'll consolidate everything to root-level.
 
 ---
 
-## Phase 1: Add P2P Dependencies
+## Current State
 
-Install the required libraries for CRDT-based state synchronization:
-
-```bash
-npm install yjs y-webrtc
-npm install -D @types/yjs
-```
-
-| Library | Purpose |
-|---------|---------|
-| **yjs** | CRDT library for conflict-free distributed state |
-| **y-webrtc** | WebRTC provider for Yjs - handles peer discovery via signaling |
+| File | Location | Purpose |
+|------|----------|---------|
+| `vite.config.ts` | Root | Actual config |
+| `vite.config.ts` | `config/` | Wrapper (re-exports root) |
+| `eslint.config.js` | Root | Wrapper (imports `.config/`) |
+| `eslint.config.js` | `.config/` | Actual config |
+| `tailwind.config.ts` | `.config/` | Actual config |
+| `vitest.config.ts` | Root | Actual config |
 
 ---
 
-## Phase 2: Create P2P Sync Layer
+## Implementation Plan
 
-### New File: src/services/p2p/types.ts
-Define P2P-specific types for the meeting state:
+### Step 1: Merge ESLint Config to Root
+Move the actual ESLint configuration from `.config/eslint.config.js` into root `eslint.config.js`, replacing the wrapper.
 
-```typescript
-export interface P2PMeetingState {
-  participants: Map<string, Participant>;
-  queue: QueueItem[];
-  title: string;
-  facilitatorId: string;
-}
+### Step 2: Create Root Tailwind Config  
+Move `.config/tailwind.config.ts` to root `tailwind.config.ts` (file appears in listing but doesn't exist - needs creation).
 
-export interface P2PConfig {
-  roomCode: string;
-  signalingServers?: string[];
-  password?: string;
-}
-```
+### Step 3: Delete Config Directory Wrappers
+- Delete `config/vite.config.ts` (wrapper no longer needed)
+- Delete `config/` directory entirely
 
-### New File: src/services/p2p/meeting-sync.ts
-Core CRDT document manager using Yjs:
+### Step 4: Delete .config Directory
+- Delete `.config/eslint.config.js` 
+- Delete `.config/tailwind.config.ts`
+- Delete `.config/.gitignore` (redundant, root `.gitignore` is comprehensive)
+- Delete `.config/` directory
 
-- Initialize a `Y.Doc` for each meeting room
-- Create shared types: `Y.Map` for participants, `Y.Array` for queue
-- Handle local mutations that automatically sync to peers
-- Observe remote changes and emit callbacks
+### Step 5: Update package.json Scripts
+Remove `--config config/vite.config.ts` from all scripts since Vite auto-detects root config:
 
-### New File: src/services/p2p/signaling.ts
-Wrapper around y-webrtc with fallback signaling servers:
-
-- Use public WebRTC signaling servers initially
-- Option to configure custom signaling server
-- Handle peer connection lifecycle
-
----
-
-## Phase 3: Create Unified Meeting Service Interface
-
-### New File: src/services/meeting-service.ts
-Abstract interface that both Supabase and P2P backends implement:
-
-```typescript
-export interface IMeetingService {
-  createMeeting(title: string, facilitatorName: string): Promise<MeetingData>;
-  getMeeting(code: string): Promise<MeetingWithParticipants | null>;
-  joinMeeting(code: string, name: string): Promise<Participant>;
-  joinQueue(meetingId: string, participantId: string): Promise<QueueItem>;
-  leaveQueue(meetingId: string, participantId: string): Promise<void>;
-  nextSpeaker(meetingId: string): Promise<QueueItem | null>;
-  // ... other methods
-}
-
-export interface IMeetingRealtime {
-  subscribe(meetingId: string, callbacks: RealtimeCallbacks): () => void;
+```json
+{
+  "dev": "vite",
+  "build": "vite build",
+  "build:dev": "vite build --mode development",
+  "build:prod": "vite build --mode production",
+  "build:analyze": "vite build --mode production --reporter verbose",
+  "preview": "vite preview",
+  "preview:prod": "vite preview --host 0.0.0.0"
 }
 ```
 
-### Refactor: src/services/supabase.ts
-Implement `IMeetingService` interface (no behavior changes, just conformance).
-
-### New File: src/services/p2p/p2p-meeting-service.ts
-P2P implementation of `IMeetingService`:
-
-- `createMeeting`: Generate room code, initialize Yjs document
-- `getMeeting`: Sync Yjs state and return current snapshot
-- `joinMeeting`: Add participant to Y.Map
-- Queue operations: Manipulate Y.Array with CRDT guarantees
+### Step 6: Update PROJECT_STRUCTURE.md
+Remove references to the `config/` and `.config/` directories since they no longer exist.
 
 ---
 
-## Phase 4: Minimal Backend for Discovery (Hybrid Approach)
+## Files Changed
 
-The fully P2P approach requires a minimal signaling/discovery layer. Options:
-
-### Option A: Keep Supabase for Discovery Only
-- Use existing `meetings` table just for room code lookup
-- Store only: `id`, `meeting_code`, `peer_id`, `created_at`
-- All live state (participants, queue) syncs via P2P
-
-### Option B: Use Public Signaling Server
-- y-webrtc includes default public signaling servers
-- Room code becomes the signaling room name
-- No custom backend needed (but less reliable)
-
-**Recommended**: Option A for reliability with minimal Supabase usage.
-
----
-
-## Phase 5: Update Hooks to Use Unified Service
-
-### Refactor: src/hooks/useMeetingState.ts
-Add service provider selection:
-
-```typescript
-const [backend, setBackend] = useState<'supabase' | 'p2p'>('supabase');
-const meetingService = backend === 'p2p' 
-  ? P2PMeetingService 
-  : SupabaseMeetingService;
-```
-
-### Refactor: src/hooks/useMeetingRealtime.ts
-Use the unified realtime interface that works with either backend.
+| Action | File |
+|--------|------|
+| Replace | `eslint.config.js` (root) - full ESLint config |
+| Create | `tailwind.config.ts` (root) - from `.config/tailwind.config.ts` |
+| Edit | `package.json` - simplify vite script paths |
+| Edit | `PROJECT_STRUCTURE.md` - update docs |
+| Delete | `config/vite.config.ts` |
+| Delete | `config/` directory |
+| Delete | `.config/eslint.config.js` |
+| Delete | `.config/tailwind.config.ts` |
+| Delete | `.config/.gitignore` |
+| Delete | `.config/` directory |
 
 ---
 
-## Phase 6: UI Toggle for P2P Mode
+## Technical Notes
 
-### Update: src/components/MeetingRoom/HostSettingsPanel.tsx
-Add toggle switch for "P2P Mode (Experimental)":
-
-- Saves preference to localStorage
-- Shows warning about public signaling limitations
-- Allows facilitator to choose sync method when creating room
+- ESLint config references `./config/tsconfig.app.json` for TypeScript parser - this path will need updating or the tsconfig reference may need removal if file doesn't exist
+- The `.config/.gitignore` content is redundant with root `.gitignore`
+- Vite automatically finds `vite.config.ts` in root, no explicit path needed
+- Tailwind also auto-detects `tailwind.config.ts` in root
 
 ---
 
-## Architecture Diagram
+## Result
 
-```text
-+------------------+      +-------------------+
-|   React UI       |      |   React UI        |
-| (MeetingRoom.tsx)|      | (InlineRoomBrowser)|
-+--------+---------+      +---------+---------+
-         |                          |
-         v                          v
-+------------------------------------------+
-|         Unified Meeting Service          |
-|    (IMeetingService interface)           |
-+--------+-----------------+---------------+
-         |                 |
-   +-----+-----+     +-----+-----+
-   | Supabase  |     |    P2P    |
-   |  Service  |     |  Service  |
-   +-----------+     +-----+-----+
-         |                 |
-         v                 v
-+-------------+    +---------------+
-| PostgreSQL  |    | Yjs + WebRTC  |
-| (meetings,  |    | (CRDT sync)   |
-| participants|    +-------+-------+
-| queue)      |            |
-+-------------+    +-------v-------+
-                   | Signaling Svr |
-                   | (y-webrtc)    |
-                   +---------------+
-```
+After consolidation, root will contain:
+- `vite.config.ts` - Vite/build config
+- `vitest.config.ts` - Test config  
+- `eslint.config.js` - Linting config
+- `tailwind.config.ts` - Styling config
 
----
-
-## Migration Summary
-
-| Step | Files Changed | Effort |
-|------|---------------|--------|
-| 0. Fix build error | `useMeetingRealtime.ts` | 5 min |
-| 1. Add dependencies | `package.json` | 5 min |
-| 2. P2P sync layer | New files in `src/services/p2p/` | 2-3 hrs |
-| 3. Unified interface | `meeting-service.ts` + refactors | 1-2 hrs |
-| 4. Discovery backend | Supabase migration or signaling | 1 hr |
-| 5. Hook refactors | `useMeetingState.ts`, `useMeetingRealtime.ts` | 1-2 hrs |
-| 6. UI toggle | `HostSettingsPanel.tsx` | 30 min |
-
----
-
-## Tradeoffs
-
-| Aspect | Current (Supabase) | Hybrid P2P |
-|--------|-------------------|------------|
-| **Latency** | ~50-100ms (server round-trip) | ~10-50ms (direct peer) |
-| **Reliability** | High (managed infra) | Medium (depends on peers) |
-| **Offline** | No | Partial (local CRDT state) |
-| **Room Discovery** | Database query | Still needs server |
-| **Cost** | Supabase usage fees | Minimal (signaling only) |
-| **Complexity** | Lower | Higher |
-| **Max Participants** | Unlimited | ~10-20 (WebRTC mesh limit) |
-
----
-
-## Recommendation
-
-Start with **Phase 0-2** to fix the build and create the P2P foundation. This allows experimentation without breaking existing functionality. The hybrid approach (Option A) is best because:
-
-1. Room codes still work via Supabase lookup
-2. InlineRoomBrowser remains functional
-3. Users can opt-in to P2P per-room
-4. Fallback to Supabase if P2P fails
+No wrapper files, no subdirectories for configs.
