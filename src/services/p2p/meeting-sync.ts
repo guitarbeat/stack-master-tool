@@ -113,6 +113,11 @@ export class MeetingSync {
     return (this.metadata.get("facilitatorId") as string) || "";
   }
 
+  /** Get facilitator name */
+  getFacilitatorName(): string {
+    return (this.metadata.get("facilitatorName") as string) || "";
+  }
+
   // ============ WRITE OPERATIONS ============
 
   /** Initialize meeting metadata (called by facilitator) */
@@ -143,6 +148,14 @@ export class MeetingSync {
     const existing = this.participants.get(participantId);
     if (existing) {
       this.participants.set(participantId, { ...existing, isActive: false });
+    }
+  }
+
+  /** Restore participant (undo soft delete) */
+  restoreParticipant(participantId: string): void {
+    const existing = this.participants.get(participantId);
+    if (existing) {
+      this.participants.set(participantId, { ...existing, isActive: true });
     }
   }
 
