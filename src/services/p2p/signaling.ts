@@ -5,7 +5,7 @@
 
 import { WebrtcProvider } from "y-webrtc";
 import type { MeetingSync } from "./meeting-sync";
-import type { P2PConfig, P2PConnectionStatus } from "./types";
+import type { P2PConfig } from "./types";
 
 /** Default public signaling servers for y-webrtc */
 const DEFAULT_SIGNALING_SERVERS = [
@@ -103,13 +103,13 @@ export class SignalingManager {
     if (!this.provider) return;
 
     // Track connection status based on signaling WebSocket
-    this.provider.on("status", (event: { status: string }) => {
-      console.log("[SignalingManager] Status:", event.status);
-      
-      if (event.status === "connected") {
+    this.provider.on("status", (event: { connected: boolean }) => {
+      console.log("[SignalingManager] Status:", event.connected ? "connected" : "disconnected");
+
+      if (event.connected) {
         this.meetingSync.setStatus("connected");
         this.reconnectAttempts = 0;
-      } else if (event.status === "disconnected") {
+      } else {
         this.meetingSync.setStatus("disconnected");
         this.scheduleReconnect();
       }
@@ -122,9 +122,9 @@ export class SignalingManager {
     });
 
     // Handle sync events
-    this.provider.on("synced", (synced: boolean) => {
-      console.log("[SignalingManager] Synced:", synced);
-      if (synced) {
+    this.provider.on("synced", (event: { synced: boolean }) => {
+      console.log("[SignalingManager] Synced:", event.synced);
+      if (event.synced) {
         this.meetingSync.setStatus("connected");
       }
     });
