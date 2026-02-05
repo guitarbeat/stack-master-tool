@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -136,7 +136,7 @@ export default function HomePage() {
 
     try {
       if (!user) {
-        await signInAnonymously();
+        await signInAnonymously(displayName.trim());
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
       }
@@ -190,7 +190,7 @@ export default function HomePage() {
 
     try {
       if (!user) {
-        await signInAnonymously();
+        await signInAnonymously(displayName.trim());
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
       }

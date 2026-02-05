@@ -155,11 +155,12 @@ function toast({ ...props }: Toast) {
 
 // * Legacy API compatibility for existing codebase
 interface LegacyToastData {
-  type: 'success' | 'error' | 'warning' | 'info';
+  type?: 'success' | 'error' | 'warning' | 'info';
   title: string;
   message?: string;
   description?: string;
   duration?: number;
+  variant?: 'default' | 'destructive' | 'success' | 'warning' | 'info';
 }
 
 function useToast() {
@@ -177,25 +178,27 @@ function useToast() {
 
   // * Legacy showToast function for backward compatibility
   const showToast = React.useCallback((toastData: LegacyToastData) => {
-    const { type, title, message, description, duration = 5000 } = toastData;
+    const { type, title, message, description, duration = 5000, variant: passedVariant } = toastData;
     
-    // * Map legacy types to Radix variants
-    let variant: 'default' | 'destructive' | 'success' | 'warning' | 'info' = 'default';
-    switch (type) {
-      case 'error':
-        variant = 'destructive';
-        break;
-      case 'success':
-        variant = 'success';
-        break;
-      case 'warning':
-        variant = 'warning';
-        break;
-      case 'info':
-        variant = 'info';
-        break;
-      default:
-        variant = 'default';
+    // * Map legacy types to Radix variants, or use passed variant directly
+    let variant: 'default' | 'destructive' | 'success' | 'warning' | 'info' = passedVariant ?? 'default';
+    if (!passedVariant && type) {
+      switch (type) {
+        case 'error':
+          variant = 'destructive';
+          break;
+        case 'success':
+          variant = 'success';
+          break;
+        case 'warning':
+          variant = 'warning';
+          break;
+        case 'info':
+          variant = 'info';
+          break;
+        default:
+          variant = 'default';
+      }
     }
     
     // * Use description if provided, otherwise use message

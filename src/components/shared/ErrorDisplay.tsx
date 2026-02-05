@@ -31,7 +31,7 @@ const getErrorIcon = (errorType: ErrorType, severity?: 'low' | 'medium' | 'high'
   }
 };
 
-const getErrorColor = (errorType: ErrorType, severity?: 'low' | 'medium' | 'high') => {
+const getErrorColor = (errorType: ErrorType, _severity?: 'low' | 'medium' | 'high') => {
   const baseColors = {
     [ErrorType.NETWORK]: 'text-warning bg-warning-light border-warning',
     [ErrorType.TIMEOUT]: 'text-warning bg-warning-light border-warning',

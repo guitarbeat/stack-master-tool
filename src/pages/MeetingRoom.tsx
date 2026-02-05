@@ -619,6 +619,7 @@ export default function MeetingRoom() {
   }
 
   const mockMeetingData = {
+    id: serverMeeting?.id ?? "mock-id",
     title:
       serverMeeting?.title ??
       (mode === "host"
@@ -628,7 +629,9 @@ export default function MeetingRoom() {
           : "Meeting"),
     code: meetingCode,
     facilitator: serverMeeting?.facilitator ?? "Meeting Facilitator",
-    createdAt: serverMeeting ? new Date(serverMeeting.createdAt) : new Date(),
+    facilitatorId: serverMeeting?.facilitatorId ?? null,
+    createdAt: serverMeeting?.createdAt ?? new Date().toISOString(),
+    isActive: serverMeeting?.isActive ?? true,
   };
 
   const mockParticipants = serverParticipants.length
@@ -639,7 +642,8 @@ export default function MeetingRoom() {
           name: p.name,
           isFacilitator: p.isFacilitator,
           hasRaisedHand: false,
-          joinedAt: new Date(p.joinedAt),
+          joinedAt: p.joinedAt,
+          isActive: p.isActive,
         }))
     : showJohnDoe ? [
         {
@@ -647,15 +651,18 @@ export default function MeetingRoom() {
           name: "John Doe",
           isFacilitator: mode === "host",
           hasRaisedHand: false,
-          joinedAt: new Date(),
+          joinedAt: new Date().toISOString(),
+          isActive: true,
         },
       ] : [];
 
   // Determine current speaker from the actual queue (first person in queue)
   const currentSpeakerFromQueue = serverQueue.length > 0 ? {
+    name: serverQueue[0].participantName,
     participantName: serverQueue[0].participantName,
-    startedSpeakingAt: new Date(serverQueue[0].joinedQueueAt), // Use when they joined queue as approximation
-  } : null;
+    startedSpeakingAt: serverQueue[0].joinedQueueAt ? new Date(serverQueue[0].joinedQueueAt) : undefined,
+    speakingTime: 0,
+  } : undefined;
 
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
@@ -742,7 +749,7 @@ export default function MeetingRoom() {
                 }
                 try {
                   setIsLoading(true);
-                  const { data, error: authError } = await signInAnonymously(participantName.trim());
+                  const { error: authError } = await signInAnonymously(participantName.trim());
                   if (authError) {
                     setError(new AppError(ErrorCode.AUTH_ERROR, authError, "Failed to authenticate"));
                     return;
@@ -930,7 +937,7 @@ export default function MeetingRoom() {
                 totalParticipants={mockParticipants.length}
                 queueActivity={speakingHistory.length}
                 directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue}
+                currentSpeaker={currentSpeakerFromQueue?.name}
                 isHostMode={mode === "host"}
               />
             </div>
@@ -942,9 +949,14 @@ export default function MeetingRoom() {
           /* Participant: Personal actions view */
           <>
             <QueuePositionFeedback
+              participantName={participantName || "You"}
               queuePosition={1}
+              totalInQueue={serverQueue.length}
               joinedAt={new Date()}
-              currentSpeaker={currentSpeakerFromQueue}
+              currentSpeaker={currentSpeakerFromQueue ? {
+                participantName: currentSpeakerFromQueue.participantName ?? currentSpeakerFromQueue.name,
+                startedSpeakingAt: currentSpeakerFromQueue.startedSpeakingAt
+              } : undefined}
               queueHistory={[]}
             />
             <ActionsPanel
@@ -956,7 +968,7 @@ export default function MeetingRoom() {
           </>
         )}
 
-        {mode === "watch" && (
+        {mode !== "host" && mode !== "join" && (
           /* Observer: Read-only queue view */
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
@@ -981,7 +993,7 @@ export default function MeetingRoom() {
                 totalParticipants={mockParticipants.length}
                 queueActivity={speakingHistory.length}
                 directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue}
+                currentSpeaker={currentSpeakerFromQueue?.name}
                 isHostMode={false}
               />
             </div>

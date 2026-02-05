@@ -69,6 +69,11 @@ export enum ErrorCode {
   MEETING_FULL = "MEETING_FULL",
   INVALID_OPERATION = "INVALID_OPERATION",
   QUEUE_LIMIT_REACHED = "QUEUE_LIMIT_REACHED",
+
+  // Generic errors
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  AUTH_ERROR = "AUTH_ERROR",
+  UNKNOWN = "UNKNOWN",
 }
 
 export interface ErrorDetails {
