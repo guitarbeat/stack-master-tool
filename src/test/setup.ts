@@ -4,6 +4,9 @@ import { afterEach, expect, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 
+// Re-export testing-library utilities as globals
+export { screen, fireEvent, waitFor } from "@testing-library/react";
+
 expect.extend(matchers);
 
 afterEach(() => {

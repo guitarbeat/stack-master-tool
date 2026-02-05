@@ -42,7 +42,7 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
 
       // Start continuous scanning
       await reader.decodeFromVideoDevice(
-        undefined, // Use default camera (back camera on mobile)
+        null, // Use default camera (back camera on mobile)
         videoRef.current,
         (result, err) => {
           if (result) {

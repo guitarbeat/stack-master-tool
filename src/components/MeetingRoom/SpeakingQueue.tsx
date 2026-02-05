@@ -17,7 +17,7 @@ export const SpeakingQueue = ({
   speakingQueue,
   participantName,
   onLeaveQueue,
-  currentUserId,
+  currentUserId: _currentUserId,
   isFacilitator = false,
   onReorderQueue
 }: SpeakingQueueProps) => {
@@ -61,7 +61,7 @@ export const SpeakingQueue = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {speakingQueue.map((entry, index) => {
-          const { type, participantName: entryName, participantId } = entry;
+          const { type, participantName: entryName, participantId: _participantId } = entry;
           const isSelf = entryName === participantName;
           const isDirect = type === 'direct-response';
           const isPointInfo = type === 'point-of-info';

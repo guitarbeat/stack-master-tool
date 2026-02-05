@@ -81,7 +81,7 @@ export function QuickJoinModal({
     try {
       // Ensure user is authenticated
       if (!user) {
-        await signInAnonymously();
+        await signInAnonymously(displayName.trim());
       }
 
       // Save name to localStorage

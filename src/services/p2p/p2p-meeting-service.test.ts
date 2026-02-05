@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { P2PMeetingService } from './p2p-meeting-service';
 import { MeetingSync } from './meeting-sync';
-import { createP2PSession } from './signaling';
+import type { SignalingManager } from './signaling';
 
 // Mock crypto.randomUUID
 if (!globalThis.crypto) {
@@ -50,10 +50,10 @@ vi.mock('./signaling', () => ({
     connect: vi.fn(),
     disconnect: vi.fn(),
   })),
-  createP2PSession: vi.fn().mockImplementation((sync, config) => ({
+  createP2PSession: vi.fn().mockImplementation((_sync: MeetingSync, _config: { roomCode: string }): SignalingManager => ({
     connect: vi.fn(),
     disconnect: vi.fn(),
-  }))
+  } as SignalingManager))
 }));
 
 describe('P2PMeetingService', () => {

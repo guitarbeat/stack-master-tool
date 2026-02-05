@@ -1,5 +1,4 @@
 // Supabase client configuration
-import type { Database } from "./types";
 import {
   createSupabaseConnectionManager,
   type ConnectionState,

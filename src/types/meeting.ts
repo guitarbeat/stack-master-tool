@@ -41,6 +41,7 @@ export interface QueueItem {
   type: string;
   position: number;
   timestamp: number;
+  joinedQueueAt?: string;
   isSpeaking: boolean;
   isFacilitator: boolean;
 }
@@ -54,7 +55,9 @@ export interface MeetingWithParticipants extends MeetingData {
 /** Current speaker information for display components */
 export interface CurrentSpeaker {
   name: string;
+  participantName?: string;
   speakingTime: number;
+  startedSpeakingAt?: Date;
 }
 
 /** Speaking queue entry for display components (alias for QueueItem) */

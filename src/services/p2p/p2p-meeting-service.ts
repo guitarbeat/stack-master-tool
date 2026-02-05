@@ -69,7 +69,7 @@ export class P2PMeetingService implements IMeetingService {
     facilitatorId?: string
   ): Promise<MeetingData> {
     const code = this.generateMeetingCode();
-    const id = this.generateId();
+    // Meeting ID is the code in P2P mode
     const facId = facilitatorId ?? this.generateId();
 
     const sync = await this.ensureSession(code);
@@ -160,7 +160,7 @@ export class P2PMeetingService implements IMeetingService {
   }
 
   async joinQueue(
-    meetingId: string,
+    _meetingId: string,
     participantId: string,
     queueType: string = "speak"
   ): Promise<QueueItem> {
@@ -184,22 +184,22 @@ export class P2PMeetingService implements IMeetingService {
     return item;
   }
 
-  async leaveQueue(meetingId: string, participantId: string): Promise<void> {
+  async leaveQueue(_meetingId: string, participantId: string): Promise<void> {
     if (!this.activeSync) return;
     this.activeSync.removeFromQueue(participantId);
   }
 
-  async nextSpeaker(meetingId: string): Promise<QueueItem | null> {
+  async nextSpeaker(_meetingId: string): Promise<QueueItem | null> {
     if (!this.activeSync) return null;
     return this.activeSync.nextSpeaker();
   }
 
-  async updateMeetingTitle(meetingId: string, newTitle: string): Promise<void> {
+  async updateMeetingTitle(_meetingId: string, newTitle: string): Promise<void> {
     if (!this.activeSync) return;
     this.activeSync.updateTitle(newTitle);
   }
 
-  async updateMeetingCode(meetingId: string, newCode: string): Promise<void> {
+  async updateMeetingCode(_meetingId: string, _newCode: string): Promise<void> {
     throw new Error("Updating meeting code not supported in P2P");
   }
 
@@ -212,7 +212,7 @@ export class P2PMeetingService implements IMeetingService {
   }
 
   async reorderQueueItem(
-    meetingId: string,
+    _meetingId: string,
     participantId: string,
     newPosition: number
   ): Promise<void> {
@@ -251,7 +251,7 @@ export class P2PMeetingService implements IMeetingService {
     // this.activeSignaling?.disconnect();
   }
 
-  async endMeeting(meetingId: string): Promise<void> {
+  async endMeeting(_meetingId: string): Promise<void> {
     if (!this.activeSync) return;
     this.activeSync.endMeeting();
   }
@@ -261,14 +261,14 @@ export class P2PMeetingService implements IMeetingService {
     return []; // Not supported
   }
 
-  async getParticipants(meetingId: string): Promise<Participant[]> {
-    if (this.activeSync && this.activeCode === meetingId) {
+  async getParticipants(_meetingId: string): Promise<Participant[]> {
+    if (this.activeSync && this.activeCode === _meetingId) {
       return this.activeSync.getParticipantsList();
     }
     return [];
   }
 
-  async getMeetingsByFacilitator(facilitatorId: string): Promise<MeetingData[]> {
+  async getMeetingsByFacilitator(_facilitatorId: string): Promise<MeetingData[]> {
     return []; // Not supported
   }
 
@@ -276,14 +276,14 @@ export class P2PMeetingService implements IMeetingService {
     // No-op
   }
 
-  async deleteMeeting(meetingId: string, facilitatorId: string): Promise<void> {
+  async deleteMeeting(meetingId: string, _facilitatorId: string): Promise<void> {
     // No-op or end meeting
     return this.endMeeting(meetingId);
   }
 
   // Subscription
   subscribeToMeeting(
-    meetingId: string,
+    _meetingId: string,
     callbacks: {
       onParticipantsUpdated: (participants: Participant[]) => void;
       onQueueUpdated: (queue: QueueItem[]) => void;

@@ -53,10 +53,15 @@ export const useSpeakingHistory = () => {
       .map((d) => ({ name: d.name, value: Math.round(d.ms / 1000) })); // seconds
   }, [speakingHistory]);
 
+  const getTotalSpeakingTime = useCallback(() => {
+    return speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0);
+  }, [speakingHistory]);
+
   return {
     speakingHistory,
     addSpeakingSegment,
     clearSpeakingHistory,
-    getSpeakingDistribution
+    getSpeakingDistribution,
+    getTotalSpeakingTime
   };
 };
