@@ -394,6 +394,24 @@ export const ERROR_MESSAGES: Record<
       "Wait for someone to leave the queue or ask the facilitator to increase the limit.",
     severity: "low",
   },
+  VALIDATION_ERROR: {
+    title: "Validation Error",
+    description: "The provided data is invalid.",
+    action: "Check your input and try again.",
+    severity: "low",
+  },
+  AUTH_ERROR: {
+    title: "Authentication Error",
+    description: "You are not authorized to perform this action.",
+    action: "Please log in and try again.",
+    severity: "medium",
+  },
+  UNKNOWN: {
+    title: "Unknown Error",
+    description: "An unexpected error occurred.",
+    action: "Please try again. If the problem persists, contact support.",
+    severity: "medium",
+  },
 };
 
 export class AppError extends Error {

@@ -41,10 +41,10 @@ export class P2PMeetingService implements IMeetingService {
   }
 
   private async waitForSync(sync: MeetingSync, timeoutMs = 2000): Promise<void> {
-    if (sync.status === 'connected') return;
+    if ((sync.status as string) === 'connected') return;
 
     const startTime = Date.now();
-    while (sync.status !== 'connected' && Date.now() - startTime < timeoutMs) {
+    while ((sync.status as string) !== 'connected' && Date.now() - startTime < timeoutMs) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }

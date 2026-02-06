@@ -61,7 +61,7 @@ const mapSupabaseError = (
 };
 
 const withSupabase = async <T>(
-  operation: (client: typeof supabase) => Promise<T>,
+  operation: (client: typeof supabase) => PromiseLike<T>,
   options?: SupabaseRequestOptions,
 ): Promise<T> => executeSupabase(operation, options);
 
@@ -132,7 +132,7 @@ export class SupabaseMeetingService {
             facilitator: data.facilitator_name,
             facilitatorId: data.facilitator_id,
             createdAt: data.created_at,
-            isActive: data.is_active,
+            isActive: data.is_active ?? true,
           };
         }
 
@@ -322,8 +322,9 @@ export class SupabaseMeetingService {
         code: meeting.meeting_code,
         title: meeting.title,
         facilitator: meeting.facilitator_name,
+        facilitatorId: meeting.facilitator_id ?? null,
         createdAt: meeting.created_at,
-        isActive: meeting.is_active,
+        isActive: meeting.is_active ?? true,
         participants: participantRows.map((p) => ({
           id: p.id,
           name: p.name,
@@ -441,10 +442,10 @@ export class SupabaseMeetingService {
       return {
         id: data.id,
         name: data.name,
-        isFacilitator: data.is_facilitator,
+        isFacilitator: data.is_facilitator ?? false,
         hasRaisedHand: false,
         joinedAt: data.joined_at,
-        isActive: data.is_active,
+        isActive: data.is_active ?? true,
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -522,8 +523,8 @@ export class SupabaseMeetingService {
         type: data.queue_type,
         position: data.position,
         timestamp: new Date(data.joined_queue_at).getTime(),
-        isSpeaking: data.is_speaking,
-        isFacilitator: participant.is_facilitator,
+        isSpeaking: data.is_speaking ?? false,
+        isFacilitator: false,
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -872,7 +873,7 @@ export class SupabaseMeetingService {
 
       if (!participantRow) {
         throw new AppError(
-          ErrorCode.NOT_FOUND,
+          ErrorCode.PARTICIPANT_NOT_FOUND,
           undefined,
           "Participant not found",
         );
@@ -882,7 +883,7 @@ export class SupabaseMeetingService {
         id: participantRow.id,
         meetingId: participantRow.meeting_id,
         name: participantRow.name,
-        isFacilitator: participantRow.is_facilitator,
+        isFacilitator: participantRow.is_facilitator ?? false,
         joinedAt: participantRow.joined_at,
       };
 
@@ -1071,7 +1072,14 @@ export class SupabaseMeetingService {
         throw mapSupabaseError(error, "Failed to get participants");
       }
 
-      return data || [];
+      return (data || []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        isFacilitator: p.is_facilitator ?? false,
+        hasRaisedHand: false,
+        joinedAt: p.joined_at,
+        isActive: p.is_active ?? true,
+      }));
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw mapSupabaseError(error, "Failed to get participants");
@@ -1104,7 +1112,7 @@ export class SupabaseMeetingService {
         facilitator: meeting.facilitator_name,
         facilitatorId: meeting.facilitator_id,
         createdAt: meeting.created_at,
-        isActive: meeting.is_active,
+        isActive: meeting.is_active ?? true,
       }));
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -1149,7 +1157,7 @@ export class SupabaseMeetingService {
       }
 
       // Get meetings with 0 active participants
-      const meetingsToDelete = [];
+      const meetingsToDelete: string[] = [];
       for (const meeting of emptyOldMeetings) {
         const { data: activeParticipants, error: participantError } =
           await withSupabase((client) =>

@@ -31,7 +31,7 @@ const connectionManager = createSupabaseConnectionManager({
 export const supabase = connectionManager.getClient();
 
 export const executeSupabase = async <T>(
-  operation: (client: typeof supabase) => Promise<T>,
+  operation: (client: typeof supabase) => PromiseLike<T>,
   options?: SupabaseRequestOptions,
 ): Promise<T> => connectionManager.execute(operation, options);
 

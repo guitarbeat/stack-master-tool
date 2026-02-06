@@ -149,7 +149,7 @@ export class SupabaseConnectionManager {
   }
 
   public async execute<T>(
-    operation: (client: SupabaseClient<Database>) => Promise<T>,
+    operation: (client: SupabaseClient<Database>) => PromiseLike<T>,
     options: ExecuteOptions = {},
   ): Promise<T> {
     const { retryCount = DEFAULT_RETRY_COUNT, timeoutMs = DEFAULT_TIMEOUT_MS, dedupeKey } = options;
@@ -180,7 +180,7 @@ export class SupabaseConnectionManager {
   }
 
   private async runWithRetry<T>(
-    operation: (client: SupabaseClient<Database>) => Promise<T>,
+    operation: (client: SupabaseClient<Database>) => PromiseLike<T>,
     retryCount: number,
     timeoutMs: number,
   ): Promise<T> {
@@ -188,7 +188,7 @@ export class SupabaseConnectionManager {
 
     while (attempt < retryCount) {
       try {
-        const result = await this.runWithTimeout(operation(this.client), timeoutMs);
+        const result = await this.runWithTimeout(Promise.resolve(operation(this.client)), timeoutMs);
         if (this.state !== 'healthy') {
           this.updateState('healthy');
         }

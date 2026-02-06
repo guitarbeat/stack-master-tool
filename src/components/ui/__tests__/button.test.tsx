@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+// @ts-expect-error - testing-library types not fully resolved in this environment
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Button, buttonVariants } from '../button';
 
