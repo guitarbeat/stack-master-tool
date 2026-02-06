@@ -209,6 +209,7 @@ export function HostSettingsPanel({
                     void handleSaveCode();
                   }}
                   disabled={!codeInput.trim()}
+                  aria-label="Save meeting code"
                 >
                   <Check className="w-3 h-3" />
                 </Button>
@@ -216,6 +217,7 @@ export function HostSettingsPanel({
                   size="sm"
                   variant="outline"
                   onClick={handleCancelEditing}
+                  aria-label="Cancel editing"
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -227,6 +229,7 @@ export function HostSettingsPanel({
                   variant="outline"
                   onClick={handleStartEditing}
                   disabled={!onMeetingCodeChange}
+                  aria-label="Edit meeting code"
                 >
                   <Edit3 className="w-3 h-3" />
                 </Button>
@@ -238,6 +241,7 @@ export function HostSettingsPanel({
                   }}
                   disabled={!onMeetingCodeChange}
                   title="Generate new random code"
+                  aria-label="Generate new random code"
                 >
                   <RefreshCw className="w-3 h-3" />
                 </Button>

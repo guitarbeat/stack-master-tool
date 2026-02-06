@@ -91,6 +91,7 @@ export function QrCodeScanner({ onScan, onClose }: QrCodeScannerProps) {
           size="sm"
           onClick={handleManualEntry}
           className="hover:bg-muted"
+          aria-label="Close scanner"
         >
           <X className="w-4 h-4" />
         </Button>
