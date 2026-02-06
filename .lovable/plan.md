@@ -1,100 +1,103 @@
 
-# Consolidate Config Directories to Root-Level Strategy
+
+# Fix All TypeScript Build Errors
 
 ## Overview
 
-The project has config files scattered across three locations:
-- **`config/`** - Contains `vite.config.ts` (wrapper that re-exports root)
-- **`.config/`** - Contains `eslint.config.js`, `tailwind.config.ts`, `.gitignore`
-- **Root** - Contains `eslint.config.js` (wrapper), `vite.config.ts` (actual), `vitest.config.ts`
-
-This creates unnecessary indirection and confusion. We'll consolidate everything to root-level.
+There are 5 categories of errors to fix across the codebase. All stem from type mismatches introduced during recent refactoring.
 
 ---
 
-## Current State
+## Error Categories and Fixes
 
-| File | Location | Purpose |
-|------|----------|---------|
-| `vite.config.ts` | Root | Actual config |
-| `vite.config.ts` | `config/` | Wrapper (re-exports root) |
-| `eslint.config.js` | Root | Wrapper (imports `.config/`) |
-| `eslint.config.js` | `.config/` | Actual config |
-| `tailwind.config.ts` | `.config/` | Actual config |
-| `vitest.config.ts` | Root | Actual config |
+### 1. `src/services/supabase.ts` - withSupabase returns `unknown` (majority of errors)
+
+**Root cause**: The `withSupabase` wrapper calls `executeSupabase` which expects `(client) => Promise<T>`, but Supabase query builders return `PostgrestBuilder` (thenable, not a real `Promise`). TypeScript can't infer `T` and falls back to `unknown`.
+
+**Fix**: Change the `execute` method signatures in `connection-manager.ts` and `client.ts` to accept `PromiseLike<T>` instead of `Promise<T>`. This makes them compatible with Postgrest builders while preserving type inference.
+
+Files changed:
+- `src/integrations/supabase/connection-manager.ts` - Update `execute` and `runWithRetry` parameter types from `Promise<T>` to `PromiseLike<T>`
+- `src/integrations/supabase/client.ts` - Update `executeSupabase` parameter type from `Promise<T>` to `PromiseLike<T>`
+
+Also add `facilitatorId` to the return object in `getMeeting` (line ~320).
+
+### 2. `src/App.test.tsx` and `button.test.tsx` - Missing `screen`/`fireEvent` exports
+
+**Root cause**: `@testing-library/react` may not be resolving correctly, or the installed version doesn't match the expected exports.
+
+**Fix**: Add explicit `import { render, screen, fireEvent } from '@testing-library/react'` at the top of each test file (they already have this - the issue is likely the package version). Verify `@testing-library/react` is properly installed. If the type declarations are missing, add `@types/testing-library__react` or ensure `@testing-library/react` version >= 14 which bundles types.
+
+Files changed:
+- `src/App.test.tsx` - Already imports correctly; no code change needed if package is correct
+- `src/components/ui/__tests__/button.test.tsx` - Same
+
+If the package version is the issue, ensure `package.json` has `@testing-library/react` >= 14.
+
+### 3. `src/services/p2p/p2p-meeting-service.test.ts` - SignalingManager mock type mismatch
+
+**Root cause**: The mock only has `connect` and `disconnect` but `SignalingManager` has many more properties. TypeScript rejects the `as SignalingManager` cast.
+
+**Fix**: Cast through `unknown` first: `as unknown as SignalingManager`.
+
+File changed:
+- `src/services/p2p/p2p-meeting-service.test.ts` line 53-56
+
+### 4. `src/services/p2p/p2p-meeting-service.ts` - Status comparison type error
+
+**Root cause**: `P2PConnectionStatus` is `"connecting" | "disconnected" | "error"` but the code compares it to `"connected"`. The `MeetingSync.status` getter actually returns `P2PConnectionStatus` which includes `"connected"` in its definition in `types.ts`.
+
+**Fix**: The issue is that `sync.status` type is being narrowed incorrectly. The `P2PConnectionStatus` type in `types.ts` already includes `"connected"`. The error says `'"connecting" | "disconnected" | "error"'` which suggests the type is being imported/resolved without `"connected"`. Check the actual `P2PConnectionStatus` type - it does include `"connected"`, so this may be a stale type cache issue. No code change needed if the type is correct. If the build still complains, add a type assertion.
+
+### 5. `src/services/supabase-meeting-adapter.ts` - Spread adapter loses methods
+
+**Root cause**: `{ ...adapter, realtime }` creates a plain object that loses the class methods because they're on the prototype, not own properties.
+
+**Fix**: Use `Object.assign` or explicitly list all methods. Simplest fix: use `Object.assign(Object.create(Object.getPrototypeOf(adapter)), adapter, { realtime })` or restructure to return an object that delegates to the adapter.
+
+File changed:
+- `src/services/supabase-meeting-adapter.ts` lines 175-185
 
 ---
 
-## Implementation Plan
+## Implementation Order
 
-### Step 1: Merge ESLint Config to Root
-Move the actual ESLint configuration from `.config/eslint.config.js` into root `eslint.config.js`, replacing the wrapper.
+1. Fix `connection-manager.ts` and `client.ts` (`PromiseLike<T>`) -- fixes all ~30 supabase.ts errors at once
+2. Fix `supabase.ts` missing `facilitatorId` in `getMeeting` return
+3. Fix `supabase-meeting-adapter.ts` spread issue
+4. Fix `p2p-meeting-service.test.ts` cast
+5. Fix `p2p-meeting-service.ts` status comparison
+6. Verify test file imports resolve correctly
 
-### Step 2: Create Root Tailwind Config  
-Move `.config/tailwind.config.ts` to root `tailwind.config.ts` (file appears in listing but doesn't exist - needs creation).
+---
 
-### Step 3: Delete Config Directory Wrappers
-- Delete `config/vite.config.ts` (wrapper no longer needed)
-- Delete `config/` directory entirely
+## Technical Details
 
-### Step 4: Delete .config Directory
-- Delete `.config/eslint.config.js` 
-- Delete `.config/tailwind.config.ts`
-- Delete `.config/.gitignore` (redundant, root `.gitignore` is comprehensive)
-- Delete `.config/` directory
+### connection-manager.ts changes (lines 151-153, 182-184)
 
-### Step 5: Update package.json Scripts
-Remove `--config config/vite.config.ts` from all scripts since Vite auto-detects root config:
-
-```json
-{
-  "dev": "vite",
-  "build": "vite build",
-  "build:dev": "vite build --mode development",
-  "build:prod": "vite build --mode production",
-  "build:analyze": "vite build --mode production --reporter verbose",
-  "preview": "vite preview",
-  "preview:prod": "vite preview --host 0.0.0.0"
-}
+```typescript
+// Before
+operation: (client: SupabaseClient<Database>) => Promise<T>
+// After
+operation: (client: SupabaseClient<Database>) => PromiseLike<T>
 ```
 
-### Step 6: Update PROJECT_STRUCTURE.md
-Remove references to the `config/` and `.config/` directories since they no longer exist.
+### supabase-meeting-adapter.ts fix (lines 178-185)
 
----
+```typescript
+// Before: spread loses prototype methods
+return { ...adapter, realtime };
 
-## Files Changed
+// After: properly combine
+return Object.assign(adapter, { realtime }) as IMeetingServiceWithRealtime;
+```
 
-| Action | File |
-|--------|------|
-| Replace | `eslint.config.js` (root) - full ESLint config |
-| Create | `tailwind.config.ts` (root) - from `.config/tailwind.config.ts` |
-| Edit | `package.json` - simplify vite script paths |
-| Edit | `PROJECT_STRUCTURE.md` - update docs |
-| Delete | `config/vite.config.ts` |
-| Delete | `config/` directory |
-| Delete | `.config/eslint.config.js` |
-| Delete | `.config/tailwind.config.ts` |
-| Delete | `.config/.gitignore` |
-| Delete | `.config/` directory |
+### p2p-meeting-service.test.ts fix (line 53)
 
----
+```typescript
+// Before
+} as SignalingManager
+// After  
+} as unknown as SignalingManager
+```
 
-## Technical Notes
-
-- ESLint config references `./config/tsconfig.app.json` for TypeScript parser - this path will need updating or the tsconfig reference may need removal if file doesn't exist
-- The `.config/.gitignore` content is redundant with root `.gitignore`
-- Vite automatically finds `vite.config.ts` in root, no explicit path needed
-- Tailwind also auto-detects `tailwind.config.ts` in root
-
----
-
-## Result
-
-After consolidation, root will contain:
-- `vite.config.ts` - Vite/build config
-- `vitest.config.ts` - Test config  
-- `eslint.config.js` - Linting config
-- `tailwind.config.ts` - Styling config
-
-No wrapper files, no subdirectories for configs.
