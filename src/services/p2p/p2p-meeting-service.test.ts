@@ -53,7 +53,7 @@ vi.mock('./signaling', () => ({
   createP2PSession: vi.fn().mockImplementation((_sync: MeetingSync, _config: { roomCode: string }): SignalingManager => ({
     connect: vi.fn(),
     disconnect: vi.fn(),
-  } as SignalingManager))
+  } as unknown as SignalingManager))
 }));
 
 describe('P2PMeetingService', () => {

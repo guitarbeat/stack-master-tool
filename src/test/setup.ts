@@ -5,6 +5,7 @@ import { cleanup } from "@testing-library/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 
 // Re-export testing-library utilities as globals
+// @ts-expect-error - testing-library types resolution issue
 export { screen, fireEvent, waitFor } from "@testing-library/react";
 
 expect.extend(matchers);

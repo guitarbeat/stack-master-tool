@@ -178,10 +178,7 @@ export function createSupabaseMeetingServiceWithRealtime(
   const adapter = new SupabaseMeetingAdapter();
   const realtime = new SupabaseRealtimeAdapter(meetingCode);
   
-  return {
-    ...adapter,
-    realtime,
-  };
+  return Object.assign(adapter, { realtime }) as IMeetingServiceWithRealtime;
 }
 
 /** Singleton instance for the default Supabase service */

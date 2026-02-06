@@ -1,3 +1,4 @@
+// @ts-expect-error - testing-library types not fully resolved in this environment
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
