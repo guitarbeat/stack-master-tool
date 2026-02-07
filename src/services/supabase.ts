@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { nameSchema, titleSchema } from "@/utils/schemas";
 import { AppError, ErrorCode } from "../utils/errorHandling";
 import { logProduction } from "../utils/productionLogger";
 // Use the single, validated client from integrations to avoid duplicate config
@@ -97,6 +99,21 @@ type SpeakingQueueRow = {
 
 // Meeting operations
 export class SupabaseMeetingService {
+  private static validate(
+    schema: z.ZodSchema,
+    value: unknown,
+    errorType: ErrorCode = ErrorCode.VALIDATION_ERROR,
+  ): void {
+    const result = schema.safeParse(value);
+    if (!result.success) {
+      throw new AppError(
+        errorType,
+        undefined,
+        result.error.errors[0]?.message ?? "Validation failed",
+      );
+    }
+  }
+
   // Create a new meeting
   static async createMeeting(
     title: string,
@@ -104,6 +121,13 @@ export class SupabaseMeetingService {
     facilitatorId?: string,
   ): Promise<MeetingData> {
     try {
+      this.validate(titleSchema, title.trim(), ErrorCode.INVALID_MEETING_TITLE);
+      this.validate(
+        nameSchema,
+        facilitatorName.trim(),
+        ErrorCode.INVALID_PARTICIPANT_NAME,
+      );
+
       const maxCreateAttempts = 5;
       let lastError: AppError | null = null;
 
@@ -385,6 +409,12 @@ export class SupabaseMeetingService {
     isFacilitator: boolean = false,
   ): Promise<Participant> {
     try {
+      this.validate(
+        nameSchema,
+        participantName.trim(),
+        ErrorCode.INVALID_PARTICIPANT_NAME,
+      );
+
       // Validate meeting code format before proceeding
       if (!meetingCode || typeof meetingCode !== "string") {
         throw new AppError(
@@ -627,6 +657,12 @@ export class SupabaseMeetingService {
     newTitle: string,
   ): Promise<void> {
     try {
+      this.validate(
+        titleSchema,
+        newTitle.trim(),
+        ErrorCode.INVALID_MEETING_TITLE,
+      );
+
       const { error } = await withSupabase((client) =>
         client
           .from("meetings")
@@ -697,6 +733,8 @@ export class SupabaseMeetingService {
     newName: string,
   ): Promise<void> {
     try {
+      this.validate(nameSchema, newName.trim(), ErrorCode.INVALID_PARTICIPANT_NAME);
+
       const { error } = await withSupabase((client) =>
         client
           .from("participants")
