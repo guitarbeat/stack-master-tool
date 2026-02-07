@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
@@ -90,6 +90,12 @@ export default function MeetingRoom() {
     setLastSpeaker,
     setShowJohnDoe,
   });
+
+  // Ref to track serverParticipants for stable callbacks
+  const serverParticipantsRef = useRef(serverParticipants);
+  useEffect(() => {
+    serverParticipantsRef.current = serverParticipants;
+  }, [serverParticipants]);
 
   const [isP2P, setIsP2P] = useState(false);
 
@@ -248,7 +254,7 @@ export default function MeetingRoom() {
   const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop({ isFacilitator: mode === 'host' });
 
 
-  const handleUpdateParticipant = async (participantId: string, newName: string) => {
+  const handleUpdateParticipant = useCallback(async (participantId: string, newName: string) => {
     if (!participantId || !newName.trim()) {
       return;
     }
@@ -275,9 +281,9 @@ export default function MeetingRoom() {
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [showToast]);
 
-  const handleRemoveParticipant = async (participantId: string) => {
+  const handleRemoveParticipant = useCallback(async (participantId: string) => {
     if (!participantId) {
       return;
     }
@@ -293,8 +299,9 @@ export default function MeetingRoom() {
       return;
     }
 
-    const existingParticipant = serverParticipants.find(p => p.id === participantId);
-    const originalIndex = serverParticipants.findIndex(p => p.id === participantId);
+    const currentParticipants = serverParticipantsRef.current;
+    const existingParticipant = currentParticipants.find(p => p.id === participantId);
+    const originalIndex = currentParticipants.findIndex(p => p.id === participantId);
 
     try {
       const removedParticipant = await SupabaseMeetingService.removeParticipant(participantId);
@@ -369,11 +376,11 @@ export default function MeetingRoom() {
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [setShowJohnDoe, showToast, pushToast, setServerParticipants]);
 
 
   // Handler for AddParticipants component
-  const handleAddParticipant = async (name: string) => {
+  const handleAddParticipant = useCallback(async (name: string) => {
     if (!meetingCode) {
       return Promise.resolve();
     }
@@ -401,10 +408,10 @@ export default function MeetingRoom() {
       });
       return Promise.reject(error);
     }
-  };
+  }, [meetingCode, meetingId, showToast]);
 
 
-  const handleMeetingCodeChange = async (newCode: string) => {
+  const handleMeetingCodeChange = useCallback(async (newCode: string) => {
     if (!meetingId) return;
 
     try {
@@ -424,7 +431,29 @@ export default function MeetingRoom() {
       });
       throw error; // Re-throw to let the UI handle it
     }
-  };
+  }, [meetingId, setMeetingCode, showToast]);
+
+  const mockParticipants = useMemo(() => serverParticipants.length
+    ? serverParticipants
+        .filter(p => p.isActive !== false) // Only include active participants (default to active if not specified)
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          isFacilitator: p.isFacilitator,
+          hasRaisedHand: false,
+          joinedAt: p.joinedAt,
+          isActive: p.isActive,
+        }))
+    : showJohnDoe ? [
+        {
+          id: "1",
+          name: "John Doe",
+          isFacilitator: mode === "host",
+          hasRaisedHand: false,
+          joinedAt: new Date().toISOString(),
+          isActive: true,
+        },
+      ] : [], [serverParticipants, showJohnDoe, mode]);
 
   // Meeting initialization is handled by useMeetingState hook
 
@@ -634,27 +663,6 @@ export default function MeetingRoom() {
     isActive: serverMeeting?.isActive ?? true,
   };
 
-  const mockParticipants = serverParticipants.length
-    ? serverParticipants
-        .filter(p => p.isActive !== false) // Only include active participants (default to active if not specified)
-        .map((p) => ({
-          id: p.id,
-          name: p.name,
-          isFacilitator: p.isFacilitator,
-          hasRaisedHand: false,
-          joinedAt: p.joinedAt,
-          isActive: p.isActive,
-        }))
-    : showJohnDoe ? [
-        {
-          id: "1",
-          name: "John Doe",
-          isFacilitator: mode === "host",
-          hasRaisedHand: false,
-          joinedAt: new Date().toISOString(),
-          isActive: true,
-        },
-      ] : [];
 
   // Determine current speaker from the actual queue (first person in queue)
   const currentSpeakerFromQueue = serverQueue.length > 0 ? {
