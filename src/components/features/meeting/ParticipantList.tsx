@@ -69,6 +69,7 @@ export function ParticipantList({
                       onUpdateParticipant(participant.id, newName)
                     }
                     canEdit={isFacilitator}
+                    ariaLabel={participant.name}
                     className={`text-sm font-medium text-foreground truncate block ${
                       isFacilitator
                         ? "cursor-pointer hover:underline decoration-dashed decoration-muted-foreground/50 underline-offset-4"

@@ -19,6 +19,7 @@ interface EditableFieldProps<T = string> {
   placeholder?: string;
   displayValue?: (value: T) => ReactNode;
   inputClassName?: string;
+  ariaLabel?: string;
 }
 
 export function EditableField<T extends string = string>({
@@ -31,6 +32,7 @@ export function EditableField<T extends string = string>({
   placeholder,
   displayValue,
   inputClassName = "h-8 text-sm",
+  ariaLabel,
 }: EditableFieldProps<T>) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -102,6 +104,7 @@ export function EditableField<T extends string = string>({
           placeholder={placeholder}
           autoFocus
           disabled={isUpdating}
+          aria-label={ariaLabel ? `Edit ${ariaLabel}` : "Edit value"}
         />
         <Button
           size="sm"
@@ -111,7 +114,7 @@ export function EditableField<T extends string = string>({
           }}
           disabled={isUpdating || editValue.trim() === ""}
           className="h-8 w-8 p-0"
-          aria-label="Save"
+          aria-label={ariaLabel ? `Save ${ariaLabel}` : "Save"}
         >
           <Check className="h-4 w-4 text-green-600" />
         </Button>
@@ -121,7 +124,7 @@ export function EditableField<T extends string = string>({
           onClick={handleCancelEdit}
           disabled={isUpdating}
           className="h-8 w-8 p-0"
-          aria-label="Cancel"
+          aria-label={ariaLabel ? `Cancel ${ariaLabel}` : "Cancel"}
         >
           <X className="h-4 w-4 text-red-600" />
         </Button>
@@ -139,7 +142,7 @@ export function EditableField<T extends string = string>({
         variant="ghost"
         onClick={handleStartEdit}
         className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-        aria-label="Edit"
+        aria-label={ariaLabel ? `Edit ${ariaLabel}` : "Edit"}
       >
         <Edit2 className="h-3 w-3" />
       </Button>
