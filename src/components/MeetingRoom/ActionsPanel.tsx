@@ -8,7 +8,7 @@ interface ActionsPanelProps {
   participantName: string;
 }
 
-export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: ActionsPanelProps) => {
+export const ActionsPanel = ({ isInQueue, onJoinQueue, onLeaveQueue, participantName }: ActionsPanelProps) => {
   const [showDirectOptions, setShowDirectOptions] = useState(false);
 
   return (
@@ -18,16 +18,15 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
       <div className="space-y-4">
         {/* Main speak button */}
         <button
-          onClick={() => onJoinQueue('speak')}
-          disabled={isInQueue}
-          className={`w-full py-4 sm:py-5 px-4 sm:px-6 rounded-lg font-semibold transition-colors flex items-center justify-center min-h-[48px] text-base sm:text-lg ${
+          onClick={isInQueue ? onLeaveQueue : () => onJoinQueue('speak')}
+          className={`w-full py-4 sm:py-5 px-4 sm:px-6 rounded-lg font-semibold transition-colors flex items-center justify-center min-h-[48px] text-base sm:text-lg button-press ${
             isInQueue
-              ? 'bg-muted text-muted-foreground cursor-not-allowed'
+              ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80'
               : 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80'
           }`}
         >
           <Hand className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-          {isInQueue ? 'In Queue' : 'Raise Hand to Speak'}
+          {isInQueue ? 'Leave Queue' : 'Raise Hand to Speak'}
         </button>
 
         {/* Direct response options */}
@@ -35,7 +34,7 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
           <button
             onClick={() => setShowDirectOptions(!showDirectOptions)}
             disabled={isInQueue}
-            className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg font-medium transition-colors flex items-center justify-center min-h-[44px] text-sm sm:text-base ${
+            className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg font-medium transition-colors flex items-center justify-center min-h-[44px] text-sm sm:text-base button-press ${
               isInQueue
                 ? 'bg-muted text-muted-foreground cursor-not-allowed'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/70'
@@ -46,13 +45,13 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
           </button>
 
           {showDirectOptions && !isInQueue && (
-            <div className="bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-card border border-border rounded-lg shadow-lg overflow-hidden animate-fade-in">
               <button
                 onClick={() => {
                   onJoinQueue('direct-response');
                   setShowDirectOptions(false);
                 }}
-                className="w-full text-left px-4 py-4 sm:py-3 hover:bg-muted active:bg-muted/80 transition-colors border-b border-border min-h-[48px]"
+                className="w-full text-left px-4 py-4 sm:py-3 hover:bg-muted active:bg-muted/80 transition-colors border-b border-border min-h-[48px] button-press"
               >
                 <div className="font-medium text-foreground text-sm sm:text-base">Direct Response</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">Respond directly to current speaker</div>
@@ -62,7 +61,7 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
                   onJoinQueue('point-of-info');
                   setShowDirectOptions(false);
                 }}
-                className="w-full text-left px-4 py-4 sm:py-3 hover:bg-muted active:bg-muted/80 transition-colors border-b border-border min-h-[48px]"
+                className="w-full text-left px-4 py-4 sm:py-3 hover:bg-muted active:bg-muted/80 transition-colors border-b border-border min-h-[48px] button-press"
               >
                 <div className="font-medium text-foreground text-sm sm:text-base">Point of Information</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">Share relevant information</div>
@@ -72,7 +71,7 @@ export const ActionsPanel = ({ isInQueue, onJoinQueue, participantName }: Action
                   onJoinQueue('clarification');
                   setShowDirectOptions(false);
                 }}
-                className="w-full text-left px-4 py-4 sm:py-3 hover:bg-muted active:bg-muted/80 transition-colors min-h-[48px]"
+                className="w-full text-left px-4 py-4 sm:py-3 hover:bg-muted active:bg-muted/80 transition-colors min-h-[48px] button-press"
               >
                 <div className="font-medium text-foreground text-sm sm:text-base">Clarification</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">Ask for clarification</div>

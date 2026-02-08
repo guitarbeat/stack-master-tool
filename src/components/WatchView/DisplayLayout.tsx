@@ -84,10 +84,10 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
                   speakingQueue.slice(0, 5).map((entry, index) => (
                     <div
                       key={entry.id}
-                      className={`p-4 rounded-lg border-2 transition-all ${
+                      className={`p-4 rounded-lg border-2 transition-all slide-up-fade card-hover-lift ${
                         index === 0
-                          ? 'bg-primary/10 border-primary text-primary'
-                          : 'bg-muted border-border'
+                          ? 'bg-primary/10 border-primary text-primary dark:bg-primary/20'
+                          : 'bg-muted border-border dark:bg-muted/60'
                       }`}
                     >
                       <div className="flex items-center justify-between">

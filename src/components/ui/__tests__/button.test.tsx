@@ -86,14 +86,14 @@ describe('Button Variants', () => {
     render(<Button variant="default">Default</Button>);
     
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-primary', 'text-primary-foreground', 'hover:bg-primary/90');
+    expect(button).toHaveClass('bg-primary', 'text-primary-foreground', 'hover:bg-primary-hover');
   });
 
   it('should render destructive variant', () => {
     render(<Button variant="destructive">Destructive</Button>);
     
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-destructive', 'text-destructive-foreground', 'hover:bg-destructive/90');
+    expect(button).toHaveClass('bg-destructive', 'text-destructive-foreground', 'hover:bg-destructive-hover');
   });
 
   it('should render outline variant', () => {
@@ -107,7 +107,7 @@ describe('Button Variants', () => {
     render(<Button variant="secondary">Secondary</Button>);
     
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-secondary', 'text-secondary-foreground', 'hover:bg-secondary/80');
+    expect(button).toHaveClass('bg-secondary', 'text-secondary-foreground', 'hover:bg-secondary-hover');
   });
 
   it('should render ghost variant', () => {

@@ -81,16 +81,16 @@ export const SpeakingQueue = ({
               onDragLeave={handleDragLeave}
               onDrop={() => canDrag && onReorderQueue && handleDrop(index, onReorderQueue)}
               onDragEnd={handleDragEnd}
-              className={`p-4 rounded-lg border-l-4 transition-all ${
+              className={`p-4 rounded-lg border-l-4 transition-all slide-up-fade card-hover-lift ${
                 isCurrentSpeaker
-                  ? 'bg-primary/5 border-primary shadow-sm'
+                  ? 'bg-primary/5 border-primary shadow-sm dark:bg-primary/15'
                   : isDirect
-                  ? 'bg-warning/10 border-warning'
+                  ? 'bg-warning/10 border-warning dark:bg-warning/20'
                   : isPointInfo
-                  ? 'bg-info/10 border-info'
+                  ? 'bg-info/10 border-info dark:bg-info/20'
                   : isClarify
-                  ? 'bg-accent/10 border-accent'
-                  : 'bg-muted border-border'
+                  ? 'bg-accent/10 border-accent dark:bg-accent/20'
+                  : 'bg-muted border-border dark:bg-muted/60'
               } ${isSelf ? 'ring-2 ring-primary/20 bg-primary/5' : ''} ${
                 canDrag ? 'draggable-item cursor-grab' : ''
               } ${isDragging ? 'dragging opacity-50 cursor-grabbing' : ''} ${
@@ -107,7 +107,7 @@ export const SpeakingQueue = ({
                       isSpeaking={isCurrentSpeaker}
                     />
                     {!isCurrentSpeaker && (
-                      <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold border-2 border-card">
+                      <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-card/90 text-muted-foreground text-[10px] font-bold border-2 border-card shadow-sm">
                         {index + 1}
                       </span>
                     )}
