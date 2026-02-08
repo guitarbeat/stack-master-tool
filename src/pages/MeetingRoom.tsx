@@ -4,6 +4,7 @@ import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
 import { NowSpeaking } from "@/components/MeetingRoom/NowSpeaking";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
+import { MobileActionBar } from "@/components/MeetingRoom/MobileActionBar";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { HostSettingsPanel } from "@/components/MeetingRoom/HostSettingsPanel";
 import { KeyboardShortcutsModal } from "@/components/MeetingRoom/KeyboardShortcutsModal";
@@ -232,6 +233,33 @@ export default function MeetingRoom() {
     }
   };
 
+  const handleJoinQueue = async (queueType: string) => {
+    if (!meetingId || !currentParticipantId) {
+      return;
+    }
+    try {
+      await SupabaseMeetingService.joinQueue(meetingId, currentParticipantId, queueType);
+      showToast({
+        type: 'success',
+        title: 'Added to Queue',
+        message: 'You have been added to the speaking queue.'
+      });
+    } catch (error) {
+      logProduction('error', {
+        action: 'join_queue',
+        meetingId,
+        participantId: currentParticipantId,
+        queueType,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      showToast({
+        type: 'error',
+        title: 'Failed to Join Queue',
+        message: 'There was an error adding you to the queue. Please try again.'
+      });
+    }
+  };
+
   const { showKeyboardShortcuts: _showKeyboardShortcuts, toggleShortcuts: _toggleShortcuts } = useKeyboardShortcuts({
     onNextSpeaker: () => {
       void handleNextSpeaker();
@@ -248,6 +276,7 @@ export default function MeetingRoom() {
   const { speakingHistory, addSpeakingSegment: _addSpeakingSegment, getTotalSpeakingTime: _getTotalSpeakingTime, getSpeakingDistribution } = useSpeakingHistory();
   const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop({ isFacilitator: mode === 'host' });
 
+  const isInQueue = serverQueue.some(entry => entry.participantId === currentParticipantId);
 
   const handleUpdateParticipant = async (participantId: string, newName: string) => {
     if (!participantId || !newName.trim()) {
@@ -876,7 +905,7 @@ export default function MeetingRoom() {
 
   return (
     <>
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <div className={`container mx-auto px-3 sm:px-4 pt-4 sm:py-6 space-y-4 sm:space-y-6 ${mode === "join" ? "pb-28 sm:pb-6" : "pb-6"}`}>
         {/* Host Management Panel */}
         {mode === "host" && meetingId && (
           <HostSettingsPanel
@@ -967,12 +996,16 @@ export default function MeetingRoom() {
               } : undefined}
               queueHistory={[]}
             />
-            <ActionsPanel
-              isInQueue={false}
-              onJoinQueue={() => {}}
-              onLeaveQueue={() => {}}
-              participantName="Current User"
-            />
+            <div className="hidden sm:block">
+              <ActionsPanel
+                isInQueue={isInQueue}
+                onJoinQueue={handleJoinQueue}
+                onLeaveQueue={() => {
+                  void handleLeaveQueue();
+                }}
+                participantName={participantName || "Current User"}
+              />
+            </div>
           </>
         )}
 
@@ -1008,6 +1041,16 @@ export default function MeetingRoom() {
           </div>
         )}
       </div>
+
+      {mode === "join" && (
+        <MobileActionBar
+          isInQueue={isInQueue}
+          onJoinQueue={handleJoinQueue}
+          onLeaveQueue={() => {
+            void handleLeaveQueue();
+          }}
+        />
+      )}
 
       <>
         {/* QR Code Scanner */}

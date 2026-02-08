@@ -56,7 +56,8 @@ export const ParticipantAvatar = ({ name, size = "md", className, isSpeaking = f
   return (
     <Avatar className={cn(
       sizeClasses[size],
-      isSpeaking && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+      "transition-fast",
+      isSpeaking && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg",
       className
     )}>
       <AvatarFallback

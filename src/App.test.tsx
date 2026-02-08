@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
-import App from "./App";
 
 // Mock the QueryClient to avoid issues in tests
 vi.mock("@tanstack/react-query", () => ({
@@ -31,6 +30,10 @@ vi.mock("./components/layout/AppLayout", () => ({
   ),
 }));
 
+vi.mock("@/integrations/supabase/connection-context", () => ({
+  SupabaseConnectionProvider: ({ children }: { children: ReactNode }) => children,
+}));
+
 // Mock the pages
 vi.mock("./pages/HomePage", () => ({
   default: () => <div data-testid="home-page">Home Page</div>,
@@ -40,9 +43,19 @@ vi.mock("./pages/MeetingRoom", () => ({
   default: () => <div data-testid="meeting-room">Meeting Room</div>,
 }));
 
+vi.mock("./pages/FacilitatorDashboard", () => ({
+  default: () => <div data-testid="facilitator-dashboard">Facilitator Dashboard</div>,
+}));
+
+vi.mock("./pages/Health", () => ({
+  default: () => <div data-testid="health-page">Health Page</div>,
+}));
+
 vi.mock("./pages/NotFound", () => ({
   default: () => <div data-testid="not-found">Not Found</div>,
 }));
+
+const App = (await import("./App")).default;
 
 const futureConfig = {
   v7_startTransition: true,

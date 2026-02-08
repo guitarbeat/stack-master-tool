@@ -35,7 +35,7 @@ export const NowSpeaking = ({ speakerName, startedAt, className, compact = false
 
   return (
     <Card className={cn(
-      "border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-accent/5 shadow-lg animate-fade-in",
+      "border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-accent/5 shadow-lg animate-fade-in slide-up-fade dark:from-primary/20 dark:via-primary/15 dark:to-accent/20",
       className
     )}>
       <CardContent className={cn("flex items-center gap-4", compact ? "p-4" : "p-6")}>
