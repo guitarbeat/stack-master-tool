@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
+import { NowSpeaking } from "@/components/MeetingRoom/NowSpeaking";
 import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { HostSettingsPanel } from "@/components/MeetingRoom/HostSettingsPanel";
@@ -904,6 +905,13 @@ export default function MeetingRoom() {
           meetingData={mockMeetingData}
           participantCount={mockParticipants.length}
           onLeaveMeeting={() => navigate("/")}
+        />
+
+        {/* Now Speaking Spotlight */}
+        <NowSpeaking
+          speakerName={currentSpeakerFromQueue?.participantName}
+          startedAt={currentSpeakerFromQueue?.startedSpeakingAt}
+          compact
         />
 
         {/* Main Content - Speaking Queue and Analytics Side by Side */}
