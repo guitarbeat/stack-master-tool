@@ -1,12 +1,11 @@
 import type { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SpeakingAnalytics } from "./SpeakingAnalytics";
+import { NowSpeaking } from "@/components/MeetingRoom/NowSpeaking";
+import { ParticipantAvatar } from "@/components/ui/participant-avatar";
 import { 
-  Users, 
-  MessageCircle,
-  Timer
+  Users
 } from "lucide-react";
 import type {
   MeetingData,
@@ -47,11 +46,6 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
   directResponses = 0,
   showSpeakingAnalytics = false
 }) => {
-  const getCurrentSpeakingTime = () => {
-    if (!currentSpeaker?.startedSpeakingAt) return 0;
-    return Math.floor((Date.now() - currentSpeaker.startedSpeakingAt.getTime()) / 1000);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-6">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -68,47 +62,12 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Current Speaker - Large Display */}
+          {/* Current Speaker - NowSpeaking Spotlight */}
           <div className="lg:col-span-2">
-            <Card variant="elevated">
-              <CardHeader className="text-center pb-4">
-                <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">
-                  Currently Speaking
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-6">
-                {currentSpeaker ? (
-                  <>
-                    <div className="space-y-4">
-                      <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                        <MessageCircle className="w-12 h-12 text-primary-foreground" />
-                      </div>
-                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-                        {currentSpeaker.participantName}
-                      </h2>
-                      <div className="flex items-center justify-center gap-2 text-xl sm:text-2xl text-muted-foreground">
-                        <Timer className="w-6 h-6" />
-                        <span className="font-mono font-bold">
-                          {formatTime(getCurrentSpeakingTime())}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="w-24 h-24 mx-auto bg-muted rounded-full flex items-center justify-center">
-                      <Users className="w-12 h-12 text-muted-foreground" />
-                    </div>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-muted-foreground">
-                      No Current Speaker
-                    </h2>
-                    <p className="text-lg sm:text-xl text-muted-foreground">
-                      Waiting for someone to speak
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <NowSpeaking
+              speakerName={currentSpeaker?.participantName}
+              startedAt={currentSpeaker?.startedSpeakingAt}
+            />
           </div>
 
           {/* Speaking Queue */}
@@ -132,9 +91,12 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-lg">
-                          {entry.participantName}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <ParticipantAvatar name={entry.participantName} size="sm" isSpeaking={index === 0} />
+                          <span className="font-semibold text-lg">
+                            {entry.participantName}
+                          </span>
+                        </div>
                         <Badge variant={index === 0 ? "default" : "secondary"}>
                           {index === 0 ? "Now" : `#${index + 1}`}
                         </Badge>

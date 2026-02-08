@@ -2,6 +2,7 @@ import { Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
+import { ParticipantAvatar } from "@/components/ui/participant-avatar";
 import type { QueueItem } from "@/types/meeting";
 
 interface SpeakingQueueProps {
@@ -98,13 +99,18 @@ export const SpeakingQueue = ({
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {/* Position/Speaker indicator */}
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                    isCurrentSpeaker
-                      ? 'bg-primary text-primary-foreground animate-pulse'
-                      : 'bg-muted text-muted-foreground'
-                  }`}>
-                    {isCurrentSpeaker ? '🎤' : index + 1}
+                  {/* Avatar with position overlay */}
+                  <div className="relative">
+                    <ParticipantAvatar
+                      name={entryName}
+                      size="md"
+                      isSpeaking={isCurrentSpeaker}
+                    />
+                    {!isCurrentSpeaker && (
+                      <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold border-2 border-card">
+                        {index + 1}
+                      </span>
+                    )}
                   </div>
 
                   {/* Name and type indicator */}
