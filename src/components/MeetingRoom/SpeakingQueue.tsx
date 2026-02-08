@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,7 @@ interface SpeakingQueueProps {
   onReorderQueue?: (dragIndex: number, targetIndex: number) => void;
 }
 
-export const SpeakingQueue = ({
+export const SpeakingQueue = memo(({
   speakingQueue,
   participantName,
   onLeaveQueue,
@@ -155,4 +156,6 @@ export const SpeakingQueue = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+SpeakingQueue.displayName = "SpeakingQueue";

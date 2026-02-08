@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useState, memo, type ReactElement } from "react";
 import { Users, LogOut, Copy, Check, Link, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QRCode from "qrcode";
@@ -20,7 +20,7 @@ interface MeetingHeaderProps {
   additionalBadge?: ReactElement;
 }
 
-export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, additionalBadge }: MeetingHeaderProps) => {
+export const MeetingHeader = memo(({ meetingData, participantCount, onLeaveMeeting, additionalBadge }: MeetingHeaderProps) => {
   const { toast } = useToast();
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -125,4 +125,6 @@ export const MeetingHeader = ({ meetingData, participantCount, onLeaveMeeting, a
       </Dialog>
     </div>
   );
-};
+});
+
+MeetingHeader.displayName = "MeetingHeader";

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
@@ -93,7 +93,7 @@ export default function MeetingRoom() {
 
   const [isP2P, setIsP2P] = useState(false);
 
-  const handleCreateRoom = async () => {
+  const handleCreateRoom = useCallback(async () => {
     if (!codeInput.trim()) return;
 
     if (isP2P) {
@@ -150,9 +150,9 @@ export default function MeetingRoom() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [codeInput, isP2P, participantName, user, setIsLoading, setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue, setCodeInput, showToast]);
 
-  const handleQrScan = (scannedUrl: string) => {
+  const handleQrScan = useCallback((scannedUrl: string) => {
     // For now, QR scanning is not fully implemented
     // This function provides the framework for when proper QR scanning is added
     // * Log QR scan for debugging in development
@@ -163,11 +163,11 @@ export default function MeetingRoom() {
       });
     }
     setScannerOpen(false);
-  };
+  }, [setScannerOpen]);
 
   // Advanced features hooks
 
-  const handleNextSpeaker = async () => {
+  const handleNextSpeaker = useCallback(async () => {
     if (!meetingId) {
       return;
     }
@@ -182,9 +182,9 @@ export default function MeetingRoom() {
       });
       // TODO: Show user-friendly error toast
     }
-  };
+  }, [meetingId, setLastSpeaker]);
 
-  const handleUndo = async () => {
+  const handleUndo = useCallback(async () => {
     if (!meetingId || !lastSpeaker) {
       return;
     }
@@ -203,9 +203,9 @@ export default function MeetingRoom() {
       });
       // TODO: Show user-friendly error toast
     }
-  };
+  }, [meetingId, lastSpeaker, setLastSpeaker]);
 
-  const handleLeaveQueue = async () => {
+  const handleLeaveQueue = useCallback(async () => {
     if (!meetingId || !currentParticipantId) {
       return;
     }
@@ -229,7 +229,7 @@ export default function MeetingRoom() {
         message: 'There was an error removing you from the queue. Please try again.'
       });
     }
-  };
+  }, [meetingId, currentParticipantId, showToast]);
 
   const { showKeyboardShortcuts: _showKeyboardShortcuts, toggleShortcuts: _toggleShortcuts } = useKeyboardShortcuts({
     onNextSpeaker: () => {
@@ -248,7 +248,7 @@ export default function MeetingRoom() {
   const { dragIndex: _dragIndex, handleDragStart: _handleDragStart, handleDrop: _handleDrop, isDragOver: _isDragOver } = useDragAndDrop({ isFacilitator: mode === 'host' });
 
 
-  const handleUpdateParticipant = async (participantId: string, newName: string) => {
+  const handleUpdateParticipant = useCallback(async (participantId: string, newName: string) => {
     if (!participantId || !newName.trim()) {
       return;
     }
@@ -275,9 +275,9 @@ export default function MeetingRoom() {
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [showToast]);
 
-  const handleRemoveParticipant = async (participantId: string) => {
+  const handleRemoveParticipant = useCallback(async (participantId: string) => {
     if (!participantId) {
       return;
     }
@@ -369,11 +369,11 @@ export default function MeetingRoom() {
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [serverParticipants, setShowJohnDoe, showToast, pushToast, setServerParticipants]);
 
 
   // Handler for AddParticipants component
-  const handleAddParticipant = async (name: string) => {
+  const handleAddParticipant = useCallback(async (name: string) => {
     if (!meetingCode) {
       return Promise.resolve();
     }
@@ -401,10 +401,10 @@ export default function MeetingRoom() {
       });
       return Promise.reject(error);
     }
-  };
+  }, [meetingCode, meetingId, showToast]);
 
 
-  const handleMeetingCodeChange = async (newCode: string) => {
+  const handleMeetingCodeChange = useCallback(async (newCode: string) => {
     if (!meetingId) return;
 
     try {
@@ -424,7 +424,7 @@ export default function MeetingRoom() {
       });
       throw error; // Re-throw to let the UI handle it
     }
-  };
+  }, [meetingId, setMeetingCode, showToast]);
 
   // Meeting initialization is handled by useMeetingState hook
 
@@ -500,6 +500,32 @@ export default function MeetingRoom() {
       }
     };
   }, [currentParticipantId, mode, setShowJohnDoe]);
+
+  // Memoize stable handlers
+  const handleQrGenerate = useCallback((url: string, type: 'join' | 'watch') => {
+    setQrUrl(url);
+    setQrType(type);
+    setQrOpen(true);
+  }, [setQrUrl, setQrType, setQrOpen]);
+
+  const handleScannerOpen = useCallback(() => setScannerOpen(true), [setScannerOpen]);
+
+  const handleEndMeetingClick = useCallback(() => {
+    void handleEndMeeting();
+  }, [handleEndMeeting]);
+
+  const handleLeaveMeeting = useCallback(() => navigate("/"), [navigate]);
+
+  const handleReorderQueueWrapper = useCallback((dragIndex: number, targetIndex: number) => {
+    // Check if handleReorderQueue exists and is a function before calling
+    if (typeof handleReorderQueue === 'function') {
+      void handleReorderQueue(dragIndex, targetIndex);
+    }
+  }, [handleReorderQueue]);
+
+  // Empty handlers for mode !== host/join
+  const noOp = useCallback(() => {}, []);
+
 
   if (isLoading) {
     return (
@@ -618,7 +644,7 @@ export default function MeetingRoom() {
     );
   }
 
-  const mockMeetingData = {
+  const mockMeetingData = useMemo(() => ({
     id: serverMeeting?.id ?? "mock-id",
     title:
       serverMeeting?.title ??
@@ -632,9 +658,9 @@ export default function MeetingRoom() {
     facilitatorId: serverMeeting?.facilitatorId ?? null,
     createdAt: serverMeeting?.createdAt ?? new Date().toISOString(),
     isActive: serverMeeting?.isActive ?? true,
-  };
+  }), [serverMeeting, mode, meetingCode]);
 
-  const mockParticipants = serverParticipants.length
+  const mockParticipants = useMemo(() => serverParticipants.length
     ? serverParticipants
         .filter(p => p.isActive !== false) // Only include active participants (default to active if not specified)
         .map((p) => ({
@@ -654,15 +680,15 @@ export default function MeetingRoom() {
           joinedAt: new Date().toISOString(),
           isActive: true,
         },
-      ] : [];
+      ] : [], [serverParticipants, showJohnDoe, mode]);
 
   // Determine current speaker from the actual queue (first person in queue)
-  const currentSpeakerFromQueue = serverQueue.length > 0 ? {
+  const currentSpeakerFromQueue = useMemo(() => serverQueue.length > 0 ? {
     name: serverQueue[0].participantName,
     participantName: serverQueue[0].participantName,
     startedSpeakingAt: serverQueue[0].joinedQueueAt ? new Date(serverQueue[0].joinedQueueAt) : undefined,
     speakingTime: 0,
-  } : undefined;
+  } : undefined, [serverQueue]);
 
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
@@ -882,16 +908,10 @@ export default function MeetingRoom() {
             isLiveMeeting={isLiveMeeting}
             setIsLiveMeeting={setIsLiveMeeting}
             meetingCode={meetingCode}
-            onQrGenerate={(url, type) => {
-              setQrUrl(url);
-              setQrType(type);
-              setQrOpen(true);
-            }}
-            onScannerOpen={() => setScannerOpen(true)}
+            onQrGenerate={handleQrGenerate}
+            onScannerOpen={handleScannerOpen}
               onMeetingCodeChange={handleMeetingCodeChange}
-              onEndMeeting={() => {
-                void handleEndMeeting();
-              }}
+              onEndMeeting={handleEndMeetingClick}
             mockParticipants={mockParticipants}
             onAddParticipant={handleAddParticipant}
             onUpdateParticipant={handleUpdateParticipant}
@@ -903,7 +923,7 @@ export default function MeetingRoom() {
         <MeetingHeader
           meetingData={mockMeetingData}
           participantCount={mockParticipants.length}
-          onLeaveMeeting={() => navigate("/")}
+          onLeaveMeeting={handleLeaveMeeting}
         />
 
         {/* Main Content - Speaking Queue and Analytics Side by Side */}
@@ -913,12 +933,10 @@ export default function MeetingRoom() {
             <SpeakingQueue
               speakingQueue={serverQueue}
               participantName={user?.email ?? "Current User"}
-              onLeaveQueue={() => {
-                void handleLeaveQueue();
-              }}
+              onLeaveQueue={handleLeaveQueue}
               currentUserId={currentParticipantId}
               isFacilitator={mode === "host"}
-              onReorderQueue={handleReorderQueue}
+              onReorderQueue={handleReorderQueueWrapper}
             />
           </div>
 
@@ -961,8 +979,8 @@ export default function MeetingRoom() {
             />
             <ActionsPanel
               isInQueue={false}
-              onJoinQueue={() => {}}
-              onLeaveQueue={() => {}}
+              onJoinQueue={noOp}
+              onLeaveQueue={noOp}
               participantName="Current User"
             />
           </>
@@ -975,7 +993,7 @@ export default function MeetingRoom() {
               <SpeakingQueue
                 speakingQueue={serverQueue}
                 participantName={user?.email ?? "Observer"}
-                onLeaveQueue={() => {}}
+                onLeaveQueue={noOp}
                 currentUserId={undefined}
                 isFacilitator={false}
               />

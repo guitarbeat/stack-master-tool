@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -53,15 +53,15 @@ export function useMeetingActions({
   const [lastSpeaker, setLastSpeakerState] = useState<QueueItem | null>(null);
 
   // * Update the external lastSpeaker state when internal state changes
-  const updateLastSpeaker = (speaker: QueueItem | null) => {
+  const updateLastSpeaker = useCallback((speaker: QueueItem | null) => {
     setLastSpeakerState(speaker);
     setLastSpeaker(speaker);
-  };
+  }, [setLastSpeaker]);
 
   /**
    * * Handles moving to the next speaker in the queue
    */
-  const handleNextSpeaker = async () => {
+  const handleNextSpeaker = useCallback(async () => {
     if (!meetingId) {
       return;
     }
@@ -76,12 +76,12 @@ export function useMeetingActions({
       });
       // TODO: Show user-friendly error toast
     }
-  };
+  }, [meetingId, updateLastSpeaker]);
 
   /**
    * * Handles undoing the last speaker action
    */
-  const handleUndo = async () => {
+  const handleUndo = useCallback(async () => {
     if (!meetingId || !lastSpeaker) {
       return;
     }
@@ -100,12 +100,12 @@ export function useMeetingActions({
       });
       // TODO: Show user-friendly error toast
     }
-  };
+  }, [meetingId, lastSpeaker, updateLastSpeaker]);
 
   /**
    * * Handles joining the speaking queue
    */
-  const handleJoinQueue = async () => {
+  const handleJoinQueue = useCallback(async () => {
     if (!meetingId || !currentParticipantId) {
       return;
     }
@@ -120,12 +120,12 @@ export function useMeetingActions({
         error: error instanceof Error ? error.message : String(error)
       });
     }
-  };
+  }, [meetingId, currentParticipantId]);
 
   /**
    * * Handles leaving the speaking queue
    */
-  const handleLeaveQueue = async () => {
+  const handleLeaveQueue = useCallback(async () => {
     if (!meetingId || !currentParticipantId) {
       return;
     }
@@ -140,12 +140,12 @@ export function useMeetingActions({
         error: error instanceof Error ? error.message : String(error)
       });
     }
-  };
+  }, [meetingId, currentParticipantId]);
 
   /**
    * * Handles reordering items in the speaking queue
    */
-  const handleReorderQueue = async (dragIndex: number, targetIndex: number) => {
+  const handleReorderQueue = useCallback(async (dragIndex: number, targetIndex: number) => {
     if (!meetingId || serverQueue.length === 0) {
       return;
     }
@@ -188,12 +188,12 @@ export function useMeetingActions({
         error: error instanceof Error ? error.message : String(error)
       });
     }
-  };
+  }, [meetingId, serverQueue]);
 
   /**
    * * Handles updating participant information
    */
-  const handleUpdateParticipant = async (participantId: string, newName: string) => {
+  const handleUpdateParticipant = useCallback(async (participantId: string, newName: string) => {
     if (!participantId || !newName.trim()) {
       return;
     }
@@ -220,12 +220,12 @@ export function useMeetingActions({
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [showToast]);
 
   /**
    * * Handles removing a participant from the meeting
    */
-  const handleRemoveParticipant = async (participantId: string) => {
+  const handleRemoveParticipant = useCallback(async (participantId: string) => {
     if (!participantId) {
       return;
     }
@@ -294,12 +294,12 @@ export function useMeetingActions({
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [setShowJohnDoe, showToast, pushToast]);
 
   /**
    * * Handles adding a new participant to the meeting
    */
-  const handleAddParticipant = async (name: string) => {
+  const handleAddParticipant = useCallback(async (name: string) => {
     if (!meetingId) {
       return Promise.resolve();
     }
@@ -327,13 +327,13 @@ export function useMeetingActions({
       });
       return Promise.reject(error);
     }
-  };
+  }, [meetingId, showToast]);
 
 
   /**
    * * Handles ending the meeting
    */
-  const handleEndMeeting = async () => {
+  const handleEndMeeting = useCallback(async () => {
     if (!meetingId) {
       return;
     }
@@ -351,19 +351,19 @@ export function useMeetingActions({
       // * Still navigate home even if cleanup fails
       navigate("/");
     }
-  };
+  }, [meetingId, navigate]);
 
   /**
    * * Handles QR code scanning
    */
-  const handleQrScan = (scannedUrl: string) => {
+  const handleQrScan = useCallback((scannedUrl: string) => {
     // * For now, QR scanning is not fully implemented
     // * This function provides the framework for when proper QR scanning is added
     logProduction('info', {
       action: 'qr_scan_attempted',
       scannedUrl
     });
-  };
+  }, []);
 
   return {
     // * Speaker management
