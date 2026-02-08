@@ -1,103 +1,131 @@
 
 
-# Fix All TypeScript Build Errors
+# Site Improvement Plan: Features, Design & Mobile
 
 ## Overview
 
-There are 5 categories of errors to fix across the codebase. All stem from type mismatches introduced during recent refactoring.
+Three improvement tracks to make the Speaking Queue app more engaging, polished, and mobile-friendly.
 
 ---
 
-## Error Categories and Fixes
+## Track 1: New Features
 
-### 1. `src/services/supabase.ts` - withSupabase returns `unknown` (majority of errors)
+### 1A. Live Speaker Timer Display
+Show a visible countdown/count-up timer when someone is speaking, visible to all participants and watchers.
+- Add a prominent timer component in the meeting room header area
+- Auto-start when "Next Speaker" is triggered
+- Display elapsed time with color changes (green under 2min, yellow 2-3min, red 3min+)
+- Optional configurable time limit set by the facilitator
 
-**Root cause**: The `withSupabase` wrapper calls `executeSupabase` which expects `(client) => Promise<T>`, but Supabase query builders return `PostgrestBuilder` (thenable, not a real `Promise`). TypeScript can't infer `T` and falls back to `unknown`.
+### 1B. Hand-Raise Animation
+Add a visual hand-raise animation when participants join the queue.
+- Animated hand icon appears briefly when someone joins
+- Subtle bounce-in animation using existing animation system
+- Sound effect option (using existing `sound.ts` utility)
 
-**Fix**: Change the `execute` method signatures in `connection-manager.ts` and `client.ts` to accept `PromiseLike<T>` instead of `Promise<T>`. This makes them compatible with Postgrest builders while preserving type inference.
+### 1C. Participant Avatars
+Generate colorful letter avatars for each participant.
+- Use initials with deterministic background colors based on name
+- Show in the speaking queue list, participant list, and "now speaking" display
+- Leverage the existing `@radix-ui/react-avatar` package already installed
 
-Files changed:
-- `src/integrations/supabase/connection-manager.ts` - Update `execute` and `runWithRetry` parameter types from `Promise<T>` to `PromiseLike<T>`
-- `src/integrations/supabase/client.ts` - Update `executeSupabase` parameter type from `Promise<T>` to `PromiseLike<T>`
+### 1D. "Now Speaking" Spotlight
+A prominent card showing who is currently speaking with their avatar, name, and timer.
+- Large display suitable for projecting on a screen
+- Smooth transition animation between speakers
+- Works in both host and watch views
 
-Also add `facilitatorId` to the return object in `getMeeting` (line ~320).
+---
 
-### 2. `src/App.test.tsx` and `button.test.tsx` - Missing `screen`/`fireEvent` exports
+## Track 2: Visual Polish & Design
 
-**Root cause**: `@testing-library/react` may not be resolving correctly, or the installed version doesn't match the expected exports.
+### 2A. Card Hover & Press Micro-interactions
+Add tactile feedback to all interactive cards using the existing interaction system.
+- Subtle scale + shadow lift on hover
+- Press-down effect on click
+- Applies to homepage cards, room browser items, and queue items
 
-**Fix**: Add explicit `import { render, screen, fireEvent } from '@testing-library/react'` at the top of each test file (they already have this - the issue is likely the package version). Verify `@testing-library/react` is properly installed. If the type declarations are missing, add `@types/testing-library__react` or ensure `@testing-library/react` version >= 14 which bundles types.
+### 2B. Smooth Queue Transitions
+Animate queue item additions, removals, and reorderings.
+- Fade-in + slide-down for new queue entries
+- Fade-out + slide-up for removed entries
+- Smooth position swap animation for reordering
 
-Files changed:
-- `src/App.test.tsx` - Already imports correctly; no code change needed if package is correct
-- `src/components/ui/__tests__/button.test.tsx` - Same
+### 2C. Gradient Accents & Glass Effects
+Enhance the visual hierarchy with subtle gradients.
+- Add a soft gradient to the "Now Speaking" area
+- Glass-morphism effect on the meeting header
+- Subtle gradient borders on the active room cards
 
-If the package version is the issue, ensure `package.json` has `@testing-library/react` >= 14.
+### 2D. Dark Mode Polish
+Review and refine dark mode styling.
+- Ensure all custom components use semantic tokens consistently
+- Add subtle glow effects for active states in dark mode
+- Improve contrast on secondary/muted text
 
-### 3. `src/services/p2p/p2p-meeting-service.test.ts` - SignalingManager mock type mismatch
+---
 
-**Root cause**: The mock only has `connect` and `disconnect` but `SignalingManager` has many more properties. TypeScript rejects the `as SignalingManager` cast.
+## Track 3: Better Mobile Experience
 
-**Fix**: Cast through `unknown` first: `as unknown as SignalingManager`.
+### 3A. Bottom Action Bar
+Replace scattered action buttons with a fixed bottom bar on mobile.
+- "Join Queue" / "Leave Queue" as the primary bottom action
+- Quick access to QR scanner and room code
+- Collapses when keyboard is open
 
-File changed:
-- `src/services/p2p/p2p-meeting-service.test.ts` line 53-56
+### 3B. Touch-Optimized Queue
+Make the speaking queue easier to interact with on touch devices.
+- Larger tap targets (minimum 44px)
+- Swipe-to-leave-queue gesture
+- Pull-to-refresh for manual sync
 
-### 4. `src/services/p2p/p2p-meeting-service.ts` - Status comparison type error
+### 3C. Responsive Meeting Room Layout
+Optimize the meeting room for narrow screens.
+- Stack panels vertically on mobile instead of side-by-side
+- Collapsible settings panel
+- Full-width speaking queue with compact items
 
-**Root cause**: `P2PConnectionStatus` is `"connecting" | "disconnected" | "error"` but the code compares it to `"connected"`. The `MeetingSync.status` getter actually returns `P2PConnectionStatus` which includes `"connected"` in its definition in `types.ts`.
-
-**Fix**: The issue is that `sync.status` type is being narrowed incorrectly. The `P2PConnectionStatus` type in `types.ts` already includes `"connected"`. The error says `'"connecting" | "disconnected" | "error"'` which suggests the type is being imported/resolved without `"connected"`. Check the actual `P2PConnectionStatus` type - it does include `"connected"`, so this may be a stale type cache issue. No code change needed if the type is correct. If the build still complains, add a type assertion.
-
-### 5. `src/services/supabase-meeting-adapter.ts` - Spread adapter loses methods
-
-**Root cause**: `{ ...adapter, realtime }` creates a plain object that loses the class methods because they're on the prototype, not own properties.
-
-**Fix**: Use `Object.assign` or explicitly list all methods. Simplest fix: use `Object.assign(Object.create(Object.getPrototypeOf(adapter)), adapter, { realtime })` or restructure to return an object that delegates to the adapter.
-
-File changed:
-- `src/services/supabase-meeting-adapter.ts` lines 175-185
+### 3D. PWA Install Support
+Make the app installable as a home screen app (no app store needed).
+- Add PWA manifest and service worker via `vite-plugin-pwa`
+- Mobile-optimized meta tags and splash screens
+- Offline fallback page
 
 ---
 
 ## Implementation Order
 
-1. Fix `connection-manager.ts` and `client.ts` (`PromiseLike<T>`) -- fixes all ~30 supabase.ts errors at once
-2. Fix `supabase.ts` missing `facilitatorId` in `getMeeting` return
-3. Fix `supabase-meeting-adapter.ts` spread issue
-4. Fix `p2p-meeting-service.test.ts` cast
-5. Fix `p2p-meeting-service.ts` status comparison
-6. Verify test file imports resolve correctly
+1. **Participant Avatars** -- small, high-impact visual improvement
+2. **Now Speaking Spotlight** -- core feature improvement
+3. **Live Speaker Timer Display** -- builds on spotlight
+4. **Bottom Action Bar (mobile)** -- biggest mobile UX win
+5. **Card Micro-interactions** -- quick visual polish
+6. **Smooth Queue Transitions** -- animation polish
+7. **Responsive Meeting Room** -- mobile layout fix
+8. **Hand-Raise Animation** -- fun detail
+9. **Dark Mode Polish** -- refinement pass
+10. **PWA Install** -- installability
 
 ---
 
 ## Technical Details
 
-### connection-manager.ts changes (lines 151-153, 182-184)
+### Files to create
+- `src/components/MeetingRoom/NowSpeaking.tsx` -- spotlight component
+- `src/components/MeetingRoom/SpeakerTimer.tsx` -- timer display
+- `src/components/MeetingRoom/MobileActionBar.tsx` -- bottom bar
+- `src/components/ui/participant-avatar.tsx` -- reusable avatar with color generation
 
-```typescript
-// Before
-operation: (client: SupabaseClient<Database>) => Promise<T>
-// After
-operation: (client: SupabaseClient<Database>) => PromiseLike<T>
-```
+### Files to modify
+- `src/components/MeetingRoom/SpeakingQueue.tsx` -- add avatars, animations, touch gestures
+- `src/components/MeetingRoom/MeetingHeader.tsx` -- add spotlight area
+- `src/components/WatchView/DisplayLayout.tsx` -- add spotlight for watchers
+- `src/pages/MeetingRoom.tsx` -- integrate new components, mobile layout
+- `src/pages/HomePage.tsx` -- card micro-interactions
+- `src/index.css` -- new animation keyframes, mobile utilities
+- `tailwind.config.ts` -- additional animation definitions
 
-### supabase-meeting-adapter.ts fix (lines 178-185)
-
-```typescript
-// Before: spread loses prototype methods
-return { ...adapter, realtime };
-
-// After: properly combine
-return Object.assign(adapter, { realtime }) as IMeetingServiceWithRealtime;
-```
-
-### p2p-meeting-service.test.ts fix (line 53)
-
-```typescript
-// Before
-} as SignalingManager
-// After  
-} as unknown as SignalingManager
-```
+### Key dependencies
+- No new packages needed for tracks 1-2
+- `vite-plugin-pwa` needed only for PWA support (track 3D)
 
