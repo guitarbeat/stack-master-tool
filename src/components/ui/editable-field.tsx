@@ -6,7 +6,7 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit2, Check, X } from "lucide-react";
+import { Edit2, Check, X, Loader2 } from "lucide-react";
 import { logProduction } from "@/utils/productionLogger";
 
 interface EditableFieldProps<T = string> {
@@ -19,6 +19,7 @@ interface EditableFieldProps<T = string> {
   placeholder?: string;
   displayValue?: (value: T) => ReactNode;
   inputClassName?: string;
+  ariaLabel?: string;
 }
 
 export function EditableField<T extends string = string>({
@@ -31,6 +32,7 @@ export function EditableField<T extends string = string>({
   placeholder,
   displayValue,
   inputClassName = "h-8 text-sm",
+  ariaLabel,
 }: EditableFieldProps<T>) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -102,6 +104,7 @@ export function EditableField<T extends string = string>({
           placeholder={placeholder}
           autoFocus
           disabled={isUpdating}
+          aria-label={ariaLabel || "Edit value"}
         />
         <Button
           size="sm"
@@ -111,9 +114,13 @@ export function EditableField<T extends string = string>({
           }}
           disabled={isUpdating || editValue.trim() === ""}
           className="h-8 w-8 p-0"
-          aria-label="Save"
+          aria-label={isUpdating ? "Saving..." : "Save"}
         >
-          <Check className="h-4 w-4 text-green-600" />
+          {isUpdating ? (
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          ) : (
+            <Check className="h-4 w-4 text-green-600" />
+          )}
         </Button>
         <Button
           size="sm"
