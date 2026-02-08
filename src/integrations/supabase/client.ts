@@ -8,14 +8,8 @@ import {
   SupabaseTimeoutError,
 } from "./connection-manager";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  throw new Error(
-    "Missing Supabase configuration. Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in your .env file."
-  );
-}
+const SUPABASE_URL = "https://jectngcrpikxwnjdwana.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplY3RuZ2NycGlreHduamR3YW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNTI3NTYsImV4cCI6MjA3MzgyODc1Nn0.MsBmQukMgikZxHCqJIjtXxB62Bf9CbEaaOumFEMYYuo";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
