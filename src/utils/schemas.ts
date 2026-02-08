@@ -3,9 +3,13 @@ import { z } from "zod";
 
 export const nameSchema = z
   .string()
+  .trim()
   .min(1, "Name is required")
   .max(50, "Name must be 50 characters or less")
-  .regex(/^[a-zA-Z0-9\s\-']+$/, "Only letters, numbers, spaces, hyphens, and apostrophes");
+  .regex(
+    /^[\p{L}\p{N}\s\-']+$/u,
+    "Only letters, numbers, spaces, hyphens, and apostrophes"
+  );
 
 export const roomCodeSchema = z
   .string()
@@ -14,6 +18,7 @@ export const roomCodeSchema = z
 
 export const titleSchema = z
   .string()
+  .trim()
   .min(3, "Title must be at least 3 characters")
   .max(100, "Title must be 100 characters or less");
 

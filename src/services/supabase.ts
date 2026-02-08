@@ -1,3 +1,4 @@
+import { nameSchema, titleSchema } from "../utils/schemas";
 import { AppError, ErrorCode } from "../utils/errorHandling";
 import { logProduction } from "../utils/productionLogger";
 // Use the single, validated client from integrations to avoid duplicate config
@@ -104,6 +105,25 @@ export class SupabaseMeetingService {
     facilitatorId?: string,
   ): Promise<MeetingData> {
     try {
+      // Validate inputs
+      const titleResult = titleSchema.safeParse(title);
+      if (!titleResult.success) {
+        throw new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          undefined,
+          titleResult.error.errors[0]?.message ?? "Invalid title",
+        );
+      }
+
+      const nameResult = nameSchema.safeParse(facilitatorName);
+      if (!nameResult.success) {
+        throw new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          undefined,
+          nameResult.error.errors[0]?.message ?? "Invalid facilitator name",
+        );
+      }
+
       const maxCreateAttempts = 5;
       let lastError: AppError | null = null;
 
@@ -385,6 +405,16 @@ export class SupabaseMeetingService {
     isFacilitator: boolean = false,
   ): Promise<Participant> {
     try {
+      // Validate inputs
+      const nameResult = nameSchema.safeParse(participantName);
+      if (!nameResult.success) {
+        throw new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          undefined,
+          nameResult.error.errors[0]?.message ?? "Invalid participant name",
+        );
+      }
+
       // Validate meeting code format before proceeding
       if (!meetingCode || typeof meetingCode !== "string") {
         throw new AppError(
@@ -627,6 +657,15 @@ export class SupabaseMeetingService {
     newTitle: string,
   ): Promise<void> {
     try {
+      const titleResult = titleSchema.safeParse(newTitle);
+      if (!titleResult.success) {
+        throw new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          undefined,
+          titleResult.error.errors[0]?.message ?? "Invalid title",
+        );
+      }
+
       const { error } = await withSupabase((client) =>
         client
           .from("meetings")
@@ -697,6 +736,15 @@ export class SupabaseMeetingService {
     newName: string,
   ): Promise<void> {
     try {
+      const nameResult = nameSchema.safeParse(newName);
+      if (!nameResult.success) {
+        throw new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          undefined,
+          nameResult.error.errors[0]?.message ?? "Invalid participant name",
+        );
+      }
+
       const { error } = await withSupabase((client) =>
         client
           .from("participants")
