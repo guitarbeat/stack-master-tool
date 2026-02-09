@@ -182,7 +182,11 @@ export default function MeetingRoom() {
         meetingId,
         error: error instanceof Error ? error.message : String(error)
       });
-      // TODO: Show user-friendly error toast
+      showToast({
+        type: 'error',
+        title: 'Failed to Advance Speaker',
+        message: 'Could not move to the next speaker. Please try again.',
+      });
     }
   };
 
@@ -195,7 +199,7 @@ export default function MeetingRoom() {
         meetingId,
         lastSpeaker.participantId,
       );
-      setLastSpeaker(null); // Clear the last speaker after undoing
+      setLastSpeaker(null);
     } catch (error) {
       logProduction("error", {
         action: "undo_speaker",
@@ -203,7 +207,11 @@ export default function MeetingRoom() {
         lastSpeaker: lastSpeaker?.participantId,
         error: error instanceof Error ? error.message : String(error)
       });
-      // TODO: Show user-friendly error toast
+      showToast({
+        type: 'error',
+        title: 'Failed to Undo',
+        message: 'Could not restore the previous speaker. Please try again.',
+      });
     }
   };
 
@@ -488,48 +496,52 @@ export default function MeetingRoom() {
 
   // Cleanup: Mark participant as inactive when leaving
   useEffect(() => {
-    const handleBeforeUnload = async () => {
+    const handleBeforeUnload = () => {
       if (currentParticipantId && mode === "join") {
+        const url = `${import.meta.env.VITE_SUPABASE_URL ?? "https://jectngcrpikxwnjdwana.supabase.co"}/rest/v1/participants?id=eq.${currentParticipantId}`;
+        const body = JSON.stringify({ is_active: false });
         try {
-          await SupabaseMeetingService.leaveMeeting(currentParticipantId);
-        } catch (error) {
-          // * Log warning for debugging in development
-          if (import.meta.env.DEV) {
-            logProduction('warn', {
-              action: 'mark_participant_inactive',
-              participantId: currentParticipantId,
-              error: error instanceof Error ? error.message : String(error)
+          const blob = new Blob([body], { type: 'application/json' });
+          // sendBeacon is reliable during page unload
+          if (!navigator.sendBeacon?.(url, blob)) {
+            void fetch(url, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
+                'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? ''}`,
+                'Prefer': 'return=minimal',
+              },
+              body,
+              keepalive: true,
             });
           }
+        } catch (error) {
+          logProduction('warn', {
+            action: 'mark_participant_inactive',
+            participantId: currentParticipantId,
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       }
     };
 
-    const handleUnload = () => {
-      void handleBeforeUnload();
-    };
-
-    window.addEventListener("beforeunload", () => void handleBeforeUnload());
-    window.addEventListener("unload", handleUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", () => void handleBeforeUnload());
-      window.removeEventListener("unload", handleUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       // Mark as inactive when component unmounts (navigating away)
       if (currentParticipantId && mode === "join") {
         void SupabaseMeetingService.leaveMeeting(currentParticipantId).catch(error => {
-          // * Log warning for debugging in development
-          if (import.meta.env.DEV) {
-            logProduction('warn', {
-              action: 'mark_participant_inactive_unmount',
-              participantId: currentParticipantId,
-              error: error instanceof Error ? error.message : String(error)
-            });
-          }
+          logProduction('warn', {
+            action: 'mark_participant_inactive_unmount',
+            participantId: currentParticipantId,
+            error: error instanceof Error ? error.message : String(error),
+          });
         });
       }
     };
-  }, [currentParticipantId, mode, setShowJohnDoe]);
+  }, [currentParticipantId, mode]);
 
   if (isLoading) {
     return (

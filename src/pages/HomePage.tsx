@@ -52,9 +52,13 @@ export default function HomePage() {
 
   // Load saved name from localStorage
   useEffect(() => {
-    const savedName = localStorage.getItem("user_display_name");
-    if (savedName) {
-      setDisplayName(savedName);
+    try {
+      const savedName = localStorage.getItem("user_display_name");
+      if (savedName) {
+        setDisplayName(savedName);
+      }
+    } catch {
+      // localStorage may be unavailable in restricted environments
     }
   }, []);
 
@@ -114,8 +118,12 @@ export default function HomePage() {
   };
 
   const saveName = () => {
-    if (rememberName && displayName.trim()) {
-      localStorage.setItem("user_display_name", displayName.trim());
+    try {
+      if (rememberName && displayName.trim()) {
+        localStorage.setItem("user_display_name", displayName.trim());
+      }
+    } catch {
+      // localStorage may be unavailable
     }
   };
 
