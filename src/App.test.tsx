@@ -93,13 +93,13 @@ describe("App", () => {
 
   it.each(
     meetingRoutes.map((path, index) => ({ path, initialIndex: index }))
-  )("renders meeting room for %s route", ({ path, initialIndex }) => {
+  )("renders meeting room for %s route", async ({ path, initialIndex }) => {
     const entries = [...meetingRoutes];
     expect(entries[initialIndex]).toBe(path);
 
     renderWithRouter(entries, initialIndex);
 
-    expect(screen.getByTestId("meeting-room")).toBeInTheDocument();
+    expect(await screen.findByTestId("meeting-room")).toBeInTheDocument();
     expect(screen.queryByTestId("not-found")).not.toBeInTheDocument();
   });
 
