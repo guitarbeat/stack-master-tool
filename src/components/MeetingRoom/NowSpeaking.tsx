@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ParticipantAvatar } from "@/components/ui/participant-avatar";
 import { SpeakerTimer } from "./SpeakerTimer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +12,7 @@ interface NowSpeakingProps {
   compact?: boolean;
 }
 
-export const NowSpeaking = ({ speakerName, startedAt, className, compact = false }: NowSpeakingProps) => {
+export const NowSpeaking = memo(({ speakerName, startedAt, className, compact = false }: NowSpeakingProps) => {
   if (!speakerName) {
     return (
       <Card className={cn("border-border/50 bg-muted/30", className)}>
@@ -57,4 +58,6 @@ export const NowSpeaking = ({ speakerName, startedAt, className, compact = false
       </CardContent>
     </Card>
   );
-};
+});
+
+NowSpeaking.displayName = "NowSpeaking";

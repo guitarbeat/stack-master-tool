@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { memo, type FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SpeakingAnalytics } from "./SpeakingAnalytics";
@@ -32,7 +32,7 @@ interface DisplayLayoutProps {
   showSpeakingAnalytics?: boolean;
 }
 
-export const DisplayLayout: FC<DisplayLayoutProps> = ({
+export const DisplayLayout: FC<DisplayLayoutProps> = memo(({
   meetingData,
   participants,
   currentSpeaker,
@@ -141,6 +141,8 @@ export const DisplayLayout: FC<DisplayLayoutProps> = ({
       </div>
     </div>
   );
-};
+});
+
+DisplayLayout.displayName = "DisplayLayout";
 
 export default DisplayLayout;

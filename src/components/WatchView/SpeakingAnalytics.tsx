@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { memo, type FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatTime } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
@@ -21,7 +21,7 @@ interface SpeakingAnalyticsProps {
   isHostMode?: boolean; // whether this is being displayed in HOST mode
 }
 
-export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
+export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = memo(({
   speakingDistribution,
   totalSpeakingTime = 0,
   averageSpeakingTime = 0,
@@ -211,6 +211,8 @@ export const SpeakingAnalytics: FC<SpeakingAnalyticsProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+SpeakingAnalytics.displayName = "SpeakingAnalytics";
 
 export default SpeakingAnalytics;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { MeetingHeader } from "@/components/MeetingRoom/MeetingHeader";
 import { SpeakingQueue } from "@/components/MeetingRoom/SpeakingQueue";
@@ -7,16 +7,16 @@ import { ActionsPanel } from "@/components/MeetingRoom/ActionsPanel";
 import { MobileActionBar } from "@/components/MeetingRoom/MobileActionBar";
 import { ErrorState } from "@/components/MeetingRoom/ErrorState";
 import { HostSettingsPanel } from "@/components/MeetingRoom/HostSettingsPanel";
-import { KeyboardShortcutsModal } from "@/components/MeetingRoom/KeyboardShortcutsModal";
+// import { KeyboardShortcutsModal } from "@/components/MeetingRoom/KeyboardShortcutsModal";
 import { AppError, ErrorCode } from "@/utils/errorHandling";
 import { QueuePositionFeedback } from "@/components/MeetingRoom/QueuePositionFeedback";
-import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
-import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
+// import { DisplayLayout } from "@/components/WatchView/DisplayLayout";
+// import { SpeakingAnalytics } from "@/components/WatchView/SpeakingAnalytics";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
-import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
+// import { QrCodeScanner } from "@/components/ui/qr-code-scanner";
 import { CodeInputForm } from "@/components/MeetingRoom/CodeInputForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useMeetingState } from "@/hooks/useMeetingState";
@@ -39,6 +39,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+
+const QrCodeScanner = lazy(() => import("@/components/ui/qr-code-scanner").then(module => ({ default: module.QrCodeScanner })));
+const KeyboardShortcutsModal = lazy(() => import("@/components/MeetingRoom/KeyboardShortcutsModal").then(module => ({ default: module.KeyboardShortcutsModal })));
+const DisplayLayout = lazy(() => import("@/components/WatchView/DisplayLayout"));
+const SpeakingAnalytics = lazy(() => import("@/components/WatchView/SpeakingAnalytics"));
 
 export default function MeetingRoom() {
   const navigate = useNavigate();
@@ -95,7 +100,7 @@ export default function MeetingRoom() {
 
   const [isP2P, setIsP2P] = useState(false);
 
-  const handleCreateRoom = async () => {
+  const handleCreateRoom = useCallback(async () => {
     if (!codeInput.trim()) return;
 
     if (isP2P) {
@@ -152,9 +157,9 @@ export default function MeetingRoom() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [codeInput, isP2P, participantName, user, setMeetingId, setMeetingCode, setServerMeeting, setServerParticipants, setServerQueue, setCodeInput, showToast, setIsLoading]);
 
-  const handleQrScan = (scannedUrl: string) => {
+  const handleQrScan = useCallback((scannedUrl: string) => {
     // For now, QR scanning is not fully implemented
     // This function provides the framework for when proper QR scanning is added
     // * Log QR scan for debugging in development
@@ -165,11 +170,11 @@ export default function MeetingRoom() {
       });
     }
     setScannerOpen(false);
-  };
+  }, [setScannerOpen]);
 
   // Advanced features hooks
 
-  const handleNextSpeaker = async () => {
+  const handleNextSpeaker = useCallback(async () => {
     if (!meetingId) {
       return;
     }
@@ -188,9 +193,9 @@ export default function MeetingRoom() {
         message: 'Could not move to the next speaker. Please try again.',
       });
     }
-  };
+  }, [meetingId, setLastSpeaker]);
 
-  const handleUndo = async () => {
+  const handleUndo = useCallback(async () => {
     if (!meetingId || !lastSpeaker) {
       return;
     }
@@ -213,9 +218,9 @@ export default function MeetingRoom() {
         message: 'Could not restore the previous speaker. Please try again.',
       });
     }
-  };
+  }, [meetingId, lastSpeaker, setLastSpeaker]);
 
-  const handleLeaveQueue = async () => {
+  const handleLeaveQueue = useCallback(async () => {
     if (!meetingId || !currentParticipantId) {
       return;
     }
@@ -239,9 +244,9 @@ export default function MeetingRoom() {
         message: 'There was an error removing you from the queue. Please try again.'
       });
     }
-  };
+  }, [meetingId, currentParticipantId, showToast]);
 
-  const handleJoinQueue = async (queueType: string) => {
+  const handleJoinQueue = useCallback(async (queueType: string) => {
     if (!meetingId || !currentParticipantId) {
       return;
     }
@@ -266,7 +271,7 @@ export default function MeetingRoom() {
         message: 'There was an error adding you to the queue. Please try again.'
       });
     }
-  };
+  }, [meetingId, currentParticipantId, showToast]);
 
   const { showKeyboardShortcuts: _showKeyboardShortcuts, toggleShortcuts: _toggleShortcuts } = useKeyboardShortcuts({
     onNextSpeaker: () => {
@@ -286,7 +291,7 @@ export default function MeetingRoom() {
 
   const isInQueue = serverQueue.some(entry => entry.participantId === currentParticipantId);
 
-  const handleUpdateParticipant = async (participantId: string, newName: string) => {
+  const handleUpdateParticipant = useCallback(async (participantId: string, newName: string) => {
     if (!participantId || !newName.trim()) {
       return;
     }
@@ -313,9 +318,9 @@ export default function MeetingRoom() {
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [showToast]);
 
-  const handleRemoveParticipant = async (participantId: string) => {
+  const handleRemoveParticipant = useCallback(async (participantId: string) => {
     if (!participantId) {
       return;
     }
@@ -407,11 +412,11 @@ export default function MeetingRoom() {
         message: 'Please try again or check your connection'
       });
     }
-  };
+  }, [serverParticipants, setShowJohnDoe, showToast, pushToast, setServerParticipants]);
 
 
   // Handler for AddParticipants component
-  const handleAddParticipant = async (name: string) => {
+  const handleAddParticipant = useCallback(async (name: string) => {
     if (!meetingCode) {
       return Promise.resolve();
     }
@@ -439,10 +444,10 @@ export default function MeetingRoom() {
       });
       return Promise.reject(error);
     }
-  };
+  }, [meetingCode, meetingId, showToast]);
 
 
-  const handleMeetingCodeChange = async (newCode: string) => {
+  const handleMeetingCodeChange = useCallback(async (newCode: string) => {
     if (!meetingId) return;
 
     try {
@@ -462,7 +467,7 @@ export default function MeetingRoom() {
       });
       throw error; // Re-throw to let the UI handle it
     }
-  };
+  }, [meetingId, setMeetingCode, showToast]);
 
   // Meeting initialization is handled by useMeetingState hook
 
@@ -542,6 +547,52 @@ export default function MeetingRoom() {
       }
     };
   }, [currentParticipantId, mode]);
+
+  const mockMeetingData = useMemo(() => ({
+    id: serverMeeting?.id ?? "mock-id",
+    title:
+      serverMeeting?.title ??
+      (mode === "host"
+        ? "New Meeting"
+        : meetingCode
+          ? `Meeting ${meetingCode}`
+          : "Meeting"),
+    code: meetingCode,
+    facilitator: serverMeeting?.facilitator ?? "Meeting Facilitator",
+    facilitatorId: serverMeeting?.facilitatorId ?? null,
+    createdAt: serverMeeting?.createdAt ?? new Date().toISOString(),
+    isActive: serverMeeting?.isActive ?? true,
+  }), [serverMeeting, mode, meetingCode]);
+
+  const mockParticipants = useMemo(() => serverParticipants.length
+    ? serverParticipants
+        .filter(p => p.isActive !== false) // Only include active participants (default to active if not specified)
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          isFacilitator: p.isFacilitator,
+          hasRaisedHand: false,
+          joinedAt: p.joinedAt,
+          isActive: p.isActive,
+        }))
+    : showJohnDoe ? [
+        {
+          id: "1",
+          name: "John Doe",
+          isFacilitator: mode === "host",
+          hasRaisedHand: false,
+          joinedAt: new Date().toISOString(),
+          isActive: true,
+        },
+      ] : [], [serverParticipants, showJohnDoe, mode]);
+
+  // Determine current speaker from the actual queue (first person in queue)
+  const currentSpeakerFromQueue = useMemo(() => serverQueue.length > 0 ? {
+    name: serverQueue[0].participantName,
+    participantName: serverQueue[0].participantName,
+    startedSpeakingAt: serverQueue[0].joinedQueueAt ? new Date(serverQueue[0].joinedQueueAt) : undefined,
+    speakingTime: 0,
+  } : undefined, [serverQueue]);
 
   if (isLoading) {
     return (
@@ -660,52 +711,6 @@ export default function MeetingRoom() {
     );
   }
 
-  const mockMeetingData = {
-    id: serverMeeting?.id ?? "mock-id",
-    title:
-      serverMeeting?.title ??
-      (mode === "host"
-        ? "New Meeting"
-        : meetingCode
-          ? `Meeting ${meetingCode}`
-          : "Meeting"),
-    code: meetingCode,
-    facilitator: serverMeeting?.facilitator ?? "Meeting Facilitator",
-    facilitatorId: serverMeeting?.facilitatorId ?? null,
-    createdAt: serverMeeting?.createdAt ?? new Date().toISOString(),
-    isActive: serverMeeting?.isActive ?? true,
-  };
-
-  const mockParticipants = serverParticipants.length
-    ? serverParticipants
-        .filter(p => p.isActive !== false) // Only include active participants (default to active if not specified)
-        .map((p) => ({
-          id: p.id,
-          name: p.name,
-          isFacilitator: p.isFacilitator,
-          hasRaisedHand: false,
-          joinedAt: p.joinedAt,
-          isActive: p.isActive,
-        }))
-    : showJohnDoe ? [
-        {
-          id: "1",
-          name: "John Doe",
-          isFacilitator: mode === "host",
-          hasRaisedHand: false,
-          joinedAt: new Date().toISOString(),
-          isActive: true,
-        },
-      ] : [];
-
-  // Determine current speaker from the actual queue (first person in queue)
-  const currentSpeakerFromQueue = serverQueue.length > 0 ? {
-    name: serverQueue[0].participantName,
-    participantName: serverQueue[0].participantName,
-    startedSpeakingAt: serverQueue[0].joinedQueueAt ? new Date(serverQueue[0].joinedQueueAt) : undefined,
-    speakingTime: 0,
-  } : undefined;
-
   // Watch mode - show code input if no code provided
   if (mode === "watch" && !meetingCode) {
     return (
@@ -747,23 +752,25 @@ export default function MeetingRoom() {
       : [];
 
     return (
-      <DisplayLayout
-        meetingData={mockMeetingData}
-        participants={mockParticipants}
-        currentSpeaker={currentSpeakerFromQueue}
-        speakingQueue={serverQueue}
-        speakingDistribution={speakingDistribution.length > 0 ? speakingDistribution : fallbackDistribution}
-        totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
-        averageSpeakingTime={
-          speakingHistory.length > 0
-            ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
-            : 0
-        }
-        meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
-        totalParticipants={mockParticipants.length}
-        queueActivity={speakingHistory.length}
-        directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-      />
+      <Suspense fallback={<LoadingState message="Loading watch view..." />}>
+        <DisplayLayout
+          meetingData={mockMeetingData}
+          participants={mockParticipants}
+          currentSpeaker={currentSpeakerFromQueue}
+          speakingQueue={serverQueue}
+          speakingDistribution={speakingDistribution.length > 0 ? speakingDistribution : fallbackDistribution}
+          totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+          averageSpeakingTime={
+            speakingHistory.length > 0
+              ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+              : 0
+          }
+          meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+          totalParticipants={mockParticipants.length}
+          queueActivity={speakingHistory.length}
+          directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+        />
+      </Suspense>
     );
   }
 
@@ -974,21 +981,23 @@ export default function MeetingRoom() {
           {/* Meeting Analytics - Only visible in host mode */}
           {mode === "host" && (
             <div>
-              <SpeakingAnalytics
-                speakingDistribution={getSpeakingDistribution()}
-                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
-                averageSpeakingTime={
-                  speakingHistory.length > 0
-                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
-                    : 0
-                }
-                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
-                totalParticipants={mockParticipants.length}
-                queueActivity={speakingHistory.length}
-                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue?.name}
-                isHostMode={mode === "host"}
-              />
+              <Suspense fallback={<div className="p-4 bg-muted rounded-lg text-center"><LoadingState size="sm" /></div>}>
+                <SpeakingAnalytics
+                  speakingDistribution={getSpeakingDistribution()}
+                  totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+                  averageSpeakingTime={
+                    speakingHistory.length > 0
+                      ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                      : 0
+                  }
+                  meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+                  totalParticipants={mockParticipants.length}
+                  queueActivity={speakingHistory.length}
+                  directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+                  currentSpeaker={currentSpeakerFromQueue?.name}
+                  isHostMode={mode === "host"}
+                />
+              </Suspense>
             </div>
           )}
         </div>
@@ -1034,21 +1043,23 @@ export default function MeetingRoom() {
               />
             </div>
             <div>
-              <SpeakingAnalytics
-                speakingDistribution={getSpeakingDistribution()}
-                totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
-                averageSpeakingTime={
-                  speakingHistory.length > 0
-                    ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
-                    : 0
-                }
-                meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
-                totalParticipants={mockParticipants.length}
-                queueActivity={speakingHistory.length}
-                directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
-                currentSpeaker={currentSpeakerFromQueue?.name}
-                isHostMode={false}
-              />
+              <Suspense fallback={<div className="p-4 bg-muted rounded-lg text-center"><LoadingState size="sm" /></div>}>
+                <SpeakingAnalytics
+                  speakingDistribution={getSpeakingDistribution()}
+                  totalSpeakingTime={speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / 1000}
+                  averageSpeakingTime={
+                    speakingHistory.length > 0
+                      ? speakingHistory.reduce((sum, seg) => sum + seg.durationMs, 0) / speakingHistory.length / 1000
+                      : 0
+                  }
+                  meetingDuration={Math.floor((Date.now() - new Date(mockMeetingData.createdAt).getTime()) / 1000)}
+                  totalParticipants={mockParticipants.length}
+                  queueActivity={speakingHistory.length}
+                  directResponses={speakingHistory.filter(seg => seg.isDirectResponse).length}
+                  currentSpeaker={currentSpeakerFromQueue?.name}
+                  isHostMode={false}
+                />
+              </Suspense>
             </div>
           </div>
         )}
@@ -1067,18 +1078,22 @@ export default function MeetingRoom() {
       <>
         {/* QR Code Scanner */}
       {scannerOpen && (
-        <QrCodeScanner
-          onScan={handleQrScan}
-          onClose={() => setScannerOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <QrCodeScanner
+            onScan={handleQrScan}
+            onClose={() => setScannerOpen(false)}
+          />
+        </Suspense>
       )}
 
       {/* Keyboard Shortcuts Modal */}
-      <KeyboardShortcutsModal
-        isOpen={showKeyboardShortcutsModal}
-        onClose={() => setShowKeyboardShortcutsModal(false)}
-        isHost={mode === "host"}
-      />
+      <Suspense fallback={null}>
+        <KeyboardShortcutsModal
+          isOpen={showKeyboardShortcutsModal}
+          onClose={() => setShowKeyboardShortcutsModal(false)}
+          isHost={mode === "host"}
+        />
+      </Suspense>
 
       {/* QR Code Dialog */}
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
