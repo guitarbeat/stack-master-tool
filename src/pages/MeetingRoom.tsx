@@ -594,6 +594,9 @@ export default function MeetingRoom() {
     speakingTime: 0,
   } : undefined, [serverQueue]);
 
+  // ⚡ Bolt Optimization: Memoize navigation callback
+  const handleLeaveMeeting = useCallback(() => navigate("/"), [navigate]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -938,9 +941,7 @@ export default function MeetingRoom() {
             }}
             onScannerOpen={() => setScannerOpen(true)}
               onMeetingCodeChange={handleMeetingCodeChange}
-              onEndMeeting={() => {
-                void handleEndMeeting();
-              }}
+              onEndMeeting={handleEndMeeting}
             mockParticipants={mockParticipants}
             onAddParticipant={handleAddParticipant}
             onUpdateParticipant={handleUpdateParticipant}
@@ -952,7 +953,7 @@ export default function MeetingRoom() {
         <MeetingHeader
           meetingData={mockMeetingData}
           participantCount={mockParticipants.length}
-          onLeaveMeeting={() => navigate("/")}
+          onLeaveMeeting={handleLeaveMeeting}
         />
 
         {/* Now Speaking Spotlight */}
@@ -969,9 +970,7 @@ export default function MeetingRoom() {
             <SpeakingQueue
               speakingQueue={serverQueue}
               participantName={user?.email ?? "Current User"}
-              onLeaveQueue={() => {
-                void handleLeaveQueue();
-              }}
+              onLeaveQueue={handleLeaveQueue}
               currentUserId={currentParticipantId}
               isFacilitator={mode === "host"}
               onReorderQueue={handleReorderQueue}
@@ -1021,9 +1020,7 @@ export default function MeetingRoom() {
               <ActionsPanel
                 isInQueue={isInQueue}
                 onJoinQueue={handleJoinQueue}
-                onLeaveQueue={() => {
-                  void handleLeaveQueue();
-                }}
+                onLeaveQueue={handleLeaveQueue}
                 participantName={participantName || "Current User"}
               />
             </div>
@@ -1069,9 +1066,7 @@ export default function MeetingRoom() {
         <MobileActionBar
           isInQueue={isInQueue}
           onJoinQueue={handleJoinQueue}
-          onLeaveQueue={() => {
-            void handleLeaveQueue();
-          }}
+          onLeaveQueue={handleLeaveQueue}
         />
       )}
 
