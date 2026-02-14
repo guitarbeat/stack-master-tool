@@ -1,5 +1,6 @@
 import { AppError, ErrorCode } from "../utils/errorHandling";
 import { logProduction } from "../utils/productionLogger";
+import { generateSecureRandomString } from "@/utils/security";
 // Use the single, validated client from integrations to avoid duplicate config
 import {
   executeSupabase,
@@ -191,14 +192,10 @@ export class SupabaseMeetingService {
         error: dbError instanceof Error ? dbError.message : String(dbError),
       });
 
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
       const maxAttempts = 10;
 
       for (let attempts = 0; attempts < maxAttempts; attempts++) {
-        let result = "";
-        for (let i = 0; i < 6; i++) {
-          result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+        const result = generateSecureRandomString(6);
 
         const { data: existing } = await withSupabase((client) =>
           client

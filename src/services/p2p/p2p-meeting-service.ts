@@ -1,6 +1,7 @@
 import { MeetingSync } from "./meeting-sync";
 import { SignalingManager, createP2PSession } from "./signaling";
 import type { IMeetingService } from "../meeting-interface";
+import { generateSecureRandomString } from "@/utils/security";
 import type {
   MeetingData,
   MeetingWithParticipants,
@@ -55,12 +56,7 @@ export class P2PMeetingService implements IMeetingService {
   }
 
   private generateMeetingCode(): string {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let result = "";
-    for (let i = 0; i < 6; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+    return generateSecureRandomString(6);
   }
 
   async createMeeting(

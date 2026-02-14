@@ -32,6 +32,7 @@ import {
 } from "@/services/supabase";
 import { validateMeetingCode } from "@/utils/schemas";
 import { logProduction } from "@/utils/productionLogger";
+import { generateSecureRandomString } from "@/utils/security";
 import {
   Dialog,
   DialogContent,
@@ -688,7 +689,7 @@ export default function MeetingRoom() {
                   />
                   <button
                     type="button"
-                    onClick={() => setCodeInput(Math.random().toString(36).substring(2, 8).toUpperCase())}
+                    onClick={() => setCodeInput(generateSecureRandomString(6))}
                     className="px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors min-h-[48px]"
                     title="Generate random code"
                     aria-label="Generate random meeting code"
