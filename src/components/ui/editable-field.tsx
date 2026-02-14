@@ -6,7 +6,7 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit2, Check, X } from "lucide-react";
+import { Edit2, Check, X, Loader2 } from "lucide-react";
 import { logProduction } from "@/utils/productionLogger";
 
 interface EditableFieldProps<T = string> {
@@ -47,6 +47,8 @@ export function EditableField<T extends string = string>({
   };
 
   const handleSaveEdit = async () => {
+    if (isUpdating) return;
+
     if (editValue.trim() === value || editValue.trim() === "") {
       setIsEditing(false);
       return;
@@ -100,6 +102,7 @@ export function EditableField<T extends string = string>({
           className={inputClassName}
           maxLength={maxLength}
           placeholder={placeholder}
+          aria-label={placeholder || "Edit value"}
           autoFocus
           disabled={isUpdating}
         />
@@ -113,7 +116,11 @@ export function EditableField<T extends string = string>({
           className="h-8 w-8 p-0"
           aria-label="Save"
         >
-          <Check className="h-4 w-4 text-green-600" />
+          {isUpdating ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Check className="h-4 w-4 text-green-600" />
+          )}
         </Button>
         <Button
           size="sm"
