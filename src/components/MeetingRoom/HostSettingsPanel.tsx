@@ -6,6 +6,7 @@ import { AddParticipants } from "@/components/features/meeting/AddParticipants";
 import { ParticipantList } from "@/components/features/meeting/ParticipantList";
 import { useToast } from "@/hooks/use-toast";
 import { copyMeetingLink } from "@/utils/clipboard";
+import { generateSecureRandomString } from "@/utils/security";
 import QRCode from "qrcode";
 import { RefreshCw, Edit3, Check, X, AlertTriangle, Copy, Wifi, WifiOff } from "lucide-react";
 import {
@@ -106,7 +107,7 @@ export function HostSettingsPanel({
   };
 
   const handleRegenerateCode = async () => {
-    const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const newCode = generateSecureRandomString(6);
     if (onMeetingCodeChange) {
       await onMeetingCodeChange(newCode);
     }
